@@ -6,10 +6,14 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_logo.dart';
-import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/primary_button.dart';
+import '../../../shared/widgets/alerts/app_alert.dart';
+import '../../../shared/widgets/branding/app_logo.dart';
+import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../shared/widgets/text_fields/app_password_field.dart';
+import '../../../shared/widgets/text_fields/app_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,8 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final rememberedEmail = context.read<AuthProvider>().rememberedEmail;
+    if (rememberedEmail != null) {
+      _emailController.text = rememberedEmail;
+      _rememberMe = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -60,172 +73,107 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppConstants.screenPaddingHorizontal,
-                vertical: 24,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - 48,
+        child: FormScrollScaffold(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.screenPaddingHorizontal,
+            vertical: 24,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                const Center(child: AppLogo(iconSize: 96)),
+                const SizedBox(height: 32),
+                Text('Welcome back', style: AppTypography.pageTitle),
+                const SizedBox(height: 4),
+                Text(
+                  'Log in to manage your business permits.',
+                  style: AppTypography.bodyMuted,
                 ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: AppConstants.maxFormWidth,
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 24),
-                          const Center(child: AppLogo()),
-                          const SizedBox(height: 32),
-                          Text(
-                            'Welcome back',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Log in to manage your business permits.',
-                            style: TextStyle(color: AppColors.textSecondary),
-                          ),
-                          const SizedBox(height: 24),
-                          AppTextField(
-                            controller: _emailController,
-                            label: 'Email address',
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: const Icon(Icons.mail_outline),
-                            validator: Validators.email,
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          AppTextField(
-                            controller: _passwordController,
-                            label: 'Password',
-                            obscureText: _obscurePassword,
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                              onPressed: () => setState(
-                                () => _obscurePassword = !_obscurePassword,
+                const SizedBox(height: 24),
+                AppTextField(
+                  controller: _emailController,
+                  label: 'Email address',
+                  keyboardType: TextInputType.emailAddress,
+                  prefixIcon: const Icon(Icons.mail_outline),
+                  validator: Validators.email,
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
+                AppPasswordField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  validator: (value) =>
+                      Validators.required(value, fieldLabel: 'Password'),
+                  onFieldSubmitted: (_) => _handleLogin(),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: InkWell(
+                        onTap: () => setState(() => _rememberMe = !_rememberMe),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) => setState(
+                                () => _rememberMe = value ?? false,
                               ),
                             ),
-                            validator: (value) => Validators.required(
-                              value,
-                              fieldLabel: 'Password',
+                            const Flexible(
+                              child: Text(
+                                'Remember me',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            textInputAction: TextInputAction.done,
-                            onFieldSubmitted: (_) => _handleLogin(),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: InkWell(
-                                  onTap: () => setState(
-                                    () => _rememberMe = !_rememberMe,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (value) => setState(
-                                          () => _rememberMe = value ?? false,
-                                        ),
-                                      ),
-                                      const Flexible(
-                                        child: Text(
-                                          'Remember me',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    context.push('/forgot-password'),
-                                child: const Text('Forgot password?'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          PrimaryButton(
-                            label: 'Log In',
-                            isLoading: authProvider.isLoading,
-                            onPressed: _handleLogin,
-                          ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            children: [
-                              const Text(
-                                "Don't have an account? ",
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => context.push('/register'),
-                                child: const Text(
-                                  'Create account',
-                                  style: TextStyle(
-                                    color: AppColors.secondaryBlue,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceMuted,
-                              borderRadius: BorderRadius.circular(
-                                AppConstants.borderRadiusMedium,
-                              ),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  Icons.info_outline,
-                                  size: 18,
-                                  color: AppColors.textMuted,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Prototype access — use ${AppStrings.mockEmail} / ${AppStrings.mockPassword} to explore the app.',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textMuted,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                    TextButton(
+                      onPressed: () => context.push('/forgot-password'),
+                      child: const Text('Forgot password?'),
+                    ),
+                  ],
                 ),
-              ),
-            );
-          },
+                const SizedBox(height: 8),
+                PrimaryButton(
+                  label: 'Log In',
+                  isLoading: authProvider.isLoading,
+                  onPressed: _handleLogin,
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: AppTypography.bodyMuted,
+                    ),
+                    GestureDetector(
+                      onTap: () => context.push('/register'),
+                      child: Text(
+                        'Create account',
+                        style: AppTypography.bodyStrong.copyWith(
+                          color: AppColors.secondaryBlue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                AppAlert(
+                  variant: AppAlertVariant.info,
+                  message:
+                      'Prototype access — use ${AppStrings.mockEmail} / ${AppStrings.mockPassword} to explore the app.',
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../shared/widgets/buttons/primary_button.dart';
 import '../models/onboarding_item.dart';
 import 'widgets/onboarding_page.dart';
 
@@ -104,10 +106,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     width: isActive ? 22 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: isActive
-                          ? AppColors.primaryNavy
-                          : AppColors.border,
-                      borderRadius: BorderRadius.circular(4),
+                      color: isActive ? AppColors.primary : AppColors.border,
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.borderRadiusXs,
+                      ),
                     ),
                   );
                 }),
@@ -115,15 +117,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: SizedBox(
-                height: 52,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLastPage ? _finishOnboarding : _goToNextPage,
-                  child: Text(
-                    _isLastPage ? AppStrings.getStarted : AppStrings.next,
-                  ),
-                ),
+              child: PrimaryButton(
+                label: _isLastPage ? AppStrings.getStarted : AppStrings.next,
+                onPressed: _isLastPage ? _finishOnboarding : _goToNextPage,
               ),
             ),
           ],

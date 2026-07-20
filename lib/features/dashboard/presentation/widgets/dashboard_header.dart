@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/avatars/app_avatar.dart';
+import '../../../../shared/widgets/layout/hero_header.dart';
 
-/// Dashboard header greeting the user, with notification and profile
-/// shortcuts.
+/// Dashboard's premium coral [HeroHeader]: greets the user and surfaces
+/// notification/profile shortcuts.
 class DashboardHeader extends StatelessWidget {
   final String firstName;
   final String initials;
   final int unreadCount;
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
+  final Widget? searchBar;
 
   const DashboardHeader({
     super.key,
@@ -18,6 +21,7 @@ class DashboardHeader extends StatelessWidget {
     required this.unreadCount,
     required this.onNotificationsTap,
     required this.onProfileTap,
+    this.searchBar,
   });
 
   String get _greeting {
@@ -29,32 +33,11 @@ class DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _greeting,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                firstName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
+    return HeroHeader(
+      subtitle: _greeting,
+      title: firstName,
+      searchBar: searchBar,
+      actions: [
         Semantics(
           label: unreadCount > 0
               ? '$unreadCount unread notifications'
@@ -67,7 +50,7 @@ class DashboardHeader extends StatelessWidget {
               label: Text('$unreadCount'),
               child: const Icon(
                 Icons.notifications_outlined,
-                color: AppColors.textPrimary,
+                color: AppColors.textOnPrimary,
               ),
             ),
           ),
@@ -79,16 +62,11 @@ class DashboardHeader extends StatelessWidget {
           child: InkWell(
             onTap: onProfileTap,
             customBorder: const CircleBorder(),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: AppColors.primaryNavy,
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+            child: AppAvatar(
+              size: 40,
+              initials: initials,
+              backgroundColor: AppColors.surface,
+              foregroundColor: AppColors.primary,
             ),
           ),
         ),

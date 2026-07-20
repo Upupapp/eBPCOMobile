@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_strings.dart';
 import '../models/user_model.dart';
+import '../repositories/auth_repository.dart';
 import '../services/local_storage_service.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
 /// Handles mock authentication state: session restore, login, registration,
-/// and logout. No real network calls are made - everything is backed by
-/// [LocalStorageService] for this frontend-only prototype.
+/// and logout. Credential/account logic lives in [AuthRepository];
+/// [LocalStorageService] only persists session/device state, so swapping in
+/// a real backend later means providing a different [AuthRepository].
 class AuthProvider extends ChangeNotifier {
-  AuthProvider({LocalStorageService? storageService})
-    : _storage = storageService ?? LocalStorageService();
+  AuthProvider({
+    AuthRepository? authRepository,
+    LocalStorageService? storageService,
+  }) : _storage = storageService ?? LocalStorageService(),
+       _repository =
+           authRepository ??
+           MockAuthRepository(
+             storageService: storageService ?? LocalStorageService(),
+           );
 
   final LocalStorageService _storage;
+  final AuthRepository _repository;
 
   AuthStatus _status = AuthStatus.unknown;
   bool _isLoading = false;
   String? _errorMessage;
   UserModel? _currentUser;
   bool _onboardingCompleted = false;
+  String? _rememberedEmail;
 
   AuthStatus get status => _status;
   bool get isLoading => _isLoading;
@@ -28,11 +38,19 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _status == AuthStatus.authenticated;
   bool get onboardingCompleted => _onboardingCompleted;
 
+  /// Email remembered from a previous "Remember me" login, if any, so
+  /// [LoginScreen] can prefill it.
+  String? get rememberedEmail => _rememberedEmail;
+
   Future<void> loadSession() async {
     _onboardingCompleted = await _storage.isOnboardingCompleted();
+    _rememberedEmail = await _storage.getRememberedEmail();
     final loggedIn = await _storage.isLoggedIn();
     if (loggedIn) {
-      await _hydrateCurrentUser();
+      final email = await _storage.getCurrentUserEmail();
+      _currentUser = email != null
+          ? await _repository.hydrateUser(email)
+          : null;
       _status = AuthStatus.authenticated;
     } else {
       _status = AuthStatus.unauthenticated;
@@ -46,29 +64,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _hydrateCurrentUser() async {
-    final email = await _storage.getCurrentUserEmail();
-    if (email == AppStrings.mockEmail) {
-      _currentUser = const UserModel(
-        firstName: 'Juan',
-        lastName: 'Dela Cruz',
-        email: AppStrings.mockEmail,
-        mobileNumber: '09171234567',
-      );
-      return;
-    }
-
-    final registeredEmail = await _storage.getRegisteredEmail();
-    if (email != null && email == registeredEmail) {
-      _currentUser = UserModel(
-        firstName: await _storage.getRegisteredFirstName() ?? 'User',
-        lastName: await _storage.getRegisteredLastName() ?? '',
-        email: registeredEmail!,
-        mobileNumber: await _storage.getRegisteredMobile() ?? '',
-      );
-    }
-  }
-
   Future<bool> login({
     required String email,
     required String password,
@@ -78,25 +73,18 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    await Future.delayed(const Duration(milliseconds: 900));
+    final user = await _repository.authenticate(
+      email: email,
+      password: password,
+    );
 
-    final normalizedEmail = email.trim().toLowerCase();
-    final registeredEmail = await _storage.getRegisteredEmail();
-    final registeredPassword = await _storage.getRegisteredPassword();
-
-    final isMockMatch =
-        normalizedEmail == AppStrings.mockEmail &&
-        password == AppStrings.mockPassword;
-    final isRegisteredMatch =
-        registeredEmail != null &&
-        normalizedEmail == registeredEmail &&
-        password == registeredPassword;
-
-    if (isMockMatch || isRegisteredMatch) {
+    if (user != null) {
       await _storage.setLoggedIn(true);
       await _storage.setRememberMe(rememberMe);
-      await _storage.setCurrentUserEmail(normalizedEmail);
-      await _hydrateCurrentUser();
+      await _storage.setCurrentUserEmail(user.email);
+      await _storage.setRememberedEmail(rememberMe ? user.email : null);
+      _rememberedEmail = rememberMe ? user.email : null;
+      _currentUser = user;
       _status = AuthStatus.authenticated;
       _isLoading = false;
       notifyListeners();
@@ -121,25 +109,40 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    await Future.delayed(const Duration(milliseconds: 900));
-
-    final normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail == AppStrings.mockEmail) {
-      _errorMessage = 'This email address is already in use.';
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-
-    await _storage.saveRegisteredUser(
-      email: normalizedEmail,
+    final success = await _repository.registerAccount(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      mobileNumber: mobileNumber,
       password: password,
+    );
+
+    if (!success) {
+      _errorMessage = 'This email address is already in use.';
+    }
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
+
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String mobileNumber,
+  }) async {
+    final user = _currentUser;
+    if (user == null) return false;
+
+    _currentUser = user.copyWith(
       firstName: firstName,
       lastName: lastName,
       mobileNumber: mobileNumber,
     );
-
-    _isLoading = false;
+    await _storage.updateRegisteredProfile(
+      firstName: firstName,
+      lastName: lastName,
+      mobileNumber: mobileNumber,
+    );
     notifyListeners();
     return true;
   }

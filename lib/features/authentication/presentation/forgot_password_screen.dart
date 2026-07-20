@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/primary_button.dart';
+import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../shared/widgets/text_fields/app_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -30,7 +32,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     FocusScope.of(context).unfocus();
 
     setState(() => _isSubmitting = true);
-    await Future.delayed(const Duration(milliseconds: 900));
+    await Future.delayed(AppConstants.mockNetworkDelay);
     if (!mounted) return;
     setState(() => _isSubmitting = false);
 
@@ -46,7 +48,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         content: Text(
           "We've simulated sending password reset instructions to ${_emailController.text.trim()}. "
           'In this prototype, no real email is sent.',
-          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
@@ -66,63 +67,53 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Forgot Password')),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: FormScrollScaffold(
           padding: const EdgeInsets.symmetric(
             horizontal: AppConstants.screenPaddingHorizontal,
             vertical: 24,
           ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: AppConstants.maxFormWidth,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(
-                      Icons.lock_reset_outlined,
-                      size: 56,
-                      color: AppColors.primaryNavy,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Reset your password',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Enter the email address linked to your account and we will send you '
-                      'instructions to reset your password.',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                    const SizedBox(height: 24),
-                    AppTextField(
-                      controller: _emailController,
-                      label: 'Email address',
-                      keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(Icons.mail_outline),
-                      validator: Validators.email,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _handleSubmit(),
-                    ),
-                    const SizedBox(height: 24),
-                    PrimaryButton(
-                      label: 'Send Reset Instructions',
-                      isLoading: _isSubmitting,
-                      onPressed: _handleSubmit,
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => context.go('/login'),
-                        child: const Text('Back to Login'),
-                      ),
-                    ),
-                  ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(
+                  Icons.lock_reset_outlined,
+                  size: 56,
+                  color: AppColors.primary,
                 ),
-              ),
+                const SizedBox(height: 20),
+                Text('Reset your password', style: AppTypography.pageTitle),
+                const SizedBox(height: 8),
+                Text(
+                  'Enter the email address linked to your account and we will send you '
+                  'instructions to reset your password.',
+                  style: AppTypography.bodyMuted,
+                ),
+                const SizedBox(height: 24),
+                AppTextField(
+                  controller: _emailController,
+                  label: 'Email address',
+                  keyboardType: TextInputType.emailAddress,
+                  prefixIcon: const Icon(Icons.mail_outline),
+                  validator: Validators.email,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _handleSubmit(),
+                ),
+                const SizedBox(height: 24),
+                PrimaryButton(
+                  label: 'Send Reset Instructions',
+                  isLoading: _isSubmitting,
+                  onPressed: _handleSubmit,
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton(
+                    onPressed: () => context.go('/login'),
+                    child: const Text('Back to Login'),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

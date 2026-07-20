@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../../core/widgets/confirmation_dialog.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/avatars/app_avatar.dart';
+import '../../../shared/widgets/cards/app_card.dart';
+import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -43,38 +46,35 @@ class ProfileScreen extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: AppColors.primaryNavy,
-                      child: Text(
-                        user?.initials ?? 'U',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    AppAvatar(
+                      size: 80,
+                      initials: user?.initials ?? 'U',
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textOnPrimary,
                     ),
                     const SizedBox(height: 12),
                     Text(
                       user?.fullName ?? 'User',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: AppTypography.sectionTitle,
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      user?.email ?? '',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 13,
-                      ),
-                    ),
+                    Text(user?.email ?? '', style: AppTypography.bodyMuted),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
+              const _ProfileSectionTitle('Account'),
+              _ProfileActionTile(
+                icon: Icons.edit_outlined,
+                label: 'Edit Profile',
+                onTap: () => context.push('/profile/edit'),
+              ),
+              _ProfileActionTile(
+                icon: Icons.lock_outline,
+                label: 'Change Password',
+                onTap: () => context.push('/profile/change-password'),
+              ),
+              const SizedBox(height: 20),
               const _ProfileSectionTitle('Personal Information'),
               _ProfileTile(
                 icon: Icons.person_outline,
@@ -126,9 +126,9 @@ class ProfileScreen extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _handleLogout(context),
                 icon: const Icon(Icons.logout, color: AppColors.error),
-                label: const Text(
+                label: Text(
                   'Log Out',
-                  style: TextStyle(color: AppColors.error),
+                  style: AppTypography.button.copyWith(color: AppColors.error),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.error),
@@ -161,10 +161,9 @@ class _ProfileSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
+        style: AppTypography.label.copyWith(
           color: AppColors.textMuted,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -184,40 +183,31 @@ class _ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppColors.primaryNavy),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: AppColors.textMuted,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AppCard(
+        backgroundColor: AppColors.surfaceMuted,
+        padding: const EdgeInsets.all(12),
+        showBorder: false,
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: AppColors.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: AppTypography.caption),
+                  Text(
+                    value,
+                    style: AppTypography.bodyStrong,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -252,7 +242,7 @@ class _ProfileActionTile extends StatelessWidget {
               Icon(icon, size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 14),
               Expanded(
-                child: Text(label, style: const TextStyle(fontSize: 14.5)),
+                child: Text(label, style: AppTypography.body),
               ),
               const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],

@@ -5,11 +5,16 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/primary_button.dart';
-import '../../../core/widgets/secondary_button.dart';
+import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/buttons/secondary_button.dart';
+import '../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../shared/widgets/text_fields/app_dropdown.dart';
+import '../../../shared/widgets/text_fields/app_password_field.dart';
+import '../../../shared/widgets/text_fields/app_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -49,8 +54,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Step 3: Account security.
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _acceptedTerms = false;
   bool _acceptedPrivacy = false;
   bool _showAgreementError = false;
@@ -109,6 +112,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _goToStep(_currentStep - 1);
     }
   }
+
+  static const _backLabel = AppStrings.back;
 
   Future<void> _handleCreateAccount() async {
     FocusScope.of(context).unfocus();
@@ -188,46 +193,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _formScrollWrapper({required Widget child}) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.screenPaddingHorizontal,
-            vertical: 20,
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: AppConstants.maxFormWidth,
-              ),
-              child: child,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildStep1() {
-    return _formScrollWrapper(
+    return FormScrollScaffold(
       child: Form(
         key: _step1FormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Tell us who you are.',
-              style: TextStyle(color: AppColors.textSecondary),
+            const _StepHeader(
+              title: 'Personal Information',
+              subtitle: 'Tell us who you are.',
             ),
             const SizedBox(height: 20),
             AppTextField(
@@ -283,9 +258,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _sex,
-              decoration: const InputDecoration(labelText: 'Sex'),
+            AppDropdown<String>(
+              value: _sex,
+              label: 'Sex',
               items: const [
                 DropdownMenuItem(value: 'Male', child: Text('Male')),
                 DropdownMenuItem(value: 'Female', child: Text('Female')),
@@ -295,9 +270,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value == null ? 'Please select your sex.' : null,
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _civilStatus,
-              decoration: const InputDecoration(labelText: 'Civil status'),
+            AppDropdown<String>(
+              value: _civilStatus,
+              label: 'Civil status',
               items: const [
                 DropdownMenuItem(value: 'Single', child: Text('Single')),
                 DropdownMenuItem(value: 'Married', child: Text('Married')),
@@ -325,24 +300,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildStep2() {
-    return _formScrollWrapper(
+    return FormScrollScaffold(
       child: Form(
         key: _step2FormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Contact Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'How can we reach you?',
-              style: TextStyle(color: AppColors.textSecondary),
+            const _StepHeader(
+              title: 'Contact Information',
+              subtitle: 'How can we reach you?',
             ),
             const SizedBox(height: 20),
             AppTextField(
@@ -396,7 +362,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               children: [
                 Expanded(
-                  child: SecondaryButton(label: 'Back', onPressed: _handleBack),
+                  child: SecondaryButton(
+                    label: _backLabel,
+                    onPressed: _handleBack,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -416,40 +385,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final hasLetter = RegExp(r'[A-Za-z]').hasMatch(password);
     final hasNumber = RegExp(r'\d').hasMatch(password);
 
-    return _formScrollWrapper(
+    return FormScrollScaffold(
       child: Form(
         key: _step3FormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Account Security',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Create a password to protect your account.',
-              style: TextStyle(color: AppColors.textSecondary),
+            const _StepHeader(
+              title: 'Account Security',
+              subtitle: 'Create a password to protect your account.',
             ),
             const SizedBox(height: 20),
-            AppTextField(
+            AppPasswordField(
               controller: _passwordController,
               label: 'Password',
-              obscureText: _obscurePassword,
               onChanged: (_) => setState(() {}),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                ),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
-              ),
               validator: Validators.password,
             ),
             const SizedBox(height: 10),
@@ -466,20 +416,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               met: hasNumber,
             ),
             const SizedBox(height: 16),
-            AppTextField(
+            AppPasswordField(
               controller: _confirmPasswordController,
               label: 'Confirm password',
-              obscureText: _obscureConfirmPassword,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureConfirmPassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                ),
-                onPressed: () => setState(
-                  () => _obscureConfirmPassword = !_obscureConfirmPassword,
-                ),
-              ),
               validator: (value) =>
                   Validators.confirmPassword(value, _passwordController.text),
             ),
@@ -495,18 +434,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onChanged: (value) => setState(() => _acceptedPrivacy = value),
             ),
             if (_showAgreementError)
-              const Padding(
-                padding: EdgeInsets.only(top: 4, left: 4),
+              Padding(
+                padding: const EdgeInsets.only(top: 4, left: 4),
                 child: Text(
                   'Please accept the Terms and Conditions and Privacy Policy to continue.',
-                  style: TextStyle(color: AppColors.error, fontSize: 12.5),
+                  style: AppTypography.caption.copyWith(color: AppColors.error),
                 ),
               ),
             const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: SecondaryButton(label: 'Back', onPressed: _handleBack),
+                  child: SecondaryButton(
+                    label: _backLabel,
+                    onPressed: _handleBack,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -521,6 +463,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Title + subtitle pair shown at the top of each registration wizard step.
+class _StepHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _StepHeader({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTypography.sectionTitle),
+        const SizedBox(height: 4),
+        Text(subtitle, style: AppTypography.bodyMuted),
+      ],
     );
   }
 }
@@ -546,20 +508,16 @@ class _StepProgressHeader extends StatelessWidget {
         children: [
           Text(
             'Step ${currentStep + 1} of $totalSteps',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: AppTypography.label,
           ),
           const SizedBox(height: 8),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppConstants.borderRadiusXs),
             child: LinearProgressIndicator(
               value: (currentStep + 1) / totalSteps,
               minHeight: 6,
               backgroundColor: AppColors.surfaceMuted,
-              valueColor: const AlwaysStoppedAnimation(AppColors.primaryNavy),
+              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
             ),
           ),
         ],
@@ -588,8 +546,7 @@ class _PasswordRequirementRow extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12.5,
+            style: AppTypography.caption.copyWith(
               color: met ? AppColors.statusApproved : AppColors.textMuted,
             ),
           ),
@@ -621,7 +578,7 @@ class _AgreementCheckbox extends StatelessWidget {
           children: [
             Checkbox(value: value, onChanged: (v) => onChanged(v ?? false)),
             Expanded(
-              child: Text(label, style: const TextStyle(fontSize: 13.5)),
+              child: Text(label, style: AppTypography.body),
             ),
           ],
         ),

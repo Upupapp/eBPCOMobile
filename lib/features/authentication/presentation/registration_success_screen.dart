@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/widgets/primary_button.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/avatars/app_avatar.dart';
+import '../../../shared/widgets/buttons/primary_button.dart';
 
 class RegistrationSuccessScreen extends StatelessWidget {
   const RegistrationSuccessScreen({super.key});
@@ -26,35 +28,26 @@ class RegistrationSuccessScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 96,
-                    height: 96,
-                    decoration: const BoxDecoration(
-                      color: AppColors.statusApprovedBg,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_circle,
-                      size: 56,
-                      color: AppColors.statusApproved,
-                    ),
+                  const AppAvatar(
+                    size: 96,
+                    icon: Icons.check_circle,
+                    iconSize: 56,
+                    backgroundColor: AppColors.statusApprovedBg,
+                    foregroundColor: AppColors.statusApproved,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Account created!',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: AppTypography.pageTitle,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Your E-BPCO account has been created successfully. You can now log in '
                     'using your registered email address and password to start applying for '
                     'business permits and clearances.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: AppTypography.bodyMuted.copyWith(height: 1.5),
                   ),
                   const SizedBox(height: 32),
                   PrimaryButton(

@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/models/notification_model.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/avatars/app_avatar.dart';
 
 /// Formats a notification's timestamp as a short, readable relative date.
 String formatRelativeDate(DateTime dateTime) {
@@ -41,18 +43,12 @@ class RecentNotificationTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.lightBlue,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  notification.icon,
-                  size: 20,
-                  color: AppColors.secondaryBlue,
-                ),
+              AppAvatar(
+                size: 40,
+                icon: notification.icon,
+                iconSize: 20,
+                backgroundColor: AppColors.lightBlue,
+                foregroundColor: AppColors.secondaryBlue,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -61,31 +57,21 @@ class RecentNotificationTile extends StatelessWidget {
                   children: [
                     Text(
                       notification.title,
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: notification.isRead
-                            ? FontWeight.w600
-                            : FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: notification.isRead
+                          ? AppTypography.body
+                          : AppTypography.bodyStrong,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       notification.message,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: AppTypography.bodyMuted,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       formatRelativeDate(notification.createdAt),
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
-                      ),
+                      style: AppTypography.caption,
                     ),
                   ],
                 ),

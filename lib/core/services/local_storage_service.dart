@@ -42,6 +42,20 @@ class LocalStorageService {
     await prefs.setBool(AppConstants.prefRememberMe, value);
   }
 
+  Future<String?> getRememberedEmail() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefRememberedEmail);
+  }
+
+  Future<void> setRememberedEmail(String? email) async {
+    final prefs = await _prefs;
+    if (email == null) {
+      await prefs.remove(AppConstants.prefRememberedEmail);
+    } else {
+      await prefs.setString(AppConstants.prefRememberedEmail, email);
+    }
+  }
+
   Future<void> saveRegisteredUser({
     required String email,
     required String password,
@@ -83,6 +97,17 @@ class LocalStorageService {
   Future<String?> getRegisteredMobile() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefRegisteredMobile);
+  }
+
+  Future<void> updateRegisteredProfile({
+    required String firstName,
+    required String lastName,
+    required String mobileNumber,
+  }) async {
+    final prefs = await _prefs;
+    await prefs.setString(AppConstants.prefRegisteredFirstName, firstName);
+    await prefs.setString(AppConstants.prefRegisteredLastName, lastName);
+    await prefs.setString(AppConstants.prefRegisteredMobile, mobileNumber);
   }
 
   Future<void> setCurrentUserEmail(String email) async {

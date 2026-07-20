@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_colors.dart';
-
 /// Main app shell with a bottom navigation bar. Tab state is preserved via
 /// go_router's [StatefulShellRoute.indexedStack], which keeps each branch's
 /// navigator (and its widget tree) alive across tab switches.
@@ -21,38 +19,40 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(bottom: false, child: navigationShell),
+      // No top SafeArea here: screens without an AppBar (e.g. Dashboard's
+      // HeroHeader) render full-bleed and apply their own top inset;
+      // AppBar-based screens already position themselves below the status
+      // bar via Scaffold, so this was previously a redundant wrapper.
+      body: navigationShell,
       bottomNavigationBar: SafeArea(
         top: false,
-        child: BottomNavigationBar(
-          currentIndex: navigationShell.currentIndex,
-          onTap: _onTap,
-          selectedItemColor: AppColors.primaryNavy,
-          unselectedItemColor: AppColors.textMuted,
-          items: const [
-            BottomNavigationBarItem(
+        child: NavigationBar(
+          selectedIndex: navigationShell.currentIndex,
+          onDestinationSelected: _onTap,
+          destinations: const [
+            NavigationDestination(
               icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
+              selectedIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.folder_outlined),
-              activeIcon: Icon(Icons.folder),
+              selectedIcon: Icon(Icons.folder),
               label: 'Applications',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.payments_outlined),
-              activeIcon: Icon(Icons.payments),
+              selectedIcon: Icon(Icons.payments),
               label: 'Payments',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.notifications_outlined),
-              activeIcon: Icon(Icons.notifications),
+              selectedIcon: Icon(Icons.notifications),
               label: 'Notifications',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
+              selectedIcon: Icon(Icons.person),
               label: 'Profile',
             ),
           ],
