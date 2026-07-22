@@ -16,6 +16,19 @@ class DocumentUploadTile extends StatelessWidget {
   final VoidCallback onUpload;
   final VoidCallback? onRemove;
 
+  /// Optional caption shown under the filename instead of "Not yet
+  /// uploaded" (e.g. a requirement level like "Required when applicable").
+  final String? statusLabel;
+
+  /// When provided and a document is attached, shows a "Preview" text
+  /// action. Opt-in so existing call sites are unaffected.
+  final VoidCallback? onPreview;
+
+  /// When true and a document is attached, shows a "Replace" icon button
+  /// next to Remove (calls [onUpload] again). Defaults to false so
+  /// existing call sites render exactly as before.
+  final bool allowReplace;
+
   const DocumentUploadTile({
     super.key,
     required this.label,
@@ -23,7 +36,17 @@ class DocumentUploadTile extends StatelessWidget {
     this.document,
     required this.onUpload,
     this.onRemove,
+    this.statusLabel,
+    this.onPreview,
+    this.allowReplace = false,
   });
+
+  static String _formatFileSize(int bytes) {
+    if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(0)} KB';
+    }
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,19 +78,52 @@ class DocumentUploadTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  uploaded ? document!.fileName : 'Not yet uploaded',
+                  uploaded
+                      ? document!.fileName
+                      : (statusLabel ?? 'Not yet uploaded'),
                   style: AppTypography.caption,
                 ),
+                if (uploaded && document!.fileSizeBytes != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    _formatFileSize(document!.fileSizeBytes!),
+                    style: AppTypography.caption,
+                  ),
+                ],
+                if (uploaded && onPreview != null) ...[
+                  const SizedBox(height: 4),
+                  InkWell(
+                    onTap: onPreview,
+                    child: Text(
+                      'Preview',
+                      style: AppTypography.label.copyWith(
+                        color: AppColors.secondaryBlue,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
           const SizedBox(width: 8),
           if (uploaded)
-            IconButton(
-              onPressed: onRemove,
-              icon: const Icon(Icons.close, size: 18),
-              color: AppColors.textMuted,
-              tooltip: 'Remove attachment',
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: onRemove,
+                  icon: const Icon(Icons.close, size: 18),
+                  color: AppColors.textMuted,
+                  tooltip: 'Remove attachment',
+                ),
+                if (allowReplace)
+                  IconButton(
+                    onPressed: onUpload,
+                    icon: const Icon(Icons.refresh, size: 18),
+                    color: AppColors.secondaryBlue,
+                    tooltip: 'Replace attachment',
+                  ),
+              ],
             )
           else
             OutlinedButton(onPressed: onUpload, child: const Text('Upload')),

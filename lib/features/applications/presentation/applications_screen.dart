@@ -1,142 +1,143 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/models/application_model.dart';
-import '../../../core/providers/applications_provider.dart';
+import '../../../core/models/building_permit_model.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../shared/widgets/badges/status_badge.dart';
-import '../../../shared/widgets/buttons/primary_button.dart';
-import '../../../shared/widgets/cards/app_card.dart';
-import '../../../shared/widgets/search/app_search_field.dart';
-import '../../../shared/widgets/states/empty_state.dart';
-import '../../../shared/widgets/states/loading_view.dart';
+import 'widgets/application_option_card.dart';
+import 'widgets/before_you_start_card.dart';
 
-class ApplicationsScreen extends StatefulWidget {
+/// Landing page for the "Applications" tab: a catalog of permit/application
+/// types the user can file, grouped into a "Select Form Project Type" grid
+/// and an "Other Applications" list, plus a "Before you start" checklist.
+class ApplicationsScreen extends StatelessWidget {
   const ApplicationsScreen({super.key});
 
-  @override
-  State<ApplicationsScreen> createState() => _ApplicationsScreenState();
-}
+  void _startNewApplication(BuildContext context) {
+    context.push('/applications/new');
+  }
 
-class _ApplicationsScreenState extends State<ApplicationsScreen> {
-  String _query = '';
+  /// The four "Select Form Project Type" cards and the "Building Permit"
+  /// card all lead into the Building Permit wizard; the project type (when
+  /// known) is passed through so Step 3 can preselect the matching Scope
+  /// of Work option.
+  void _startBuildingPermit(
+    BuildContext context, {
+    BuildingPermitProjectScope? projectScope,
+  }) {
+    context.push('/applications/new/building-permit', extra: projectScope);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final applicationsProvider = context.watch<ApplicationsProvider>();
-    final query = _query.trim().toLowerCase();
-    final applications = applicationsProvider.applications.where((
-      application,
-    ) {
-      if (query.isEmpty) return true;
-      return application.businessName.toLowerCase().contains(query) ||
-          application.applicationNumber.toLowerCase().contains(query);
-    }).toList()..sort((a, b) => b.submittedDate.compareTo(a.submittedDate));
-    final hasAnyApplication = applicationsProvider.applications.isNotEmpty;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Applications')),
       body: SafeArea(
-        child: applicationsProvider.isLoading
-            ? const LoadingView()
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppConstants.screenPaddingHorizontal,
-                      12,
-                      AppConstants.screenPaddingHorizontal,
-                      0,
-                    ),
-                    child: AppSearchField(
-                      hint: 'Search applications',
-                      onChanged: (value) => setState(() => _query = value),
-                    ),
-                  ),
-                  Expanded(
-                    child: applications.isEmpty
-                        ? EmptyState(
-                            icon: Icons.folder_open_outlined,
-                            title: hasAnyApplication
-                                ? 'No matching applications'
-                                : 'No applications yet',
-                            message: hasAnyApplication
-                                ? 'Try a different search term.'
-                                : 'Apply for a permit to see it listed here.',
-                            action: hasAnyApplication
-                                ? null
-                                : PrimaryButton(
-                                    label: 'New Application',
-                                    onPressed: () =>
-                                        context.push('/applications/new'),
-                                  ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.all(
-                              AppConstants.screenPaddingHorizontal,
-                            ),
-                            itemCount: applications.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) =>
-                                _ApplicationTile(application: applications[index]),
-                          ),
-                  ),
-                ],
-              ),
-      ),
-      floatingActionButton: !hasAnyApplication
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () => context.push('/applications/new'),
-              icon: const Icon(Icons.add),
-              label: const Text('New Application'),
-            ),
-    );
-  }
-}
-
-class _ApplicationTile extends StatelessWidget {
-  final ApplicationModel application;
-
-  const _ApplicationTile({required this.application});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      onTap: () => context.push('/applications/${application.id}'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      application.businessName,
-                      style: AppTypography.cardTitle,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(application.type.label, style: AppTypography.bodyMuted),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              StatusBadge(
-                label: application.status.label,
-                color: application.status.color,
-                backgroundColor: application.status.backgroundColor,
-              ),
-            ],
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppConstants.screenPaddingHorizontal,
+            AppSpacing.lg,
+            AppConstants.screenPaddingHorizontal,
+            AppSpacing.xxl,
           ),
-          const SizedBox(height: 8),
-          Text(application.applicationNumber, style: AppTypography.caption),
-        ],
+          children: [
+            Text(
+              'Choose the application you want to file.',
+              style: AppTypography.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            Text('Select Form Project Type', style: AppTypography.sectionTitle),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'Choose the application you want to file.',
+              style: AppTypography.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            GridView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: AppSpacing.md,
+                mainAxisSpacing: AppSpacing.md,
+                mainAxisExtent: 214,
+              ),
+              children: [
+                ApplicationOptionCard(
+                  icon: Icons.add_home_work_outlined,
+                  title: 'New Construction',
+                  description:
+                      'For building a completely new structure or property from the ground up, such as houses, commercial buildings, or facilities.',
+                  onTap: () => _startBuildingPermit(
+                    context,
+                    projectScope: BuildingPermitProjectScope.newConstruction,
+                  ),
+                ),
+                ApplicationOptionCard(
+                  icon: Icons.handyman_outlined,
+                  title: 'Renovation',
+                  description:
+                      'For improving, remodeling, or upgrading an existing structure without significantly increasing its size or floor area.',
+                  onTap: () => _startBuildingPermit(
+                    context,
+                    projectScope: BuildingPermitProjectScope.renovation,
+                  ),
+                ),
+                ApplicationOptionCard(
+                  icon: Icons.open_in_full_rounded,
+                  title: 'Extension',
+                  description:
+                      'For adding new spaces or expanding parts of an existing building, such as additional rooms, floors, or attached structures.',
+                  onTap: () => _startBuildingPermit(
+                    context,
+                    projectScope: BuildingPermitProjectScope.extension,
+                  ),
+                ),
+                ApplicationOptionCard(
+                  icon: Icons.domain_disabled_outlined,
+                  title: 'Demolition',
+                  description:
+                      'For safely removing or tearing down an existing structure, building, or portion of a property.',
+                  onTap: () => _startBuildingPermit(
+                    context,
+                    projectScope: BuildingPermitProjectScope.demolition,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            Text('Other Applications', style: AppTypography.sectionTitle),
+            const SizedBox(height: AppSpacing.md),
+            ApplicationOptionCard(
+              layout: ApplicationOptionCardLayout.list,
+              icon: Icons.assignment_outlined,
+              title: 'Building Permit',
+              description:
+                  'Apply for a building permit for new construction, renovation, or repair.',
+              accentColor: AppColors.secondaryBlue,
+              accentBackgroundColor: AppColors.lightBlue,
+              onTap: () => _startBuildingPermit(context),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ApplicationOptionCard(
+              layout: ApplicationOptionCardLayout.list,
+              icon: Icons.verified_outlined,
+              title: 'Certificate of Occupancy',
+              description:
+                  'Apply for a certificate of occupancy after building completion.',
+              accentColor: AppColors.secondaryBlue,
+              accentBackgroundColor: AppColors.lightBlue,
+              onTap: () => _startNewApplication(context),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            const BeforeYouStartCard(),
+          ],
+        ),
       ),
     );
   }

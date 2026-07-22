@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/models/building_permit_model.dart';
 import '../core/providers/auth_provider.dart';
 import '../shared/widgets/states/error_state.dart';
 import '../features/applications/presentation/application_details_screen.dart';
 import '../features/applications/presentation/applications_screen.dart';
+import '../features/applications/presentation/building_permit/building_permit_status_screen.dart';
+import '../features/applications/presentation/building_permit/building_permit_success_screen.dart';
+import '../features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
 import '../features/applications/presentation/new_application_screen.dart';
 import '../features/authentication/presentation/forgot_password_screen.dart';
 import '../features/authentication/presentation/login_screen.dart';
@@ -21,7 +25,12 @@ import '../features/payments/presentation/payment_flow_screen.dart';
 import '../features/payments/presentation/payments_screen.dart';
 import '../features/profile/presentation/change_password_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
+import '../features/profile/presentation/help_support_screen.dart';
+import '../features/profile/presentation/language_screen.dart';
+import '../features/profile/presentation/notification_preferences_screen.dart';
+import '../features/profile/presentation/privacy_policy_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/profile/presentation/terms_conditions_screen.dart';
 import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/presentation/splash_screen.dart';
 
@@ -89,6 +98,20 @@ class AppRouter {
               NewApplicationScreen(initialBusinessId: state.extra as String?),
         ),
         GoRoute(
+          path: '/applications/new/building-permit',
+          builder: (context, state) => BuildingPermitWizardScreen(
+            initialProjectScope: state.extra as BuildingPermitProjectScope?,
+          ),
+        ),
+        GoRoute(
+          path: '/applications/new/building-permit/success',
+          builder: (context, state) => const BuildingPermitSuccessScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/building-permit/status',
+          builder: (context, state) => const BuildingPermitStatusScreen(),
+        ),
+        GoRoute(
           path: '/applications/:applicationId',
           builder: (context, state) => ApplicationDetailsScreen(
             applicationId: state.pathParameters['applicationId']!,
@@ -107,6 +130,26 @@ class AppRouter {
         GoRoute(
           path: '/profile/change-password',
           builder: (context, state) => const ChangePasswordScreen(),
+        ),
+        GoRoute(
+          path: '/profile/language',
+          builder: (context, state) => const LanguageScreen(),
+        ),
+        GoRoute(
+          path: '/profile/notifications',
+          builder: (context, state) => const NotificationPreferencesScreen(),
+        ),
+        GoRoute(
+          path: '/profile/help',
+          builder: (context, state) => const HelpSupportScreen(),
+        ),
+        GoRoute(
+          path: '/profile/terms',
+          builder: (context, state) => const TermsConditionsScreen(),
+        ),
+        GoRoute(
+          path: '/profile/privacy',
+          builder: (context, state) => const PrivacyPolicyScreen(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>

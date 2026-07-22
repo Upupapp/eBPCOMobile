@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../shared/widgets/avatars/app_avatar.dart';
+import '../../../shared/widgets/badges/status_badge.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import 'widgets/profile_photo_avatar.dart';
+import 'widgets/profile_photo_bottom_sheet.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,8 +20,8 @@ class ProfileScreen extends StatelessWidget {
   Future<void> _handleLogout(BuildContext context) async {
     final confirmed = await ConfirmationDialog.show(
       context,
-      title: 'Log out',
-      message: 'Are you sure you want to log out of your E-BPCO account?',
+      title: 'Log Out',
+      message: 'Are you sure you want to log out of your eBPCO account?',
       confirmLabel: 'Log Out',
       isDestructive: true,
     );
@@ -28,9 +32,40 @@ class ProfileScreen extends StatelessWidget {
     if (context.mounted) context.go('/login');
   }
 
+  Future<void> _handleEditPhoto(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final hasPhoto = authProvider.currentUser?.photoPath != null;
+
+    await showProfilePhotoOptions(
+      context,
+      hasPhoto: hasPhoto,
+      onTakePhoto: () => _setMockPhoto(context, 'Photo captured (mock).'),
+      onChooseFromGallery: () =>
+          _setMockPhoto(context, 'Photo selected from gallery (mock).'),
+      onRemovePhoto: () async {
+        await authProvider.updateProfilePhoto(null);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile photo removed.')),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _setMockPhoto(BuildContext context, String message) async {
+    await context.read<AuthProvider>().updateProfilePhoto('mock_photo');
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
+    final dateFormat = DateFormat('MMM d, yyyy');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -46,11 +81,10 @@ class ProfileScreen extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    AppAvatar(
-                      size: 80,
+                    ProfilePhotoAvatar(
+                      photoPath: user?.photoPath,
                       initials: user?.initials ?? 'U',
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.textOnPrimary,
+                      onEditTap: () => _handleEditPhoto(context),
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -93,34 +127,58 @@ class ProfileScreen extends StatelessWidget {
                     ? user!.mobileNumber
                     : 'Not provided',
               ),
+              _ProfileTile(
+                icon: Icons.location_on_outlined,
+                label: 'Address',
+                value: (user?.fullAddress.isNotEmpty ?? false)
+                    ? user!.fullAddress
+                    : 'Not provided',
+              ),
+              _ProfileTile(
+                icon: Icons.badge_outlined,
+                label: 'Account Type',
+                value: user?.accountType ?? '-',
+              ),
+              _ProfileStatusTile(
+                icon: Icons.verified_user_outlined,
+                label: 'Account Status',
+                status: user?.accountStatus,
+              ),
+              _ProfileTile(
+                icon: Icons.calendar_today_outlined,
+                label: 'Registered Since',
+                value: user?.registeredSince != null
+                    ? dateFormat.format(user!.registeredSince!)
+                    : 'Not available',
+              ),
               const SizedBox(height: 20),
               const _ProfileSectionTitle('Settings'),
               _ProfileActionTile(
                 icon: Icons.notifications_outlined,
                 label: 'Notification Preferences',
-                onTap: () => _showComingSoon(context),
+                onTap: () => context.push('/profile/notifications'),
               ),
               _ProfileActionTile(
                 icon: Icons.language_outlined,
                 label: 'Language',
-                onTap: () => _showComingSoon(context),
+                onTap: () => context.push('/profile/language'),
               ),
               const SizedBox(height: 20),
               const _ProfileSectionTitle('Support & Legal'),
               _ProfileActionTile(
                 icon: Icons.help_outline,
                 label: 'Help and Support',
-                onTap: () => _showComingSoon(context),
+                onTap: () => context.push('/profile/help'),
               ),
               _ProfileActionTile(
                 icon: Icons.description_outlined,
                 label: 'Terms and Conditions',
-                onTap: () => _showComingSoon(context),
+                onTap: () => context.push('/profile/terms'),
               ),
               _ProfileActionTile(
                 icon: Icons.privacy_tip_outlined,
                 label: 'Privacy Policy',
-                onTap: () => _showComingSoon(context),
+                onTap: () => context.push('/profile/privacy'),
               ),
               const SizedBox(height: 28),
               OutlinedButton.icon(
@@ -137,14 +195,6 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('This section will be available in a future update.'),
       ),
     );
   }
@@ -213,6 +263,45 @@ class _ProfileTile extends StatelessWidget {
   }
 }
 
+class _ProfileStatusTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final AccountStatus? status;
+
+  const _ProfileStatusTile({
+    required this.icon,
+    required this.label,
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AppCard(
+        backgroundColor: AppColors.surfaceMuted,
+        padding: const EdgeInsets.all(12),
+        showBorder: false,
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: AppColors.primary),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: AppTypography.caption)),
+            if (status != null)
+              StatusBadge(
+                label: status!.label,
+                color: status!.color,
+                backgroundColor: status!.backgroundColor,
+              )
+            else
+              Text('-', style: AppTypography.bodyStrong),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ProfileActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -241,9 +330,7 @@ class _ProfileActionTile extends StatelessWidget {
             children: [
               Icon(icon, size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 14),
-              Expanded(
-                child: Text(label, style: AppTypography.body),
-              ),
+              Expanded(child: Text(label, style: AppTypography.body)),
               const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],
           ),

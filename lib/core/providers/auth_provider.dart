@@ -127,22 +127,50 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> updateProfile({
     required String firstName,
+    String middleName = '',
     required String lastName,
     required String mobileNumber,
+    String address = '',
+    String province = '',
+    String city = '',
+    String barangay = '',
+    String zipCode = '',
   }) async {
     final user = _currentUser;
     if (user == null) return false;
 
     _currentUser = user.copyWith(
       firstName: firstName,
+      middleName: middleName,
       lastName: lastName,
       mobileNumber: mobileNumber,
+      address: address,
+      province: province,
+      city: city,
+      barangay: barangay,
+      zipCode: zipCode,
     );
+    // Only first/last/mobile are persisted on-device, matching the
+    // prototype's original persistence scope; the newer profile fields
+    // (middle name, address) are session-only mock state that resets on
+    // app restart.
     await _storage.updateRegisteredProfile(
       firstName: firstName,
       lastName: lastName,
       mobileNumber: mobileNumber,
     );
+    notifyListeners();
+    return true;
+  }
+
+  /// Sets or clears the (mock) profile photo. No real image is stored —
+  /// `photoPath` is just a marker used to switch the avatar between the
+  /// initials placeholder and a generic "photo set" placeholder.
+  Future<bool> updateProfilePhoto(String? photoPath) async {
+    final user = _currentUser;
+    if (user == null) return false;
+
+    _currentUser = user.copyWith(photoPath: photoPath);
     notifyListeners();
     return true;
   }

@@ -23,19 +23,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   static const _items = [
     OnboardingItem(
-      icon: Icons.assignment_outlined,
+      imagePath: 'assets/images/1.png',
       title: 'Apply for permits from your phone',
       description:
           'Submit new, renewal, and amendment permit applications through a simple mobile process.',
     ),
     OnboardingItem(
-      icon: Icons.upload_file_outlined,
+      imagePath: 'assets/images/2.png',
       title: 'Submit and manage requirements',
       description:
           'Review required documents and prepare your permit application in one place.',
     ),
     OnboardingItem(
-      icon: Icons.timeline_outlined,
+      imagePath: 'assets/images/3.png',
       title: 'Track your application',
       description:
           'Monitor evaluations, payments, approval, and permit release status.',

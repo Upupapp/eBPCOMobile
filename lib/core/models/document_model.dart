@@ -6,11 +6,13 @@ class DocumentModel {
   final String label;
   final String fileName;
   final DateTime uploadedAt;
+  final int? fileSizeBytes;
 
   const DocumentModel({
     required this.id,
     required this.label,
     required this.fileName,
     required this.uploadedAt,
+    this.fileSizeBytes,
   });
 }

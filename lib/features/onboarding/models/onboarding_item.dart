@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
-
 /// A single onboarding page's content.
 class OnboardingItem {
-  final IconData icon;
+  final String imagePath;
   final String title;
   final String description;
 
   const OnboardingItem({
-    required this.icon,
+    required this.imagePath,
     required this.title,
     required this.description,
   });

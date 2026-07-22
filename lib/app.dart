@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_strings.dart';
 import 'core/providers/applications_provider.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/providers/building_permit_provider.dart';
 import 'core/providers/business_provider.dart';
 import 'core/providers/navigation_provider.dart';
 import 'core/providers/notifications_provider.dart';
+import 'core/providers/settings_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_router.dart';
 
@@ -39,13 +41,22 @@ class _EbpcoAppState extends State<EbpcoApp> {
           create: (_) => NotificationsProvider(),
         ),
         ChangeNotifierProvider<BusinessProvider>(
-          create: (context) =>
-              BusinessProvider(notifications: context.read<NotificationsProvider>()),
+          create: (context) => BusinessProvider(
+            notifications: context.read<NotificationsProvider>(),
+          ),
         ),
         ChangeNotifierProvider<ApplicationsProvider>(
           create: (context) => ApplicationsProvider(
             notifications: context.read<NotificationsProvider>(),
           ),
+        ),
+        ChangeNotifierProvider<BuildingPermitProvider>(
+          create: (context) => BuildingPermitProvider(
+            notifications: context.read<NotificationsProvider>(),
+          ),
+        ),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) => SettingsProvider(),
         ),
       ],
       child: MaterialApp.router(

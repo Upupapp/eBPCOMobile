@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Reusable, keyboard-safe text field used throughout forms in the app.
 class AppTextField extends StatelessWidget {
@@ -17,6 +18,8 @@ class AppTextField extends StatelessWidget {
   final AutovalidateMode autovalidateMode;
   final FocusNode? focusNode;
   final void Function(String)? onFieldSubmitted;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField({
     super.key,
@@ -35,6 +38,8 @@ class AppTextField extends StatelessWidget {
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.focusNode,
     this.onFieldSubmitted,
+    this.textCapitalization = TextCapitalization.none,
+    this.inputFormatters,
   });
 
   @override
@@ -53,6 +58,8 @@ class AppTextField extends StatelessWidget {
         autovalidateMode: autovalidateMode,
         focusNode: focusNode,
         onFieldSubmitted: onFieldSubmitted,
+        textCapitalization: textCapitalization,
+        inputFormatters: inputFormatters,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,

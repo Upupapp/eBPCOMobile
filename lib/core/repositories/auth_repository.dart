@@ -29,11 +29,20 @@ class MockAuthRepository implements AuthRepository {
 
   final LocalStorageService _storage;
 
-  static const _mockUser = UserModel(
+  static final _mockUser = UserModel(
     firstName: 'Juan',
+    middleName: 'Santos',
     lastName: 'Dela Cruz',
     email: AppStrings.mockEmail,
     mobileNumber: '09171234567',
+    address: '123 Rizal Street',
+    barangay: 'San Isidro',
+    city: 'Quezon City',
+    province: 'Metro Manila',
+    zipCode: '1100',
+    accountType: 'Individual Applicant',
+    accountStatus: AccountStatus.verified,
+    registeredSince: DateTime(2024, 3, 12),
   );
 
   @override
