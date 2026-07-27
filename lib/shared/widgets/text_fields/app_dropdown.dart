@@ -26,6 +26,12 @@ class AppDropdown<T> extends StatelessWidget {
       items: items,
       onChanged: onChanged,
       validator: validator,
+      // Without this, the button sizes itself to its selected item's
+      // intrinsic width, which can overflow the decorated field on narrow
+      // screens once the arrow icon is added back in. Expanding lets the
+      // selected item's Text shrink/ellipsize within the available width
+      // instead.
+      isExpanded: true,
     );
   }
 }

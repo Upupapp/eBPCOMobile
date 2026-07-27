@@ -5,8 +5,9 @@ import '../../../../../core/models/document_model.dart';
 final _random = Random();
 
 /// Fabricates a plausible [DocumentModel] the same way the rest of the app
-/// simulates uploads (no real file picker) — used by every upload slot in
-/// the Building Permit wizard so file names/sizes look realistic.
+/// simulates uploads (no real file picker, no server) — used by every
+/// upload slot in the Building Permit wizard so file names/sizes look
+/// realistic.
 DocumentModel createMockDocument(String label, {String extension = 'pdf'}) {
   final now = DateTime.now();
   final slug = label

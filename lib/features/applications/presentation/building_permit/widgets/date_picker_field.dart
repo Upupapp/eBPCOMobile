@@ -6,7 +6,8 @@ import '../../../../../core/theme/app_typography.dart';
 
 /// Tappable date field that opens the platform date picker, wired as a
 /// [FormField] so it participates in the wizard step's `Form.validate()`
-/// like any other field. Needed in Steps 5, 6, and 7.
+/// like any other field. Handles a cancelled picker (returns null) and a
+/// never-selected date safely — no unsafe null assertions.
 class DatePickerField extends FormField<DateTime> {
   DatePickerField({
     super.key,
@@ -34,6 +35,8 @@ class DatePickerField extends FormField<DateTime> {
                  firstDate: firstDate ?? DateTime(now.year - 20),
                  lastDate: lastDate ?? DateTime(now.year + 20),
                );
+               // showDatePicker returns null when the user cancels or
+               // dismisses the dialog — leave the field's value untouched.
                if (picked != null) {
                  state.didChange(picked);
                  onChanged(picked);
@@ -50,9 +53,7 @@ class DatePickerField extends FormField<DateTime> {
                  errorText: state.errorText,
                ),
                child: Text(
-                 state.value != null
-                     ? format.format(state.value!)
-                     : 'Select a date',
+                 state.value != null ? format.format(state.value!) : 'Select a date',
                  style: state.value != null
                      ? AppTypography.body
                      : AppTypography.helper,

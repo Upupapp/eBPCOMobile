@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
-import '../core/models/building_permit_model.dart';
 import '../core/providers/auth_provider.dart';
 import '../shared/widgets/states/error_state.dart';
 import '../features/applications/presentation/application_details_screen.dart';
 import '../features/applications/presentation/applications_screen.dart';
-import '../features/applications/presentation/building_permit/building_permit_status_screen.dart';
-import '../features/applications/presentation/building_permit/building_permit_success_screen.dart';
 import '../features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
 import '../features/applications/presentation/new_application_screen.dart';
 import '../features/authentication/presentation/forgot_password_screen.dart';
@@ -99,17 +96,7 @@ class AppRouter {
         ),
         GoRoute(
           path: '/applications/new/building-permit',
-          builder: (context, state) => BuildingPermitWizardScreen(
-            initialProjectScope: state.extra as BuildingPermitProjectScope?,
-          ),
-        ),
-        GoRoute(
-          path: '/applications/new/building-permit/success',
-          builder: (context, state) => const BuildingPermitSuccessScreen(),
-        ),
-        GoRoute(
-          path: '/applications/new/building-permit/status',
-          builder: (context, state) => const BuildingPermitStatusScreen(),
+          builder: (context, state) => const BuildingPermitWizardScreen(),
         ),
         GoRoute(
           path: '/applications/:applicationId',

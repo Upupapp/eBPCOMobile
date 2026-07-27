@@ -1,51 +1,82 @@
+import '../utils/validators.dart';
 import 'document_model.dart';
-import 'payment_assessment_model.dart' show PaymentMethod;
 
-/// Mock data model for the Unified Application Form for Building Permit and
-/// Fire Safety Evaluation Clearance (DILG-DPWH-DICT-DTI JMC 2018-01),
-/// reorganized into a 10-step mobile wizard. Everything here is
-/// session-local, editable draft state — no network/database involved.
+/// Mock, frontend-only data model for the Building Permit application
+/// wizard. Steps 1-5 are implemented so far; the draft is built to be
+/// extended with additional step data as Steps 6-9 are added incrementally.
 
-/// The official form supports New / Renewal / Amendatory; this wizard only
-/// implements the New flow (entered from the Applications tab), so the
-/// value is fixed and shown read-only.
-enum BuildingPermitApplicationType { newApplication, renewal, amendatory }
+/// Official "Form of Ownership" choices shown when the construction is
+/// owned by an enterprise.
+const List<String> formsOfOwnership = [
+  'Sole Proprietorship',
+  'Partnership',
+  'Corporation',
+  'Cooperative',
+  'Government',
+  'Others',
+];
 
-extension BuildingPermitApplicationTypeX on BuildingPermitApplicationType {
-  String get label {
-    switch (this) {
-      case BuildingPermitApplicationType.newApplication:
-        return 'New';
-      case BuildingPermitApplicationType.renewal:
-        return 'Renewal';
-      case BuildingPermitApplicationType.amendatory:
-        return 'Amendatory';
-    }
+/// Step 1 — Applicant Information. The application type is fixed to "New
+/// Application" for this flow (renewal/amendment aren't part of this
+/// rebuild), so it's not a field the user can change.
+class ApplicantInfo {
+  String firstName = '';
+  String middleName = '';
+  String lastName = '';
+  String tin = '';
+  String mobileNumber = '';
+  String email = '';
+  bool isOwnedByEnterprise = false;
+  String enterpriseName = '';
+  String? formOfOwnership;
+
+  bool get isValid {
+    final basicsValid =
+        Validators.required(firstName) == null &&
+        Validators.required(lastName) == null &&
+        Validators.philippineMobile(mobileNumber) == null &&
+        Validators.email(email) == null;
+    if (!basicsValid) return false;
+    if (!isOwnedByEnterprise) return true;
+    return Validators.required(enterpriseName) == null &&
+        formOfOwnership != null;
   }
 }
 
-/// The project category the user picked from the Applications tab grid,
-/// passed into the wizard as route `extra` to preselect Scope of Work.
-enum BuildingPermitProjectScope {
-  newConstruction,
-  renovation,
-  extension,
-  demolition,
+/// Step 2 (part 1) — Applicant Address.
+class ApplicantAddress {
+  String houseNumber = '';
+  String street = '';
+  String barangay = '';
+  String city = '';
+  String province = '';
+  String zipCode = '';
+
+  bool get isValid =>
+      Validators.required(street) == null &&
+      Validators.required(barangay) == null &&
+      Validators.required(city) == null &&
+      Validators.required(province) == null;
 }
 
-extension BuildingPermitProjectScopeX on BuildingPermitProjectScope {
-  String get label {
-    switch (this) {
-      case BuildingPermitProjectScope.newConstruction:
-        return 'New Construction';
-      case BuildingPermitProjectScope.renovation:
-        return 'Renovation';
-      case BuildingPermitProjectScope.extension:
-        return 'Extension';
-      case BuildingPermitProjectScope.demolition:
-        return 'Demolition';
-    }
-  }
+/// Step 2 (part 2) — Construction Location.
+class ConstructionLocation {
+  String lotNumber = '';
+  String blockNumber = '';
+  String tctNumber = '';
+  String taxDeclarationNumber = '';
+  String street = '';
+  String barangay = '';
+  String city = '';
+  String province = '';
+  String zipCode = '';
+
+  bool get isValid =>
+      Validators.required(lotNumber) == null &&
+      Validators.required(street) == null &&
+      Validators.required(barangay) == null &&
+      Validators.required(city) == null &&
+      Validators.required(province) == null;
 }
 
 /// Official "Scope of Work" checklist from the Unified Application Form.
@@ -137,7 +168,8 @@ extension OccupancyGroupX on OccupancyGroup {
     }
   }
 
-  /// Short plain-language description shown beneath the option label.
+  /// Short plain-language description shown beneath the option label so
+  /// users don't need to already know the National Building Code terms.
   String get description {
     switch (this) {
       case OccupancyGroup.groupA:
@@ -166,6 +198,55 @@ extension OccupancyGroupX on OccupancyGroup {
   }
 }
 
+/// Step 3 — Project Information: scope of work + building use. Scope of
+/// Work is preselected to "New Construction" since this wizard is reached
+/// through Applications → Building Permit → New Construction, but stays
+/// fully editable — the flow doesn't require it to stay fixed.
+class ProjectInformation {
+  Set<ScopeOfWorkOption> scopeOfWork = {ScopeOfWorkOption.newConstruction};
+  String scopeOfWorkOtherDescription = '';
+  OccupancyGroup? occupancyGroup;
+  String occupancyOtherDescription = '';
+
+  bool get isValid {
+    if (scopeOfWork.isEmpty) return false;
+    if (scopeOfWork.contains(ScopeOfWorkOption.others) &&
+        Validators.required(scopeOfWorkOtherDescription) != null) {
+      return false;
+    }
+    if (occupancyGroup == null) return false;
+    if (occupancyGroup == OccupancyGroup.others &&
+        Validators.required(occupancyOtherDescription) != null) {
+      return false;
+    }
+    return true;
+  }
+}
+
+/// Step 4 — Building Details: occupancy, area, cost, and schedule.
+class BuildingDetails {
+  String occupancyClassification = '';
+  String numberOfUnits = '';
+  String totalFloorArea = '';
+  String lotArea = '';
+  String estimatedConstructionCost = '';
+  DateTime? proposedConstructionDate;
+  DateTime? expectedCompletionDate;
+
+  bool get isValid {
+    final proposed = proposedConstructionDate;
+    final expected = expectedCompletionDate;
+    if (proposed == null || expected == null) return false;
+    if (!expected.isAfter(proposed)) return false;
+
+    return Validators.required(occupancyClassification) == null &&
+        Validators.positiveWholeNumber(numberOfUnits) == null &&
+        Validators.positiveDecimal(totalFloorArea) == null &&
+        Validators.positiveDecimal(lotArea) == null &&
+        Validators.positiveDecimal(estimatedConstructionCost) == null;
+  }
+}
+
 /// Licensed professional type required to supervise the construction work.
 enum ProfessionType { architect, civilEngineer }
 
@@ -174,435 +255,89 @@ extension ProfessionTypeX on ProfessionType {
       this == ProfessionType.architect ? 'Architect' : 'Civil Engineer';
 }
 
-/// How strictly a Step 8 document is required before the wizard allows
-/// submission.
-enum DocumentRequirement { required, requiredIfApplicable, optional }
-
-extension DocumentRequirementX on DocumentRequirement {
-  String get label {
-    switch (this) {
-      case DocumentRequirement.required:
-        return 'Required';
-      case DocumentRequirement.requiredIfApplicable:
-        return 'Required when applicable';
-      case DocumentRequirement.optional:
-        return 'Optional';
-    }
-  }
-}
-
-enum BuildingPermitSubmissionStatus { draft, submittedForAssessment }
-
-extension BuildingPermitSubmissionStatusX on BuildingPermitSubmissionStatus {
-  String get label {
-    switch (this) {
-      case BuildingPermitSubmissionStatus.draft:
-        return 'Draft';
-      case BuildingPermitSubmissionStatus.submittedForAssessment:
-        return 'Submitted for Assessment';
-    }
-  }
-}
-
-/// One uploadable requirement inside the Step 8 checklist.
-class BuildingPermitDocumentSlot {
-  final String id;
-  final String label;
-  final DocumentRequirement requirement;
-  DocumentModel? document;
-
-  BuildingPermitDocumentSlot({
-    required this.id,
-    required this.label,
-    required this.requirement,
-    this.document,
-  });
-}
-
-/// A collapsible group of [BuildingPermitDocumentSlot]s (Official Forms,
-/// Property Documents, Plans, Clearances).
-class BuildingPermitDocumentCategory {
-  final String title;
-  final List<BuildingPermitDocumentSlot> slots;
-
-  const BuildingPermitDocumentCategory({
-    required this.title,
-    required this.slots,
-  });
-}
-
-/// Builds a fresh copy of the Step 8 document checklist (mutable per-draft,
-/// so each application gets its own upload state).
-List<BuildingPermitDocumentCategory> buildBuildingPermitDocumentChecklist() {
-  BuildingPermitDocumentSlot slot(
-    String id,
-    String label,
-    DocumentRequirement requirement,
-  ) => BuildingPermitDocumentSlot(
-    id: id,
-    label: label,
-    requirement: requirement,
-  );
-
-  return [
-    BuildingPermitDocumentCategory(
-      title: 'Official Application Forms',
-      slots: [
-        slot(
-          'official-unified-form',
-          'Accomplished Unified Application Form',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'official-notarized-form',
-          'Notarized Unified Application Form',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'official-architectural-permit',
-          'Architectural Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-civil-structural-permit',
-          'Civil or Structural Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-electrical-permit',
-          'Electrical Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-mechanical-permit',
-          'Mechanical Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-sanitary-permit',
-          'Sanitary Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-plumbing-permit',
-          'Plumbing Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-electronics-permit',
-          'Electronics Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-interior-permit',
-          'Interior Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-fencing-permit',
-          'Fencing Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'official-line-grade-permit',
-          'Line and Grade or Geodetic Permit',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-      ],
-    ),
-    BuildingPermitDocumentCategory(
-      title: 'Property Documents',
-      slots: [
-        slot(
-          'property-tct-ort',
-          'Certified True Copy of TCT or OCT',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'property-tax-declaration',
-          'Tax Declaration',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'property-tax-receipt',
-          'Latest Real Property Tax Receipt',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'property-lease-contract',
-          'Contract of Lease',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'property-deed-of-sale',
-          'Deed of Sale',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'property-owners-consent',
-          "Owner's Consent",
-          DocumentRequirement.requiredIfApplicable,
-        ),
-      ],
-    ),
-    BuildingPermitDocumentCategory(
-      title: 'Plans and Technical Documents',
-      slots: [
-        slot(
-          'plans-architectural',
-          'Architectural Plans',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-civil-structural',
-          'Civil or Structural Plans',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-electrical',
-          'Electrical Plans',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-mechanical',
-          'Mechanical Plans',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot('plans-sanitary', 'Sanitary Plans', DocumentRequirement.required),
-        slot('plans-plumbing', 'Plumbing Plans', DocumentRequirement.required),
-        slot(
-          'plans-electronics',
-          'Electronics Plans',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'plans-fire-protection',
-          'Fire Protection Plans',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'plans-bill-of-materials',
-          'Bill of Materials and Cost Estimates',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-technical-specs',
-          'Technical Specifications',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-structural-analysis',
-          'Structural Analysis or Calculations',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-        slot(
-          'plans-lot-survey',
-          'Lot or Survey Plan',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'plans-safety-health-program',
-          'Construction Safety and Health Program',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-      ],
-    ),
-    BuildingPermitDocumentCategory(
-      title: 'Clearances and Identification',
-      slots: [
-        slot(
-          'clearance-locational-zoning',
-          'Locational or Zoning Clearance',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'clearance-barangay',
-          'Barangay Clearance',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'clearance-fire-safety',
-          'Fire Safety-related Requirements',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'clearance-applicant-id',
-          "Applicant's Valid Government ID",
-          DocumentRequirement.required,
-        ),
-        slot(
-          'clearance-professional-prc-ptr',
-          'Professional PRC ID and PTR',
-          DocumentRequirement.required,
-        ),
-        slot(
-          'clearance-authorization-letter',
-          'Authorization Letter or SPA',
-          DocumentRequirement.requiredIfApplicable,
-        ),
-      ],
-    ),
-  ];
-}
-
-/// Step 1 — Applicant and Ownership.
-class ApplicantOwnershipDetails {
-  String lastName = '';
-  String firstName = '';
-  String middleInitial = '';
-  String tin = '';
-  String contactNumber = '';
-  bool isOwnedByEnterprise = false;
-  String enterpriseName = '';
-  String formOfOwnership = '';
-  String houseNumber = '';
-  String street = '';
-  String barangay = '';
-  String city = '';
-  String province = '';
-  String zipCode = '';
-}
-
-/// Step 2 — Construction/Property Location.
-class PropertyLocationDetails {
-  String lotNumber = '';
-  String blockNumber = '';
-  String tctOrOctNumber = '';
-  String taxDeclarationNumber = '';
-  String street = '';
-  String barangay = '';
-  String city = '';
-  String province = '';
-  String zipCode = '';
-}
-
-/// Step 5 — Project Details.
-class ProjectDetails {
-  String totalFloorArea = '';
-  String lotArea = '';
-  String estimatedCost = '';
-  DateTime? proposedConstructionDate;
-  DateTime? expectedCompletionDate;
-}
-
-/// Step 6 — Architect or Civil Engineer in charge.
-class ProfessionalDetails {
+/// Step 5 — Architect or Civil Engineer in charge. `dateSigned` is kept
+/// optional for this prototype, matching the task's instruction to only
+/// require it if the existing model already did (it didn't exist before).
+class ProfessionalInCharge {
   String fullName = '';
   ProfessionType? profession;
   String address = '';
+  String contactNumber = '';
+  String tin = '';
+
   String prcNumber = '';
   DateTime? prcValidityDate;
   String ptrNumber = '';
   DateTime? ptrDateIssued;
   String ptrPlaceIssued = '';
-  String tin = '';
-  String contactNumber = '';
   DateTime? dateSigned;
+
   DocumentModel? prcIdUpload;
   DocumentModel? ptrUpload;
-  DocumentModel? signedSealedFormUpload;
+  DocumentModel? signedSealedUpload;
+
+  bool get isValid =>
+      Validators.required(fullName) == null &&
+      profession != null &&
+      Validators.required(address) == null &&
+      Validators.required(prcNumber) == null &&
+      prcValidityDate != null &&
+      Validators.required(ptrNumber) == null &&
+      ptrDateIssued != null &&
+      Validators.required(ptrPlaceIssued) == null &&
+      prcIdUpload != null &&
+      ptrUpload != null &&
+      signedSealedUpload != null;
+
+  /// Non-blocking heads-up (per the task: warn instead of blocking
+  /// Continue) shown when the PRC validity date has already passed.
+  bool get prcAppearsExpired =>
+      prcValidityDate != null && prcValidityDate!.isBefore(DateTime.now());
+
+  /// Non-blocking heads-up shown if the PTR date issued is in the future,
+  /// which shouldn't normally happen for an already-issued PTR.
+  bool get ptrDateIssuedInFuture =>
+      ptrDateIssued != null && ptrDateIssued!.isAfter(DateTime.now());
 }
 
-/// Step 7 — Consent and Representative.
-class ConsentDetails {
-  bool? isRegisteredOwner;
-
-  // Shown only when isRegisteredOwner == false.
-  String representativeFullName = '';
-  String representativeAddress = '';
-  String representativeCtcNumber = '';
-  DateTime? representativeCtcDateIssued;
-  String representativeCtcPlaceIssued = '';
-  String representativeContactNumber = '';
-  String relationshipToApplicant = '';
-  String authorizationType = '';
-  DocumentModel? ownerValidIdUpload;
-  DocumentModel? applicantValidIdUpload;
-  DocumentModel? authorizationLetterUpload;
-  DocumentModel? proofOfOwnershipUpload;
-
-  // Always shown once the question above is answered.
-  String applicantCtcNumber = '';
-  DateTime? applicantCtcDateIssued;
-  String applicantCtcPlaceIssued = '';
-  bool declarationConfirmed = false;
-}
+enum BuildingPermitDraftStatus { draft, submitted }
 
 /// The full mutable draft for one Building Permit application session.
-/// Deliberately mutable (unlike the app's immutable domain models) since it
-/// represents actively-edited wizard state, not a persisted record.
+/// Deliberately mutable — it represents actively-edited wizard state, not
+/// a persisted domain entity.
 class BuildingPermitDraft {
-  BuildingPermitDraft({this.projectScope});
+  final ApplicantInfo applicant = ApplicantInfo();
+  final ApplicantAddress applicantAddress = ApplicantAddress();
+  final ConstructionLocation constructionLocation = ConstructionLocation();
+  final ProjectInformation projectInformation = ProjectInformation();
+  final BuildingDetails buildingDetails = BuildingDetails();
+  final ProfessionalInCharge professional = ProfessionalInCharge();
 
-  final BuildingPermitApplicationType applicationType =
-      BuildingPermitApplicationType.newApplication;
-  BuildingPermitProjectScope? projectScope;
+  /// Whether the "Use my address as the construction location" toggle is
+  /// on. Toggling it on copies the current applicant address into the
+  /// construction location fields once; the copied fields stay editable
+  /// afterward and are not kept in sync on further edits.
+  bool useApplicantAddressForConstruction = false;
 
-  final ApplicantOwnershipDetails applicant = ApplicantOwnershipDetails();
-  final PropertyLocationDetails location = PropertyLocationDetails();
-
-  final Set<ScopeOfWorkOption> scopeOfWork = {};
-  String scopeOfWorkOtherDetail = '';
-
-  OccupancyGroup? occupancyGroup;
-  String occupancyOtherDetail = '';
-  String occupancyClassification = '';
-  String numberOfUnits = '';
-
-  final ProjectDetails project = ProjectDetails();
-  final ProfessionalDetails professional = ProfessionalDetails();
-  final ConsentDetails consent = ConsentDetails();
-
-  final List<BuildingPermitDocumentCategory> documentCategories =
-      buildBuildingPermitDocumentChecklist();
-
-  bool declareTrueAndCorrect = false;
-  bool declareUnderstandDelay = false;
-  bool declareSignedSealed = false;
-  bool declareDataPrivacy = false;
-
-  PaymentMethod? paymentMethod;
-  DocumentModel? paymentProof;
-
-  BuildingPermitSubmissionStatus status = BuildingPermitSubmissionStatus.draft;
-  String? referenceNumber;
-  DateTime? submittedDate;
+  BuildingPermitDraftStatus status = BuildingPermitDraftStatus.draft;
   DateTime? lastSavedAt;
 
-  bool get allDeclarationsConfirmed =>
-      declareTrueAndCorrect &&
-      declareUnderstandDelay &&
-      declareSignedSealed &&
-      declareDataPrivacy;
+  bool get isStep1Valid => applicant.isValid;
+  bool get isStep2Valid =>
+      applicantAddress.isValid && constructionLocation.isValid;
+  bool get isStep3Valid => projectInformation.isValid;
+  bool get isStep4Valid => buildingDetails.isValid;
+  bool get isStep5Valid => professional.isValid;
 
-  List<BuildingPermitDocumentSlot> get missingRequiredDocuments =>
-      documentCategories
-          .expand((category) => category.slots)
-          .where(
-            (slot) =>
-                slot.requirement == DocumentRequirement.required &&
-                slot.document == null,
-          )
-          .toList();
-}
-
-/// Maps the project selected on the Applications tab to the closest
-/// official Scope of Work checklist option. Demolition has no equivalent
-/// in the official checklist, so it is intentionally left unmapped — the
-/// UI preserves the demolition context separately instead of forcing an
-/// incorrect match.
-ScopeOfWorkOption? mapProjectScopeToScopeOfWork(
-  BuildingPermitProjectScope? scope,
-) {
-  switch (scope) {
-    case BuildingPermitProjectScope.newConstruction:
-      return ScopeOfWorkOption.newConstruction;
-    case BuildingPermitProjectScope.renovation:
-      return ScopeOfWorkOption.renovation;
-    case BuildingPermitProjectScope.extension:
-      return ScopeOfWorkOption.addition;
-    case BuildingPermitProjectScope.demolition:
-    case null:
-      return null;
+  /// Copies the applicant address into the construction location's
+  /// matching fields (street/barangay/city/province/ZIP only — lot/block/
+  /// title/tax-declaration numbers have no applicant-address equivalent).
+  void copyApplicantAddressToConstruction() {
+    constructionLocation
+      ..street = applicantAddress.street
+      ..barangay = applicantAddress.barangay
+      ..city = applicantAddress.city
+      ..province = applicantAddress.province
+      ..zipCode = applicantAddress.zipCode;
   }
 }

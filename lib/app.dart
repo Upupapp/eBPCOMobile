@@ -51,9 +51,7 @@ class _EbpcoAppState extends State<EbpcoApp> {
           ),
         ),
         ChangeNotifierProvider<BuildingPermitProvider>(
-          create: (context) => BuildingPermitProvider(
-            notifications: context.read<NotificationsProvider>(),
-          ),
+          create: (_) => BuildingPermitProvider(),
         ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),

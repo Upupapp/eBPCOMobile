@@ -71,4 +71,42 @@ class Validators {
     }
     return null;
   }
+
+  /// Whole-number quantities (e.g. number of units) — required, integer,
+  /// and strictly positive.
+  static String? positiveWholeNumber(
+    String? value, {
+    String fieldLabel = 'This field',
+  }) {
+    if (value == null || value.trim().isEmpty) {
+      return '$fieldLabel is required.';
+    }
+    final parsed = int.tryParse(value.trim());
+    if (parsed == null) {
+      return 'Enter a whole number.';
+    }
+    if (parsed <= 0) {
+      return '$fieldLabel must be greater than zero.';
+    }
+    return null;
+  }
+
+  /// Decimal measurements/amounts (e.g. floor area, cost) — required,
+  /// numeric, and strictly positive. Negative values are rejected.
+  static String? positiveDecimal(
+    String? value, {
+    String fieldLabel = 'This field',
+  }) {
+    if (value == null || value.trim().isEmpty) {
+      return '$fieldLabel is required.';
+    }
+    final parsed = double.tryParse(value.trim());
+    if (parsed == null) {
+      return 'Enter a valid number.';
+    }
+    if (parsed <= 0) {
+      return '$fieldLabel must be greater than zero.';
+    }
+    return null;
+  }
 }

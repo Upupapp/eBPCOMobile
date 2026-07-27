@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/building_permit_model.dart';
-import 'notifications_provider.dart';
 
 /// Holds the single in-progress Building Permit application draft for the
 /// current app session (frontend-only: nothing here is persisted to disk
@@ -9,38 +8,33 @@ import 'notifications_provider.dart';
 /// they navigate away and reopen the Building Permit flow before
 /// submitting.
 class BuildingPermitProvider extends ChangeNotifier {
-  BuildingPermitProvider({required NotificationsProvider notifications})
-    : _notifications = notifications;
-
-  final NotificationsProvider _notifications;
-
   BuildingPermitDraft? _draft;
   int _currentStep = 0;
-  final Set<int> _completedSteps = {};
 
   BuildingPermitDraft? get draft => _draft;
   int get currentStep => _currentStep;
-  Set<int> get completedSteps => _completedSteps;
 
   /// Whether there is an unsubmitted draft the wizard can resume into.
   bool get hasResumableDraft =>
-      _draft != null && _draft!.status == BuildingPermitSubmissionStatus.draft;
+      _draft != null && _draft!.status == BuildingPermitDraftStatus.draft;
 
   /// Returns the resumable draft if one exists, otherwise starts a fresh
   /// one (replacing any already-submitted draft from a prior session run).
-  BuildingPermitDraft resumeOrStart({
-    BuildingPermitProjectScope? projectScope,
-  }) {
+  BuildingPermitDraft resumeOrStart() {
     if (hasResumableDraft) return _draft!;
-    return startNew(projectScope: projectScope);
+    return startNew();
   }
 
-  BuildingPermitDraft startNew({BuildingPermitProjectScope? projectScope}) {
-    final draft = BuildingPermitDraft(projectScope: projectScope);
+  /// Does not call `notifyListeners()`: this is invoked from the wizard
+  /// screen's own `initState()` (via [resumeOrStart]) when it first mounts,
+  /// and Flutter forbids notifying an already-built ancestor `Provider`
+  /// while a new route is still in the middle of its initial build. Nothing
+  /// currently watches this provider — the wizard manages its own
+  /// rebuilds via local `setState` — so no listener is missed.
+  BuildingPermitDraft startNew() {
+    final draft = BuildingPermitDraft();
     _draft = draft;
     _currentStep = 0;
-    _completedSteps.clear();
-    notifyListeners();
     return draft;
   }
 
@@ -50,53 +44,17 @@ class BuildingPermitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markStepCompleted(int step) {
-    if (_completedSteps.add(step)) notifyListeners();
-  }
-
-  /// Triggers a rebuild for anything watching this provider after the
-  /// wizard mutates draft fields directly (draft fields are written
-  /// through immediately so Save as Draft never loses data).
-  void touch() => notifyListeners();
-
   void saveAsDraft() {
     final draft = _draft;
     if (draft == null) return;
-    draft.status = BuildingPermitSubmissionStatus.draft;
+    draft.status = BuildingPermitDraftStatus.draft;
     draft.lastSavedAt = DateTime.now();
     notifyListeners();
-  }
-
-  /// Finalizes submission for assessment and returns the mock reference
-  /// number. Does not mark the application as paid or approved — only the
-  /// Office of the Building Official's mock review can do that, which this
-  /// frontend-only prototype does not simulate further.
-  String submitForAssessment() {
-    final draft = _draft;
-    if (draft == null) {
-      throw StateError('No active Building Permit draft to submit.');
-    }
-    final now = DateTime.now();
-    final reference =
-        'BP-${now.year}-${now.microsecondsSinceEpoch.toString().substring(7)}';
-    draft.status = BuildingPermitSubmissionStatus.submittedForAssessment;
-    draft.referenceNumber = reference;
-    draft.submittedDate = now;
-    notifyListeners();
-    _notifications.addNotification(
-      title: 'Building permit application submitted',
-      message:
-          'Your application $reference has been submitted for assessment '
-          'by the Office of the Building Official.',
-      icon: Icons.check_circle_outline,
-    );
-    return reference;
   }
 
   void discardDraft() {
     _draft = null;
     _currentStep = 0;
-    _completedSteps.clear();
     notifyListeners();
   }
 }

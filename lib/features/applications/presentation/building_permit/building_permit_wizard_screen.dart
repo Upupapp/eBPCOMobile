@@ -6,20 +6,17 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/building_permit_model.dart';
 import '../../../../core/providers/building_permit_provider.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
 import 'steps/step1_applicant_info.dart';
-import 'steps/step2_property_location.dart';
-import 'steps/step3_scope_of_work.dart';
-import 'steps/step4_building_use.dart';
-import 'steps/step5_project_details.dart';
-import 'steps/step6_professional.dart';
-import 'steps/step7_consent.dart';
-import 'steps/step8_documents.dart';
-import 'steps/step9_review.dart';
-import 'steps/step10_assessment_payment.dart';
+import 'steps/step2_address_location.dart';
+import 'steps/step3_project_information.dart';
+import 'steps/step4_building_details.dart';
+import 'steps/step5_professional_in_charge.dart';
+import 'steps/step6_placeholder.dart';
 
 class _StepMeta {
   final String title;
@@ -27,15 +24,13 @@ class _StepMeta {
   const _StepMeta({required this.title, required this.subtitle});
 }
 
-/// 10-step mobile wizard for the Unified Application Form for Building
-/// Permit and Fire Safety Evaluation Clearance (New application flow
-/// only). All data lives in a [BuildingPermitDraft] held by
-/// [BuildingPermitProvider] so the draft survives if the user exits and
-/// reopens the flow within the same app session.
+/// Building Permit application wizard. The full flow is 9 steps, but only
+/// Steps 1-6 are implemented so far (Step 6 is a placeholder) — the
+/// remaining steps will be added incrementally, so the PageView currently
+/// only holds six pages while the progress indicator still reports the
+/// true "Step X of 9" total.
 class BuildingPermitWizardScreen extends StatefulWidget {
-  final BuildingPermitProjectScope? initialProjectScope;
-
-  const BuildingPermitWizardScreen({super.key, this.initialProjectScope});
+  const BuildingPermitWizardScreen({super.key});
 
   @override
   State<BuildingPermitWizardScreen> createState() =>
@@ -44,76 +39,56 @@ class BuildingPermitWizardScreen extends StatefulWidget {
 
 class _BuildingPermitWizardScreenState
     extends State<BuildingPermitWizardScreen> {
-  static const totalSteps = 10;
+  static const totalSteps = 9;
+  static const implementedStepCount = 6;
 
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle:
-          'Tell us who owns the property and who is filing this application.',
+      subtitle: 'Tell us about yourself so we can identify the applicant.',
     ),
     _StepMeta(
-      title: 'Property Location',
+      title: 'Applicant Address & Construction Location',
       subtitle:
-          'Provide the official location and property references for the construction site.',
+          'Tell us where you live and where the construction project will be located.',
     ),
     _StepMeta(
-      title: 'Scope of Work',
+      title: 'Project Information',
       subtitle:
-          'Confirm the type of construction activity included in this application.',
+          'Tell us what kind of construction work you are applying for.',
     ),
     _StepMeta(
-      title: 'Building Use',
+      title: 'Building Details',
       subtitle:
-          'Select the primary purpose or occupancy classification of the proposed building.',
-    ),
-    _StepMeta(
-      title: 'Project Details',
-      subtitle:
-          'Provide the size, cost estimate, and expected construction schedule.',
+          'Provide the size, classification, estimated cost, and project schedule.',
     ),
     _StepMeta(
       title: 'Architect or Civil Engineer',
       subtitle:
-          'Provide the licensed professional who will inspect and supervise the construction work.',
+          'Provide the licensed professional who will supervise and inspect the construction work.',
     ),
     _StepMeta(
       title: 'Consent and Authorization',
-      subtitle:
-          'Complete this section when the applicant is not the registered lot owner or is filing through an authorized representative.',
-    ),
-    _StepMeta(
-      title: 'Document Upload',
-      subtitle: 'Upload the required forms, plans, and supporting documents.',
-    ),
-    _StepMeta(
-      title: 'Review Application',
-      subtitle:
-          'Review all information before proceeding to assessment and payment.',
-    ),
-    _StepMeta(
-      title: 'Assessment and Payment',
-      subtitle: 'Review the estimated fees and select how you intend to pay.',
+      subtitle: 'This step will be implemented next.',
     ),
   ];
 
   late final PageController _pageController;
   final List<GlobalKey<FormState>> _formKeys = List.generate(
-    totalSteps,
+    implementedStepCount,
     (_) => GlobalKey<FormState>(),
   );
 
   late BuildingPermitDraft _draft;
   late int _currentStep;
-  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     final provider = context.read<BuildingPermitProvider>();
     final wasResuming = provider.hasResumableDraft;
-    _draft = provider.resumeOrStart(projectScope: widget.initialProjectScope);
-    _currentStep = provider.currentStep;
+    _draft = provider.resumeOrStart();
+    _currentStep = provider.currentStep.clamp(0, implementedStepCount - 1);
     _pageController = PageController(initialPage: _currentStep);
 
     if (wasResuming) {
@@ -150,99 +125,35 @@ class _BuildingPermitWizardScreenState
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  bool _validateCurrentStep() {
-    final step = _currentStep;
-
-    if (step == 2) {
-      if (_draft.scopeOfWork.isEmpty) {
-        _showMessage('Please select at least one scope of work.');
+  bool get _isCurrentStepValid {
+    switch (_currentStep) {
+      case 0:
+        return _draft.isStep1Valid;
+      case 1:
+        return _draft.isStep2Valid;
+      case 2:
+        return _draft.isStep3Valid;
+      case 3:
+        return _draft.isStep4Valid;
+      case 4:
+        return _draft.isStep5Valid;
+      default:
         return false;
-      }
-      if (_draft.scopeOfWork.contains(ScopeOfWorkOption.others) &&
-          _draft.scopeOfWorkOtherDetail.trim().isEmpty) {
-        _showMessage('Please specify the scope of work.');
-        return false;
-      }
     }
-
-    if (step == 3) {
-      if (_draft.occupancyGroup == null) {
-        _showMessage(
-          'Please select the building use or occupancy classification.',
-        );
-        return false;
-      }
-      if (_draft.occupancyGroup == OccupancyGroup.others &&
-          _draft.occupancyOtherDetail.trim().isEmpty) {
-        _showMessage('Please specify the occupancy use.');
-        return false;
-      }
-    }
-
-    if (step == 4) {
-      final proposed = _draft.project.proposedConstructionDate;
-      final expected = _draft.project.expectedCompletionDate;
-      if (proposed != null && expected != null && !expected.isAfter(proposed)) {
-        _showMessage(
-          'Expected completion date must be later than the proposed construction date.',
-        );
-        return false;
-      }
-    }
-
-    if (step == 6) {
-      final consent = _draft.consent;
-      if (consent.isRegisteredOwner == null) {
-        _showMessage('Please answer whether you are the registered lot owner.');
-        return false;
-      }
-      if (consent.isRegisteredOwner == false) {
-        if (consent.ownerValidIdUpload == null ||
-            consent.applicantValidIdUpload == null ||
-            consent.authorizationLetterUpload == null) {
-          _showMessage(
-            'Please upload the required identification and authorization documents.',
-          );
-          return false;
-        }
-      }
-      if (!consent.declarationConfirmed) {
-        _showMessage(
-          'Please confirm that the information provided is complete and accurate.',
-        );
-        return false;
-      }
-    }
-
-    if (step == 7 && _draft.missingRequiredDocuments.isNotEmpty) {
-      _showMessage('Please upload all required documents before continuing.');
-      return false;
-    }
-
-    if (step == 8 && !_draft.allDeclarationsConfirmed) {
-      _showMessage('Please agree to all declarations before proceeding.');
-      return false;
-    }
-
-    final formState = _formKeys[step].currentState;
-    if (formState != null && !formState.validate()) {
-      _showMessage('Please complete the highlighted fields before continuing.');
-      return false;
-    }
-    return true;
   }
 
   void _handleContinue() {
-    if (!_validateCurrentStep()) return;
-    context.read<BuildingPermitProvider>().markStepCompleted(_currentStep);
-    if (_currentStep < totalSteps - 1) {
+    if (!_isCurrentStepValid) return;
+    if (_currentStep < implementedStepCount - 1) {
       _goToStep(_currentStep + 1);
+    } else {
+      _showMessage('Steps 7 to 9 will be available in a future update.');
     }
   }
 
   void _handleSaveDraft() {
     context.read<BuildingPermitProvider>().saveAsDraft();
-    _showMessage('Draft saved. You can continue anytime.');
+    _showMessage('Draft saved successfully.');
   }
 
   Future<void> _handleExitAttempt() async {
@@ -259,24 +170,10 @@ class _BuildingPermitWizardScreenState
     if (mounted) context.pop();
   }
 
-  Future<void> _handleSubmit() async {
-    if (_draft.paymentMethod == null) {
-      _showMessage('Please select a payment method to continue.');
-      return;
-    }
-    setState(() => _isSubmitting = true);
-    await Future.delayed(AppConstants.mockNetworkDelay);
-    if (!mounted) return;
-    context.read<BuildingPermitProvider>().submitForAssessment();
-    setState(() => _isSubmitting = false);
-    context.pushReplacement('/applications/new/building-permit/success');
-  }
-
   @override
   Widget build(BuildContext context) {
     final meta = _stepMeta[_currentStep];
     final isFirstStep = _currentStep == 0;
-    final isLastStep = _currentStep == totalSteps - 1;
 
     return PopScope(
       canPop: false,
@@ -318,62 +215,35 @@ class _BuildingPermitWizardScreenState
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    Step2PropertyLocation(
+                    Step2AddressLocation(
                       formKey: _formKeys[1],
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    Step3ScopeOfWork(
+                    Step3ProjectInformation(
                       formKey: _formKeys[2],
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    Step4BuildingUse(
+                    Step4BuildingDetails(
                       formKey: _formKeys[3],
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    Step5ProjectDetails(
+                    Step5ProfessionalInCharge(
                       formKey: _formKeys[4],
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    Step6Professional(
-                      formKey: _formKeys[5],
-                      draft: _draft,
-                      onChanged: _onDraftChanged,
-                    ),
-                    Step7Consent(
-                      formKey: _formKeys[6],
-                      draft: _draft,
-                      onChanged: _onDraftChanged,
-                    ),
-                    Step8Documents(
-                      formKey: _formKeys[7],
-                      draft: _draft,
-                      onChanged: _onDraftChanged,
-                    ),
-                    Step9Review(
-                      formKey: _formKeys[8],
-                      draft: _draft,
-                      onChanged: _onDraftChanged,
-                      onEditStep: _goToStep,
-                    ),
-                    Step10AssessmentPayment(
-                      formKey: _formKeys[9],
-                      draft: _draft,
-                      onChanged: _onDraftChanged,
-                    ),
+                    const Step6Placeholder(),
                   ],
                 ),
               ),
               _BottomActionBar(
                 isFirstStep: isFirstStep,
-                isLastStep: isLastStep,
-                isSubmitting: _isSubmitting,
+                isContinueEnabled: _isCurrentStepValid,
                 onBack: () => _goToStep(_currentStep - 1),
                 onContinue: _handleContinue,
-                onSubmit: _handleSubmit,
               ),
             ],
           ),
@@ -401,18 +271,23 @@ class _WizardProgressHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppConstants.screenPaddingHorizontal,
-        12,
+        AppSpacing.sm,
         AppConstants.screenPaddingHorizontal,
-        16,
+        AppSpacing.md,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+            'Complete your Building Permit application step by step.',
+            style: AppTypography.bodyMuted,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
             'Step ${currentStep + 1} of $totalSteps',
             style: AppTypography.label,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppConstants.borderRadiusXs),
             child: LinearProgressIndicator(
@@ -422,9 +297,9 @@ class _WizardProgressHeader extends StatelessWidget {
               valueColor: const AlwaysStoppedAnimation(AppColors.primary),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(title, style: AppTypography.sectionTitle),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(subtitle, style: AppTypography.bodyMuted),
         ],
       ),
@@ -434,51 +309,44 @@ class _WizardProgressHeader extends StatelessWidget {
 
 class _BottomActionBar extends StatelessWidget {
   final bool isFirstStep;
-  final bool isLastStep;
-  final bool isSubmitting;
+  final bool isContinueEnabled;
   final VoidCallback onBack;
   final VoidCallback onContinue;
-  final VoidCallback onSubmit;
 
   const _BottomActionBar({
     required this.isFirstStep,
-    required this.isLastStep,
-    required this.isSubmitting,
+    required this.isContinueEnabled,
     required this.onBack,
     required this.onContinue,
-    required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
-    final primaryButton = isLastStep
-        ? PrimaryButton(
-            label: 'Submit Application for Assessment',
-            isLoading: isSubmitting,
-            onPressed: onSubmit,
-          )
-        : PrimaryButton(label: 'Continue', onPressed: onContinue);
+    final continueButton = PrimaryButton(
+      label: 'Continue',
+      onPressed: isContinueEnabled ? onContinue : null,
+    );
 
     return Container(
-      padding: EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         AppConstants.screenPaddingHorizontal,
-        12,
+        AppSpacing.sm,
         AppConstants.screenPaddingHorizontal,
-        12,
+        AppSpacing.sm,
       ),
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.divider)),
       ),
       child: isFirstStep
-          ? primaryButton
+          ? continueButton
           : Row(
               children: [
                 Expanded(
                   child: SecondaryButton(label: 'Back', onPressed: onBack),
                 ),
-                const SizedBox(width: 12),
-                Expanded(flex: 2, child: primaryButton),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(flex: 2, child: continueButton),
               ],
             ),
     );

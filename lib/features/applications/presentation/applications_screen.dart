@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/models/building_permit_model.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import 'widgets/application_option_card.dart';
@@ -20,14 +19,11 @@ class ApplicationsScreen extends StatelessWidget {
   }
 
   /// The four "Select Form Project Type" cards and the "Building Permit"
-  /// card all lead into the Building Permit wizard; the project type (when
-  /// known) is passed through so Step 3 can preselect the matching Scope
-  /// of Work option.
-  void _startBuildingPermit(
-    BuildContext context, {
-    BuildingPermitProjectScope? projectScope,
-  }) {
-    context.push('/applications/new/building-permit', extra: projectScope);
+  /// card all lead into the Building Permit flow. The real multi-step
+  /// workflow is being rebuilt, so this currently opens a temporary
+  /// placeholder screen.
+  void _startBuildingPermit(BuildContext context) {
+    context.push('/applications/new/building-permit');
   }
 
   @override
@@ -71,40 +67,28 @@ class ApplicationsScreen extends StatelessWidget {
                   title: 'New Construction',
                   description:
                       'For building a completely new structure or property from the ground up, such as houses, commercial buildings, or facilities.',
-                  onTap: () => _startBuildingPermit(
-                    context,
-                    projectScope: BuildingPermitProjectScope.newConstruction,
-                  ),
+                  onTap: () => _startBuildingPermit(context),
                 ),
                 ApplicationOptionCard(
                   icon: Icons.handyman_outlined,
                   title: 'Renovation',
                   description:
                       'For improving, remodeling, or upgrading an existing structure without significantly increasing its size or floor area.',
-                  onTap: () => _startBuildingPermit(
-                    context,
-                    projectScope: BuildingPermitProjectScope.renovation,
-                  ),
+                  onTap: () => _startBuildingPermit(context),
                 ),
                 ApplicationOptionCard(
                   icon: Icons.open_in_full_rounded,
                   title: 'Extension',
                   description:
                       'For adding new spaces or expanding parts of an existing building, such as additional rooms, floors, or attached structures.',
-                  onTap: () => _startBuildingPermit(
-                    context,
-                    projectScope: BuildingPermitProjectScope.extension,
-                  ),
+                  onTap: () => _startBuildingPermit(context),
                 ),
                 ApplicationOptionCard(
                   icon: Icons.domain_disabled_outlined,
                   title: 'Demolition',
                   description:
                       'For safely removing or tearing down an existing structure, building, or portion of a property.',
-                  onTap: () => _startBuildingPermit(
-                    context,
-                    projectScope: BuildingPermitProjectScope.demolition,
-                  ),
+                  onTap: () => _startBuildingPermit(context),
                 ),
               ],
             ),
