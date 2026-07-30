@@ -35,6 +35,10 @@ class DatePickerField extends FormField<DateTime> {
                  firstDate: firstDate ?? DateTime(now.year - 20),
                  lastDate: lastDate ?? DateTime(now.year + 20),
                );
+               // The field (or the whole wizard step) may have been
+               // unmounted while the picker dialog was open — calling
+               // setState on a disposed FormFieldState throws.
+               if (!state.mounted) return;
                // showDatePicker returns null when the user cancels or
                // dismisses the dialog — leave the field's value untouched.
                if (picked != null) {

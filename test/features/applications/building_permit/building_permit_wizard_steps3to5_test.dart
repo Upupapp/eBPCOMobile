@@ -467,11 +467,14 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Step 6 of 9'), findsOneWidget);
       expect(find.text('Consent and Authorization'), findsOneWidget);
-      expect(find.text('This step will be implemented next.'), findsWidgets);
+      expect(
+        find.text('Are you the registered property owner?'),
+        findsOneWidget,
+      );
       expect(
         tester.widget<ElevatedButton>(_continueButton()).onPressed,
         isNull,
-        reason: 'Step 6 fields are not implemented yet',
+        reason: 'the ownership question has not been answered yet',
       );
     },
   );

@@ -2,8 +2,7 @@ import '../utils/validators.dart';
 import 'document_model.dart';
 
 /// Mock, frontend-only data model for the Building Permit application
-/// wizard. Steps 1-5 are implemented so far; the draft is built to be
-/// extended with additional step data as Steps 6-9 are added incrementally.
+/// wizard. All 9 steps are implemented.
 
 /// Official "Form of Ownership" choices shown when the construction is
 /// owned by an enterprise.
@@ -300,6 +299,117 @@ class ProfessionalInCharge {
       ptrDateIssued != null && ptrDateIssued!.isAfter(DateTime.now());
 }
 
+/// Step 6 — Consent & Authorization. When the applicant is not the
+/// registered property owner, a representative's details, CTC info, and
+/// two supporting uploads (Authorization Letter/SPA + Owner Valid ID) are
+/// required; when the applicant IS the owner, none of that applies.
+class ConsentAuthorization {
+  bool? isRegisteredOwner;
+
+  String representativeName = '';
+  String representativeAddress = '';
+  String ctcNumber = '';
+  DateTime? ctcDateIssued;
+  String ctcPlaceIssued = '';
+
+  DocumentModel? authorizationLetterUpload;
+  DocumentModel? ownerValidIdUpload;
+
+  bool get isValid {
+    if (isRegisteredOwner == null) return false;
+    if (isRegisteredOwner == true) return true;
+    return Validators.required(representativeName) == null &&
+        Validators.required(representativeAddress) == null &&
+        Validators.required(ctcNumber) == null &&
+        ctcDateIssued != null &&
+        Validators.required(ctcPlaceIssued) == null &&
+        authorizationLetterUpload != null &&
+        ownerValidIdUpload != null;
+  }
+}
+
+/// Step 7 — Required Documents: the consolidated document-checklist annex
+/// from the Unified Application Form, grouped the same way the official
+/// form groups them. These are tracked independently from any
+/// similarly-named uploads collected earlier in the wizard (e.g. Step 5's
+/// professional documents) since this step represents the full annex
+/// checklist, not a shortcut back to those fields.
+class RequiredDocuments {
+  // Property Documents
+  DocumentModel? landTitleUpload;
+  DocumentModel? taxDeclarationUpload;
+  DocumentModel? realPropertyTaxReceiptUpload;
+
+  // Technical Documents
+  DocumentModel? plansUpload;
+  DocumentModel? specificationsUpload;
+  DocumentModel? billOfMaterialsUpload;
+
+  // Professional Documents
+  DocumentModel? prcIdChecklistUpload;
+  DocumentModel? ptrChecklistUpload;
+  DocumentModel? signedFormsUpload;
+
+  // Government Clearances
+  DocumentModel? barangayClearanceUpload;
+  DocumentModel? zoningClearanceUpload;
+  DocumentModel? fireRelatedRequirementsUpload;
+
+  bool get isValid =>
+      landTitleUpload != null &&
+      taxDeclarationUpload != null &&
+      realPropertyTaxReceiptUpload != null &&
+      plansUpload != null &&
+      specificationsUpload != null &&
+      billOfMaterialsUpload != null &&
+      prcIdChecklistUpload != null &&
+      ptrChecklistUpload != null &&
+      signedFormsUpload != null &&
+      barangayClearanceUpload != null &&
+      zoningClearanceUpload != null &&
+      fireRelatedRequirementsUpload != null;
+}
+
+/// Step 8 — Review & Declaration: no new form fields, just the three
+/// certifications required before the application can be submitted.
+class ReviewDeclaration {
+  bool certifiesTrueAndCorrect = false;
+  bool understandsRequirements = false;
+  bool agreesToTerms = false;
+
+  bool get isValid =>
+      certifiesTrueAndCorrect && understandsRequirements && agreesToTerms;
+}
+
+/// How the applicant intends to pay once assessment is complete.
+enum PaymentMethod { payOnsite, bankTransfer }
+
+extension PaymentMethodX on PaymentMethod {
+  String get label =>
+      this == PaymentMethod.payOnsite ? 'Pay Onsite' : 'Bank Transfer';
+}
+
+/// Step 9 — Assessment & Payment. This represents the Processing and
+/// Evaluation Division's assessment, which the applicant does not fill in
+/// — every line item is "Pending Assessment" until the office evaluates
+/// the submitted application. There's nothing for the applicant to
+/// complete here (payment is disabled until assessment exists), so this
+/// step has no blocking validity condition.
+class AssessmentPayment {
+  PaymentMethod? selectedPaymentMethod;
+
+  static const List<String> assessmentLineItems = [
+    'Filing Fee',
+    'Processing Fee',
+    'Architectural',
+    'Structural',
+    'Electrical',
+    'Others',
+  ];
+
+  bool get isValid => true;
+}
+
 enum BuildingPermitDraftStatus { draft, submitted }
 
 /// The full mutable draft for one Building Permit application session.
@@ -312,6 +422,10 @@ class BuildingPermitDraft {
   final ProjectInformation projectInformation = ProjectInformation();
   final BuildingDetails buildingDetails = BuildingDetails();
   final ProfessionalInCharge professional = ProfessionalInCharge();
+  final ConsentAuthorization consentAuthorization = ConsentAuthorization();
+  final RequiredDocuments requiredDocuments = RequiredDocuments();
+  final ReviewDeclaration reviewDeclaration = ReviewDeclaration();
+  final AssessmentPayment assessmentPayment = AssessmentPayment();
 
   /// Whether the "Use my address as the construction location" toggle is
   /// on. Toggling it on copies the current applicant address into the
@@ -328,6 +442,10 @@ class BuildingPermitDraft {
   bool get isStep3Valid => projectInformation.isValid;
   bool get isStep4Valid => buildingDetails.isValid;
   bool get isStep5Valid => professional.isValid;
+  bool get isStep6Valid => consentAuthorization.isValid;
+  bool get isStep7Valid => requiredDocuments.isValid;
+  bool get isStep8Valid => reviewDeclaration.isValid;
+  bool get isStep9Valid => assessmentPayment.isValid;
 
   /// Copies the applicant address into the construction location's
   /// matching fields (street/barangay/city/province/ZIP only — lot/block/

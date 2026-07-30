@@ -4,10 +4,29 @@ import 'package:go_router/go_router.dart';
 import '../core/constants/app_colors.dart';
 import '../core/providers/auth_provider.dart';
 import '../shared/widgets/states/error_state.dart';
+import '../features/applications/presentation/addition_extension_permit/addition_extension_application_submitted_screen.dart';
+import '../features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
 import '../features/applications/presentation/application_details_screen.dart';
+import '../features/applications/presentation/architectural_permit/architectural_application_submitted_screen.dart';
+import '../features/applications/presentation/architectural_permit/architectural_permit_wizard_screen.dart';
+import '../features/applications/presentation/civil_structural_permit/civil_structural_application_submitted_screen.dart';
+import '../features/applications/presentation/civil_structural_permit/civil_structural_permit_wizard_screen.dart';
+import '../features/applications/presentation/electrical_permit/electrical_application_submitted_screen.dart';
+import '../features/applications/presentation/electrical_permit/electrical_permit_wizard_screen.dart';
+import '../features/applications/presentation/mechanical_permit/mechanical_application_submitted_screen.dart';
+import '../features/applications/presentation/mechanical_permit/mechanical_permit_wizard_screen.dart';
+import '../features/applications/presentation/plumbing_permit/plumbing_application_submitted_screen.dart';
+import '../features/applications/presentation/plumbing_permit/plumbing_permit_wizard_screen.dart';
+import '../features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_application_submitted_screen.dart';
+import '../features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
 import '../features/applications/presentation/applications_screen.dart';
+import '../features/applications/presentation/building_permit/application_submitted_screen.dart';
 import '../features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
+import '../features/applications/presentation/demolition_permit/demolition_application_submitted_screen.dart';
+import '../features/applications/presentation/demolition_permit/demolition_permit_wizard_screen.dart';
 import '../features/applications/presentation/new_application_screen.dart';
+import '../features/applications/presentation/renovation_permit/renovation_application_submitted_screen.dart';
+import '../features/applications/presentation/renovation_permit/renovation_permit_wizard_screen.dart';
 import '../features/authentication/presentation/forgot_password_screen.dart';
 import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/register_screen.dart';
@@ -97,6 +116,191 @@ class AppRouter {
         GoRoute(
           path: '/applications/new/building-permit',
           builder: (context, state) => const BuildingPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/building-permit/submitted',
+          builder: (context, state) => ApplicationSubmittedScreen(
+            trackingId: state.extra as String? ?? 'BP-UNKNOWN',
+          ),
+        ),
+        GoRoute(
+          path: '/applications/new/renovation-permit',
+          builder: (context, state) => const RenovationPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/renovation-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return RenovationApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'REN-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/addition-extension-permit',
+          builder: (context, state) =>
+              const AdditionExtensionPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/addition-extension-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return AdditionExtensionApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'ADX-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/demolition-permit',
+          builder: (context, state) => const DemolitionPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/demolition-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return DemolitionApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'DEM-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/architectural-permit',
+          builder: (context, state) => const ArchitecturalPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/architectural-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return ArchitecturalApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'ARC-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending Issuance',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/civil-structural-permit',
+          builder: (context, state) =>
+              const CivilStructuralPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/civil-structural-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return CivilStructuralApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'CVL-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/electrical-permit',
+          builder: (context, state) => const ElectricalPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/electrical-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return ElectricalApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'ELE-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+              electricalContractorRequired:
+                  extra?['electricalContractorRequired'] as bool? ?? false,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/mechanical-permit',
+          builder: (context, state) => const MechanicalPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/mechanical-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return MechanicalApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'MEC-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/plumbing-permit',
+          builder: (context, state) => const PlumbingPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/plumbing-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return PlumbingApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'PLB-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/sanitary-plumbing-permit',
+          builder: (context, state) =>
+              const SanitaryPlumbingPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/sanitary-plumbing-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return SanitaryPlumbingApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'SAN-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
         ),
         GoRoute(
           path: '/applications/:applicationId',

@@ -52,6 +52,17 @@ class BuildingPermitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Marks the current draft as submitted (Step 9 → Application Submitted).
+  /// The draft stays in memory so the confirmation screen can still read
+  /// it, but [hasResumableDraft] will report false since its status is no
+  /// longer `draft`, so reopening the wizard starts a fresh application.
+  void submitApplication() {
+    final draft = _draft;
+    if (draft == null) return;
+    draft.status = BuildingPermitDraftStatus.submitted;
+    notifyListeners();
+  }
+
   void discardDraft() {
     _draft = null;
     _currentStep = 0;

@@ -11,12 +11,16 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import 'application_submitted_screen.dart';
 import 'steps/step1_applicant_info.dart';
 import 'steps/step2_address_location.dart';
 import 'steps/step3_project_information.dart';
 import 'steps/step4_building_details.dart';
 import 'steps/step5_professional_in_charge.dart';
-import 'steps/step6_placeholder.dart';
+import 'steps/step6_consent_authorization.dart';
+import 'steps/step7_required_documents.dart';
+import 'steps/step8_review_declaration.dart';
+import 'steps/step9_assessment_payment.dart';
 
 class _StepMeta {
   final String title;
@@ -24,11 +28,9 @@ class _StepMeta {
   const _StepMeta({required this.title, required this.subtitle});
 }
 
-/// Building Permit application wizard. The full flow is 9 steps, but only
-/// Steps 1-6 are implemented so far (Step 6 is a placeholder) — the
-/// remaining steps will be added incrementally, so the PageView currently
-/// only holds six pages while the progress indicator still reports the
-/// true "Step X of 9" total.
+/// Building Permit application wizard — all 9 steps are implemented. Step
+/// 9's Continue submits the application and navigates to
+/// [ApplicationSubmittedScreen], which sits outside this numbered flow.
 class BuildingPermitWizardScreen extends StatefulWidget {
   const BuildingPermitWizardScreen({super.key});
 
@@ -40,7 +42,7 @@ class BuildingPermitWizardScreen extends StatefulWidget {
 class _BuildingPermitWizardScreenState
     extends State<BuildingPermitWizardScreen> {
   static const totalSteps = 9;
-  static const implementedStepCount = 6;
+  static const implementedStepCount = 9;
 
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
@@ -69,7 +71,20 @@ class _BuildingPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Consent and Authorization',
-      subtitle: 'This step will be implemented next.',
+      subtitle: 'Confirm your ownership or authorization before continuing.',
+    ),
+    _StepMeta(
+      title: 'Required Documents',
+      subtitle: 'Upload the documentary requirements for your application.',
+    ),
+    _StepMeta(
+      title: 'Review & Declaration',
+      subtitle: 'Review your application and certify that it is accurate.',
+    ),
+    _StepMeta(
+      title: 'Assessment & Payment',
+      subtitle:
+          'Submit for assessment — payment becomes available afterward.',
     ),
   ];
 
@@ -137,6 +152,14 @@ class _BuildingPermitWizardScreenState
         return _draft.isStep4Valid;
       case 4:
         return _draft.isStep5Valid;
+      case 5:
+        return _draft.isStep6Valid;
+      case 6:
+        return _draft.isStep7Valid;
+      case 7:
+        return _draft.isStep8Valid;
+      case 8:
+        return _draft.isStep9Valid;
       default:
         return false;
     }
@@ -147,8 +170,20 @@ class _BuildingPermitWizardScreenState
     if (_currentStep < implementedStepCount - 1) {
       _goToStep(_currentStep + 1);
     } else {
-      _showMessage('Steps 7 to 9 will be available in a future update.');
+      _handleSubmit();
     }
+  }
+
+  void _handleSubmit() {
+    final provider = context.read<BuildingPermitProvider>();
+    provider.submitApplication();
+    final trackingId =
+        'BP-${DateTime.now().year}-'
+        '${(DateTime.now().millisecondsSinceEpoch % 900000 + 100000)}';
+    context.pushReplacement(
+      '/applications/new/building-permit/submitted',
+      extra: trackingId,
+    );
   }
 
   void _handleSaveDraft() {
@@ -235,13 +270,36 @@ class _BuildingPermitWizardScreenState
                       draft: _draft,
                       onChanged: _onDraftChanged,
                     ),
-                    const Step6Placeholder(),
+                    Step6ConsentAuthorization(
+                      formKey: _formKeys[5],
+                      draft: _draft,
+                      onChanged: _onDraftChanged,
+                    ),
+                    Step7RequiredDocuments(
+                      formKey: _formKeys[6],
+                      draft: _draft,
+                      onChanged: _onDraftChanged,
+                    ),
+                    Step8ReviewDeclaration(
+                      formKey: _formKeys[7],
+                      draft: _draft,
+                      onChanged: _onDraftChanged,
+                      onEditStep: _goToStep,
+                    ),
+                    Step9AssessmentPayment(
+                      formKey: _formKeys[8],
+                      draft: _draft,
+                      onChanged: _onDraftChanged,
+                    ),
                   ],
                 ),
               ),
               _BottomActionBar(
                 isFirstStep: isFirstStep,
                 isContinueEnabled: _isCurrentStepValid,
+                continueLabel: _currentStep == implementedStepCount - 1
+                    ? 'Submit Application'
+                    : 'Continue',
                 onBack: () => _goToStep(_currentStep - 1),
                 onContinue: _handleContinue,
               ),
@@ -310,12 +368,14 @@ class _WizardProgressHeader extends StatelessWidget {
 class _BottomActionBar extends StatelessWidget {
   final bool isFirstStep;
   final bool isContinueEnabled;
+  final String continueLabel;
   final VoidCallback onBack;
   final VoidCallback onContinue;
 
   const _BottomActionBar({
     required this.isFirstStep,
     required this.isContinueEnabled,
+    this.continueLabel = 'Continue',
     required this.onBack,
     required this.onContinue,
   });
@@ -323,7 +383,7 @@ class _BottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final continueButton = PrimaryButton(
-      label: 'Continue',
+      label: continueLabel,
       onPressed: isContinueEnabled ? onContinue : null,
     );
 

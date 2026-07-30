@@ -126,7 +126,20 @@ class DocumentUploadTile extends StatelessWidget {
               ],
             )
           else
-            OutlinedButton(onPressed: onUpload, child: const Text('Upload')),
+            OutlinedButton(
+              onPressed: onUpload,
+              // The app-wide OutlinedButtonTheme sets minimumSize to
+              // Size.fromHeight(...), i.e. an INFINITE width, for buttons
+              // meant to stretch full-width elsewhere. As a plain (non-
+              // Expanded/Flexible) Row child here, that forces this button
+              // to be laid out with an infinite width, which never
+              // produces a valid size — the render box is left with
+              // hasSize == false, which is what the mouse tracker's hit
+              // test crashes on. Override it locally to size the button to
+              // its content, like every other Row-embedded button.
+              style: OutlinedButton.styleFrom(minimumSize: const Size(0, 40)),
+              child: const Text('Upload'),
+            ),
         ],
       ),
     );
