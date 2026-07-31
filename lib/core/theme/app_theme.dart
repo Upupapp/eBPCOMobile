@@ -162,9 +162,18 @@ class AppTheme {
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadiusPill),
         ),
+        // Slightly smaller than AppTypography.caption (12sp): with 5
+        // destinations, the longer labels ("Applications", "Notifications")
+        // are tight enough at 12sp to wrap to a second line on
+        // narrower Android phones — a well-known Flutter NavigationBar
+        // limitation, since the label is a fixed String (no per-label
+        // `overflow`/`softWrap` override is available). 11sp reliably
+        // keeps every current label on one line without being a visibly
+        // smaller size.
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return AppTypography.caption.copyWith(
+            fontSize: 11,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             color: selected ? AppColors.primary : AppColors.textMuted,
           );

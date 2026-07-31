@@ -13,6 +13,10 @@ import '../features/applications/presentation/civil_structural_permit/civil_stru
 import '../features/applications/presentation/civil_structural_permit/civil_structural_permit_wizard_screen.dart';
 import '../features/applications/presentation/electrical_permit/electrical_application_submitted_screen.dart';
 import '../features/applications/presentation/electrical_permit/electrical_permit_wizard_screen.dart';
+import '../features/applications/presentation/electronics_permit/electronics_application_submitted_screen.dart';
+import '../features/applications/presentation/electronics_permit/electronics_permit_wizard_screen.dart';
+import '../features/applications/presentation/interior_design_permit/interior_design_application_submitted_screen.dart';
+import '../features/applications/presentation/interior_design_permit/interior_design_permit_wizard_screen.dart';
 import '../features/applications/presentation/mechanical_permit/mechanical_application_submitted_screen.dart';
 import '../features/applications/presentation/mechanical_permit/mechanical_permit_wizard_screen.dart';
 import '../features/applications/presentation/plumbing_permit/plumbing_application_submitted_screen.dart';
@@ -260,6 +264,49 @@ class AppRouter {
           },
         ),
         GoRoute(
+          path: '/applications/new/electronics-permit',
+          builder: (context, state) => const ElectronicsPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/electronics-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return ElectronicsApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'ELX-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/interior-design-permit',
+          builder: (context, state) =>
+              const InteriorDesignPermitWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/interior-design-permit/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return InteriorDesignApplicationSubmittedScreen(
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'IDP-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+              relatedBuildingPermitNumber:
+                  extra?['relatedBuildingPermitNumber'] as String? ?? '',
+              relatedBuildingPermitStatus:
+                  extra?['relatedBuildingPermitStatus'] as String? ??
+                      'Pending',
+            );
+          },
+        ),
+        GoRoute(
           path: '/applications/new/plumbing-permit',
           builder: (context, state) => const PlumbingPermitWizardScreen(),
         ),
@@ -373,20 +420,20 @@ class AppRouter {
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: '/app/notifications',
-                  builder: (context, state) => const NotificationsScreen(),
-                ),
-              ],
-            ),
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
                   path: '/app/profile',
                   builder: (context, state) => const ProfileScreen(),
                 ),
               ],
             ),
           ],
+        ),
+        // Not a bottom-nav destination — Notifications is reachable from
+        // the Home page's notification bell/section instead, so it's a
+        // regular pushed route (with its own back button) rather than a
+        // StatefulShellBranch.
+        GoRoute(
+          path: '/app/notifications',
+          builder: (context, state) => const NotificationsScreen(),
         ),
       ],
       errorBuilder: (context, state) => const _NotFoundScreen(),

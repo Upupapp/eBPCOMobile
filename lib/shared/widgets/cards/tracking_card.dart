@@ -64,10 +64,12 @@ class TrackingCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              StatusBadge(
-                label: statusLabel,
-                color: statusColor,
-                backgroundColor: statusBackgroundColor,
+              Flexible(
+                child: StatusBadge(
+                  label: statusLabel,
+                  color: statusColor,
+                  backgroundColor: statusBackgroundColor,
+                ),
               ),
             ],
           ),

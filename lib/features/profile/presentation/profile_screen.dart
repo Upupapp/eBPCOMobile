@@ -286,12 +286,20 @@ class _ProfileStatusTile extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: AppColors.primary),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: AppTypography.caption)),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.caption,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             if (status != null)
-              StatusBadge(
-                label: status!.label,
-                color: status!.color,
-                backgroundColor: status!.backgroundColor,
+              Flexible(
+                child: StatusBadge(
+                  label: status!.label,
+                  color: status!.color,
+                  backgroundColor: status!.backgroundColor,
+                ),
               )
             else
               Text('-', style: AppTypography.bodyStrong),

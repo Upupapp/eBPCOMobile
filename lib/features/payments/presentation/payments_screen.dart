@@ -92,24 +92,31 @@ class _PaymentTile extends StatelessWidget {
                   style: AppTypography.bodyStrong,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(application.applicationNumber, style: AppTypography.caption),
+                Text(
+                  application.applicationNumber,
+                  style: AppTypography.caption,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   needsPayment
                       ? 'Assessment not yet available'
                       : _currencyFormat.format(payment.amount),
                   style: AppTypography.cardTitle,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          StatusBadge(
-            label: needsPayment ? 'Awaiting Payment' : payment.status.label,
-            color: needsPayment ? AppColors.statusPending : payment.status.color,
-            backgroundColor: needsPayment
-                ? AppColors.statusPendingBg
-                : payment.status.backgroundColor,
+          Flexible(
+            child: StatusBadge(
+              label: needsPayment ? 'Awaiting Payment' : payment.status.label,
+              color: needsPayment ? AppColors.statusPending : payment.status.color,
+              backgroundColor: needsPayment
+                  ? AppColors.statusPendingBg
+                  : payment.status.backgroundColor,
+            ),
           ),
         ],
       ),

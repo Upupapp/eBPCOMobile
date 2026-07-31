@@ -10,6 +10,8 @@ import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/civil_structural_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/demolition_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/electrical_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/electronics_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/interior_design_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/mechanical_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/plumbing_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/renovation_permit_provider.dart';
@@ -21,6 +23,8 @@ import 'package:ebpco_user_app/features/applications/presentation/building_permi
 import 'package:ebpco_user_app/features/applications/presentation/civil_structural_permit/civil_structural_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/demolition_permit/demolition_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/electrical_permit/electrical_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/electronics_permit/electronics_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/interior_design_permit/interior_design_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/mechanical_permit/mechanical_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/plumbing_permit/plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/renovation_permit/renovation_permit_wizard_screen.dart';
@@ -82,6 +86,15 @@ Widget _wrapWithRouter() {
         path: '/applications/new/plumbing-permit',
         builder: (context, state) => const PlumbingPermitWizardScreen(),
       ),
+      GoRoute(
+        path: '/applications/new/electronics-permit',
+        builder: (context, state) => const ElectronicsPermitWizardScreen(),
+      ),
+      GoRoute(
+        path: '/applications/new/interior-design-permit',
+        builder: (context, state) =>
+            const InteriorDesignPermitWizardScreen(),
+      ),
     ],
   );
   return MultiProvider(
@@ -117,6 +130,12 @@ Widget _wrapWithRouter() {
       ChangeNotifierProvider<PlumbingPermitProvider>(
         create: (_) => PlumbingPermitProvider(),
       ),
+      ChangeNotifierProvider<ElectronicsPermitProvider>(
+        create: (_) => ElectronicsPermitProvider(),
+      ),
+      ChangeNotifierProvider<InteriorDesignPermitProvider>(
+        create: (_) => InteriorDesignPermitProvider(),
+      ),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
@@ -125,9 +144,6 @@ Widget _wrapWithRouter() {
 /// Every placeholder entry across all four catalog sections — none of
 /// these should navigate anywhere.
 const _placeholderPermits = [
-  // Ancillary Permits section
-  'Electronics',
-  'Interior',
   // Other Permits section
   'Fencing',
   'Sign Permit',
@@ -379,6 +395,52 @@ void main() {
       expect(find.text('Step 1 of 9'), findsOneWidget);
       expect(find.text('Applicant Information'), findsOneWidget);
       expect(find.text('Plumbing Permit'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'Electronics opens the Electronics Permit wizard at Step 1',
+    (tester) async {
+      await useTallSurface(tester);
+      await tester.pumpWidget(_wrapWithRouter());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Electronics'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Electronics'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(
+        find.widgetWithText(AppBar, 'Electronics Permit'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 9'), findsOneWidget);
+      expect(find.text('Applicant Information'), findsOneWidget);
+      expect(find.text('Electronics Permit'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'Interior opens the Interior Design Permit wizard at Step 1',
+    (tester) async {
+      await useTallSurface(tester);
+      await tester.pumpWidget(_wrapWithRouter());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Interior'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Interior'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(
+        find.widgetWithText(AppBar, 'Interior Design Permit'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 9'), findsOneWidget);
+      expect(find.text('Applicant Information'), findsOneWidget);
+      expect(find.text('Interior Design Permit'), findsWidgets);
     },
   );
 

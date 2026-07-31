@@ -51,12 +51,16 @@ class BusinessDetailsScreen extends StatelessWidget {
                         child: Text(
                           business.name,
                           style: AppTypography.sectionTitle,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      StatusBadge(
-                        label: business.status.label,
-                        color: business.status.color,
-                        backgroundColor: business.status.backgroundColor,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: StatusBadge(
+                          label: business.status.label,
+                          color: business.status.color,
+                          backgroundColor: business.status.backgroundColor,
+                        ),
                       ),
                     ],
                   ),
@@ -110,18 +114,23 @@ class BusinessDetailsScreen extends StatelessWidget {
                               Text(
                                 application.applicationNumber,
                                 style: AppTypography.bodyStrong,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               Text(
                                 application.type.label,
                                 style: AppTypography.caption,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
                         ),
-                        StatusBadge(
-                          label: application.status.label,
-                          color: application.status.color,
-                          backgroundColor: application.status.backgroundColor,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: StatusBadge(
+                            label: application.status.label,
+                            color: application.status.color,
+                            backgroundColor: application.status.backgroundColor,
+                          ),
                         ),
                       ],
                     ),
@@ -145,14 +154,12 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 130,
-            child: Text(label, style: AppTypography.caption),
-          ),
-          Expanded(child: Text(value, style: AppTypography.bodyStrong)),
+          Text(label, style: AppTypography.caption),
+          const SizedBox(height: 2),
+          Text(value, style: AppTypography.bodyStrong),
         ],
       ),
     );

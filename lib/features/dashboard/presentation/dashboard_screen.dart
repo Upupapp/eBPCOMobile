@@ -9,6 +9,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/notifications_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/layout/responsive_card_grid.dart';
 import '../../../shared/widgets/layout/section_header.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
 import '../../../shared/widgets/states/empty_state.dart';
@@ -43,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
                 firstName: user?.firstName ?? 'there',
                 initials: user?.initials ?? 'U',
                 unreadCount: notificationsProvider.unreadCount,
-                onNotificationsTap: () => context.go('/app/notifications'),
+                onNotificationsTap: () => context.push('/app/notifications'),
                 onProfileTap: () => context.go('/app/profile'),
                 searchBar: AppSearchField(
                   floating: true,
@@ -83,13 +84,9 @@ class DashboardScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     const SectionHeader(title: 'Application Summary'),
                     const SizedBox(height: 12),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                    ResponsiveCardGrid(
                       mainAxisSpacing: AppSpacing.md,
                       crossAxisSpacing: AppSpacing.md,
-                      childAspectRatio: 1.6,
                       children: [
                         DashboardStatCard(
                           label: 'Draft',
@@ -127,13 +124,9 @@ class DashboardScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     const SectionHeader(title: 'Quick Actions'),
                     const SizedBox(height: 12),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                    ResponsiveCardGrid(
                       mainAxisSpacing: AppSpacing.md,
                       crossAxisSpacing: AppSpacing.md,
-                      childAspectRatio: 1.7,
                       children: [
                         QuickActionCard(
                           label: 'Apply for Permit',
@@ -161,7 +154,7 @@ class DashboardScreen extends StatelessWidget {
                     SectionHeader(
                       title: 'Recent Notifications',
                       actionLabel: 'See All',
-                      onActionTap: () => context.go('/app/notifications'),
+                      onActionTap: () => context.push('/app/notifications'),
                     ),
                     const SizedBox(height: 8),
                     ...notificationsProvider.recent.map(
@@ -169,7 +162,7 @@ class DashboardScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 4),
                         child: RecentNotificationTile(
                           notification: notification,
-                          onTap: () => context.go('/app/notifications'),
+                          onTap: () => context.push('/app/notifications'),
                         ),
                       ),
                     ),

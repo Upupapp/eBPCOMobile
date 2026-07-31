@@ -98,15 +98,19 @@ class _BusinessListScreenState extends State<BusinessListScreen> {
                                           Text(
                                             business.category.label,
                                             style: AppTypography.caption,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),
                                     ),
-                                    StatusBadge(
-                                      label: business.status.label,
-                                      color: business.status.color,
-                                      backgroundColor:
-                                          business.status.backgroundColor,
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: StatusBadge(
+                                        label: business.status.label,
+                                        color: business.status.color,
+                                        backgroundColor:
+                                            business.status.backgroundColor,
+                                      ),
                                     ),
                                   ],
                                 ),

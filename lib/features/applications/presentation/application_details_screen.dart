@@ -68,10 +68,13 @@ class ApplicationDetailsScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      StatusBadge(
-                        label: application.status.label,
-                        color: application.status.color,
-                        backgroundColor: application.status.backgroundColor,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: StatusBadge(
+                          label: application.status.label,
+                          color: application.status.color,
+                          backgroundColor: application.status.backgroundColor,
+                        ),
                       ),
                     ],
                   ),
@@ -177,10 +180,14 @@ class ApplicationDetailsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    StatusBadge(
-                      label: application.payment!.status.label,
-                      color: application.payment!.status.color,
-                      backgroundColor: application.payment!.status.backgroundColor,
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: StatusBadge(
+                        label: application.payment!.status.label,
+                        color: application.payment!.status.color,
+                        backgroundColor:
+                            application.payment!.status.backgroundColor,
+                      ),
                     ),
                   ],
                 ),

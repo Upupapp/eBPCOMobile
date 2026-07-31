@@ -6,6 +6,7 @@ import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
+import '../../../../../shared/widgets/cards/fixture_inventory_row.dart';
 import '../../../../../shared/widgets/chips/app_chip.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
@@ -33,10 +34,10 @@ String? _positiveDecimalError(String? value, String fieldLabel) {
 /// inventory, water-supply system, wastewater/disposal system, and
 /// building/project fields. Every numeric field uses safe
 /// `tryParse`-based validation, so a temporarily empty or invalid entry
-/// never throws or renders `NaN`. Fixture rows are rendered by
-/// [_FixtureInventoryRow], a small self-contained widget that owns its own
-/// controllers — updating one fixture's quantity never rebuilds or erases
-/// any other fixture's entry.
+/// never throws or renders `NaN`. Fixture rows are rendered by the
+/// shared [FixtureInventoryRow] (also used by the Plumbing Permit), which
+/// owns its own controllers — updating one fixture's quantity never
+/// rebuilds or erases any other fixture's entry.
 class Step4InstallationDetails extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final SanitaryPermitDraft draft;
@@ -269,7 +270,28 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
             ),
             const SizedBox(height: AppSpacing.sm),
             for (final entry in _details.fixtureInventory.fixtures) ...[
-              _FixtureInventoryRow(entry: entry, onChanged: widget.onChanged),
+              FixtureInventoryRow(
+                label: entry.type.label,
+                showCustomNameField: entry.type == SanitaryFixtureType.others,
+                customName: entry.customName,
+                onCustomNameChanged: (v) {
+                  setState(() => entry.customName = v);
+                  widget.onChanged();
+                },
+                newQuantity: entry.newQuantity,
+                onNewQuantityChanged: (v) {
+                  setState(() => entry.newQuantity = v);
+                  widget.onChanged();
+                },
+                existingQuantity: entry.existingQuantity,
+                onExistingQuantityChanged: (v) {
+                  setState(() => entry.existingQuantity = v);
+                  widget.onChanged();
+                },
+                totalQuantity: entry.totalQty,
+                quantityValidator: (v) =>
+                    _nonNegativeWholeNumberError(v, 'Quantity'),
+              ),
               if (entry != _details.fixtureInventory.fixtures.last)
                 const SizedBox(height: AppSpacing.sm),
             ],
@@ -706,109 +728,3 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
   }
 }
 
-/// Self-contained fixture-inventory row: owns its own New/Existing/Notes
-/// (and, for "Others", a custom-name) controllers so editing one fixture
-/// never rebuilds or disposes any other fixture's widgets. Total Quantity
-/// is always derived (New + Existing) and rendered read-only.
-class _FixtureInventoryRow extends StatefulWidget {
-  final SanitaryFixtureEntry entry;
-  final VoidCallback onChanged;
-
-  const _FixtureInventoryRow({required this.entry, required this.onChanged});
-
-  @override
-  State<_FixtureInventoryRow> createState() => _FixtureInventoryRowState();
-}
-
-class _FixtureInventoryRowState extends State<_FixtureInventoryRow> {
-  late final TextEditingController _customName;
-  late final TextEditingController _newQuantity;
-  late final TextEditingController _existingQuantity;
-
-  @override
-  void initState() {
-    super.initState();
-    _customName = TextEditingController(text: widget.entry.customName);
-    _newQuantity = TextEditingController(text: widget.entry.newQuantity);
-    _existingQuantity = TextEditingController(
-      text: widget.entry.existingQuantity,
-    );
-  }
-
-  @override
-  void dispose() {
-    _customName.dispose();
-    _newQuantity.dispose();
-    _existingQuantity.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final entry = widget.entry;
-    final isOthers = entry.type == SanitaryFixtureType.others;
-
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(entry.type.label, style: AppTypography.bodyStrong),
-          if (isOthers) ...[
-            const SizedBox(height: AppSpacing.sm),
-            AppTextField(
-              controller: _customName,
-              label: 'Fixture Name',
-              onChanged: (v) {
-                setState(() => entry.customName = v);
-                widget.onChanged();
-              },
-            ),
-          ],
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            children: [
-              Expanded(
-                child: AppTextField(
-                  controller: _newQuantity,
-                  label: 'New',
-                  keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      _nonNegativeWholeNumberError(v, 'New quantity'),
-                  onChanged: (v) {
-                    setState(() => entry.newQuantity = v);
-                    widget.onChanged();
-                  },
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: AppTextField(
-                  controller: _existingQuantity,
-                  label: 'Existing',
-                  keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      _nonNegativeWholeNumberError(v, 'Existing quantity'),
-                  onChanged: (v) {
-                    setState(() => entry.existingQuantity = v);
-                    widget.onChanged();
-                  },
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Total', style: AppTypography.caption),
-                    const SizedBox(height: 2),
-                    Text('${entry.totalQty}', style: AppTypography.bodyStrong),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}

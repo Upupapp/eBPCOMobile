@@ -51,6 +51,27 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+# Launcher icon generation — source images live in assets/icon/ and are
+# generated from the official DILG logo by
+# scripts/generate_launcher_icon_sources.py. Regenerate with:
+#   python scripts/generate_launcher_icon_sources.py
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "assets/icon/icon_background.png"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  adaptive_icon_monochrome: "assets/icon/icon_foreground.png"
+  # icon_foreground.png already keeps the logo within the safe zone (55%
+  # of the 1024px canvas width, ~22.5% margin per side) with generous
+  # padding, so the tool's own default 16% auto-inset is disabled here to
+  # avoid compounding both paddings and shrinking the logo too far.
+  adaptive_icon_foreground_inset: 0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

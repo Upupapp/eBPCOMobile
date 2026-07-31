@@ -111,11 +111,13 @@ class ApplicationsScreen extends StatelessWidget {
       title: 'Electronics',
       description:
           'For electronic systems such as fire alarms, CCTV, and communication wiring.',
+      routePath: '/applications/new/electronics-permit',
     ),
     _PermitOption(
       icon: Icons.chair_outlined,
       title: 'Interior',
       description: 'For interior design and fit-out of enclosed spaces.',
+      routePath: '/applications/new/interior-design-permit',
     ),
   ];
 

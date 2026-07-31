@@ -29,6 +29,11 @@ class MainShell extends StatelessWidget {
         child: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onTap,
+          // Slightly taller than Material 3's 80dp default so that if a
+          // label ever still wraps to two lines on an unusually narrow
+          // device or high text-scale combination, the second line has
+          // room to render instead of being clipped at the bar's edge.
+          height: 88,
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),
@@ -44,11 +49,6 @@ class MainShell extends StatelessWidget {
               icon: Icon(Icons.payments_outlined),
               selectedIcon: Icon(Icons.payments),
               label: 'Payments',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.notifications_outlined),
-              selectedIcon: Icon(Icons.notifications),
-              label: 'Notifications',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline),
