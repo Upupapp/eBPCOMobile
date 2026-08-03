@@ -51,11 +51,24 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = email != null
           ? await _repository.hydrateUser(email)
           : null;
+      await _applySavedPhoto();
       _status = AuthStatus.authenticated;
     } else {
       _status = AuthStatus.unauthenticated;
     }
     notifyListeners();
+  }
+
+  /// Re-applies the persisted profile photo path (if any) to
+  /// [_currentUser] — [_repository.hydrateUser]/[_repository.authenticate]
+  /// don't know about the photo, since it's saved separately by
+  /// [ProfilePhotoService], not part of the mock account record itself.
+  Future<void> _applySavedPhoto() async {
+    final user = _currentUser;
+    if (user == null) return;
+    final savedPath = await _storage.getProfilePhotoPath();
+    if (savedPath == null) return;
+    _currentUser = user.copyWith(photoPath: savedPath);
   }
 
   Future<void> completeOnboarding() async {
@@ -85,6 +98,7 @@ class AuthProvider extends ChangeNotifier {
       await _storage.setRememberedEmail(rememberMe ? user.email : null);
       _rememberedEmail = rememberMe ? user.email : null;
       _currentUser = user;
+      await _applySavedPhoto();
       _status = AuthStatus.authenticated;
       _isLoading = false;
       notifyListeners();
@@ -163,13 +177,15 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  /// Sets or clears the (mock) profile photo. No real image is stored —
-  /// `photoPath` is just a marker used to switch the avatar between the
-  /// initials placeholder and a generic "photo set" placeholder.
+  /// Sets or clears the profile photo. [photoPath] is a real local file
+  /// path (saved by [ProfilePhotoService]) or null to remove the photo —
+  /// persisted so it survives app restarts, matching how the other
+  /// registered-profile fields are handled.
   Future<bool> updateProfilePhoto(String? photoPath) async {
     final user = _currentUser;
     if (user == null) return false;
 
+    await _storage.setProfilePhotoPath(photoPath);
     _currentUser = user.copyWith(photoPath: photoPath);
     notifyListeners();
     return true;

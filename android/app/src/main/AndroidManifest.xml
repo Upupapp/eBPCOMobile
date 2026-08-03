@@ -1,4 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Profile photo capture (Take Photo). Gallery selection and document
+         import use the system photo picker / Storage Access Framework via
+         image_picker and file_picker, which do not require a broad storage
+         permission on modern Android. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <!-- Only needed so permission_handler can request gallery access on
+         Android 12 (API 32) and below; on Android 13+ the system photo
+         picker (used by image_picker) needs no runtime permission at all. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <application
         android:label="E-BPCO"
         android:name="${applicationName}"

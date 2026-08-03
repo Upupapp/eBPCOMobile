@@ -9,10 +9,14 @@ import 'core/providers/architectural_permit_provider.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/building_permit_provider.dart';
 import 'core/providers/business_provider.dart';
+import 'core/providers/certificate_of_occupancy_provider.dart';
 import 'core/providers/civil_structural_permit_provider.dart';
 import 'core/providers/demolition_permit_provider.dart';
+import 'core/providers/documents_provider.dart';
 import 'core/providers/electrical_permit_provider.dart';
 import 'core/providers/electronics_permit_provider.dart';
+import 'core/providers/excavation_permit_provider.dart';
+import 'core/providers/fencing_permit_provider.dart';
 import 'core/providers/interior_design_permit_provider.dart';
 import 'core/providers/mechanical_permit_provider.dart';
 import 'core/providers/navigation_provider.dart';
@@ -21,6 +25,7 @@ import 'core/providers/plumbing_permit_provider.dart';
 import 'core/providers/renovation_permit_provider.dart';
 import 'core/providers/sanitary_plumbing_permit_provider.dart';
 import 'core/providers/settings_provider.dart';
+import 'core/providers/sign_permit_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_router.dart';
 
@@ -61,6 +66,9 @@ class _EbpcoAppState extends State<EbpcoApp> {
             notifications: context.read<NotificationsProvider>(),
           ),
         ),
+        ChangeNotifierProvider<DocumentsProvider>(
+          create: (_) => DocumentsProvider(),
+        ),
         ChangeNotifierProvider<BuildingPermitProvider>(
           create: (_) => BuildingPermitProvider(),
         ),
@@ -88,6 +96,9 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ChangeNotifierProvider<InteriorDesignPermitProvider>(
           create: (_) => InteriorDesignPermitProvider(),
         ),
+        ChangeNotifierProvider<FencingPermitProvider>(
+          create: (_) => FencingPermitProvider(),
+        ),
         ChangeNotifierProvider<MechanicalPermitProvider>(
           create: (_) => MechanicalPermitProvider(),
         ),
@@ -96,6 +107,15 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ),
         ChangeNotifierProvider<PlumbingPermitProvider>(
           create: (_) => PlumbingPermitProvider(),
+        ),
+        ChangeNotifierProvider<SignPermitProvider>(
+          create: (_) => SignPermitProvider(),
+        ),
+        ChangeNotifierProvider<ExcavationPermitProvider>(
+          create: (_) => ExcavationPermitProvider(),
+        ),
+        ChangeNotifierProvider<CertificateOfOccupancyProvider>(
+          create: (_) => CertificateOfOccupancyProvider(),
         ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),

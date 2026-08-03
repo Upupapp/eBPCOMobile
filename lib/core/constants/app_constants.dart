@@ -30,4 +30,5 @@ class AppConstants {
   static const String prefRegisteredMobile = 'registeredMobile';
   static const String prefCurrentUserEmail = 'currentUserEmail';
   static const String prefRememberedEmail = 'rememberedEmail';
+  static const String prefProfilePhotoPath = 'profilePhotoPath';
 }

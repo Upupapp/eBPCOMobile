@@ -7,28 +7,36 @@ import 'package:ebpco_user_app/core/providers/addition_extension_permit_provider
 import 'package:ebpco_user_app/core/providers/architectural_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
 import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/certificate_of_occupancy_provider.dart';
 import 'package:ebpco_user_app/core/providers/civil_structural_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/demolition_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/electrical_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/electronics_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/excavation_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/fencing_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/interior_design_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/mechanical_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/plumbing_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/renovation_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/sanitary_plumbing_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/sign_permit_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/applications_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/architectural_permit/architectural_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/certificate_of_occupancy/certificate_of_occupancy_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/civil_structural_permit/civil_structural_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/demolition_permit/demolition_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/electrical_permit/electrical_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/electronics_permit/electronics_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/excavation_permit/excavation_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/fencing_permit/fencing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/interior_design_permit/interior_design_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/mechanical_permit/mechanical_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/plumbing_permit/plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/renovation_permit/renovation_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/sign_permit/sign_permit_wizard_screen.dart';
 
 Widget _wrapWithRouter() {
   final router = GoRouter(
@@ -95,6 +103,23 @@ Widget _wrapWithRouter() {
         builder: (context, state) =>
             const InteriorDesignPermitWizardScreen(),
       ),
+      GoRoute(
+        path: '/applications/new/fencing-permit',
+        builder: (context, state) => const FencingPermitWizardScreen(),
+      ),
+      GoRoute(
+        path: '/applications/new/sign-permit',
+        builder: (context, state) => const SignPermitWizardScreen(),
+      ),
+      GoRoute(
+        path: '/applications/new/excavation-permit',
+        builder: (context, state) => const ExcavationPermitWizardScreen(),
+      ),
+      GoRoute(
+        path: '/applications/new/certificate-of-occupancy',
+        builder: (context, state) =>
+            const CertificateOfOccupancyWizardScreen(),
+      ),
     ],
   );
   return MultiProvider(
@@ -136,21 +161,22 @@ Widget _wrapWithRouter() {
       ChangeNotifierProvider<InteriorDesignPermitProvider>(
         create: (_) => InteriorDesignPermitProvider(),
       ),
+      ChangeNotifierProvider<FencingPermitProvider>(
+        create: (_) => FencingPermitProvider(),
+      ),
+      ChangeNotifierProvider<SignPermitProvider>(
+        create: (_) => SignPermitProvider(),
+      ),
+      ChangeNotifierProvider<ExcavationPermitProvider>(
+        create: (_) => ExcavationPermitProvider(),
+      ),
+      ChangeNotifierProvider<CertificateOfOccupancyProvider>(
+        create: (_) => CertificateOfOccupancyProvider(),
+      ),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
 }
-
-/// Every placeholder entry across all four catalog sections — none of
-/// these should navigate anywhere.
-const _placeholderPermits = [
-  // Other Permits section
-  'Fencing',
-  'Sign Permit',
-  'Excavation',
-  // Certificates section
-  'Certificate of Occupancy',
-];
 
 void main() {
   // The Applications page's content is much taller than the default
@@ -445,53 +471,90 @@ void main() {
   );
 
   testWidgets(
-    'every placeholder permit shows the "coming soon" message and does not navigate',
+    'Fencing opens the Fencing Permit wizard at Step 1',
     (tester) async {
       await useTallSurface(tester);
       await tester.pumpWidget(_wrapWithRouter());
       await tester.pumpAndSettle();
 
-      for (final label in _placeholderPermits) {
-        await tester.ensureVisible(find.text(label));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(label));
-        await tester.pump();
-        expect(tester.takeException(), isNull, reason: 'tapping "$label"');
+      await tester.ensureVisible(find.text('Fencing'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Fencing'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
 
-        expect(
-          find.text('This permit will be available in a future update.'),
-          findsOneWidget,
-          reason: '"$label" should show the coming-soon message',
-        );
+      expect(
+        find.widgetWithText(AppBar, 'Fencing Permit'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 9'), findsOneWidget);
+      expect(find.text('Permit Information'), findsWidgets);
+    },
+  );
 
-        // Still on the Applications page — no wizard, no other screen.
-        expect(
-          find.text('Applications'),
-          findsOneWidget,
-          reason: '"$label" should not navigate away from Applications',
-        );
-        expect(
-          find.widgetWithText(AppBar, 'Renovation Permit'),
-          findsNothing,
-          reason: '"$label" should not open the Renovation Permit wizard',
-        );
-        expect(
-          find.widgetWithText(AppBar, 'Building Permit'),
-          findsNothing,
-          reason: '"$label" should not open the Building Permit wizard',
-        );
-        expect(
-          find.widgetWithText(AppBar, 'Addition / Extension Permit'),
-          findsNothing,
-          reason:
-              '"$label" should not open the Addition / Extension Permit wizard',
-        );
-        expect(find.text('New Application Screen'), findsNothing);
+  testWidgets(
+    'Sign Permit opens the Sign Permit wizard at Step 1',
+    (tester) async {
+      await useTallSurface(tester);
+      await tester.pumpWidget(_wrapWithRouter());
+      await tester.pumpAndSettle();
 
-        // Let the SnackBar clear before checking the next entry.
-        await tester.pump(const Duration(seconds: 5));
-        await tester.pumpAndSettle();
-      }
+      await tester.ensureVisible(find.text('Sign Permit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sign Permit'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(
+        find.widgetWithText(AppBar, 'Sign Permit'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 10'), findsOneWidget);
+      expect(find.text('Permit Information'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'Excavation opens the Excavation & Ground Preparation Permit wizard at Step 1',
+    (tester) async {
+      await useTallSurface(tester);
+      await tester.pumpWidget(_wrapWithRouter());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Excavation'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Excavation'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(
+        find.widgetWithText(AppBar, 'Excavation & Ground Preparation Permit'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 9'), findsOneWidget);
+      expect(find.text('Permit Information'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'Certificate of Occupancy opens the Certificate of Occupancy wizard at Step 1',
+    (tester) async {
+      await useTallSurface(tester);
+      await tester.pumpWidget(_wrapWithRouter());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Certificate of Occupancy'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Certificate of Occupancy'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(
+        find.widgetWithText(AppBar, 'Certificate of Occupancy'),
+        findsOneWidget,
+      );
+      expect(find.text('Step 1 of 5'), findsOneWidget);
+      expect(find.text('Related Building Permit'), findsOneWidget);
     },
   );
 }

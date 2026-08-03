@@ -128,4 +128,21 @@ class LocalStorageService {
     await prefs.remove(AppConstants.prefIsLoggedIn);
     await prefs.remove(AppConstants.prefCurrentUserEmail);
   }
+
+  /// The saved profile photo's local file path, if any. Kept across
+  /// logout (like the other registered-profile fields above) since this
+  /// prototype only ever has one mock account per device.
+  Future<String?> getProfilePhotoPath() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefProfilePhotoPath);
+  }
+
+  Future<void> setProfilePhotoPath(String? path) async {
+    final prefs = await _prefs;
+    if (path == null) {
+      await prefs.remove(AppConstants.prefProfilePhotoPath);
+    } else {
+      await prefs.setString(AppConstants.prefProfilePhotoPath, path);
+    }
+  }
 }

@@ -1,13 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/avatars/app_avatar.dart';
 
 /// Circular profile picture with a camera/edit icon overlay at the
-/// bottom-right, matching the standard "avatar + edit badge" pattern. Shows
-/// the initials placeholder when [photoPath] is null, or a generic
-/// "photo set" placeholder icon otherwise — no real image is ever loaded,
-/// this is a frontend-only mock.
+/// bottom-right, matching the standard "avatar + edit badge" pattern.
+/// Shows the initials placeholder when [photoPath] is null, or the real
+/// saved photo file otherwise. Falls back to the placeholder (rather than
+/// crashing or showing a broken-image icon) if the file can no longer be
+/// read — e.g. it was deleted outside the app.
 class ProfilePhotoAvatar extends StatelessWidget {
   final String? photoPath;
   final String initials;
@@ -24,7 +27,8 @@ class ProfilePhotoAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPhoto = photoPath != null;
+    final path = photoPath;
+    final hasPhoto = path != null && path.isNotEmpty;
 
     return SizedBox(
       width: size,
@@ -33,12 +37,19 @@ class ProfilePhotoAvatar extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           hasPhoto
-              ? AppAvatar(
-                  size: size,
-                  icon: Icons.person,
-                  iconSize: size * 0.55,
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.textOnPrimary,
+              ? ClipOval(
+                  child: Image.file(
+                    File(path),
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => AppAvatar(
+                      size: size,
+                      initials: initials,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textOnPrimary,
+                    ),
+                  ),
                 )
               : AppAvatar(
                   size: size,

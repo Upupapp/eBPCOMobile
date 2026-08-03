@@ -7,15 +7,21 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/permission_service.dart';
+import '../../../core/services/profile_photo_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/badges/status_badge.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../shared/widgets/dialogs/permission_dialogs.dart';
 import 'widgets/profile_photo_avatar.dart';
 import 'widgets/profile_photo_bottom_sheet.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  ProfileScreen({super.key});
+
+  final ProfilePhotoService _photoService = ProfilePhotoService();
+  final PermissionService _permissionService = PermissionService();
 
   Future<void> _handleLogout(BuildContext context) async {
     final confirmed = await ConfirmationDialog.show(
@@ -39,26 +45,99 @@ class ProfileScreen extends StatelessWidget {
     await showProfilePhotoOptions(
       context,
       hasPhoto: hasPhoto,
-      onTakePhoto: () => _setMockPhoto(context, 'Photo captured (mock).'),
-      onChooseFromGallery: () =>
-          _setMockPhoto(context, 'Photo selected from gallery (mock).'),
-      onRemovePhoto: () async {
-        await authProvider.updateProfilePhoto(null);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile photo removed.')),
-          );
-        }
-      },
+      onTakePhoto: () => _handleTakePhoto(context),
+      onChooseFromGallery: () => _handleChooseFromGallery(context),
+      onRemovePhoto: () => _handleRemovePhoto(context),
     );
   }
 
-  Future<void> _setMockPhoto(BuildContext context, String message) async {
-    await context.read<AuthProvider>().updateProfilePhoto('mock_photo');
+  void _showMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _handleTakePhoto(BuildContext context) async {
+    final status = await requestPermissionWithPriming(
+      context,
+      permissionService: _permissionService,
+      kind: AppPermissionKind.camera,
+      primerTitle: cameraPermissionPrimerTitle,
+      primerMessage: cameraPermissionPrimerMessage,
+    );
+    if (status != AppPermissionStatus.granted) {
+      if (status == AppPermissionStatus.denied && context.mounted) {
+        _showMessage(context, 'Camera permission is required.');
+      }
+      return;
+    }
+    if (!context.mounted) return;
+
+    final result = await _photoService.takePhoto();
+    if (!context.mounted) return;
+    await _handlePhotoPickResult(context, result);
+  }
+
+  Future<void> _handleChooseFromGallery(BuildContext context) async {
+    final status = await requestPermissionWithPriming(
+      context,
+      permissionService: _permissionService,
+      kind: AppPermissionKind.photos,
+      primerTitle: photosPermissionPrimerTitle,
+      primerMessage: photosPermissionPrimerMessage,
+    );
+    if (status != AppPermissionStatus.granted) {
+      if (status == AppPermissionStatus.denied && context.mounted) {
+        _showMessage(context, 'Photo access is required.');
+      }
+      return;
+    }
+    if (!context.mounted) return;
+
+    final result = await _photoService.chooseFromGallery();
+    if (!context.mounted) return;
+    await _handlePhotoPickResult(context, result);
+  }
+
+  Future<void> _handlePhotoPickResult(
+    BuildContext context,
+    ProfilePhotoPickResult result,
+  ) async {
+    switch (result.outcome) {
+      case ProfilePhotoPickOutcome.success:
+        await context.read<AuthProvider>().updateProfilePhoto(
+          result.file!.path,
+        );
+        if (context.mounted) {
+          _showMessage(context, 'Profile photo updated successfully.');
+        }
+      case ProfilePhotoPickOutcome.cancelled:
+        // Leave the current photo untouched.
+        break;
+      case ProfilePhotoPickOutcome.invalidFile:
+        _showMessage(context, 'Unsupported file format.');
+      case ProfilePhotoPickOutcome.error:
+        _showMessage(context, 'The selected file could not be opened.');
+    }
+  }
+
+  Future<void> _handleRemovePhoto(BuildContext context) async {
+    final confirmed = await ConfirmationDialog.show(
+      context,
+      title: 'Remove Profile Photo?',
+      message:
+          'Are you sure you want to remove your current profile photo?',
+      confirmLabel: 'Remove Photo',
+      isDestructive: true,
+    );
+    if (!confirmed) return;
+    if (!context.mounted) return;
+
+    await _photoService.removeSavedPhoto();
+    if (!context.mounted) return;
+    await context.read<AuthProvider>().updateProfilePhoto(null);
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      _showMessage(context, 'Profile photo removed.');
     }
   }
 
@@ -107,6 +186,12 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.lock_outline,
                 label: 'Change Password',
                 onTap: () => context.push('/profile/change-password'),
+              ),
+              _ProfileActionTile(
+                icon: Icons.folder_outlined,
+                label: 'My Documents',
+                subtitle: 'View and manage your imported documents',
+                onTap: () => context.push('/profile/documents'),
               ),
               const SizedBox(height: 20),
               const _ProfileSectionTitle('Personal Information'),
@@ -313,11 +398,13 @@ class _ProfileStatusTile extends StatelessWidget {
 class _ProfileActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String? subtitle;
   final VoidCallback onTap;
 
   const _ProfileActionTile({
     required this.icon,
     required this.label,
+    this.subtitle,
     required this.onTap,
   });
 
@@ -338,7 +425,19 @@ class _ProfileActionTile extends StatelessWidget {
             children: [
               Icon(icon, size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 14),
-              Expanded(child: Text(label, style: AppTypography.body)),
+              Expanded(
+                child: subtitle == null
+                    ? Text(label, style: AppTypography.body)
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(label, style: AppTypography.body),
+                          const SizedBox(height: 2),
+                          Text(subtitle!, style: AppTypography.caption),
+                        ],
+                      ),
+              ),
               const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],
           ),

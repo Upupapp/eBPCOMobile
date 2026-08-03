@@ -26,11 +26,11 @@ class _PermitOption {
 }
 
 /// Landing page for the "Applications" tab: a catalog of every permit type
-/// the user can eventually file, grouped into "Building Permit", "Ancillary
-/// Permits", "Other Permits", and "Certificates". Only New Construction
-/// (under Building Permit) has a completed workflow so far — everything
-/// else is a placeholder that surfaces a "coming soon" message instead of
-/// navigating, until its own dedicated flow is built.
+/// the user can file, grouped into "Building Permit", "Ancillary Permits",
+/// "Other Permits", and "Certificates". Every entry now has a completed
+/// workflow; [_PermitOption.routePath] remains nullable so a future
+/// catalog entry can still be added as a "coming soon" placeholder before
+/// its own dedicated flow is built.
 class ApplicationsScreen extends StatelessWidget {
   const ApplicationsScreen({super.key});
 
@@ -127,18 +127,21 @@ class ApplicationsScreen extends StatelessWidget {
       title: 'Fencing',
       description:
           'For construction of perimeter fences and walls around a property.',
+      routePath: '/applications/new/fencing-permit',
     ),
     _PermitOption(
       icon: Icons.campaign_outlined,
       title: 'Sign Permit',
       description:
           'For installation of business signages, billboards, and similar structures.',
+      routePath: '/applications/new/sign-permit',
     ),
     _PermitOption(
       icon: Icons.terrain_outlined,
       title: 'Excavation',
       description:
           'For ground excavation, earthworks, and site preparation activities.',
+      routePath: '/applications/new/excavation-permit',
     ),
   ];
 
@@ -148,6 +151,7 @@ class ApplicationsScreen extends StatelessWidget {
       title: 'Certificate of Occupancy',
       description:
           'Apply for a certificate of occupancy after building completion.',
+      routePath: '/applications/new/certificate-of-occupancy',
     ),
   ];
 
