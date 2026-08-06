@@ -37,19 +37,22 @@ Future<bool> showPermissionPrimerDialog(
 /// Shown when permission has already been denied, instead of re-opening
 /// the OS prompt (which does nothing once permanently denied, and is
 /// simply unhelpful when merely denied) — offers a way to the device
-/// Settings screen instead.
+/// Settings screen instead. [title]/[message] default to generic copy;
+/// pass feature-specific copy (e.g. the scanner's) to be more precise
+/// about which permission and feature is affected.
 Future<void> showPermissionDeniedDialog(
   BuildContext context, {
   required PermissionService permissionService,
+  String title = 'Permission Required',
+  String message =
+      'Camera, photo, or file access is required to use this feature. '
+      'You can enable permission from your device settings.',
 }) async {
   final openSettings = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Permission Required'),
-      content: const Text(
-        'Camera, photo, or file access is required to use this feature. '
-        'You can enable permission from your device settings.',
-      ),
+      title: Text(title),
+      content: Text(message),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -79,6 +82,8 @@ Future<AppPermissionStatus> requestPermissionWithPriming(
   required AppPermissionKind kind,
   required String primerTitle,
   required String primerMessage,
+  String? deniedTitle,
+  String? deniedMessage,
 }) async {
   final currentStatus = await permissionService.status(kind);
   if (currentStatus == AppPermissionStatus.granted) {
@@ -90,6 +95,10 @@ Future<AppPermissionStatus> requestPermissionWithPriming(
     await showPermissionDeniedDialog(
       context,
       permissionService: permissionService,
+      title: deniedTitle ?? 'Permission Required',
+      message: deniedMessage ??
+          'Camera, photo, or file access is required to use this feature. '
+              'You can enable permission from your device settings.',
     );
     return currentStatus;
   }
@@ -108,6 +117,10 @@ Future<AppPermissionStatus> requestPermissionWithPriming(
     await showPermissionDeniedDialog(
       context,
       permissionService: permissionService,
+      title: deniedTitle ?? 'Permission Required',
+      message: deniedMessage ??
+          'Camera, photo, or file access is required to use this feature. '
+              'You can enable permission from your device settings.',
     );
   }
   return requested;
@@ -128,3 +141,15 @@ const String photosPermissionPrimerMessage =
     'personally choose to import.\n\n'
     'For your privacy, eBPCO will not browse, collect, or upload other '
     'files without your permission.';
+
+const String scannerCameraPermissionPrimerTitle = 'Allow Camera Access';
+const String scannerCameraPermissionPrimerMessage =
+    'eBPCO needs access to your camera so you can scan physical documents. '
+    'The camera will only be used when you open the document scanner.\n\n'
+    'For your privacy, eBPCO will not access or record from your camera '
+    'without your permission.';
+
+const String scannerCameraPermissionDeniedTitle = 'Camera Permission Required';
+const String scannerCameraPermissionDeniedMessage =
+    'Camera access is required to scan a physical document. You can '
+    'enable camera permission from your device settings.';

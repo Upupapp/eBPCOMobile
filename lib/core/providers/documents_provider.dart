@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
 
 import '../models/saved_document_model.dart';
+import '../models/scan_mode.dart';
 import '../repositories/document_repository.dart';
 import '../services/document_picker_service.dart';
 import '../services/document_storage_service.dart';
@@ -16,6 +20,15 @@ enum DocumentImportOutcome {
   invalidFile,
   tooLarge,
   error,
+}
+
+enum ScannedDocumentSaveOutcome { success, tooLarge, error }
+
+class ScannedDocumentSaveResult {
+  final ScannedDocumentSaveOutcome outcome;
+  final SavedDocumentModel? document;
+
+  const ScannedDocumentSaveResult(this.outcome, {this.document});
 }
 
 class DocumentImportResult {
@@ -301,12 +314,16 @@ class DocumentsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Removes a document from My Documents and deletes its local file.
-  /// Never fails just because the underlying file is already missing.
+  /// Removes a document from My Documents and deletes its local file (and
+  /// thumbnail, if it has one). Never fails just because the underlying
+  /// file is already missing.
   Future<void> remove(String id) async {
     final target = _documents.where((d) => d.id == id).toList();
     if (target.isEmpty) return;
     await _storageService.deleteFile(target.first.localPath);
+    if (target.first.thumbnailPath != null) {
+      await _storageService.deleteFile(target.first.thumbnailPath!);
+    }
     _documents = _documents.where((d) => d.id != id).toList();
     await _repository.saveAll(_documents);
     notifyListeners();
@@ -316,4 +333,74 @@ class DocumentsProvider extends ChangeNotifier {
   /// used to show a friendly "file missing" state instead of crashing.
   Future<bool> fileStillExists(SavedDocumentModel document) =>
       _storageService.fileExists(document.localPath);
+
+  /// Copies a finished scan (the processed image for the user's chosen
+  /// mode, plus its thumbnail) into permanent local document storage and
+  /// adds it to My Documents. The caller (the scanner) is responsible for
+  /// deleting its own temp working files afterward — this only copies,
+  /// it doesn't take ownership of or delete [processedFile]/[thumbnailFile].
+  Future<ScannedDocumentSaveResult> saveScannedDocument({
+    required File processedFile,
+    required String displayName,
+    required SavedDocumentCategory category,
+    String? notes,
+    required ScanMode scanMode,
+    required int pageCount,
+    required File thumbnailFile,
+  }) async {
+    try {
+      final size = await _storageService.fileSize(processedFile);
+      if (size > _storageService.maxFileSizeBytes) {
+        return const ScannedDocumentSaveResult(
+          ScannedDocumentSaveOutcome.tooLarge,
+        );
+      }
+
+      // Multi-page scans are combined into a PDF before reaching here;
+      // single-page scans stay a JPG — inferred from the file this method
+      // was actually handed rather than from [pageCount], so this stays
+      // correct even if that combination logic changes later.
+      final fileType =
+          SavedDocumentFileTypeX.fromExtension(p.extension(processedFile.path)) ??
+          SavedDocumentFileType.jpg;
+      final originalFileName = fileType == SavedDocumentFileType.pdf
+          ? 'Scanned Document.pdf'
+          : 'Scanned Document.jpg';
+
+      final savedDoc = await _storageService.saveCopy(
+        processedFile,
+        originalFileName: originalFileName,
+      );
+      final savedThumb = await _storageService.saveCopy(
+        thumbnailFile,
+        originalFileName: 'scan_thumbnail.jpg',
+      );
+      final savedSize = await savedDoc.length();
+
+      final document = SavedDocumentModel(
+        id: 'doc-${DateTime.now().microsecondsSinceEpoch}',
+        originalFileName: originalFileName,
+        displayName: displayName,
+        localPath: savedDoc.path,
+        fileType: fileType,
+        fileSizeBytes: savedSize,
+        dateImported: DateTime.now(),
+        category: category,
+        notes: (notes != null && notes.trim().isEmpty) ? null : notes,
+        isScanned: true,
+        scanMode: scanMode,
+        pageCount: pageCount,
+        thumbnailPath: savedThumb.path,
+      );
+      _documents = [..._documents, document];
+      await _repository.saveAll(_documents);
+      notifyListeners();
+      return ScannedDocumentSaveResult(
+        ScannedDocumentSaveOutcome.success,
+        document: document,
+      );
+    } catch (_) {
+      return const ScannedDocumentSaveResult(ScannedDocumentSaveOutcome.error);
+    }
+  }
 }

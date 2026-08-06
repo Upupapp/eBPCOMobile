@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'scan_mode.dart';
+
 /// Supported file types for imported "My Documents" items — the same set
 /// accepted by the import file picker.
 enum SavedDocumentFileType { pdf, jpg, jpeg, png }
@@ -45,6 +47,8 @@ enum SavedDocumentCategory {
   barangayClearance,
   businessRegistration,
   taxDocument,
+  fireSafety,
+  engineering,
   propertyDocument,
   authorizationLetter,
   supportingDocument,
@@ -65,6 +69,10 @@ extension SavedDocumentCategoryX on SavedDocumentCategory {
         return 'Business Registration';
       case SavedDocumentCategory.taxDocument:
         return 'Tax Document';
+      case SavedDocumentCategory.fireSafety:
+        return 'Fire Safety';
+      case SavedDocumentCategory.engineering:
+        return 'Engineering';
       case SavedDocumentCategory.propertyDocument:
         return 'Property Document';
       case SavedDocumentCategory.authorizationLetter:
@@ -93,6 +101,14 @@ class SavedDocumentModel {
   final DateTime dateImported;
   final DateTime? lastUsedDate;
   final SavedDocumentCategory category;
+  final String? notes;
+
+  /// Whether this document came from the built-in scanner rather than an
+  /// imported file — drives the "Scanned" badge and the fields below.
+  final bool isScanned;
+  final ScanMode? scanMode;
+  final int pageCount;
+  final String? thumbnailPath;
 
   const SavedDocumentModel({
     required this.id,
@@ -104,6 +120,11 @@ class SavedDocumentModel {
     required this.dateImported,
     this.lastUsedDate,
     this.category = SavedDocumentCategory.uncategorized,
+    this.notes,
+    this.isScanned = false,
+    this.scanMode,
+    this.pageCount = 1,
+    this.thumbnailPath,
   });
 
   /// The name shown throughout the UI — the custom display name when set,
@@ -115,10 +136,13 @@ class SavedDocumentModel {
 
   File get file => File(localPath);
 
+  File? get thumbnailFile => thumbnailPath != null ? File(thumbnailPath!) : null;
+
   SavedDocumentModel copyWith({
     String? displayName,
     DateTime? lastUsedDate,
     SavedDocumentCategory? category,
+    String? notes,
   }) {
     return SavedDocumentModel(
       id: id,
@@ -130,6 +154,11 @@ class SavedDocumentModel {
       dateImported: dateImported,
       lastUsedDate: lastUsedDate ?? this.lastUsedDate,
       category: category ?? this.category,
+      notes: notes ?? this.notes,
+      isScanned: isScanned,
+      scanMode: scanMode,
+      pageCount: pageCount,
+      thumbnailPath: thumbnailPath,
     );
   }
 
@@ -143,6 +172,11 @@ class SavedDocumentModel {
     'dateImported': dateImported.toIso8601String(),
     'lastUsedDate': lastUsedDate?.toIso8601String(),
     'category': category.name,
+    'notes': notes,
+    'isScanned': isScanned,
+    'scanMode': scanMode?.name,
+    'pageCount': pageCount,
+    'thumbnailPath': thumbnailPath,
   };
 
   factory SavedDocumentModel.fromJson(Map<String, dynamic> json) {
@@ -164,6 +198,16 @@ class SavedDocumentModel {
         (c) => c.name == json['category'],
         orElse: () => SavedDocumentCategory.uncategorized,
       ),
+      notes: json['notes'] as String?,
+      isScanned: json['isScanned'] as bool? ?? false,
+      scanMode: json['scanMode'] != null
+          ? ScanMode.values.firstWhere(
+              (m) => m.name == json['scanMode'],
+              orElse: () => ScanMode.defaultMode,
+            )
+          : null,
+      pageCount: json['pageCount'] as int? ?? 1,
+      thumbnailPath: json['thumbnailPath'] as String?,
     );
   }
 }
