@@ -60,7 +60,6 @@ import '../features/profile/presentation/notification_preferences_screen.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/terms_conditions_screen.dart';
-import '../features/scanner/presentation/scanner_capture_screen.dart';
 import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/presentation/splash_screen.dart';
 
@@ -466,10 +465,6 @@ class AppRouter {
         GoRoute(
           path: '/profile/documents',
           builder: (context, state) => const MyDocumentsScreen(),
-        ),
-        GoRoute(
-          path: '/scanner',
-          builder: (context, state) => const ScannerCaptureScreen(),
         ),
         GoRoute(
           path: '/profile/language',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../../core/services/permission_service.dart';
 
 /// eBPCO's own privacy-explanation dialog, shown BEFORE the official OS
@@ -37,13 +38,13 @@ Future<bool> showPermissionPrimerDialog(
 /// Shown when permission has already been denied, instead of re-opening
 /// the OS prompt (which does nothing once permanently denied, and is
 /// simply unhelpful when merely denied) — offers a way to the device
-/// Settings screen instead. [title]/[message] default to generic copy;
-/// pass feature-specific copy (e.g. the scanner's) to be more precise
-/// about which permission and feature is affected.
+/// Settings screen instead. [message] defaults to generic copy covering
+/// camera/photo/file access together; pass a more specific message (e.g.
+/// [fileAccessPermissionDeniedMessage]) when the call site only ever
+/// requests one of those.
 Future<void> showPermissionDeniedDialog(
   BuildContext context, {
   required PermissionService permissionService,
-  String title = 'Permission Required',
   String message =
       'Camera, photo, or file access is required to use this feature. '
       'You can enable permission from your device settings.',
@@ -51,7 +52,7 @@ Future<void> showPermissionDeniedDialog(
   final openSettings = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(title),
+      title: const Text('Permission Required'),
       content: Text(message),
       actions: [
         TextButton(
@@ -72,18 +73,24 @@ Future<void> showPermissionDeniedDialog(
 }
 
 /// Orchestrates the full permission flow used everywhere this app needs
-/// camera or photo access: show eBPCO's own privacy explanation first,
-/// then (only if the user agrees) trigger the official OS prompt, then
-/// (only if the OS reports permanent denial) offer a way to Settings
+/// camera or photo/file access: show eBPCO's own privacy explanation
+/// first, then (only if the user agrees) trigger the official OS prompt,
+/// then (only if the OS reports permanent denial) offer a way to Settings
 /// instead of silently failing or looping the prompt.
+///
+/// By default the privacy explanation is shown every time permission
+/// isn't already granted, since re-showing it costs nothing. Pass
+/// [showPrimerOnlyOnce] `true` for flows where it should only ever be
+/// shown the first time a device is used (e.g. picking files for permit
+/// attachments) — subsequent attempts skip straight to the OS prompt.
 Future<AppPermissionStatus> requestPermissionWithPriming(
   BuildContext context, {
   required PermissionService permissionService,
   required AppPermissionKind kind,
   required String primerTitle,
   required String primerMessage,
-  String? deniedTitle,
   String? deniedMessage,
+  bool showPrimerOnlyOnce = false,
 }) async {
   final currentStatus = await permissionService.status(kind);
   if (currentStatus == AppPermissionStatus.granted) {
@@ -95,20 +102,28 @@ Future<AppPermissionStatus> requestPermissionWithPriming(
     await showPermissionDeniedDialog(
       context,
       permissionService: permissionService,
-      title: deniedTitle ?? 'Permission Required',
-      message: deniedMessage ??
-          'Camera, photo, or file access is required to use this feature. '
-              'You can enable permission from your device settings.',
+      message: deniedMessage ?? _defaultDeniedMessage,
     );
     return currentStatus;
   }
 
+  var shouldShowPrimer = true;
+  if (showPrimerOnlyOnce) {
+    final localStorage = LocalStorageService();
+    shouldShowPrimer = !(await localStorage.isFileAccessPrimerShown());
+    if (shouldShowPrimer) {
+      await localStorage.setFileAccessPrimerShown();
+    }
+  }
+
   if (!context.mounted) return currentStatus;
-  final agreed = await showPermissionPrimerDialog(
-    context,
-    title: primerTitle,
-    message: primerMessage,
-  );
+  final agreed = shouldShowPrimer
+      ? await showPermissionPrimerDialog(
+          context,
+          title: primerTitle,
+          message: primerMessage,
+        )
+      : true;
   if (!agreed) return AppPermissionStatus.denied;
 
   final requested = await permissionService.request(kind);
@@ -117,14 +132,15 @@ Future<AppPermissionStatus> requestPermissionWithPriming(
     await showPermissionDeniedDialog(
       context,
       permissionService: permissionService,
-      title: deniedTitle ?? 'Permission Required',
-      message: deniedMessage ??
-          'Camera, photo, or file access is required to use this feature. '
-              'You can enable permission from your device settings.',
+      message: deniedMessage ?? _defaultDeniedMessage,
     );
   }
   return requested;
 }
+
+const String _defaultDeniedMessage =
+    'Camera, photo, or file access is required to use this feature. '
+    'You can enable permission from your device settings.';
 
 const String cameraPermissionPrimerTitle = 'Allow Camera Access';
 const String cameraPermissionPrimerMessage =
@@ -142,14 +158,19 @@ const String photosPermissionPrimerMessage =
     'For your privacy, eBPCO will not browse, collect, or upload other '
     'files without your permission.';
 
-const String scannerCameraPermissionPrimerTitle = 'Allow Camera Access';
-const String scannerCameraPermissionPrimerMessage =
-    'eBPCO needs access to your camera so you can scan physical documents. '
-    'The camera will only be used when you open the document scanner.\n\n'
-    'For your privacy, eBPCO will not access or record from your camera '
+/// Used specifically by the document-attachment flow (My Documents import
+/// and permit-form "Choose from Gallery/Files") rather than
+/// [photosPermissionPrimerTitle]/[photosPermissionPrimerMessage] (used by
+/// unrelated photo pickers like the profile photo editor), since the two
+/// contexts warrant slightly different copy.
+const String fileAccessPermissionPrimerTitle = 'Allow File Access';
+const String fileAccessPermissionPrimerMessage =
+    'eBPCO needs access to the documents you choose from your device so '
+    'you can attach them to permit applications.\n\n'
+    'For your privacy, eBPCO will only access files that you personally '
+    'select. The app will not browse, collect, or upload other files '
     'without your permission.';
 
-const String scannerCameraPermissionDeniedTitle = 'Camera Permission Required';
-const String scannerCameraPermissionDeniedMessage =
-    'Camera access is required to scan a physical document. You can '
-    'enable camera permission from your device settings.';
+const String fileAccessPermissionDeniedMessage =
+    'File access is required to select documents for this feature. You '
+    'can enable the required permission from your device settings.';

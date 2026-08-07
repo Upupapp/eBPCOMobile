@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/document_model.dart';
 import '../../../../core/models/saved_document_model.dart';
 import '../../../../core/services/document_picker_service.dart';
+import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/permission_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -130,30 +131,51 @@ Future<DocumentModel?> _resolve(
   final permissionService = PermissionService();
   final pickerService = DocumentPickerService();
 
-  if (source == _AttachSource.camera || source == _AttachSource.gallery) {
-    final kind = source == _AttachSource.camera
-        ? AppPermissionKind.camera
-        : AppPermissionKind.photos;
+  if (source == _AttachSource.camera) {
     final status = await requestPermissionWithPriming(
       context,
       permissionService: permissionService,
-      kind: kind,
-      primerTitle: source == _AttachSource.camera
-          ? cameraPermissionPrimerTitle
-          : photosPermissionPrimerTitle,
-      primerMessage: source == _AttachSource.camera
-          ? cameraPermissionPrimerMessage
-          : photosPermissionPrimerMessage,
+      kind: AppPermissionKind.camera,
+      primerTitle: cameraPermissionPrimerTitle,
+      primerMessage: cameraPermissionPrimerMessage,
     );
     if (status != AppPermissionStatus.granted) {
       if (status == AppPermissionStatus.denied) {
-        showMessage(
-          source == _AttachSource.camera
-              ? 'Camera permission is required.'
-              : 'Photo access is required.',
-        );
+        showMessage('Camera permission is required.');
       }
       return null;
+    }
+  } else if (source == _AttachSource.gallery) {
+    final status = await requestPermissionWithPriming(
+      context,
+      permissionService: permissionService,
+      kind: AppPermissionKind.photos,
+      primerTitle: fileAccessPermissionPrimerTitle,
+      primerMessage: fileAccessPermissionPrimerMessage,
+      deniedMessage: fileAccessPermissionDeniedMessage,
+      showPrimerOnlyOnce: true,
+    );
+    if (status != AppPermissionStatus.granted) {
+      if (status == AppPermissionStatus.denied) {
+        showMessage('Photo access is required.');
+      }
+      return null;
+    }
+  } else if (source == _AttachSource.files) {
+    // The system file picker (Storage Access Framework on Android,
+    // document picker on iOS) needs no runtime OS permission, but the
+    // one-time privacy explanation still applies before the very first
+    // file-selection attempt of any kind.
+    final localStorage = LocalStorageService();
+    if (!(await localStorage.isFileAccessPrimerShown())) {
+      if (!context.mounted) return null;
+      final agreed = await showPermissionPrimerDialog(
+        context,
+        title: fileAccessPermissionPrimerTitle,
+        message: fileAccessPermissionPrimerMessage,
+      );
+      await localStorage.setFileAccessPrimerShown();
+      if (!agreed) return null;
     }
   }
 

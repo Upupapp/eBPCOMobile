@@ -8,8 +8,9 @@ import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../../../shared/widgets/uploads/document_file_preview_screen.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Required Renovation Documents: the full document-checklist
 /// annex, grouped into the four official categories. Professional
@@ -40,26 +41,35 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
   Set<RenovationAffectedArea> get _affectedAreas =>
       widget.draft.projectInformation.affectedAreas;
 
+  void _previewDocument(DocumentModel document) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => DocumentFilePreviewScreen(document: document),
+      ),
+    );
+  }
+
   Widget _uploadTile({
     required String label,
     required DocumentModel? Function() getDocument,
     required void Function(DocumentModel?) setDocument,
     String? statusLabel,
     bool isRequired = true,
-    String extension = 'pdf',
   }) {
+    final document = getDocument();
     return DocumentUploadTile(
       label: label,
       isRequired: isRequired,
       statusLabel: statusLabel,
-      document: getDocument(),
+      document: document,
       allowReplace: true,
-      onUpload: () {
-        setState(
-          () => setDocument(createMockDocument(label, extension: extension)),
-        );
+      onUpload: () async {
+        final result = await showAttachDocumentOptions(context, label: label);
+        if (result == null) return;
+        setState(() => setDocument(result));
         widget.onChanged();
       },
+      onPreview: document == null ? null : () => _previewDocument(document),
       onRemove: () {
         setState(() => setDocument(null));
         widget.onChanged();
@@ -70,7 +80,6 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
   Widget _existingDocumentTile({
     required String label,
     required RenovationDocumentSlot slot,
-    String extension = 'pdf',
   }) {
     if (slot.markedNotAvailable) {
       return AppCard(
@@ -108,12 +117,18 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
           statusLabel: 'Not yet uploaded',
           document: slot.upload,
           allowReplace: true,
-          onUpload: () {
-            setState(
-              () => slot.upload = createMockDocument(label, extension: extension),
+          onUpload: () async {
+            final result = await showAttachDocumentOptions(
+              context,
+              label: label,
             );
+            if (result == null) return;
+            setState(() => slot.upload = result);
             widget.onChanged();
           },
+          onPreview: slot.upload == null
+              ? null
+              : () => _previewDocument(slot.upload!),
           onRemove: () {
             setState(() => slot.upload = null);
             widget.onChanged();
@@ -215,7 +230,6 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
                 _existingDocumentTile(
                   label: 'Recent Photographs of the Existing Building',
                   slot: _documents.recentPhotographs,
-                  extension: 'jpg',
                 ),
               ],
             ),
@@ -326,7 +340,6 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
               children: [
                 _uploadTile(
                   label: 'PRC ID',
-                  extension: 'jpg',
                   getDocument: () => _professional.prcIdUpload,
                   setDocument: (d) => _professional.prcIdUpload = d,
                 ),

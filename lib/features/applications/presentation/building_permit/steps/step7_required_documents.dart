@@ -6,8 +6,9 @@ import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../../../shared/widgets/uploads/document_file_preview_screen.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Required Documents: the full document-checklist annex from the
 /// Unified Application Form, grouped into the four official categories.
@@ -37,18 +38,25 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
     required String label,
     required DocumentModel? Function() getDocument,
     required void Function(DocumentModel?) setDocument,
-    String extension = 'pdf',
   }) {
+    final document = getDocument();
     return DocumentUploadTile(
       label: label,
-      document: getDocument(),
+      document: document,
       allowReplace: true,
-      onUpload: () {
-        setState(
-          () => setDocument(createMockDocument(label, extension: extension)),
-        );
+      onUpload: () async {
+        final result = await showAttachDocumentOptions(context, label: label);
+        if (result == null) return;
+        setState(() => setDocument(result));
         widget.onChanged();
       },
+      onPreview: document == null
+          ? null
+          : () => Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => DocumentFilePreviewScreen(document: document),
+              ),
+            ),
       onRemove: () {
         setState(() => setDocument(null));
         widget.onChanged();
@@ -120,7 +128,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'PRC ID',
-                  extension: 'jpg',
                   getDocument: () => _documents.prcIdChecklistUpload,
                   setDocument: (d) => _documents.prcIdChecklistUpload = d,
                 ),

@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>eBPCO needs access to your camera so you can take and upload a profile photo, or scan a physical document. Your camera is only used while you are actively taking a photo or using the document scanner.</string>
+	<string>eBPCO needs access to your camera so you can take and upload a profile photo. Your camera is only used when you choose "Take Photo".</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>eBPCO needs access to your photos so you can choose a profile photo or import an image document. eBPCO only accesses photos you personally select.</string>
 	<key>UIApplicationSceneManifest</key>

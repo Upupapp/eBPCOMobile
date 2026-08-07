@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/models/addition_extension_permit_model.dart';
+import '../../../../../core/models/document_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/utils/validators.dart';
@@ -9,9 +10,10 @@ import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_dropdown.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
+import '../../../../../shared/widgets/uploads/document_file_preview_screen.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
 
 /// Step 5 — Professional in Charge of the addition/extension work:
 /// professional details, license details, and the supporting documents.
@@ -73,45 +75,59 @@ class _Step5ProfessionalInChargeState
     super.dispose();
   }
 
-  void _uploadPrcId() {
-    setState(() {
-      _professional.prcIdUpload = createMockDocument('PRC ID', extension: 'jpg');
-    });
+  Future<void> _uploadPrcId() async {
+    final result = await showAttachDocumentOptions(context, label: 'PRC ID');
+    if (result == null) return;
+    setState(() => _professional.prcIdUpload = result);
     widget.onChanged();
   }
 
-  void _uploadPtr() {
-    setState(() {
-      _professional.ptrDocumentUpload = createMockDocument('PTR Document');
-    });
+  Future<void> _uploadPtr() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'PTR Document',
+    );
+    if (result == null) return;
+    setState(() => _professional.ptrDocumentUpload = result);
     widget.onChanged();
   }
 
-  void _uploadSignedSealedForm() {
-    setState(() {
-      _professional.signedSealedFormUpload = createMockDocument(
-        'Signed and Sealed Professional Form',
-      );
-    });
+  Future<void> _uploadSignedSealedForm() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Signed and Sealed Professional Form',
+    );
+    if (result == null) return;
+    setState(() => _professional.signedSealedFormUpload = result);
     widget.onChanged();
   }
 
-  void _uploadSignedSealedPlans() {
-    setState(() {
-      _professional.signedSealedPlansUpload = createMockDocument(
-        'Signed and Sealed Addition / Extension Plans',
-      );
-    });
+  Future<void> _uploadSignedSealedPlans() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Signed and Sealed Addition / Extension Plans',
+    );
+    if (result == null) return;
+    setState(() => _professional.signedSealedPlansUpload = result);
     widget.onChanged();
   }
 
-  void _uploadStructuralAnalysis() {
-    setState(() {
-      _professional.structuralAnalysisUpload = createMockDocument(
-        'Structural Analysis or Certification',
-      );
-    });
+  Future<void> _uploadStructuralAnalysis() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Structural Analysis or Certification',
+    );
+    if (result == null) return;
+    setState(() => _professional.structuralAnalysisUpload = result);
     widget.onChanged();
+  }
+
+  void _previewDocument(DocumentModel document) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => DocumentFilePreviewScreen(document: document),
+      ),
+    );
   }
 
   @override
@@ -311,6 +327,9 @@ class _Step5ProfessionalInChargeState
               document: _professional.prcIdUpload,
               onUpload: _uploadPrcId,
               allowReplace: true,
+              onPreview: _professional.prcIdUpload == null
+                  ? null
+                  : () => _previewDocument(_professional.prcIdUpload!),
               onRemove: () {
                 setState(() => _professional.prcIdUpload = null);
                 widget.onChanged();
@@ -322,6 +341,9 @@ class _Step5ProfessionalInChargeState
               document: _professional.ptrDocumentUpload,
               onUpload: _uploadPtr,
               allowReplace: true,
+              onPreview: _professional.ptrDocumentUpload == null
+                  ? null
+                  : () => _previewDocument(_professional.ptrDocumentUpload!),
               onRemove: () {
                 setState(() => _professional.ptrDocumentUpload = null);
                 widget.onChanged();
@@ -333,6 +355,10 @@ class _Step5ProfessionalInChargeState
               document: _professional.signedSealedFormUpload,
               onUpload: _uploadSignedSealedForm,
               allowReplace: true,
+              onPreview: _professional.signedSealedFormUpload == null
+                  ? null
+                  : () =>
+                      _previewDocument(_professional.signedSealedFormUpload!),
               onRemove: () {
                 setState(() => _professional.signedSealedFormUpload = null);
                 widget.onChanged();
@@ -344,6 +370,11 @@ class _Step5ProfessionalInChargeState
               document: _professional.signedSealedPlansUpload,
               onUpload: _uploadSignedSealedPlans,
               allowReplace: true,
+              onPreview: _professional.signedSealedPlansUpload == null
+                  ? null
+                  : () => _previewDocument(
+                      _professional.signedSealedPlansUpload!,
+                    ),
               onRemove: () {
                 setState(() => _professional.signedSealedPlansUpload = null);
                 widget.onChanged();
@@ -359,6 +390,11 @@ class _Step5ProfessionalInChargeState
               document: _professional.structuralAnalysisUpload,
               onUpload: _uploadStructuralAnalysis,
               allowReplace: true,
+              onPreview: _professional.structuralAnalysisUpload == null
+                  ? null
+                  : () => _previewDocument(
+                      _professional.structuralAnalysisUpload!,
+                    ),
               onRemove: () {
                 setState(() => _professional.structuralAnalysisUpload = null);
                 widget.onChanged();

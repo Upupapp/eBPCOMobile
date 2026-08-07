@@ -13,7 +13,6 @@ import '../../../shared/widgets/layout/responsive_card_grid.dart';
 import '../../../shared/widgets/layout/section_header.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
 import '../../../shared/widgets/states/empty_state.dart';
-import '../../scanner/presentation/widgets/scanner_fab.dart';
 import 'widgets/active_application_card.dart';
 import 'widgets/dashboard_header.dart';
 import 'widgets/dashboard_stat_card.dart';
@@ -33,9 +32,6 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: ScannerFab(
-        onPressed: () => context.push('/scanner'),
-      ),
       body: RefreshIndicator(
         onRefresh: applicationsProvider.refresh,
         color: AppColors.primary,

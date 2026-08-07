@@ -3,8 +3,7 @@
          networking is silently blocked on Android even though the same
          code runs fine on web, where the browser handles it. -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Profile photo capture (Take Photo) and the built-in document
-         scanner's live camera preview. Gallery selection and document
+    <!-- Profile photo capture (Take Photo). Gallery selection and document
          import use the system photo picker / Storage Access Framework via
          image_picker and file_picker, which do not require a broad storage
          permission on modern Android. -->

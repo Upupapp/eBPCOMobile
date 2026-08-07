@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/models/building_permit_model.dart';
+import '../../../../../core/models/document_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
+import '../../../../../shared/widgets/uploads/document_file_preview_screen.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 import '../widgets/date_picker_field.dart';
-import '../widgets/mock_upload.dart';
 
 /// Step 6 — Consent & Authorization: confirms whether the applicant is the
 /// registered property owner, and if not, collects the authorized
@@ -68,23 +70,32 @@ class _Step6ConsentAuthorizationState
     widget.onChanged();
   }
 
-  void _uploadAuthorizationLetter() {
-    setState(() {
-      _consent.authorizationLetterUpload = createMockDocument(
-        'Authorization Letter / SPA',
-      );
-    });
+  Future<void> _uploadAuthorizationLetter() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Authorization Letter / SPA',
+    );
+    if (result == null) return;
+    setState(() => _consent.authorizationLetterUpload = result);
     widget.onChanged();
   }
 
-  void _uploadOwnerValidId() {
-    setState(() {
-      _consent.ownerValidIdUpload = createMockDocument(
-        'Owner Valid ID',
-        extension: 'jpg',
-      );
-    });
+  Future<void> _uploadOwnerValidId() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Owner Valid ID',
+    );
+    if (result == null) return;
+    setState(() => _consent.ownerValidIdUpload = result);
     widget.onChanged();
+  }
+
+  void _previewDocument(DocumentModel document) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => DocumentFilePreviewScreen(document: document),
+      ),
+    );
   }
 
   @override
@@ -214,6 +225,10 @@ class _Step6ConsentAuthorizationState
                 document: _consent.authorizationLetterUpload,
                 onUpload: _uploadAuthorizationLetter,
                 allowReplace: true,
+                onPreview: _consent.authorizationLetterUpload == null
+                    ? null
+                    : () =>
+                        _previewDocument(_consent.authorizationLetterUpload!),
                 onRemove: () {
                   setState(() => _consent.authorizationLetterUpload = null);
                   widget.onChanged();
@@ -225,6 +240,9 @@ class _Step6ConsentAuthorizationState
                 document: _consent.ownerValidIdUpload,
                 onUpload: _uploadOwnerValidId,
                 allowReplace: true,
+                onPreview: _consent.ownerValidIdUpload == null
+                    ? null
+                    : () => _previewDocument(_consent.ownerValidIdUpload!),
                 onRemove: () {
                   setState(() => _consent.ownerValidIdUpload = null);
                   widget.onChanged();

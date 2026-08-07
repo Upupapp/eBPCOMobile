@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/models/building_permit_model.dart';
+import '../../../../../core/models/document_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/utils/validators.dart';
@@ -9,9 +10,10 @@ import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_dropdown.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
+import '../../../../../shared/widgets/uploads/document_file_preview_screen.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 import '../widgets/date_picker_field.dart';
-import '../widgets/mock_upload.dart';
 
 /// Step 5 — Architect or Civil Engineer in charge of the construction work:
 /// professional details, license details, and the supporting documents.
@@ -70,30 +72,39 @@ class _Step5ProfessionalInChargeState
     super.dispose();
   }
 
-  void _uploadPrcId() {
-    setState(() {
-      _professional.prcIdUpload = createMockDocument(
-        'PRC ID',
-        extension: 'jpg',
-      );
-    });
+  Future<void> _uploadPrcId() async {
+    final result = await showAttachDocumentOptions(context, label: 'PRC ID');
+    if (result == null) return;
+    setState(() => _professional.prcIdUpload = result);
     widget.onChanged();
   }
 
-  void _uploadPtr() {
-    setState(() {
-      _professional.ptrUpload = createMockDocument('Current PTR');
-    });
+  Future<void> _uploadPtr() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Current PTR',
+    );
+    if (result == null) return;
+    setState(() => _professional.ptrUpload = result);
     widget.onChanged();
   }
 
-  void _uploadSignedSealed() {
-    setState(() {
-      _professional.signedSealedUpload = createMockDocument(
-        'Signed and Sealed Professional Certification',
-      );
-    });
+  Future<void> _uploadSignedSealed() async {
+    final result = await showAttachDocumentOptions(
+      context,
+      label: 'Signed and Sealed Professional Certification',
+    );
+    if (result == null) return;
+    setState(() => _professional.signedSealedUpload = result);
     widget.onChanged();
+  }
+
+  void _previewDocument(DocumentModel document) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => DocumentFilePreviewScreen(document: document),
+      ),
+    );
   }
 
   @override
@@ -301,6 +312,9 @@ class _Step5ProfessionalInChargeState
               document: _professional.prcIdUpload,
               onUpload: _uploadPrcId,
               allowReplace: true,
+              onPreview: _professional.prcIdUpload == null
+                  ? null
+                  : () => _previewDocument(_professional.prcIdUpload!),
               onRemove: () {
                 setState(() => _professional.prcIdUpload = null);
                 widget.onChanged();
@@ -313,6 +327,9 @@ class _Step5ProfessionalInChargeState
               document: _professional.ptrUpload,
               onUpload: _uploadPtr,
               allowReplace: true,
+              onPreview: _professional.ptrUpload == null
+                  ? null
+                  : () => _previewDocument(_professional.ptrUpload!),
               onRemove: () {
                 setState(() => _professional.ptrUpload = null);
                 widget.onChanged();
@@ -325,6 +342,9 @@ class _Step5ProfessionalInChargeState
               document: _professional.signedSealedUpload,
               onUpload: _uploadSignedSealed,
               allowReplace: true,
+              onPreview: _professional.signedSealedUpload == null
+                  ? null
+                  : () => _previewDocument(_professional.signedSealedUpload!),
               onRemove: () {
                 setState(() => _professional.signedSealedUpload = null);
                 widget.onChanged();

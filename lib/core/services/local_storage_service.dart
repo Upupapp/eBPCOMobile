@@ -145,4 +145,18 @@ class LocalStorageService {
       await prefs.setString(AppConstants.prefProfilePhotoPath, path);
     }
   }
+
+  /// Whether the "Allow File Access" privacy explanation has already been
+  /// shown once — after that, file-access requests go straight to the OS
+  /// permission flow instead of re-showing eBPCO's own explanation dialog
+  /// every time.
+  Future<bool> isFileAccessPrimerShown() async {
+    final prefs = await _prefs;
+    return prefs.getBool(AppConstants.prefFileAccessPrimerShown) ?? false;
+  }
+
+  Future<void> setFileAccessPrimerShown() async {
+    final prefs = await _prefs;
+    await prefs.setBool(AppConstants.prefFileAccessPrimerShown, true);
+  }
 }

@@ -58,8 +58,10 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
       context,
       permissionService: _permissionService,
       kind: AppPermissionKind.photos,
-      primerTitle: photosPermissionPrimerTitle,
-      primerMessage: photosPermissionPrimerMessage,
+      primerTitle: fileAccessPermissionPrimerTitle,
+      primerMessage: fileAccessPermissionPrimerMessage,
+      deniedMessage: fileAccessPermissionDeniedMessage,
+      showPrimerOnlyOnce: true,
     );
     if (status != AppPermissionStatus.granted) {
       if (status == AppPermissionStatus.denied && mounted) {
@@ -86,10 +88,8 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
         final confirmed = await ConfirmationDialog.show(
           context,
           title: 'Document Already Exists',
-          message:
-              'Document already exists in My Documents. Do you want to '
-              'import another copy?',
-          confirmLabel: 'Import Copy',
+          message: 'This document has already been imported into My Documents.',
+          confirmLabel: 'Import Another Copy',
         );
         if (!confirmed) {
           provider.discardPendingImport();
@@ -352,17 +352,20 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
                 ),
                 Expanded(
                   child: !hasAnyDocuments
-                      ? EmptyState(
+                      ? const EmptyState(
                           icon: Icons.folder_open_outlined,
                           title: 'No Documents Yet',
                           message:
                               'Documents you import into eBPCO will appear '
                               'here, making them easier to reuse for future '
                               'permit applications.',
-                          action: PrimaryButton(
-                            label: 'Import Document',
-                            onPressed: _handleImportDocument,
-                          ),
+                          // No action button here — the always-visible
+                          // "Import Document" button above (in the header
+                          // section) is already the one way to import,
+                          // regardless of whether the list is empty or
+                          // not. A second button here would just be the
+                          // duplicated-button problem this screen used to
+                          // have.
                         )
                       : visible.isEmpty
                       ? const EmptyState(

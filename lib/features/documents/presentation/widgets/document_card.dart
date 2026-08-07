@@ -66,21 +66,11 @@ class DocumentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        document.name,
-                        style: AppTypography.bodyStrong,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (document.isScanned) ...[
-                      const SizedBox(width: AppSpacing.xs),
-                      const _ScannedBadge(),
-                    ],
-                  ],
+                Text(
+                  document.name,
+                  style: AppTypography.bodyStrong,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -141,46 +131,6 @@ class DocumentCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Marks a document that came from the built-in scanner rather than an
-/// imported file, per the "Scanned document badge / source indicator"
-/// requirement for My Documents.
-class _ScannedBadge extends StatelessWidget {
-  const _ScannedBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'Scanned document',
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.document_scanner_outlined,
-              size: 11,
-              color: AppColors.primary,
-            ),
-            const SizedBox(width: 3),
-            Text(
-              'Scanned',
-              style: AppTypography.caption.copyWith(
-                color: AppColors.primary,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
