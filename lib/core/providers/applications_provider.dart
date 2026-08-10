@@ -12,10 +12,9 @@ import 'notifications_provider.dart';
 /// [NotificationsProvider].
 class ApplicationsProvider extends ChangeNotifier {
   ApplicationsProvider({
-    required NotificationsProvider notifications,
+    required this._notifications,
     ApplicationsRepository? repository,
-  }) : _notifications = notifications,
-       _repository = repository ?? MockApplicationsRepository() {
+  }) : _repository = repository ?? MockApplicationsRepository() {
     _load();
   }
 

@@ -9,10 +9,9 @@ import 'notifications_provider.dart';
 /// notification via [NotificationsProvider].
 class BusinessProvider extends ChangeNotifier {
   BusinessProvider({
-    required NotificationsProvider notifications,
+    required this._notifications,
     BusinessRepository? repository,
-  }) : _notifications = notifications,
-       _repository = repository ?? MockBusinessRepository() {
+  }) : _repository = repository ?? MockBusinessRepository() {
     _load();
   }
 
