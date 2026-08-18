@@ -12,6 +12,23 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/dialogs/permission_dialogs.dart';
 import '../my_documents_screen.dart';
 
+/// Signature of [showAttachDocumentOptions], so widget tests can swap the
+/// whole chooser out via [debugAttachDocumentOverride].
+typedef AttachDocumentHandler =
+    Future<DocumentModel?> Function(
+      BuildContext context, {
+      required String label,
+    });
+
+/// When set, [showAttachDocumentOptions] delegates to this instead of
+/// showing the real sheet. Camera, gallery, and the system file picker all
+/// need platform channels that are unavailable under `flutter test`, so
+/// wizard tests install a handler that returns a fabricated document —
+/// mirroring what `createMockDocument` did before these wizards moved to
+/// real attachments. Never set this in production code.
+@visibleForTesting
+AttachDocumentHandler? debugAttachDocumentOverride;
+
 /// Result of the "attach a document" chooser: either a freshly-picked
 /// file (camera/gallery/files) or an existing "My Documents" item,
 /// normalized to the same [DocumentModel] shape every permit upload slot
@@ -21,6 +38,9 @@ Future<DocumentModel?> showAttachDocumentOptions(
   BuildContext context, {
   required String label,
 }) async {
+  final override = debugAttachDocumentOverride;
+  if (override != null) return override(context, label: label);
+
   final choice = await showModalBottomSheet<_AttachSource>(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -237,7 +257,7 @@ class _AttachOptionTile extends StatelessWidget {
             children: [
               Icon(icon, size: 22, color: AppColors.textSecondary),
               const SizedBox(width: AppSpacing.md),
-              Text(label, style: AppTypography.body),
+              Expanded(child: Text(label, style: AppTypography.body)),
             ],
           ),
         ),

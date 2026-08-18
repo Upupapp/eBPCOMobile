@@ -7,6 +7,8 @@ import 'package:ebpco_user_app/core/providers/addition_extension_permit_provider
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/addition_extension_permit/addition_extension_application_submitted_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 /// End-to-end coverage of the Addition / Extension Permit wizard — fully
 /// separate from both the New Construction and Renovation wizards, driven
@@ -329,6 +331,17 @@ Future<void> _checkAllDeclarations(WidgetTester tester) async {
 }
 
 void main() {
+  // These wizards attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   testWidgets(
     'Step 1 renders with Project Type fixed to Addition / Extension and Scope of Work fixed to Addition',
     (tester) async {

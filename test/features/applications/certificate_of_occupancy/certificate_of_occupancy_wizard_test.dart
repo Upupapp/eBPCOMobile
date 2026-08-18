@@ -8,6 +8,8 @@ import 'package:ebpco_user_app/core/providers/certificate_of_occupancy_provider.
 import 'package:ebpco_user_app/features/applications/presentation/certificate_of_occupancy/certificate_of_occupancy_submitted_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/certificate_of_occupancy/certificate_of_occupancy_wizard_screen.dart';
 import 'package:ebpco_user_app/shared/widgets/uploads/document_upload_tile.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 /// End-to-end coverage of the Certificate of Occupancy wizard — a
 /// deliberately short, 5-step flow (fully separate from every ancillary
@@ -232,6 +234,17 @@ Future<void> _completeStep5(WidgetTester tester) async {
 }
 
 void main() {
+  // These wizards attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   testWidgets(
     'Step 1 renders with Building Permit & Application Type heading',
     (tester) async {

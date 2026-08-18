@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Covers Steps 3-5 (Project Information, Building Details, Professional in
 /// Charge) plus the Step 6 placeholder, mirroring the driving pattern
@@ -200,6 +202,17 @@ Future<void> _completeStep4(WidgetTester tester) async {
 }
 
 void main() {
+  // These wizards attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   testWidgets(
     'Step 3 renders and Continue is disabled until Building Use is selected',
     (tester) async {
