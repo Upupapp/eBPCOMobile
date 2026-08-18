@@ -55,6 +55,7 @@ import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/notifications/presentation/notifications_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/payments/presentation/order_of_payment_screen.dart';
+import '../features/payments/presentation/payment_history_screen.dart';
 import '../features/payments/presentation/payments_screen.dart';
 import '../features/documents/presentation/my_documents_screen.dart';
 import '../features/profile/presentation/change_password_screen.dart';
@@ -492,6 +493,10 @@ class AppRouter {
           builder: (context, state) => ApplicationOutcomeScreen(
             applicationId: state.pathParameters['applicationId']!,
           ),
+        ),
+        GoRoute(
+          path: '/payments/history',
+          builder: (context, state) => const PaymentHistoryScreen(),
         ),
         GoRoute(
           path: '/applications/:applicationId/pay',

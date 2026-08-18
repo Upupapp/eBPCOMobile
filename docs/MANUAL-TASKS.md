@@ -5,7 +5,7 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: scope audit — three unbuilt rows closed, one outstanding. 18 August 2026.
+Last updated: payment history built; one scope row outstanding. 18 August 2026.
 
 ---
 
@@ -47,8 +47,9 @@ Last updated: scope audit — three unbuilt rows closed, one outstanding. 18 Aug
 
 | # | Item | Status |
 |---|---|---|
-| M-23 | **Payment history with filtering and export** (§8.1, listed EXTEND) | Not built. Found by a self-audit after TAB 3 was certified — the §8.3 acceptance criteria did not cover it, which is how it was missed. Needs a decision on export format (CSV? PDF receipt?) and whether history spans businesses |
 | M-24 | **Appointment booking** (§3.1 benchmark) | Not built and not in the §7.1 screens table, so arguably out of scope. QC e-Services treats a confirmed online appointment as the *first* basic requirement, so if this LGU does the same it belongs in TAB 2 |
+| M-25 | **Share-sheet export.** Payment history exports to the clipboard as CSV, which pastes into a spreadsheet or an email. A real share sheet or file save needs a platform plugin (`share_plus`) this app does not carry — a deliberate omission, not an oversight | Adding a plugin is a dependency decision |
+| M-26 | **Confirm the CSV export is fit for purpose.** Format was my call: CSV over a PDF receipt, since the destination is almost always a spreadsheet or an accountant. If applicants actually want a printable receipt, this needs redoing | Product decision |
 
 ## Product decisions I have deliberately left open
 
@@ -74,3 +75,7 @@ Last updated: scope audit — three unbuilt rows closed, one outstanding. 18 Aug
 - **No consent gate before document capture.** X3 puts an RA 10173 consent
   dialog in front of the first attachment, records when it was given, and
   allows withdrawal from Privacy & Data.
+- **Pre-flight check and document expiry** (§7.1 and §10.1), both listed in
+  TAB scope tables but never built until the scope audit.
+- **Payment history with filtering and export** (§8.1), the last of the four
+  audit findings. Export format was decided rather than deferred — see M-26.
