@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/action_item.dart';
+import '../models/application_detail.dart';
 import '../models/application_model.dart';
+import '../models/lifecycle_status.dart';
 import '../models/document_model.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
@@ -222,6 +224,111 @@ class ApplicationsProvider extends ChangeNotifier {
       icon: _statusNotificationIcon(updated.status),
     );
     return updated;
+  }
+
+  /// Marks one Letter of Instruction item addressed, or un-marks it.
+  ///
+  /// Local-only: it records that the applicant believes they have dealt with
+  /// the item. It does not advance the application — only the OBO can do that,
+  /// and only after [resubmitAfterInstruction] puts the corrections back in
+  /// their queue.
+  void toggleInstructionItem(
+    String applicationId,
+    String letterId,
+    String itemId,
+  ) {
+    final application = byId(applicationId);
+    if (application == null) return;
+
+    final letters = [
+      for (final letter in application.instructions)
+        if (letter.id != letterId)
+          letter
+        else
+          letter.copyWith(
+            items: [
+              for (final item in letter.items)
+                if (item.id != itemId)
+                  item
+                else
+                  InstructionItem(
+                    id: item.id,
+                    subject: item.subject,
+                    remark: item.remark,
+                    resolvedAt: item.isResolved ? null : _clock(),
+                  ),
+            ],
+          ),
+    ];
+
+    var open = 0;
+    for (final letter in letters) {
+      open += letter.openCount;
+    }
+
+    _replace(
+      application.copyWith(
+        instructions: letters,
+        openInstructionCount: open,
+      ),
+    );
+  }
+
+  /// Puts corrections back in the OBO's queue after a Letter of Instruction.
+  ///
+  /// The applicant does not get to decide the application is now fine — this
+  /// returns it to Under Evaluation, which is a *request* for re-evaluation.
+  /// Every state after this point still arrives from the server.
+  void resubmitAfterInstruction(String applicationId) {
+    final application = byId(applicationId);
+    if (application == null) return;
+    if (application.openInstruction != null) return;
+
+    final now = _clock();
+    _replace(
+      application.copyWith(
+        lifecycleStatus: ApplicationLifecycleStatus.underEvaluation,
+        status: ApplicationStatus.underReview,
+        timeline: [
+          ...application.timeline,
+          TimelineEntry(
+            status: ApplicationLifecycleStatus.underEvaluation,
+            occurredAt: now,
+            office: 'Office of the Building Official',
+            remarks: 'Corrections resubmitted by the applicant.',
+          ),
+        ],
+      ),
+    );
+
+    _notifications.addNotification(
+      title: 'Corrections resubmitted',
+      message:
+          'Your corrections for ${application.applicationNumber} are back with '
+          'the Office of the Building Official for re-evaluation.',
+      icon: Icons.send_outlined,
+    );
+  }
+
+  /// Saves a local copy of the permit so it stays readable with no
+  /// connection.
+  ///
+  /// RA 8792 gives an electronic document the same legal effect as its paper
+  /// equivalent, so a downloaded permit is worth having on a site with no
+  /// signal — which describes a great many construction sites.
+  Future<void> downloadPermit(String applicationId) async {
+    final application = byId(applicationId);
+    final permit = application?.permit;
+    if (application == null || permit == null) return;
+    if (permit.isAvailableOffline) return;
+
+    // Stands in for writing the fetched PDF into app-local storage. The path
+    // shape matches DocumentStorageService so swapping in the real fetch is a
+    // repository change and nothing more.
+    final path = 'permits/${permit.permitNumber}.pdf';
+    _replace(
+      application.copyWith(permit: permit.copyWith(localFilePath: path)),
+    );
   }
 
   void _replace(ApplicationModel updated) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
+import 'application_detail.dart';
 import 'document_model.dart';
 import 'lifecycle_status.dart';
 import 'payment_assessment_model.dart';
@@ -160,7 +161,26 @@ class ApplicationModel {
   final String? permitTypeLabel;
 
   /// Unresolved items on an outstanding Letter of Instruction.
+  ///
+  /// Kept as a denormalised counter so list rows and the Home action stack do
+  /// not have to load full detail. Always set from [instructions] by whatever
+  /// builds the record, so the two can never disagree.
   final int openInstructionCount;
+
+  /// Every lifecycle transition, richest form. [statusHistory] is the older,
+  /// coarser projection of the same events; screens prefer this when present
+  /// and fall back to that when it is empty.
+  final List<TimelineEntry> timeline;
+
+  /// Per-stage evaluation results, in stage order.
+  final List<EvaluationRecord> evaluations;
+
+  /// Letters of Instruction, newest first.
+  final List<LetterOfInstruction> instructions;
+
+  final InspectionRecord? inspection;
+  final GeneratedPermit? permit;
+  final ReleaseRecord? release;
 
   const ApplicationModel({
     required this.id,
@@ -179,6 +199,12 @@ class ApplicationModel {
     this.classification,
     this.permitTypeLabel,
     this.openInstructionCount = 0,
+    this.timeline = const [],
+    this.evaluations = const [],
+    this.instructions = const [],
+    this.inspection,
+    this.permit,
+    this.release,
   });
 
   /// The applicant-visible status. Derived from [lifecycleStatus] when the
@@ -198,11 +224,33 @@ class ApplicationModel {
   /// Whether a service-pledge countdown is meaningful for this record.
   bool get isInFlight => lifecycleStatus?.isInFlight ?? false;
 
+  /// The Letter of Instruction the applicant still has to clear, if any.
+  LetterOfInstruction? get openInstruction {
+    for (final letter in instructions) {
+      if (!letter.isFullyResolved) return letter;
+    }
+    return null;
+  }
+
+  /// The evaluation that returned this application, if one did. Its remarks
+  /// are the applicant's instructions.
+  EvaluationRecord? get returningEvaluation {
+    for (final evaluation in evaluations) {
+      if (evaluation.result == EvaluationResult.revisionRequired ||
+          evaluation.result == EvaluationResult.rejected) {
+        return evaluation;
+      }
+    }
+    return null;
+  }
+
   /// Date by which work must commence or the building permit lapses.
   ///
   /// PD 1096 voids a permit where the authorised work is not commenced within
   /// one year of issue, so a released permit always carries this deadline.
   DateTime? get commenceByDate {
+    final generated = permit;
+    if (generated != null) return generated.commenceByDate;
     final issued = issuedDate;
     if (issued == null || permitNumber == null) return null;
     return DateTime(issued.year + 1, issued.month, issued.day);
@@ -247,6 +295,12 @@ class ApplicationModel {
     PermitClassification? classification,
     String? permitTypeLabel,
     int? openInstructionCount,
+    List<TimelineEntry>? timeline,
+    List<EvaluationRecord>? evaluations,
+    List<LetterOfInstruction>? instructions,
+    InspectionRecord? inspection,
+    GeneratedPermit? permit,
+    ReleaseRecord? release,
   }) {
     return ApplicationModel(
       id: id,
@@ -265,6 +319,12 @@ class ApplicationModel {
       classification: classification ?? this.classification,
       permitTypeLabel: permitTypeLabel ?? this.permitTypeLabel,
       openInstructionCount: openInstructionCount ?? this.openInstructionCount,
+      timeline: timeline ?? this.timeline,
+      evaluations: evaluations ?? this.evaluations,
+      instructions: instructions ?? this.instructions,
+      inspection: inspection ?? this.inspection,
+      permit: permit ?? this.permit,
+      release: release ?? this.release,
     );
   }
 }

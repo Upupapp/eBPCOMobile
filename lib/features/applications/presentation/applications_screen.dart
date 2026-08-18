@@ -34,6 +34,20 @@ class _PermitOption {
 class ApplicationsScreen extends StatelessWidget {
   const ApplicationsScreen({super.key});
 
+  /// The business permit flow predates the construction-permit catalog and
+  /// keeps its own generic wizard. Listed here so it stays reachable now that
+  /// the catalog, rather than that wizard, is what /applications/new opens.
+  static const _businessPermitOptions = [
+    _PermitOption(
+      icon: Icons.storefront_outlined,
+      title: 'Business Permit',
+      description:
+          'New, renewal, or amendment of a business permit for an existing '
+          'registered business.',
+      routePath: '/applications/new/business-permit',
+    ),
+  ];
+
   static const _buildingPermitOptions = [
     _PermitOption(
       icon: Icons.add_home_work_outlined,
@@ -208,6 +222,13 @@ class ApplicationsScreen extends StatelessWidget {
             _PermitListSection(
               title: 'Other Permits',
               options: _otherPermitOptions,
+              onTap: (option) => _handleTap(context, option),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            _PermitListSection(
+              title: 'Business Permit',
+              options: _businessPermitOptions,
               onTap: (option) => _handleTap(context, option),
             ),
             const SizedBox(height: AppSpacing.xl),

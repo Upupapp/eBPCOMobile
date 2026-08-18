@@ -1,3 +1,4 @@
+import '../core/models/application_detail.dart';
 import '../core/models/application_model.dart';
 import '../core/models/document_model.dart';
 import '../core/models/lifecycle_status.dart';
@@ -41,6 +42,46 @@ ApplicationModel buildSeedApplication() {
       StatusHistoryEntry(
         status: ApplicationStatus.underReview,
         timestamp: submitted.add(const Duration(hours: 5)),
+      ),
+    ],
+    timeline: [
+      TimelineEntry(
+        status: ApplicationLifecycleStatus.submitted,
+        occurredAt: submitted,
+        office: 'eBPCO Mobile',
+      ),
+      TimelineEntry(
+        status: ApplicationLifecycleStatus.received,
+        occurredAt: submitted.add(const Duration(hours: 2)),
+        office: 'Office of the Building Official',
+      ),
+      TimelineEntry(
+        status: ApplicationLifecycleStatus.documentVerification,
+        occurredAt: submitted.add(const Duration(hours: 5)),
+        office: 'Office of the Building Official',
+      ),
+      TimelineEntry(
+        status: ApplicationLifecycleStatus.underEvaluation,
+        occurredAt: submitted.add(const Duration(days: 1)),
+        office: 'Office of the Building Official',
+      ),
+    ],
+    evaluations: [
+      EvaluationRecord(
+        stage: EvaluationStage.initial,
+        result: EvaluationResult.passed,
+        evaluator: 'Engr. R. Villanueva',
+        evaluatedAt: submitted.add(const Duration(hours: 6)),
+      ),
+      EvaluationRecord(
+        stage: EvaluationStage.zoning,
+        result: EvaluationResult.passed,
+        evaluator: 'Arch. L. Bautista',
+        evaluatedAt: submitted.add(const Duration(days: 1)),
+      ),
+      const EvaluationRecord(
+        stage: EvaluationStage.fireSafety,
+        result: EvaluationResult.pending,
       ),
     ],
   );

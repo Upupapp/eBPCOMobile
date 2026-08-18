@@ -6,7 +6,11 @@ import '../core/providers/auth_provider.dart';
 import '../shared/widgets/states/error_state.dart';
 import '../features/applications/presentation/addition_extension_permit/addition_extension_application_submitted_screen.dart';
 import '../features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
-import '../features/applications/presentation/application_details_screen.dart';
+import '../features/applications/presentation/application_list_screen.dart';
+import '../features/applications/presentation/detail/application_detail_screen.dart';
+import '../features/applications/presentation/detail/application_outcome_screen.dart';
+import '../features/applications/presentation/detail/digital_permit_screen.dart';
+import '../features/applications/presentation/detail/letter_of_instruction_screen.dart';
 import '../features/applications/presentation/architectural_permit/architectural_application_submitted_screen.dart';
 import '../features/applications/presentation/architectural_permit/architectural_permit_wizard_screen.dart';
 import '../features/applications/presentation/certificate_of_occupancy/certificate_of_occupancy_submitted_screen.dart';
@@ -121,8 +125,15 @@ class AppRouter {
             businessId: state.pathParameters['businessId']!,
           ),
         ),
+        // The catalog is what "new application" means to an applicant: they
+        // are choosing which of the sixteen permits to file, not entering one
+        // particular form.
         GoRoute(
           path: '/applications/new',
+          builder: (context, state) => const ApplicationsScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/business-permit',
           builder: (context, state) =>
               NewApplicationScreen(initialBusinessId: state.extra as String?),
         ),
@@ -444,7 +455,25 @@ class AppRouter {
         ),
         GoRoute(
           path: '/applications/:applicationId',
-          builder: (context, state) => ApplicationDetailsScreen(
+          builder: (context, state) => ApplicationDetailScreen(
+            applicationId: state.pathParameters['applicationId']!,
+          ),
+        ),
+        GoRoute(
+          path: '/applications/:applicationId/instructions',
+          builder: (context, state) => LetterOfInstructionScreen(
+            applicationId: state.pathParameters['applicationId']!,
+          ),
+        ),
+        GoRoute(
+          path: '/applications/:applicationId/permit',
+          builder: (context, state) => DigitalPermitScreen(
+            applicationId: state.pathParameters['applicationId']!,
+          ),
+        ),
+        GoRoute(
+          path: '/applications/:applicationId/outcome',
+          builder: (context, state) => ApplicationOutcomeScreen(
             applicationId: state.pathParameters['applicationId']!,
           ),
         ),
@@ -502,7 +531,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/app/applications',
-                  builder: (context, state) => const ApplicationsScreen(),
+                  builder: (context, state) => const ApplicationListScreen(),
                 ),
               ],
             ),
