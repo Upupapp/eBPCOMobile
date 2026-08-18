@@ -26,6 +26,13 @@ class AppConstants {
   static const String prefRegisteredEmail = 'registeredEmail';
   /// Password verifier and its salt. The password itself is never stored —
   /// see CredentialVerifier.
+  /// Bearer token for the API, once a real auth backend issues one.
+  ///
+  /// SharedPreferences is unencrypted, so this is a placeholder location, not
+  /// the final one — a session token belongs in the platform keychain or
+  /// keystore. See M-01 and M-22 in docs/MANUAL-TASKS.md.
+  static const String prefSessionToken = 'sessionToken';
+
   /// When the applicant consented to this app processing their personal
   /// documents, ISO-8601. Absent until they do.
   static const String prefPrivacyConsentAt = 'privacyConsentAt';

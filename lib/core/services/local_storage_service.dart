@@ -181,6 +181,27 @@ class LocalStorageService {
   /// shown once — after that, file-access requests go straight to the OS
   /// permission flow instead of re-showing eBPCO's own explanation dialog
   /// every time.
+  /// The API session token, or null when signed out.
+  ///
+  /// Returns null today because nothing issues one yet — the mock login has
+  /// no server behind it. Wiring this up is the second half of M-22; the
+  /// client already asks for a token on every request, so a real one starts
+  /// working the moment this returns it.
+  Future<String?> sessionToken() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefSessionToken);
+  }
+
+  Future<void> saveSessionToken(String token) async {
+    final prefs = await _prefs;
+    await prefs.setString(AppConstants.prefSessionToken, token);
+  }
+
+  Future<void> clearSessionToken() async {
+    final prefs = await _prefs;
+    await prefs.remove(AppConstants.prefSessionToken);
+  }
+
   /// When the applicant gave consent to document processing, or null.
   ///
   /// RA 10173 requires consent to be given before collection and to be

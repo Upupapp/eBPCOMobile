@@ -25,6 +25,7 @@ import 'core/providers/plumbing_permit_provider.dart';
 import 'core/providers/renovation_permit_provider.dart';
 import 'core/providers/sanitary_plumbing_permit_provider.dart';
 import 'core/providers/professionals_provider.dart';
+import 'core/repositories/repository_factory.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/providers/sign_permit_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -51,6 +52,13 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ChangeNotifierProvider<NavigationProvider>(
           create: (_) => NavigationProvider(),
         ),
+        // First, because the repositories every other provider is built from
+        // come out of it. One place decides whether this build talks to the
+        // API or to seed data, so a build cannot end up half-live.
+        Provider<RepositoryFactory>(
+          create: (_) => RepositoryFactory(),
+          dispose: (_, factory) => factory.dispose(),
+        ),
         // Declared before ApplicationsProvider/BusinessProvider so their
         // `create` callbacks can read it via `context.read` to post
         // notifications for submit/pay/advance/register actions.
@@ -65,6 +73,7 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ChangeNotifierProvider<ApplicationsProvider>(
           create: (context) => ApplicationsProvider(
             notifications: context.read<NotificationsProvider>(),
+            repository: context.read<RepositoryFactory>().applications(),
           ),
         ),
         ChangeNotifierProvider<DocumentsProvider>(
