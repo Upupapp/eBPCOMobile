@@ -52,6 +52,9 @@ dependencies:
   # transitive dependency to a direct one because credential handling must not
   # depend on another package continuing to pull it in.
   crypto: ^3.0.0
+  # HTTP transport for the eBPCO API client. Chosen over dart:io's HttpClient
+  # because this app also builds for web, where dart:io is unavailable.
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

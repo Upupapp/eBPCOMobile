@@ -5,7 +5,7 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: §11 cross-cutting commands complete, 18 August 2026.
+Last updated: API client layer complete, 18 August 2026.
 
 ---
 
@@ -14,7 +14,9 @@ Last updated: §11 cross-cutting commands complete, 18 August 2026.
 | # | Task | Why manual | Raised in |
 |---|---|---|---|
 | M-01 | Move authentication to a server-issued session token held in the platform keychain/keystore | Needs an auth backend to issue tokens. **Partially closed in TAB 5**: the password is no longer stored at all (PBKDF2 verifier + salt), so nothing recoverable remains on disk. What is left is genuinely server-dependent | TAB 1 · §10.1 |
-| M-02 | Stand up the backend for the admin-authoritative fields — `lifecycleStatus`, `classification`, `openInstructionCount`, Orders of Payment, evaluations, Letters of Instruction, inspections, release records | Server-side work; the app builds against repository interfaces ready to swap | TABs 1–3 |
+| M-02 | Stand up the backend for the admin-authoritative fields — `lifecycleStatus`, `classification`, `openInstructionCount`, Orders of Payment, evaluations, Letters of Instruction, inspections, release records | Server-side work. **The client is now built and tested against the §7.2 contract** (`lib/core/api/`), so this is the server half only. See M-21 for the endpoints it expects | TABs 1–3 |
+| M-21 | Confirm the API base URL, auth scheme, and endpoint paths the client assumes: `GET /applications`, `GET /applications/:id`, `POST /applications`, `POST /applications/:id/payments`, `POST /applications/:id/instructions/:letterId/resubmit`, bearer-token auth | The client codifies an assumption; the real contract is the backend team's to set | API layer |
+| M-22 | Decide the token storage and refresh mechanism the `AuthTokenProvider` will read from | Depends on the auth backend; the client asks for a token per request and never caches one | API layer |
 | M-03 | NPC-compliant privacy notice text and retention policy, reviewed by counsel | Legal text under RA 10173. TAB 5 ships a plain-language disclosure and working access/correct/export/delete controls; the formal notice still needs review | TAB 5 |
 | M-16 | Publish the LGU's Data Protection Officer contact so applicants can exercise rights over what the LGU holds | LGU-specific; the Privacy & Data screen currently names the role without contact details | TAB 5 |
 | M-17 | Raise the PBKDF2 iteration count and move derivation off the main isolate | Needs device profiling on the target mid-range Android hardware | TAB 5 |
