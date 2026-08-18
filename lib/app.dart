@@ -24,6 +24,7 @@ import 'core/providers/notifications_provider.dart';
 import 'core/providers/plumbing_permit_provider.dart';
 import 'core/providers/renovation_permit_provider.dart';
 import 'core/providers/sanitary_plumbing_permit_provider.dart';
+import 'core/providers/professionals_provider.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/providers/sign_permit_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -119,6 +120,9 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
+        ),
+        ChangeNotifierProvider<ProfessionalsProvider>(
+          create: (_) => ProfessionalsProvider(),
         ),
       ],
       child: MaterialApp.router(

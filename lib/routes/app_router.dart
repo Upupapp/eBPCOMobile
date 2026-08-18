@@ -63,6 +63,7 @@ import '../features/profile/presentation/language_screen.dart';
 import '../features/profile/presentation/notification_preferences_screen.dart';
 import '../features/profile/presentation/citizens_charter_screen.dart';
 import '../features/profile/presentation/privacy_data_screen.dart';
+import '../features/profile/presentation/professionals_screen.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/terms_conditions_screen.dart';
@@ -512,6 +513,10 @@ class AppRouter {
         GoRoute(
           path: '/profile/terms',
           builder: (context, state) => const TermsConditionsScreen(),
+        ),
+        GoRoute(
+          path: '/profile/professionals',
+          builder: (context, state) => const ProfessionalsScreen(),
         ),
         GoRoute(
           path: '/profile/privacy-data',

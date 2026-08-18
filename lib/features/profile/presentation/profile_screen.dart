@@ -194,6 +194,13 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => context.push('/profile/documents'),
               ),
               _ProfileActionTile(
+                icon: Icons.badge_outlined,
+                label: 'Professionals & Representatives',
+                subtitle:
+                    'Your architect or engineer, and anyone who may act for you',
+                onTap: () => context.push('/profile/professionals'),
+              ),
+              _ProfileActionTile(
                 icon: Icons.privacy_tip_outlined,
                 label: 'Privacy & Data',
                 subtitle: 'See what is held about you, and delete it',

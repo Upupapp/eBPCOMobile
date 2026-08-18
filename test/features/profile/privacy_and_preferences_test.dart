@@ -20,6 +20,8 @@ Widget _wrap(NotificationsProvider provider) => ChangeNotifierProvider.value(
   child: const MaterialApp(home: NotificationPreferencesScreen()),
 );
 
+final _daytime = DateTime(2026, 8, 18, 10);
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
@@ -27,7 +29,13 @@ void main() {
     testWidgets('turning Payment Notifications off suppresses its push', (
       tester,
     ) async {
-      final provider = NotificationsProvider(repository: _EmptyRepository());
+      // A fixed mid-morning clock. Without it, quiet hours (21:00-07:00)
+      // suppress progress events and this test passes or fails depending on
+      // what time the suite runs.
+      final provider = NotificationsProvider(
+        repository: _EmptyRepository(),
+        clock: () => _daytime,
+      );
       await tester.pumpWidget(_wrap(provider));
       await tester.pump(const Duration(seconds: 3));
 
@@ -60,7 +68,13 @@ void main() {
     testWidgets('the screen reflects the delivering provider, not a copy', (
       tester,
     ) async {
-      final provider = NotificationsProvider(repository: _EmptyRepository());
+      // A fixed mid-morning clock. Without it, quiet hours (21:00-07:00)
+      // suppress progress events and this test passes or fails depending on
+      // what time the suite runs.
+      final provider = NotificationsProvider(
+        repository: _EmptyRepository(),
+        clock: () => _daytime,
+      );
       await tester.pumpWidget(_wrap(provider));
       await tester.pump(const Duration(seconds: 3));
 
@@ -76,7 +90,7 @@ void main() {
       expect(
         provider.shouldPush(
           NotificationType.applicationSubmitted,
-          at: DateTime(2026, 8, 18, 10),
+          at: _daytime,
         ),
         isFalse,
       );
