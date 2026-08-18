@@ -5,7 +5,7 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: TAB 5 (Profile) — all five TABs complete, 18 August 2026.
+Last updated: §11 cross-cutting commands complete, 18 August 2026.
 
 ---
 
@@ -18,6 +18,9 @@ Last updated: TAB 5 (Profile) — all five TABs complete, 18 August 2026.
 | M-03 | NPC-compliant privacy notice text and retention policy, reviewed by counsel | Legal text under RA 10173. TAB 5 ships a plain-language disclosure and working access/correct/export/delete controls; the formal notice still needs review | TAB 5 |
 | M-16 | Publish the LGU's Data Protection Officer contact so applicants can exercise rights over what the LGU holds | LGU-specific; the Privacy & Data screen currently names the role without contact details | TAB 5 |
 | M-17 | Raise the PBKDF2 iteration count and move derivation off the main isolate | Needs device profiling on the target mid-range Android hardware | TAB 5 |
+| M-18 | Run the app on a physical mid-range Android device on a throttled connection | X4 verifies text scale, touch targets, and screen-reader labels under test; real-device performance cannot be asserted in a widget test | §11 · X4 |
+| M-19 | Confirm colour contrast meets WCAG AA against the brand palette | Needs a contrast audit tool against rendered output; the palette is fixed by brand and any failure is a brand decision, not a code fix | §11 · X4 |
+| M-20 | Implement a real offline submission queue once a backend exists | X5 ships staleness stamping and non-destructive degradation; queueing a submission requires something to submit to | §11 · X5 |
 
 ## Repository and delivery
 
@@ -56,3 +59,9 @@ Last updated: TAB 5 (Profile) — all five TABs complete, 18 August 2026.
   contains the password. The remaining server-side half is M-01.
 - **Notification preferences that changed nothing.** TAB 4 and TAB 5 made the
   switches gate delivery, with a test proving a toggle changes the outcome.
+- **Eleven wizards fabricating mock documents.** X2 migrated all 134 upload
+  slots to the real attach-document sheet and added the test stub to every
+  wizard suite in the same change.
+- **No consent gate before document capture.** X3 puts an RA 10173 consent
+  dialog in front of the first attachment, records when it was given, and
+  allows withdrawal from Privacy & Data.

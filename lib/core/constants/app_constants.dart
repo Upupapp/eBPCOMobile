@@ -26,6 +26,10 @@ class AppConstants {
   static const String prefRegisteredEmail = 'registeredEmail';
   /// Password verifier and its salt. The password itself is never stored —
   /// see CredentialVerifier.
+  /// When the applicant consented to this app processing their personal
+  /// documents, ISO-8601. Absent until they do.
+  static const String prefPrivacyConsentAt = 'privacyConsentAt';
+
   static const String prefRegisteredVerifier = 'registeredPasswordVerifier';
   static const String prefRegisteredSalt = 'registeredPasswordSalt';
 

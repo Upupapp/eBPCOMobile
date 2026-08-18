@@ -37,6 +37,8 @@ import 'package:ebpco_user_app/features/applications/presentation/plumbing_permi
 import 'package:ebpco_user_app/features/applications/presentation/renovation_permit/renovation_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/sign_permit/sign_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 Widget _wrapWithRouter() {
   final router = GoRouter(
@@ -179,6 +181,17 @@ Widget _wrapWithRouter() {
 }
 
 void main() {
+  // These wizards now attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   // The Applications page's content is much taller than the default
   // 800x600 test canvas now that it lists every permit catalog entry.
   Future<void> useTallSurface(WidgetTester tester) async {

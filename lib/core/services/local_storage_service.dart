@@ -181,6 +181,30 @@ class LocalStorageService {
   /// shown once — after that, file-access requests go straight to the OS
   /// permission flow instead of re-showing eBPCO's own explanation dialog
   /// every time.
+  /// When the applicant gave consent to document processing, or null.
+  ///
+  /// RA 10173 requires consent to be given before collection and to be
+  /// specific to a declared purpose, so the timestamp is kept rather than a
+  /// bare flag — "they agreed at some point" is not a record of consent.
+  Future<DateTime?> privacyConsentAt() async {
+    final prefs = await _prefs;
+    final raw = prefs.getString(AppConstants.prefPrivacyConsentAt);
+    return raw == null ? null : DateTime.tryParse(raw);
+  }
+
+  Future<void> recordPrivacyConsent(DateTime at) async {
+    final prefs = await _prefs;
+    await prefs.setString(
+      AppConstants.prefPrivacyConsentAt,
+      at.toIso8601String(),
+    );
+  }
+
+  Future<void> withdrawPrivacyConsent() async {
+    final prefs = await _prefs;
+    await prefs.remove(AppConstants.prefPrivacyConsentAt);
+  }
+
   Future<bool> isFileAccessPrimerShown() async {
     final prefs = await _prefs;
     return prefs.getBool(AppConstants.prefFileAccessPrimerShown) ?? false;

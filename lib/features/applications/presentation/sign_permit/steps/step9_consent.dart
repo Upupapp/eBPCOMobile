@@ -10,7 +10,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 9 — Applicant & Owner Consent (Boxes 5–6). Hidden fields never
 /// block navigation, and switching an answer back and forth preserves
@@ -182,12 +182,13 @@ class _Step9ConsentState extends State<Step9Consent> {
             DocumentUploadTile(
               label: 'Applicant Signature / Signed Document',
               document: _consent.applicantSignedDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _consent.applicantSignedDocumentUpload = createMockDocument(
-                    'Applicant Signed Document',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Applicant Signed Document',
+                );
+                if (picked == null) return;
+                setState(() { _consent.applicantSignedDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -317,10 +318,15 @@ class _Step9ConsentState extends State<Step9Consent> {
               DocumentUploadTile(
                 label: 'Building Owner Signature / Signed Document',
                 document: _consent.buildingOwnerSignedDocumentUpload,
-                onUpload: () {
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Building Owner Signed Document',
+                  );
+                  if (picked == null) return;
                   setState(() {
                     _consent.buildingOwnerSignedDocumentUpload =
-                        createMockDocument('Building Owner Signed Document');
+                        picked;
                   });
                   widget.onChanged();
                 },

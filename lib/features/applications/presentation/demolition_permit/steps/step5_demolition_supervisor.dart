@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/text_fields/app_dropdown.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 5 — Demolition Supervisor: the licensed Architect or Civil Engineer
 /// supervising the demolition, their license details, and six-to-seven
@@ -74,62 +74,73 @@ class _Step5DemolitionSupervisorState
     super.dispose();
   }
 
-  void _uploadPrcId() {
-    setState(() {
-      _professional.prcIdUpload = createMockDocument('PRC ID', extension: 'jpg');
-    });
+  Future<void> _uploadPrcId() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'PRC ID',
+    );
+    if (picked == null) return;
+    setState(() { _professional.prcIdUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadPtr() {
-    setState(() {
-      _professional.ptrDocumentUpload = createMockDocument('PTR Document');
-    });
+  Future<void> _uploadPtr() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'PTR Document',
+    );
+    if (picked == null) return;
+    setState(() { _professional.ptrDocumentUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadSignedSealedForm() {
-    setState(() {
-      _professional.signedSealedFormUpload = createMockDocument(
-        'Signed and Sealed Professional Form',
-      );
-    });
+  Future<void> _uploadSignedSealedForm() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Signed and Sealed Professional Form',
+    );
+    if (picked == null) return;
+    setState(() { _professional.signedSealedFormUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadDemolitionPlan() {
-    setState(() {
-      _professional.demolitionPlanUpload = createMockDocument(
-        'Demolition Plan',
-      );
-    });
+  Future<void> _uploadDemolitionPlan() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Demolition Plan',
+    );
+    if (picked == null) return;
+    setState(() { _professional.demolitionPlanUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadDemolitionMethodology() {
-    setState(() {
-      _professional.demolitionMethodologyUpload = createMockDocument(
-        'Demolition Methodology',
-      );
-    });
+  Future<void> _uploadDemolitionMethodology() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Demolition Methodology',
+    );
+    if (picked == null) return;
+    setState(() { _professional.demolitionMethodologyUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadSafetyProgram() {
-    setState(() {
-      _professional.safetyProgramUpload = createMockDocument(
-        'Safety Program',
-      );
-    });
+  Future<void> _uploadSafetyProgram() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Safety Program',
+    );
+    if (picked == null) return;
+    setState(() { _professional.safetyProgramUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadStructuralAssessment() {
-    setState(() {
-      _professional.structuralAssessmentUpload = createMockDocument(
-        'Structural Assessment',
-      );
-    });
+  Future<void> _uploadStructuralAssessment() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Structural Assessment',
+    );
+    if (picked == null) return;
+    setState(() { _professional.structuralAssessmentUpload = picked; });
     widget.onChanged();
   }
 

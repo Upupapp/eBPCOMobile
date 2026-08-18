@@ -107,7 +107,14 @@ class ActionRequiredCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(item.actionLabel),
+                        // Flexible, because at 200% text scale a label like
+                        // "View Order of Payment" is wider than a 360dp phone.
+                        Flexible(
+                          child: Text(
+                            item.actionLabel,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                         const SizedBox(width: AppSpacing.xs),
                         const Icon(Icons.arrow_forward, size: 16),
                       ],

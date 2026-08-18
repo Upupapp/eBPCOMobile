@@ -59,11 +59,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
             onPressed: () => setState(() => _unreadOnly = !_unreadOnly),
           ),
-          TextButton(
+          // An icon rather than a text button: at 200% text scale
+          // "Mark all read" alone is wider than the title bar of a 360dp
+          // phone, and an AppBar cannot scroll to accommodate it.
+          IconButton(
+            tooltip: 'Mark all read',
+            icon: const Icon(Icons.done_all),
             onPressed: provider.unreadCount == 0
                 ? null
                 : provider.markAllAsRead,
-            child: const Text('Mark all read'),
           ),
         ],
       ),

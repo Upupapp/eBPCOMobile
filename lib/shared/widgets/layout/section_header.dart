@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_constants.dart';
+
 import '../../../core/theme/app_typography.dart';
 
 /// Consistent section title used across dashboard and list screens,
@@ -32,7 +34,10 @@ class SectionHeader extends StatelessWidget {
           TextButton(
             onPressed: onActionTap,
             style: TextButton.styleFrom(
-              minimumSize: const Size(0, 36),
+              // 48dp, not the 36 this used to force. A "See All" link is a
+              // real target on a phone, and undersizing it to tighten the
+              // header trades an accessibility floor for a few pixels.
+              minimumSize: const Size(0, AppConstants.minTouchTarget),
               padding: const EdgeInsets.symmetric(horizontal: 8),
             ),
             child: Text(actionLabel!),

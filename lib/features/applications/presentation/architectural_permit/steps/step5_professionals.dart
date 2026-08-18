@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 5 — Architectural Professionals: the Design Architect (Box 3) and
 /// the Supervisor / Architect in Charge (Box 4). When the same person
@@ -261,13 +261,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'PRC ID',
               document: _professionals.designPrcIdUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.designPrcIdUpload = createMockDocument(
-                    'Design Architect PRC ID',
-                    extension: 'jpg',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Design Architect PRC ID',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.designPrcIdUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -280,12 +280,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'PTR Document',
               document: _professionals.designPtrDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.designPtrDocumentUpload = createMockDocument(
-                    'Design Architect PTR',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Design Architect PTR',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.designPtrDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -298,12 +299,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'Signed and Sealed Architectural Plans',
               document: _professionals.signedSealedPlansUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.signedSealedPlansUpload = createMockDocument(
-                    'Signed and Sealed Architectural Plans',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Signed and Sealed Architectural Plans',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.signedSealedPlansUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -316,10 +318,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'Signed and Sealed Specifications',
               document: _professionals.signedSealedSpecificationsUpload,
-              onUpload: () {
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Signed and Sealed Specifications',
+                );
+                if (picked == null) return;
                 setState(() {
                   _professionals.signedSealedSpecificationsUpload =
-                      createMockDocument('Signed and Sealed Specifications');
+                      picked;
                 });
                 widget.onChanged();
               },
@@ -484,13 +491,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Supervisor PRC ID',
                 document: _professionals.supervisorPrcIdUpload,
-                onUpload: () {
-                  setState(() {
-                    _professionals.supervisorPrcIdUpload = createMockDocument(
-                      'Supervisor PRC ID',
-                      extension: 'jpg',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Supervisor PRC ID',
+                  );
+                  if (picked == null) return;
+                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -503,12 +510,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Supervisor PTR',
                 document: _professionals.supervisorPtrUpload,
-                onUpload: () {
-                  setState(() {
-                    _professionals.supervisorPtrUpload = createMockDocument(
-                      'Supervisor PTR',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Supervisor PTR',
+                  );
+                  if (picked == null) return;
+                  setState(() { _professionals.supervisorPtrUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -521,10 +529,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Signed Supervisor Confirmation',
                 document: _professionals.signedSupervisorConfirmationUpload,
-                onUpload: () {
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Signed Supervisor Confirmation',
+                  );
+                  if (picked == null) return;
                   setState(() {
                     _professionals.signedSupervisorConfirmationUpload =
-                        createMockDocument('Signed Supervisor Confirmation');
+                        picked;
                   });
                   widget.onChanged();
                 },

@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 final DateFormat _dateFormat = DateFormat('MMM d, yyyy');
 String _formatDate(DateTime? date) => date != null ? _dateFormat.format(date) : 'Not set';
@@ -173,12 +173,13 @@ class _Step5CertificationReviewSubmissionState
             DocumentUploadTile(
               label: 'Signature / Signed Document',
               document: _certification.signedDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _certification.signedDocumentUpload = createMockDocument(
-                    'Applicant Signed Document',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Applicant Signed Document',
+                );
+                if (picked == null) return;
+                setState(() { _certification.signedDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,

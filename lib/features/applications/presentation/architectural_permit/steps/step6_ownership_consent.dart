@@ -10,7 +10,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 6 — Ownership & Consent (Box 5 + Box 6): confirms whether the
 /// applicant is the Building Owner, and separately whether the Building
@@ -196,13 +196,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
               DocumentUploadTile(
                 label: 'Building Owner Valid ID',
                 document: _consent.buildingOwnerValidIdUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.buildingOwnerValidIdUpload = createMockDocument(
-                      'Building Owner Valid ID',
-                      extension: 'jpg',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Building Owner Valid ID',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.buildingOwnerValidIdUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -215,12 +215,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
               DocumentUploadTile(
                 label: 'Authorization Letter or SPA',
                 document: _consent.authorizationLetterUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.authorizationLetterUpload = createMockDocument(
-                      'Authorization Letter or SPA',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Authorization Letter or SPA',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.authorizationLetterUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -343,13 +344,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
               DocumentUploadTile(
                 label: 'Lot Owner Valid ID',
                 document: _consent.lotOwnerValidIdUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.lotOwnerValidIdUpload = createMockDocument(
-                      'Lot Owner Valid ID',
-                      extension: 'jpg',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Lot Owner Valid ID',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.lotOwnerValidIdUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -362,12 +363,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
               DocumentUploadTile(
                 label: 'Lot Owner Consent',
                 document: _consent.lotOwnerConsentUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.lotOwnerConsentUpload = createMockDocument(
-                      'Lot Owner Consent',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Lot Owner Consent',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.lotOwnerConsentUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -384,12 +386,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
             DocumentUploadTile(
               label: 'Proof of Ownership',
               document: _consent.proofOfOwnershipUpload,
-              onUpload: () {
-                setState(() {
-                  _consent.proofOfOwnershipUpload = createMockDocument(
-                    'Proof of Ownership',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Proof of Ownership',
+                );
+                if (picked == null) return;
+                setState(() { _consent.proofOfOwnershipUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,

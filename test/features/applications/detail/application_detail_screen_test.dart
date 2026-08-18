@@ -17,6 +17,8 @@ import 'package:ebpco_user_app/features/applications/presentation/detail/applica
 import 'package:ebpco_user_app/features/applications/presentation/detail/application_outcome_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/detail/digital_permit_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/detail/letter_of_instruction_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 class _FakeRepository implements ApplicationsRepository {
   _FakeRepository(this.applications);
@@ -140,6 +142,17 @@ Future<void> _useTallSurface(WidgetTester tester) async {
 }
 
 void main() {
+  // These wizards now attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   group('header and sections', () {

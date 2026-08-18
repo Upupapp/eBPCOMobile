@@ -11,6 +11,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/dialogs/permission_dialogs.dart';
 import '../my_documents_screen.dart';
+import 'privacy_consent_gate.dart';
 
 /// Signature of [showAttachDocumentOptions], so widget tests can swap the
 /// whole chooser out via [debugAttachDocumentOverride].
@@ -40,6 +41,11 @@ Future<DocumentModel?> showAttachDocumentOptions(
 }) async {
   final override = debugAttachDocumentOverride;
   if (override != null) return override(context, label: label);
+
+  // Consent before collection, not after. Declining simply cancels the
+  // attachment — it is not a dead end, and the applicant can agree next time.
+  if (!await ensurePrivacyConsent(context)) return null;
+  if (!context.mounted) return null;
 
   final choice = await showModalBottomSheet<_AttachSource>(
     context: context,

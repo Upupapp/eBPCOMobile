@@ -10,7 +10,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Applicant & Lot Owner Consent (Boxes 4–5). The paper form's
 /// Notarial Acknowledgment section is intentionally never exposed here —
@@ -172,12 +172,13 @@ class _Step7ConsentState extends State<Step7Consent> {
             DocumentUploadTile(
               label: 'Applicant Signature / Signed Document',
               document: _consent.applicantSignedDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _consent.applicantSignedDocumentUpload = createMockDocument(
-                    'Applicant Signed Document',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Applicant Signed Document',
+                );
+                if (picked == null) return;
+                setState(() { _consent.applicantSignedDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -307,12 +308,13 @@ class _Step7ConsentState extends State<Step7Consent> {
               DocumentUploadTile(
                 label: 'Lot Owner Signature / Signed Document',
                 document: _consent.lotOwnerSignedDocumentUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.lotOwnerSignedDocumentUpload = createMockDocument(
-                      'Lot Owner Signed Document',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Lot Owner Signed Document',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.lotOwnerSignedDocumentUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,

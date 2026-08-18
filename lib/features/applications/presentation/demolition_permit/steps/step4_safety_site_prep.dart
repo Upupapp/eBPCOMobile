@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/text_fields/app_dropdown.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 4 — Demolition Safety & Site Preparation: building-occupancy
 /// clearance, per-utility disconnection tracking, ten required safety
@@ -122,12 +122,13 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
     widget.onChanged();
   }
 
-  void _uploadUtilityDocument(UtilityType type) {
-    setState(() {
-      _safety.utilities[type]!.supportingDocument = createMockDocument(
-        '${type.label} Disconnection Document',
-      );
-    });
+  Future<void> _uploadUtilityDocument(UtilityType type) async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: '${type.label} Disconnection Document',
+    );
+    if (picked == null) return;
+    setState(() { _safety.utilities[type]!.supportingDocument = picked; });
     widget.onChanged();
   }
 
@@ -261,7 +262,7 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
                   _safety.utilities[type]!.referenceNumber = v;
                   widget.onChanged();
                 },
-                onUpload: () => _uploadUtilityDocument(type),
+                onUpload: () async => _uploadUtilityDocument(type),
                 onRemoveUpload: () {
                   setState(
                     () => _safety.utilities[type]!.supportingDocument = null,

@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Required Demolition Documents: the full document-checklist
 /// annex. Professional and demolition technical documents already
@@ -64,7 +64,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
     required void Function(DocumentModel?) setDocument,
     String? statusLabel,
     bool isRequired = true,
-    String extension = 'pdf',
   }) {
     return DocumentUploadTile(
       label: label,
@@ -72,9 +71,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       statusLabel: statusLabel,
       document: getDocument(),
       allowReplace: true,
-      onUpload: () {
+      onUpload: () async {
+        final picked = await showAttachDocumentOptions(
+          context,
+          label: label,
+        );
+        if (picked == null) return;
         setState(
-          () => setDocument(createMockDocument(label, extension: extension)),
+          () => setDocument(picked),
         );
         widget.onChanged();
       },
@@ -88,7 +92,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
   Widget _existingDocumentTile({
     required String label,
     required DemolitionDocumentSlot slot,
-    String extension = 'pdf',
   }) {
     if (slot.markedNotAvailable) {
       final controller = _explanationController(slot);
@@ -139,9 +142,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
           statusLabel: 'Not yet uploaded',
           document: slot.upload,
           allowReplace: true,
-          onUpload: () {
+          onUpload: () async {
+            final picked = await showAttachDocumentOptions(
+              context,
+              label: label,
+            );
+            if (picked == null) return;
             setState(
-              () => slot.upload = createMockDocument(label, extension: extension),
+              () => slot.upload = picked,
             );
             widget.onChanged();
           },
@@ -243,7 +251,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _existingDocumentTile(
                   label: 'Recent Photographs of the Structure',
                   slot: _documents.recentPhotographs,
-                  extension: 'jpg',
                 ),
                 _uploadTile(
                   label: 'Proof of Ownership or Authority to Demolish',
@@ -348,7 +355,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'PRC ID',
-                  extension: 'jpg',
                   getDocument: () => _professional.prcIdUpload,
                   setDocument: (d) => _professional.prcIdUpload = d,
                 ),

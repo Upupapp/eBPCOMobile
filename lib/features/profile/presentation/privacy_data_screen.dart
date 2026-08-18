@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/documents_provider.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
@@ -101,6 +103,8 @@ class PrivacyDataScreen extends StatelessWidget {
                   : () => _confirmDeleteAll(context, storedCount),
             ),
 
+            const _ConsentTile(),
+
             const SizedBox(height: AppSpacing.xl),
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -153,6 +157,74 @@ class PrivacyDataScreen extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Documents deleted from this device.')),
+    );
+  }
+}
+
+/// The consent record itself — when it was given, and a way to withdraw it.
+///
+/// Consent that cannot be withdrawn is not consent, so this shows the date and
+/// offers to revoke. Revoking makes the gate reappear before the next capture;
+/// it does not retroactively unsend anything already filed.
+class _ConsentTile extends StatefulWidget {
+  const _ConsentTile();
+
+  @override
+  State<_ConsentTile> createState() => _ConsentTileState();
+}
+
+class _ConsentTileState extends State<_ConsentTile> {
+  final _storage = LocalStorageService();
+  DateTime? _consentAt;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final at = await _storage.privacyConsentAt();
+    if (!mounted) return;
+    setState(() {
+      _consentAt = at;
+      _loaded = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_loaded) return const SizedBox.shrink();
+    final at = _consentAt;
+
+    return _RightTile(
+      icon: Icons.fact_check_outlined,
+      title: 'Your consent',
+      body: at == null
+          ? 'You have not yet agreed to document processing. You will be asked '
+                'before the first document you attach.'
+          : 'Given on ${DateFormat('MMM d, yyyy').format(at)} for completing '
+                'your permit applications.',
+      actionLabel: at == null ? null : 'Withdraw consent',
+      onTap: at == null
+          ? null
+          : () async {
+              // Capture the messenger before the await so the analyzer can see
+              // the BuildContext is not used across the async gap.
+              final messenger = ScaffoldMessenger.of(context);
+              await _storage.withdrawPrivacyConsent();
+              if (!mounted) return;
+              await _load();
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Consent withdrawn. You will be asked again before your '
+                    'next attachment.',
+                  ),
+                ),
+              );
+            },
     );
   }
 }

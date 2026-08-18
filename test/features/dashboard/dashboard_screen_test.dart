@@ -68,6 +68,20 @@ class _EmptyNotificationsRepository implements NotificationsRepository {
   Future<List<NotificationEvent>> fetchAll() async => const [];
 }
 
+/// Succeeds once, then fails on demand — so a *refresh* failure can be told
+/// apart from a cold-start failure.
+class _FlakyApplicationsRepository extends _FakeApplicationsRepository {
+  _FlakyApplicationsRepository(super.applications);
+
+  bool failNext = false;
+
+  @override
+  Future<List<ApplicationModel>> fetchAll() async {
+    if (failNext) throw StateError('network unreachable');
+    return applications;
+  }
+}
+
 class _FakeBusinessRepository implements BusinessRepository {
   _FakeBusinessRepository(this.businesses);
 
@@ -358,6 +372,30 @@ void main() {
       expect(find.text('Apply for Permit'), findsWidgets);
       expect(find.text('Application Summary'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a failed refresh keeps the data and labels it as stale', (
+      tester,
+    ) async {
+      final repository = _FlakyApplicationsRepository([_application()]);
+      await tester.pumpWidget(_wrap(applicationsRepository: repository));
+      await _settle(tester);
+
+      // First load succeeded, so there is no stamp yet.
+      expect(find.textContaining('showing saved data'), findsNothing);
+      expect(find.text('Under Review'), findsOneWidget);
+
+      repository.failNext = true;
+      await tester
+          .element(find.byType(DashboardScreen))
+          .read<ApplicationsProvider>()
+          .refresh();
+      await _settle(tester);
+
+      // The application is still on screen, now stamped rather than withheld.
+      expect(find.text('Under Review'), findsOneWidget);
+      expect(find.textContaining('showing saved data'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
     });
   });
 

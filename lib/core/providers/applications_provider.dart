@@ -52,6 +52,19 @@ class ApplicationsProvider extends ChangeNotifier {
   Object? get loadError => _loadError;
   bool get hasLoadError => _loadError != null;
 
+  DateTime? _lastLoadedAt;
+
+  /// When this data was last successfully fetched.
+  ///
+  /// Every remote-backed surface stamps it when serving cached data, because
+  /// an applicant deciding whether to act on a status needs to know whether
+  /// they are looking at now or at last Tuesday.
+  DateTime? get lastLoadedAt => _lastLoadedAt;
+
+  /// True when what is on screen is known to be stale — the last refresh
+  /// failed, so this is the previous load.
+  bool get isServingStaleData => _loadError != null && _lastLoadedAt != null;
+
   /// Most relevant application for the dashboard's summary card: the most
   /// recently submitted one that hasn't reached the end of the happy path.
   ApplicationModel? get activeApplication {
@@ -160,6 +173,7 @@ class ApplicationsProvider extends ChangeNotifier {
     try {
       _applications = await _repository.fetchAll();
       _loadError = null;
+      _lastLoadedAt = _clock();
     } catch (error) {
       // Keep whatever was already loaded. Losing the action stack because a
       // refresh timed out would hide exactly the information the applicant

@@ -10,7 +10,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 6 — Ownership, Consent & Authorization: confirms whether the
 /// applicant is the registered lot owner, and if not, collects the
@@ -73,50 +73,53 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     widget.onChanged();
   }
 
-  void _uploadLotOwnerConsent() {
-    setState(() {
-      _consent.lotOwnerConsentUpload = createMockDocument(
-        'Lot Owner Consent',
-      );
-    });
+  Future<void> _uploadLotOwnerConsent() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Lot Owner Consent',
+    );
+    if (picked == null) return;
+    setState(() { _consent.lotOwnerConsentUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadAuthorizationLetter() {
-    setState(() {
-      _consent.authorizationLetterUpload = createMockDocument(
-        'Authorization Letter / SPA',
-      );
-    });
+  Future<void> _uploadAuthorizationLetter() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Authorization Letter / SPA',
+    );
+    if (picked == null) return;
+    setState(() { _consent.authorizationLetterUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadOwnerValidId() {
-    setState(() {
-      _consent.ownerValidIdUpload = createMockDocument(
-        'Registered Owner Valid ID',
-        extension: 'jpg',
-      );
-    });
+  Future<void> _uploadOwnerValidId() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Registered Owner Valid ID',
+    );
+    if (picked == null) return;
+    setState(() { _consent.ownerValidIdUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadRepresentativeValidId() {
-    setState(() {
-      _consent.representativeValidIdUpload = createMockDocument(
-        'Authorized Representative Valid ID',
-        extension: 'jpg',
-      );
-    });
+  Future<void> _uploadRepresentativeValidId() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Authorized Representative Valid ID',
+    );
+    if (picked == null) return;
+    setState(() { _consent.representativeValidIdUpload = picked; });
     widget.onChanged();
   }
 
-  void _uploadProofOfOwnership() {
-    setState(() {
-      _consent.proofOfOwnershipUpload = createMockDocument(
-        'Proof of Ownership',
-      );
-    });
+  Future<void> _uploadProofOfOwnership() async {
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: 'Proof of Ownership',
+    );
+    if (picked == null) return;
+    setState(() { _consent.proofOfOwnershipUpload = picked; });
     widget.onChanged();
   }
 

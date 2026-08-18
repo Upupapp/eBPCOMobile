@@ -9,7 +9,7 @@ import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 6 — Required Supporting Documents (Box 2). Whether the applicant
 /// owns the property is asked directly here, since it determines whether
@@ -48,8 +48,13 @@ class _Step6RequiredDocumentsState extends State<Step6RequiredDocuments> {
       statusLabel: statusLabel,
       document: getDocument(),
       allowReplace: true,
-      onUpload: () {
-        setState(() => setDocument(createMockDocument(label)));
+      onUpload: () async {
+        final picked = await showAttachDocumentOptions(
+          context,
+          label: label,
+        );
+        if (picked == null) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {

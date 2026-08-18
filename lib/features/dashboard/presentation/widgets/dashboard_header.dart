@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/avatars/app_avatar.dart';
 import '../../../../shared/widgets/layout/hero_header.dart';
 
@@ -62,11 +63,19 @@ class DashboardHeader extends StatelessWidget {
           child: InkWell(
             onTap: onProfileTap,
             customBorder: const CircleBorder(),
-            child: AppAvatar(
-              size: 40,
-              initials: initials,
-              backgroundColor: AppColors.surface,
-              foregroundColor: AppColors.primary,
+            // The avatar reads better at 40dp, but the tap target must still
+            // meet the 48dp minimum — so the target is padded out rather than
+            // the avatar enlarged.
+            child: Container(
+              width: AppConstants.minTouchTarget,
+              height: AppConstants.minTouchTarget,
+              alignment: Alignment.center,
+              child: AppAvatar(
+                size: 40,
+                initials: initials,
+                backgroundColor: AppColors.surface,
+                foregroundColor: AppColors.primary,
+              ),
             ),
           ),
         ),

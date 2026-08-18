@@ -11,7 +11,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 5 — Plumbing Professionals: the Design Master Plumber (always a
 /// Master Plumber) and the Supervisor / Master Plumber in Charge. Unlike
@@ -267,13 +267,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'PRC ID',
               document: _professionals.designPrcIdUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.designPrcIdUpload = createMockDocument(
-                    'Design Master Plumber PRC ID',
-                    extension: 'jpg',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Design Master Plumber PRC ID',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.designPrcIdUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -286,12 +286,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'PTR Document',
               document: _professionals.designPtrDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.designPtrDocumentUpload = createMockDocument(
-                    'Design Master Plumber PTR',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Design Master Plumber PTR',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.designPtrDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -304,12 +305,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'Signed and Sealed Plumbing Plans',
               document: _professionals.signedSealedPlansUpload,
-              onUpload: () {
-                setState(() {
-                  _professionals.signedSealedPlansUpload = createMockDocument(
-                    'Signed and Sealed Plumbing Plans',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Signed and Sealed Plumbing Plans',
+                );
+                if (picked == null) return;
+                setState(() { _professionals.signedSealedPlansUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -322,12 +324,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             DocumentUploadTile(
               label: 'Signed and Sealed Plumbing Specifications',
               document: _professionals.signedSealedSpecificationsUpload,
-              onUpload: () {
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Signed and Sealed Plumbing Specifications',
+                );
+                if (picked == null) return;
                 setState(() {
                   _professionals.signedSealedSpecificationsUpload =
-                      createMockDocument(
-                        'Signed and Sealed Plumbing Specifications',
-                      );
+                      picked;
                 });
                 widget.onChanged();
               },
@@ -345,10 +350,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               isRequired: false,
               statusLabel: 'Optional — when applicable',
               document: _professionals.signedPlumbingCalculationsUpload,
-              onUpload: () {
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Signed Plumbing Calculations',
+                );
+                if (picked == null) return;
                 setState(() {
                   _professionals.signedPlumbingCalculationsUpload =
-                      createMockDocument('Signed Plumbing Calculations');
+                      picked;
                 });
                 widget.onChanged();
               },
@@ -539,13 +549,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Supervisor PRC ID',
                 document: _professionals.supervisorPrcIdUpload,
-                onUpload: () {
-                  setState(() {
-                    _professionals.supervisorPrcIdUpload = createMockDocument(
-                      'Supervisor PRC ID',
-                      extension: 'jpg',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Supervisor PRC ID',
+                  );
+                  if (picked == null) return;
+                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -558,12 +568,13 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Supervisor PTR',
                 document: _professionals.supervisorPtrUpload,
-                onUpload: () {
-                  setState(() {
-                    _professionals.supervisorPtrUpload = createMockDocument(
-                      'Supervisor PTR',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Supervisor PTR',
+                  );
+                  if (picked == null) return;
+                  setState(() { _professionals.supervisorPtrUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -576,10 +587,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
               DocumentUploadTile(
                 label: 'Signed Supervisor Confirmation',
                 document: _professionals.signedSupervisorConfirmationUpload,
-                onUpload: () {
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Signed Supervisor Confirmation',
+                  );
+                  if (picked == null) return;
                   setState(() {
                     _professionals.signedSupervisorConfirmationUpload =
-                        createMockDocument('Signed Supervisor Confirmation');
+                        picked;
                   });
                   widget.onChanged();
                 },

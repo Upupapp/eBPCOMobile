@@ -7,7 +7,7 @@ import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Required Documents (Box 7): the official form's ~20
 /// individual line items, grouped into clear upload categories rather
@@ -42,7 +42,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
     required void Function(DocumentModel?) setDocument,
     String? statusLabel,
     bool isRequired = true,
-    String extension = 'pdf',
   }) {
     return DocumentUploadTile(
       label: label,
@@ -50,9 +49,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       statusLabel: statusLabel,
       document: getDocument(),
       allowReplace: true,
-      onUpload: () {
+      onUpload: () async {
+        final picked = await showAttachDocumentOptions(
+          context,
+          label: label,
+        );
+        if (picked == null) return;
         setState(
-          () => setDocument(createMockDocument(label, extension: extension)),
+          () => setDocument(picked),
         );
         widget.onChanged();
       },

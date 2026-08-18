@@ -10,7 +10,7 @@ import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 9 — Owner Consent, Review & Submission (Boxes 4–5, plus the
 /// application review). Unlike every other permit in this app, consent
@@ -201,12 +201,13 @@ class _Step9ConsentReviewSubmissionState
             DocumentUploadTile(
               label: 'Owner Signature / Signed Document',
               document: _consent.ownerSignedDocumentUpload,
-              onUpload: () {
-                setState(() {
-                  _consent.ownerSignedDocumentUpload = createMockDocument(
-                    'Owner Signed Document',
-                  );
-                });
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'Owner Signed Document',
+                );
+                if (picked == null) return;
+                setState(() { _consent.ownerSignedDocumentUpload = picked; });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -332,12 +333,13 @@ class _Step9ConsentReviewSubmissionState
               DocumentUploadTile(
                 label: 'Lot Owner Signature / Signed Document',
                 document: _consent.lotOwnerSignedDocumentUpload,
-                onUpload: () {
-                  setState(() {
-                    _consent.lotOwnerSignedDocumentUpload = createMockDocument(
-                      'Lot Owner Signed Document',
-                    );
-                  });
+                onUpload: () async {
+                  final picked = await showAttachDocumentOptions(
+                    context,
+                    label: 'Lot Owner Signed Document',
+                  );
+                  if (picked == null) return;
+                  setState(() { _consent.lotOwnerSignedDocumentUpload = picked; });
                   widget.onChanged();
                 },
                 allowReplace: true,

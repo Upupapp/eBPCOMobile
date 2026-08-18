@@ -7,7 +7,7 @@ import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/layout/expandable_section.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
-import '../../building_permit/widgets/mock_upload.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 7 — Required Plumbing Documents. Professional documents already
 /// collected in Step 5 are read/written directly against
@@ -41,7 +41,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
     required void Function(DocumentModel?) setDocument,
     String? statusLabel,
     bool isRequired = true,
-    String extension = 'pdf',
   }) {
     return DocumentUploadTile(
       label: label,
@@ -49,9 +48,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       statusLabel: statusLabel,
       document: getDocument(),
       allowReplace: true,
-      onUpload: () {
+      onUpload: () async {
+        final picked = await showAttachDocumentOptions(
+          context,
+          label: label,
+        );
+        if (picked == null) return;
         setState(
-          () => setDocument(createMockDocument(label, extension: extension)),
+          () => setDocument(picked),
         );
         widget.onChanged();
       },
@@ -541,7 +545,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'Design Master Plumber PRC ID',
-                  extension: 'jpg',
                   getDocument: () => _professionals.designPrcIdUpload,
                   setDocument: (d) => _professionals.designPrcIdUpload = d,
                 ),
@@ -554,7 +557,6 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 if (supervisorHasOwnDocuments) ...[
                   _uploadTile(
                     label: 'Supervisor PRC ID',
-                    extension: 'jpg',
                     getDocument: () => _professionals.supervisorPrcIdUpload,
                     setDocument: (d) =>
                         _professionals.supervisorPrcIdUpload = d,

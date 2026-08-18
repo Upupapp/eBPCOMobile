@@ -14,6 +14,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/layout/responsive_card_grid.dart';
 import '../../../shared/widgets/layout/section_header.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
+import '../../../shared/widgets/states/stale_data_banner.dart';
 import 'widgets/action_required_card.dart';
 import 'widgets/active_application_card.dart';
 import 'widgets/dashboard_header.dart';
@@ -77,6 +78,13 @@ class DashboardScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // ---- 0. Staleness stamp ------------------------------
+                    if (applicationsProvider.isServingStaleData)
+                      StaleDataBanner(
+                        lastLoadedAt: applicationsProvider.lastLoadedAt,
+                        onRetry: applicationsProvider.refresh,
+                      ),
+
                     // ---- 1. Action Required ------------------------------
                     // Absent entirely when there is nothing outstanding. An
                     // empty "nothing to do" placeholder would train the user

@@ -7,6 +7,8 @@ import 'package:ebpco_user_app/core/providers/auth_provider.dart';
 import 'package:ebpco_user_app/core/providers/plumbing_permit_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/plumbing_permit/plumbing_application_submitted_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/plumbing_permit/plumbing_permit_wizard_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
 /// End-to-end coverage of the Plumbing Permit wizard — fully separate
 /// from the New Construction, Renovation, Addition/Extension, Demolition,
@@ -341,6 +343,17 @@ Future<void> _checkAllDeclarations(WidgetTester tester) async {
 }
 
 void main() {
+  // These wizards now attach documents through the real chooser sheet, which
+  // reaches for the camera, gallery, and system file picker — none of them
+  // available under `flutter test`. Swap it for a stub that returns a
+  // fabricated document so the upload slots behave the way the steps'
+  // validation expects.
+  setUp(() {
+    debugAttachDocumentOverride = (context, {required label}) async =>
+        createMockDocument(label);
+  });
+
+  tearDown(() => debugAttachDocumentOverride = null);
   testWidgets(
     'Step 1 renders with Permit Type fixed to Plumbing Permit',
     (tester) async {

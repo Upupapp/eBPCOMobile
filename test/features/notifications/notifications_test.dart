@@ -143,7 +143,7 @@ void main() {
       );
       expect(provider.actionBadgeCount, 2);
 
-      await tester.tap(find.text('Mark all read'));
+      await tester.tap(find.byTooltip('Mark all read'));
       await tester.pumpAndSettle();
 
       expect(provider.unreadCount, 0);
