@@ -16,7 +16,7 @@ void main() {
         // taking a baseline, so seeded notifications aren't mistaken for
         // ones posted by the actions below.
         await Future.delayed(const Duration(milliseconds: 1200));
-        final baselineNotificationCount = notifications.notifications.length;
+        final baselineNotificationCount = notifications.events.length;
 
         final submitted = await applications.submitApplication(
           businessId: 'biz-seed-1',
@@ -26,12 +26,12 @@ void main() {
         );
         expect(submitted.status, ApplicationStatus.submitted);
         expect(
-          notifications.notifications.length,
+          notifications.events.length,
           baselineNotificationCount + 1,
         );
         expect(
-          notifications.notifications.first.title,
-          contains('submitted'),
+          notifications.events.first.title,
+          contains('filed'),
         );
 
         final underReview = await applications.advanceStatus(submitted.id);

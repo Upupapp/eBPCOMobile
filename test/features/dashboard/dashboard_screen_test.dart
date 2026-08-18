@@ -13,7 +13,9 @@ import 'package:ebpco_user_app/core/models/permit_classification.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
 import 'package:ebpco_user_app/core/providers/business_provider.dart';
+import 'package:ebpco_user_app/core/models/notification_event.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/business_repository.dart';
 import 'package:ebpco_user_app/features/dashboard/presentation/dashboard_screen.dart';
@@ -56,6 +58,14 @@ class _FailingApplicationsRepository extends _FakeApplicationsRepository {
   @override
   Future<List<ApplicationModel>> fetchAll() async =>
       throw StateError('backend unavailable');
+}
+
+/// Empty notification feed, so these tests isolate the applications-derived
+/// action stack from whatever the seeded feed happens to contain. Both
+/// surfaces legitimately mention the same obligation on the real screen.
+class _EmptyNotificationsRepository implements NotificationsRepository {
+  @override
+  Future<List<NotificationEvent>> fetchAll() async => const [];
 }
 
 class _FakeBusinessRepository implements BusinessRepository {
@@ -125,7 +135,9 @@ Widget _wrap({
     providers: [
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(),
+        create: (_) => NotificationsProvider(
+          repository: _EmptyNotificationsRepository(),
+        ),
       ),
       ChangeNotifierProvider<BusinessProvider>(
         create: (context) => BusinessProvider(

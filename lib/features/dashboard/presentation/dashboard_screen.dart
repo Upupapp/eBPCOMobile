@@ -58,7 +58,8 @@ class DashboardScreen extends StatelessWidget {
               DashboardHeader(
                 firstName: user?.firstName ?? 'there',
                 initials: user?.initials ?? 'U',
-                unreadCount: actionItems.length,
+                // The bell badge counts things you must do, not things unread.
+                unreadCount: notificationsProvider.actionBadgeCount,
                 onNotificationsTap: () => context.push('/app/notifications'),
                 onProfileTap: () => context.go('/app/profile'),
                 searchBar: AppSearchField(

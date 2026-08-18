@@ -1,56 +1,57 @@
-import 'package:flutter/material.dart';
+import '../core/models/notification_event.dart';
 
-import '../core/models/notification_model.dart';
-
-/// Seed data for [MockNotificationsRepository]. Builds a fresh list of
-/// model instances on every call so separate repository/provider
-/// instances never share mutable [NotificationModel.isRead] state.
-List<NotificationModel> buildMockNotifications() {
+/// Seed notifications, built fresh on every call so separate provider
+/// instances never share state.
+///
+/// Deliberately includes one outstanding P1 (a Letter of Instruction) so the
+/// resolve-versus-read behaviour is exercised the moment the app is opened
+/// rather than only under test.
+List<NotificationEvent> buildMockNotifications() {
   final now = DateTime.now();
+  const ref = 'E-BPCO-2026-000145';
+  const applicationId = 'app-seed-1';
+
   return [
-    NotificationModel(
+    NotificationEvent(
       id: 'n1',
-      title: 'Application submitted successfully',
-      message:
-          'Your New Business Permit application E-BPCO-2026-000145 has been received.',
+      type: NotificationType.letterOfInstructionIssued,
+      applicationId: applicationId,
+      applicationNumber: ref,
+      payload: const {'count': '2'},
       createdAt: now.subtract(const Duration(hours: 2)),
-      icon: Icons.check_circle_outline,
-      isRead: false,
     ),
-    NotificationModel(
+    NotificationEvent(
       id: 'n2',
-      title: 'Your documents are under initial review',
-      message: 'An evaluator is checking your submitted requirements.',
+      type: NotificationType.evaluationStagePassed,
+      applicationId: applicationId,
+      applicationNumber: ref,
+      payload: const {'stage': 'Zoning'},
       createdAt: now.subtract(const Duration(hours: 5)),
-      icon: Icons.fact_check_outlined,
-      isRead: false,
     ),
-    NotificationModel(
+    NotificationEvent(
       id: 'n3',
-      title: 'Payment assessment will appear after evaluation',
-      message:
-          'Once your documents pass evaluation, your assessment fee will be shown here.',
+      type: NotificationType.receivedByObo,
+      applicationId: applicationId,
+      applicationNumber: ref,
       createdAt: now.subtract(const Duration(days: 1)),
-      icon: Icons.payments_outlined,
-      isRead: true,
+      readAt: now.subtract(const Duration(hours: 20)),
     ),
-    NotificationModel(
+    NotificationEvent(
       id: 'n4',
-      title: 'Welcome to E-BPCO',
-      message:
-          'Thanks for creating an account. You can now apply for permits from your phone.',
-      createdAt: now.subtract(const Duration(days: 2)),
-      icon: Icons.celebration_outlined,
-      isRead: true,
+      type: NotificationType.documentVerificationStarted,
+      applicationId: applicationId,
+      applicationNumber: ref,
+      createdAt: now.subtract(const Duration(days: 1, hours: 2)),
+      readAt: now.subtract(const Duration(days: 1)),
     ),
-    NotificationModel(
+    NotificationEvent(
       id: 'n5',
-      title: 'Reminder: Keep your documents ready',
-      message:
-          'Prepare valid IDs and proof of business address for a faster evaluation.',
+      type: NotificationType.applicationSubmitted,
+      applicationId: applicationId,
+      applicationNumber: ref,
+      payload: const {'permitType': 'New Construction'},
       createdAt: now.subtract(const Duration(days: 3)),
-      icon: Icons.notifications_active_outlined,
-      isRead: true,
+      readAt: now.subtract(const Duration(days: 3)),
     ),
   ];
 }

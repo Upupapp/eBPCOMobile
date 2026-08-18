@@ -4,6 +4,7 @@ import '../models/action_item.dart';
 import '../models/application_detail.dart';
 import '../models/application_model.dart';
 import '../models/lifecycle_status.dart';
+import '../models/notification_event.dart';
 import '../models/document_model.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
@@ -186,11 +187,11 @@ class ApplicationsProvider extends ChangeNotifier {
     );
     _applications = [..._applications, application];
     notifyListeners();
-    _notifications.addNotification(
-      title: 'Application submitted successfully',
-      message:
-          'Your ${type.label} application ${application.applicationNumber} has been received.',
-      icon: Icons.check_circle_outline,
+    _notifications.record(
+      NotificationType.applicationSubmitted,
+      applicationId: application.id,
+      applicationNumber: application.applicationNumber,
+      payload: {'permitType': application.permitTypeLabel ?? type.label},
     );
     return application;
   }
@@ -206,11 +207,17 @@ class ApplicationsProvider extends ChangeNotifier {
       proof: proof,
     );
     _replace(updated);
-    _notifications.addNotification(
-      title: 'Payment submitted for verification',
-      message:
-          'Your ${method.label} payment for ${updated.applicationNumber} is now being verified.',
-      icon: Icons.payments_outlined,
+    _notifications.record(
+      NotificationType.paymentReceived,
+      applicationId: updated.id,
+      applicationNumber: updated.applicationNumber,
+    );
+    // The Order of Payment obligation is discharged by submitting, so its
+    // outstanding action clears. The payment is not verified — that is a
+    // separate, later event from the Treasurer's Office.
+    _notifications.resolveFor(
+      updated.id,
+      NotificationType.orderOfPaymentIssued,
     );
     return updated;
   }
@@ -218,11 +225,18 @@ class ApplicationsProvider extends ChangeNotifier {
   Future<ApplicationModel> advanceStatus(String applicationId) async {
     final updated = await _repository.advanceStatus(applicationId);
     _replace(updated);
-    _notifications.addNotification(
-      title: _statusNotificationTitle(updated.status),
-      message: _statusNotificationMessage(updated),
-      icon: _statusNotificationIcon(updated.status),
-    );
+    final type = _catalogTypeFor(updated.status);
+    if (type != null) {
+      _notifications.record(
+        type,
+        applicationId: updated.id,
+        applicationNumber: updated.applicationNumber,
+        payload: {
+          if (updated.permitNumber != null)
+            'permitNumber': updated.permitNumber!,
+        },
+      );
+    }
     return updated;
   }
 
@@ -301,12 +315,16 @@ class ApplicationsProvider extends ChangeNotifier {
       ),
     );
 
-    _notifications.addNotification(
-      title: 'Corrections resubmitted',
-      message:
-          'Your corrections for ${application.applicationNumber} are back with '
-          'the Office of the Building Official for re-evaluation.',
-      icon: Icons.send_outlined,
+    // The deficiency is discharged, so the Letter of Instruction stops being
+    // an outstanding action. Resolution is driven by the applicant actually
+    // dealing with it, never by their having read the notification.
+    _notifications.resolveFor(
+      application.id,
+      NotificationType.letterOfInstructionIssued,
+    );
+    _notifications.resolveFor(
+      application.id,
+      NotificationType.revisionRequired,
     );
   }
 
@@ -360,12 +378,18 @@ class ApplicationsProvider extends ChangeNotifier {
       ),
     );
 
-    _notifications.addNotification(
-      title: 'Proof of payment submitted',
-      message:
-          'Your ${method.label} payment for ${application.applicationNumber} '
-          'is now with the Treasurer’s Office for verification.',
-      icon: Icons.payments_outlined,
+    _notifications.record(
+      NotificationType.paymentReceived,
+      applicationId: application.id,
+      applicationNumber: application.applicationNumber,
+    );
+    _notifications.resolveFor(
+      application.id,
+      NotificationType.orderOfPaymentIssued,
+    );
+    _notifications.resolveFor(
+      application.id,
+      NotificationType.paymentOverdue,
     );
   }
 
@@ -377,48 +401,25 @@ class ApplicationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _statusNotificationTitle(ApplicationStatus status) {
+  /// Maps a coarse status change onto the catalog. Anything without a
+  /// catalog entry produces no notification at all — the catalog is closed,
+  /// so an unmapped status is a gap to fix rather than a licence to invent a
+  /// message.
+  NotificationType? _catalogTypeFor(ApplicationStatus status) {
     switch (status) {
       case ApplicationStatus.underReview:
-        return 'Your documents are under initial review';
+        return NotificationType.documentVerificationStarted;
       case ApplicationStatus.paymentVerification:
-        return 'Awaiting payment verification';
+        return NotificationType.orderOfPaymentIssued;
       case ApplicationStatus.approved:
-        return 'Application approved';
+        return NotificationType.approved;
       case ApplicationStatus.released:
-        return 'Permit ready for release';
-      default:
-        return 'Application update';
-    }
-  }
-
-  String _statusNotificationMessage(ApplicationModel application) {
-    switch (application.status) {
-      case ApplicationStatus.underReview:
-        return 'An evaluator is checking the requirements for ${application.applicationNumber}.';
-      case ApplicationStatus.paymentVerification:
-        return 'Your payment for ${application.applicationNumber} is being verified by the office.';
-      case ApplicationStatus.approved:
-        return 'Your ${application.type.label} application has been approved.';
-      case ApplicationStatus.released:
-        return 'Permit ${application.permitNumber} is ready for release.';
-      default:
-        return '${application.applicationNumber} has a new status: ${application.status.label}.';
-    }
-  }
-
-  IconData _statusNotificationIcon(ApplicationStatus status) {
-    switch (status) {
-      case ApplicationStatus.underReview:
-        return Icons.fact_check_outlined;
-      case ApplicationStatus.paymentVerification:
-        return Icons.payments_outlined;
-      case ApplicationStatus.approved:
-        return Icons.verified_outlined;
-      case ApplicationStatus.released:
-        return Icons.local_shipping_outlined;
-      default:
-        return Icons.notifications_active_outlined;
+        return NotificationType.readyForRelease;
+      case ApplicationStatus.rejected:
+        return NotificationType.rejected;
+      case ApplicationStatus.draft:
+      case ApplicationStatus.submitted:
+        return null;
     }
   }
 }

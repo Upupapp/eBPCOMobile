@@ -1,6 +1,11 @@
-/// Mock, in-memory notification toggle state shown on the Notification
-/// Preferences screen. Nothing here affects whether notifications are
-/// actually sent — it's UI state only.
+import 'notification_event.dart';
+
+/// Which notification categories the applicant wants pushed.
+///
+/// These genuinely gate delivery — see NotificationsProvider.shouldPush. A
+/// preferences screen whose switches change nothing is worse than no
+/// preferences screen, because it teaches the applicant that the app's
+/// controls are decorative.
 class NotificationPreferences {
   final bool applicationUpdates;
   final bool paymentNotifications;
@@ -21,6 +26,25 @@ class NotificationPreferences {
     this.smsNotifications = false,
     this.pushNotifications = true,
   });
+
+  /// Whether events in [category] may push. Account events are not mutable
+  /// from this screen and always follow the master push switch.
+  bool allows(NotificationCategory category) {
+    switch (category) {
+      case NotificationCategory.applicationUpdates:
+        return applicationUpdates;
+      case NotificationCategory.payments:
+        return paymentNotifications;
+      case NotificationCategory.permitStatus:
+        return permitStatusUpdates;
+      case NotificationCategory.documentReminders:
+        return documentReminders;
+      case NotificationCategory.appointments:
+        return applicationUpdates;
+      case NotificationCategory.account:
+        return systemAnnouncements;
+    }
+  }
 
   NotificationPreferences copyWith({
     bool? applicationUpdates,

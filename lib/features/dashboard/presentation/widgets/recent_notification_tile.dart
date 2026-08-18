@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/models/notification_model.dart';
+import '../../../../core/models/notification_event.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/avatars/app_avatar.dart';
 
@@ -19,7 +19,7 @@ String formatRelativeDate(DateTime dateTime) {
 /// Notification row used both on the dashboard preview and the full
 /// notifications list.
 class RecentNotificationTile extends StatelessWidget {
-  final NotificationModel notification;
+  final NotificationEvent notification;
   final VoidCallback? onTap;
 
   const RecentNotificationTile({
@@ -45,7 +45,7 @@ class RecentNotificationTile extends StatelessWidget {
             children: [
               AppAvatar(
                 size: 40,
-                icon: notification.icon,
+                icon: notification.type.icon,
                 iconSize: 20,
                 backgroundColor: AppColors.lightBlue,
                 foregroundColor: AppColors.secondaryBlue,
@@ -63,7 +63,7 @@ class RecentNotificationTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      notification.message,
+                      notification.body,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodyMuted,
