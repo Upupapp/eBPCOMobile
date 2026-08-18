@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/cards/app_card.dart';
 
-/// Small summary counter card, e.g. "Draft: 1", used in a responsive grid.
+/// Small summary counter card, e.g. "In Progress: 1", used in a responsive
+/// grid.
+///
+/// [onTap] is how the counter earns its place: a number the applicant cannot
+/// act on is decoration, so every counter navigates to the set it counted.
 class DashboardStatCard extends StatelessWidget {
   final String label;
   final int count;
   final IconData icon;
   final Color color;
+  final VoidCallback? onTap;
 
   const DashboardStatCard({
     super.key,
@@ -16,12 +21,14 @@ class DashboardStatCard extends StatelessWidget {
     required this.count,
     required this.icon,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
       padding: const EdgeInsets.all(14),
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

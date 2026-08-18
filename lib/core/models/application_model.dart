@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 import 'document_model.dart';
+import 'lifecycle_status.dart';
 import 'payment_assessment_model.dart';
+import 'permit_classification.dart';
 
 /// The kind of permit action an application represents.
 enum ApplicationType { newPermit, renewal, amendment }
@@ -140,6 +142,26 @@ class ApplicationModel {
   final DateTime? issuedDate;
   final List<StatusHistoryEntry> statusHistory;
 
+  /// The admin's 19-value processing state. Server-authoritative and the more
+  /// truthful of the two status fields — [status] is its coarse projection,
+  /// kept because older screens bind to it directly.
+  final ApplicationLifecycleStatus? lifecycleStatus;
+
+  /// RA 11032 service classification, assigned by the LGU.
+  ///
+  /// Null means the LGU has not classified the application yet. The app must
+  /// then show "Awaiting classification" rather than inventing a countdown:
+  /// guessing low would have the app accuse the LGU of breaching a pledge it
+  /// never made.
+  final PermitClassification? classification;
+
+  /// Specific permit applied for — "New Construction", "Electrical", and so
+  /// on. Distinct from [type], which is the action (new/renewal/amendment).
+  final String? permitTypeLabel;
+
+  /// Unresolved items on an outstanding Letter of Instruction.
+  final int openInstructionCount;
+
   const ApplicationModel({
     required this.id,
     required this.applicationNumber,
@@ -153,7 +175,38 @@ class ApplicationModel {
     this.permitNumber,
     this.issuedDate,
     this.statusHistory = const [],
+    this.lifecycleStatus,
+    this.classification,
+    this.permitTypeLabel,
+    this.openInstructionCount = 0,
   });
+
+  /// The applicant-visible status. Derived from [lifecycleStatus] when the
+  /// server has supplied one, so the projection lives in exactly one place.
+  ApplicationStatus get applicantStatus =>
+      lifecycleStatus?.applicantStatus ?? status;
+
+  /// Plain-language explanation of the current state, or null when the record
+  /// predates lifecycle tracking.
+  String? get statusSubLine => lifecycleStatus?.applicantSubLine;
+
+  /// True when the application is waiting on the applicant, not the LGU.
+  bool get requiresApplicantAction =>
+      (lifecycleStatus?.requiresApplicantAction ?? false) ||
+      openInstructionCount > 0;
+
+  /// Whether a service-pledge countdown is meaningful for this record.
+  bool get isInFlight => lifecycleStatus?.isInFlight ?? false;
+
+  /// Date by which work must commence or the building permit lapses.
+  ///
+  /// PD 1096 voids a permit where the authorised work is not commenced within
+  /// one year of issue, so a released permit always carries this deadline.
+  DateTime? get commenceByDate {
+    final issued = issuedDate;
+    if (issued == null || permitNumber == null) return null;
+    return DateTime(issued.year + 1, issued.month, issued.day);
+  }
 
   /// Fraction of the happy-path sequence completed, for progress bars.
   double get progress {
@@ -190,6 +243,10 @@ class ApplicationModel {
     String? permitNumber,
     DateTime? issuedDate,
     List<StatusHistoryEntry>? statusHistory,
+    ApplicationLifecycleStatus? lifecycleStatus,
+    PermitClassification? classification,
+    String? permitTypeLabel,
+    int? openInstructionCount,
   }) {
     return ApplicationModel(
       id: id,
@@ -204,6 +261,10 @@ class ApplicationModel {
       permitNumber: permitNumber ?? this.permitNumber,
       issuedDate: issuedDate ?? this.issuedDate,
       statusHistory: statusHistory ?? this.statusHistory,
+      lifecycleStatus: lifecycleStatus ?? this.lifecycleStatus,
+      classification: classification ?? this.classification,
+      permitTypeLabel: permitTypeLabel ?? this.permitTypeLabel,
+      openInstructionCount: openInstructionCount ?? this.openInstructionCount,
     );
   }
 }

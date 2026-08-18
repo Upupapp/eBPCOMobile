@@ -1,5 +1,7 @@
 import '../core/models/application_model.dart';
 import '../core/models/document_model.dart';
+import '../core/models/lifecycle_status.dart';
+import '../core/models/permit_classification.dart';
 
 /// Seed data for [MockApplicationsRepository] — one in-progress application
 /// against the seed business so the dashboard isn't empty on first login.
@@ -12,6 +14,13 @@ ApplicationModel buildSeedApplication() {
     businessName: "Juan's General Merchandise",
     type: ApplicationType.newPermit,
     status: ApplicationStatus.underReview,
+    // The admin's finer-grained state. `status` above is its projection and
+    // stays in place for screens that still bind to it directly.
+    lifecycleStatus: ApplicationLifecycleStatus.underEvaluation,
+    // A New Construction building permit is classified highly technical, so
+    // RA 11032 allows 20 working days.
+    classification: PermitClassification.highlyTechnical,
+    permitTypeLabel: 'New Construction',
     submittedDate: submitted,
     documents: [
       DocumentModel(
