@@ -43,6 +43,9 @@ class AuthProvider extends ChangeNotifier {
   String? get rememberedEmail => _rememberedEmail;
 
   Future<void> loadSession() async {
+    // An install upgraded from a build that stored the password in plain text
+    // still has it on disk. Clear it before anything else touches storage.
+    await _storage.purgeLegacyPlainTextPassword();
     _onboardingCompleted = await _storage.isOnboardingCompleted();
     _rememberedEmail = await _storage.getRememberedEmail();
     final loggedIn = await _storage.isLoggedIn();

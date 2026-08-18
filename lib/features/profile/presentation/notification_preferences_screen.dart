@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/notification_preferences_model.dart';
-import '../../../core/providers/settings_provider.dart';
+import '../../../core/providers/notifications_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/alerts/app_alert.dart';
@@ -17,15 +17,15 @@ class NotificationPreferencesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsProvider>();
-    final prefs = settings.notificationPreferences;
+    // Read from the provider that actually delivers, so a switch here cannot
+    // drift from what reaches the applicant.
+    final notifications = context.watch<NotificationsProvider>();
+    final prefs = notifications.preferences;
 
     void update(
       NotificationPreferences Function(NotificationPreferences) apply,
     ) {
-      context.read<SettingsProvider>().updateNotificationPreferences(
-        apply(prefs),
-      );
+      context.read<NotificationsProvider>().updatePreferences(apply(prefs));
     }
 
     return Scaffold(
@@ -37,8 +37,9 @@ class NotificationPreferencesScreen extends StatelessWidget {
             const AppAlert(
               variant: AppAlertVariant.info,
               message:
-                  'This feature is currently available as a prototype for '
-                  'demonstration purposes.',
+                  'Turning a category off stops its push notifications. The '
+                  'update is still recorded here in the app, so nothing is '
+                  'lost — you just are not interrupted for it.',
             ),
             const SizedBox(height: AppSpacing.lg),
             const SectionHeader(title: 'What You Get Notified About'),

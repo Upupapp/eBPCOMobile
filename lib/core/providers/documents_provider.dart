@@ -323,6 +323,17 @@ class DocumentsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Removes every document and deletes each local file.
+  ///
+  /// The file deletion matters as much as the record: leaving the copy on disk
+  /// while dropping the row would make the app's answer to a Data Privacy Act
+  /// erasure request a lie.
+  Future<void> removeAll() async {
+    for (final document in List<SavedDocumentModel>.from(_documents)) {
+      await remove(document.id);
+    }
+  }
+
   /// Removes a document from My Documents and deletes its local file.
   /// Never fails just because the underlying file is already missing.
   Future<void> remove(String id) async {

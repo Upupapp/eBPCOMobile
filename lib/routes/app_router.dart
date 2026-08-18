@@ -61,6 +61,8 @@ import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/help_support_screen.dart';
 import '../features/profile/presentation/language_screen.dart';
 import '../features/profile/presentation/notification_preferences_screen.dart';
+import '../features/profile/presentation/citizens_charter_screen.dart';
+import '../features/profile/presentation/privacy_data_screen.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/terms_conditions_screen.dart';
@@ -510,6 +512,18 @@ class AppRouter {
         GoRoute(
           path: '/profile/terms',
           builder: (context, state) => const TermsConditionsScreen(),
+        ),
+        GoRoute(
+          path: '/profile/privacy-data',
+          builder: (context, state) => const PrivacyDataScreen(),
+        ),
+        GoRoute(
+          path: '/charter/:permitType',
+          builder: (context, state) => CitizensCharterScreen(
+            permitType: Uri.decodeComponent(
+              state.pathParameters['permitType']!,
+            ),
+          ),
         ),
         GoRoute(
           path: '/profile/privacy',

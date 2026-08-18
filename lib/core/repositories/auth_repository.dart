@@ -59,11 +59,12 @@ class MockAuthRepository implements AuthRepository {
     }
 
     final registeredEmail = await _storage.getRegisteredEmail();
-    final registeredPassword = await _storage.getRegisteredPassword();
-    if (registeredEmail != null &&
-        normalizedEmail == registeredEmail &&
-        password == registeredPassword) {
-      return _hydrateRegisteredUser(registeredEmail);
+    if (registeredEmail != null && normalizedEmail == registeredEmail) {
+      // The comparison happens inside the storage service against a PBKDF2
+      // verifier; no caller ever holds the stored material.
+      if (await _storage.isRegisteredPassword(password)) {
+        return _hydrateRegisteredUser(registeredEmail);
+      }
     }
 
     return null;

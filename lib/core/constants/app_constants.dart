@@ -24,7 +24,14 @@ class AppConstants {
   static const String prefIsLoggedIn = 'isLoggedIn';
   static const String prefRememberMe = 'rememberMe';
   static const String prefRegisteredEmail = 'registeredEmail';
-  static const String prefRegisteredPassword = 'registeredPassword';
+  /// Password verifier and its salt. The password itself is never stored —
+  /// see CredentialVerifier.
+  static const String prefRegisteredVerifier = 'registeredPasswordVerifier';
+  static const String prefRegisteredSalt = 'registeredPasswordSalt';
+
+  /// Legacy key holding a plain-text password. Retained only so existing
+  /// installs can have it deleted on next launch; never written again.
+  static const String legacyPrefRegisteredPassword = 'registeredPassword';
   static const String prefRegisteredFirstName = 'registeredFirstName';
   static const String prefRegisteredLastName = 'registeredLastName';
   static const String prefRegisteredMobile = 'registeredMobile';

@@ -5,7 +5,7 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: TAB 4 (Notifications), 18 August 2026.
+Last updated: TAB 5 (Profile) — all five TABs complete, 18 August 2026.
 
 ---
 
@@ -13,9 +13,11 @@ Last updated: TAB 4 (Notifications), 18 August 2026.
 
 | # | Task | Why manual | Raised in |
 |---|---|---|---|
-| M-01 | Replace plain-text credential storage with a token session in platform keychain/keystore | Needs a real auth backend to issue tokens; no backend exists | TAB 1 · §10.1 |
+| M-01 | Move authentication to a server-issued session token held in the platform keychain/keystore | Needs an auth backend to issue tokens. **Partially closed in TAB 5**: the password is no longer stored at all (PBKDF2 verifier + salt), so nothing recoverable remains on disk. What is left is genuinely server-dependent | TAB 1 · §10.1 |
 | M-02 | Stand up the backend for the admin-authoritative fields — `lifecycleStatus`, `classification`, `openInstructionCount`, Orders of Payment, evaluations, Letters of Instruction, inspections, release records | Server-side work; the app builds against repository interfaces ready to swap | TABs 1–3 |
-| M-03 | NPC-compliant privacy notice text and retention policy, reviewed by counsel | Legal text under RA 10173, not a drafting exercise for me | TAB 5 (pending) |
+| M-03 | NPC-compliant privacy notice text and retention policy, reviewed by counsel | Legal text under RA 10173. TAB 5 ships a plain-language disclosure and working access/correct/export/delete controls; the formal notice still needs review | TAB 5 |
+| M-16 | Publish the LGU's Data Protection Officer contact so applicants can exercise rights over what the LGU holds | LGU-specific; the Privacy & Data screen currently names the role without contact details | TAB 5 |
+| M-17 | Raise the PBKDF2 iteration count and move derivation off the main isolate | Needs device profiling on the target mid-range Android hardware | TAB 5 |
 
 ## Repository and delivery
 
@@ -40,7 +42,7 @@ Last updated: TAB 4 (Notifications), 18 August 2026.
 
 | # | Decision | Why yours |
 |---|---|---|
-| M-13 | Localisation: implement Filipino (and which other languages), or reduce the picker to what is supported | Scope and budget call |
+| M-13 | Localisation: implement Filipino (and which other languages), or reduce the picker to what is supported | Scope and budget call. **Still open** — the Language screen remains display-only |
 | M-14 | Whether applicants may cancel their own application | Policy question with regulatory consequences |
 | M-15 | Retention period for uploaded documents after an application closes | Data-minimisation policy under RA 10173 |
 
@@ -48,4 +50,9 @@ Last updated: TAB 4 (Notifications), 18 August 2026.
 
 ## Closed
 
-_None yet._
+- **Plain-text password storage** (was blocking). TAB 5 replaced it with a
+  PBKDF2-HMAC-SHA256 verifier and per-account salt, and purges the legacy key
+  on upgrade. A test asserts no stored value anywhere in SharedPreferences
+  contains the password. The remaining server-side half is M-01.
+- **Notification preferences that changed nothing.** TAB 4 and TAB 5 made the
+  switches gate delivery, with a test proving a toggle changes the outcome.

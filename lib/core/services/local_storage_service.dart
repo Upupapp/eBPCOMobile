@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
+import 'credential_verifier.dart';
 
 /// Thin wrapper around [SharedPreferences] used to persist prototype-only
 /// state on the device.
@@ -68,7 +69,19 @@ class LocalStorageService {
       AppConstants.prefRegisteredEmail,
       email.trim().toLowerCase(),
     );
-    await prefs.setString(AppConstants.prefRegisteredPassword, password);
+
+    // Store a PBKDF2 verifier and its salt, never the password. SharedPreferences
+    // is unencrypted, so anything written here is readable by anything with
+    // access to the app's data directory.
+    const verifier = CredentialVerifier();
+    final salt = verifier.newSalt();
+    await prefs.setString(AppConstants.prefRegisteredSalt, salt);
+    await prefs.setString(
+      AppConstants.prefRegisteredVerifier,
+      verifier.derive(password, salt),
+    );
+    // Remove any plain-text password left by an older build.
+    await prefs.remove(AppConstants.legacyPrefRegisteredPassword);
     await prefs.setString(AppConstants.prefRegisteredFirstName, firstName);
     await prefs.setString(AppConstants.prefRegisteredLastName, lastName);
     await prefs.setString(AppConstants.prefRegisteredMobile, mobileNumber);
@@ -79,9 +92,27 @@ class LocalStorageService {
     return prefs.getString(AppConstants.prefRegisteredEmail);
   }
 
-  Future<String?> getRegisteredPassword() async {
+  /// Whether [password] matches the registered account.
+  ///
+  /// Deliberately returns a verdict rather than any stored material: no caller
+  /// can obtain the password or the verifier, so no caller can leak them.
+  Future<bool> isRegisteredPassword(String password) async {
     final prefs = await _prefs;
-    return prefs.getString(AppConstants.prefRegisteredPassword);
+    final salt = prefs.getString(AppConstants.prefRegisteredSalt);
+    final expected = prefs.getString(AppConstants.prefRegisteredVerifier);
+    if (salt == null || expected == null) return false;
+    return const CredentialVerifier().matches(
+      password: password,
+      salt: salt,
+      expectedVerifier: expected,
+    );
+  }
+
+  /// Deletes any plain-text password written by an older build. Called at
+  /// startup so an upgrade cleans up after the version that created it.
+  Future<void> purgeLegacyPlainTextPassword() async {
+    final prefs = await _prefs;
+    await prefs.remove(AppConstants.legacyPrefRegisteredPassword);
   }
 
   Future<String?> getRegisteredFirstName() async {

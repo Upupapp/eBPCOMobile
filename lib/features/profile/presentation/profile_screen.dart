@@ -193,6 +193,20 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: 'View and manage your imported documents',
                 onTap: () => context.push('/profile/documents'),
               ),
+              _ProfileActionTile(
+                icon: Icons.privacy_tip_outlined,
+                label: 'Privacy & Data',
+                subtitle: 'See what is held about you, and delete it',
+                onTap: () => context.push('/profile/privacy-data'),
+              ),
+              _ProfileActionTile(
+                icon: Icons.receipt_long_outlined,
+                label: 'Citizen’s Charter',
+                subtitle: 'Processing times, fees, and what to bring',
+                onTap: () => context.push(
+                  '/charter/${Uri.encodeComponent('New Construction')}',
+                ),
+              ),
               const SizedBox(height: 20),
               const _ProfileSectionTitle('Personal Information'),
               _ProfileTile(

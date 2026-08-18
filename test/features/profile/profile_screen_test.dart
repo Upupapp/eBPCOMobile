@@ -6,7 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ebpco_user_app/core/models/user_model.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
+import 'package:ebpco_user_app/core/models/notification_event.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/providers/settings_provider.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/auth_repository.dart';
 import 'package:ebpco_user_app/features/profile/presentation/change_password_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/edit_profile_screen.dart';
@@ -108,12 +111,24 @@ Widget _wrapWithRouter(AuthProvider authProvider) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) => NotificationsProvider(
+          repository: _EmptyNotificationsRepository(),
+        ),
+      ),
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),
       ),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
+}
+
+/// The preferences screen now reads from the provider that actually delivers,
+/// so this test needs one.
+class _EmptyNotificationsRepository implements NotificationsRepository {
+  @override
+  Future<List<NotificationEvent>> fetchAll() async => const [];
 }
 
 void main() {
