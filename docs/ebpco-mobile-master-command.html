@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>eBPCO Mobile — Frontend Master Command</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 9.6pt; line-height: 1.5; color: #1F2937; margin: 0;
+}
+h1,h2,h3,h4 { color: #1F2937; margin: 0 0 6px; line-height: 1.25; }
+h2 { font-size: 16pt; letter-spacing: -0.2px; border-bottom: 2.5px solid #C81E2C; padding-bottom: 6px; margin: 0 0 14px; }
+h3 { font-size: 12pt; margin: 20px 0 7px; color: #A01823; }
+h4 { font-size: 10pt; margin: 14px 0 5px; text-transform: uppercase; letter-spacing: 0.6px; color: #6B7280; }
+p { margin: 0 0 8px; }
+ul, ol { margin: 0 0 9px; padding-left: 17px; }
+li { margin-bottom: 3px; }
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.4pt; background: #F5F7FA; padding: 1px 4px; border-radius: 3px; color: #A01823; }
+pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8pt; background: #F5F7FA; border: 1px solid #E6E6EC; border-left: 3px solid #2563EB; border-radius: 4px; padding: 9px 11px; overflow-x: auto; white-space: pre-wrap; line-height: 1.45; margin: 0 0 10px; }
+pre code { background: none; padding: 0; color: #1F2937; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 8.5pt; }
+th { background: #1F2937; color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 8.2pt; letter-spacing: 0.3px; }
+td { padding: 5px 8px; border-bottom: 1px solid #E6E6EC; vertical-align: top; }
+tr:nth-child(even) td { background: #FAFAFA; }
+.section { page-break-before: always; }
+.no-break { page-break-inside: avoid; }
+
+/* Cover */
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+.cover-top { border-top: 9px solid #C81E2C; padding-top: 26px; }
+.cover-eyebrow { font-size: 9pt; letter-spacing: 3.5px; text-transform: uppercase; color: #C81E2C; font-weight: 700; margin-bottom: 26px; }
+.cover-title { font-size: 40pt; font-weight: 800; line-height: 1.03; letter-spacing: -1.4px; margin-bottom: 16px; }
+.cover-title span { color: #C81E2C; }
+.cover-sub { font-size: 13pt; color: #6B7280; line-height: 1.45; max-width: 135mm; font-weight: 300; }
+.cover-rule { width: 62px; height: 4px; background: #2563EB; margin: 26px 0; }
+.cover-meta { display: flex; gap: 34px; flex-wrap: wrap; font-size: 9pt; }
+.cover-meta div span { display: block; text-transform: uppercase; letter-spacing: 1.3px; font-size: 7.2pt; color: #9CA3AF; margin-bottom: 3px; font-weight: 700; }
+.cover-note { border-left: 3px solid #2563EB; background: #E8F1FF; padding: 12px 15px; font-size: 9pt; color: #1F2937; }
+
+/* Components */
+.cmd { border: 1.5px solid #C81E2C; border-radius: 6px; padding: 0; margin: 0 0 16px; page-break-inside: avoid; overflow: hidden; }
+.cmd-head { background: #C81E2C; color: #fff; padding: 7px 13px; font-size: 8.4pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+.cmd-body { padding: 12px 14px; background: #FFF9F9; font-size: 9.4pt; }
+.cmd-body p:last-child { margin-bottom: 0; }
+.callout { background: #F5F7FA; border-left: 3px solid #6B7280; padding: 9px 13px; margin: 0 0 11px; font-size: 8.8pt; }
+.callout.law { background: #E8F1FF; border-left-color: #2563EB; }
+.callout.warn { background: #FEF3C7; border-left-color: #F59E0B; }
+.callout strong { color: #1F2937; }
+.tag { display: inline-block; font-size: 7.2pt; font-weight: 700; padding: 2px 7px; border-radius: 9px; letter-spacing: 0.6px; text-transform: uppercase; }
+.tag-a { background: #DCFCE7; color: #15803D; }
+.tag-p { background: #FEF3C7; color: #B45309; }
+.tag-r { background: #FEE2E2; color: #B91C1C; }
+.tag-i { background: #DBEAFE; color: #1D4ED8; }
+.tag-n { background: #F5F7FA; color: #6B7280; }
+.ac { list-style: none; padding-left: 0; }
+.ac li { padding-left: 21px; position: relative; margin-bottom: 4px; }
+.ac li:before { content: "\2610"; position: absolute; left: 0; color: #C81E2C; font-size: 11pt; line-height: 1; top: 1px; }
+.toc { column-count: 2; column-gap: 26px; font-size: 9pt; }
+.toc-item { display: flex; gap: 9px; margin-bottom: 5px; break-inside: avoid; }
+.toc-num { color: #C81E2C; font-weight: 700; min-width: 24px; }
+.grid2 { display: flex; gap: 14px; }
+.grid2 > div { flex: 1; }
+.lead { font-size: 10.5pt; color: #4B5563; margin-bottom: 15px; font-weight: 300; line-height: 1.55; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-eyebrow">Frontend Build Specification &nbsp;·&nbsp; Philippines</div>
+    <div class="cover-title">eBPCO Mobile<br><span>Master Command</span></div>
+    <div class="cover-rule"></div>
+    <div class="cover-sub">
+      A tab-by-tab executable command set for the applicant-facing Flutter app of the
+      Electronic Building Permit and Certificate of Occupancy system — grounded in
+      Philippine law, benchmarked against Philippine LGU e-permitting platforms, and
+      aligned to the eBPCO Web Admin domain.
+    </div>
+  </div>
+  <div>
+    <div class="cover-note">
+      <strong>How to use.</strong> Section 1 is the Master Command — the standing context every
+      other command inherits. Sections 6 through 10 are five self-contained tab commands.
+      Each may be handed to a developer or coding agent on its own; each carries its own data
+      contract, states, notifications, legal grounding, and acceptance criteria.
+    </div>
+    <div class="cover-rule" style="background:#C81E2C;"></div>
+    <div class="cover-meta">
+      <div><span>Document</span>Frontend Master Command v1.0</div>
+      <div><span>Target</span>ebpco_user_app (Flutter)</div>
+      <div><span>Audience</span>Business owners &amp; permit applicants</div>
+      <div><span>Date</span>18 August 2026</div>
+      <div><span>Jurisdiction</span>Republic of the Philippines</div>
+    </div>
+  </div>
+</div>
+
+<h2>Contents</h2>
+<div class="toc">
+  <div class="toc-item"><span class="toc-num">0</span><span>Reading this document</span></div>
+  <div class="toc-item"><span class="toc-num">1</span><span>The Master Command</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><span>Philippine regulatory baseline</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><span>Philippine platform benchmarks</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><span>Admin portal scope, projected to mobile</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><span>Canonical notification catalog</span></div>
+  <div class="toc-item"><span class="toc-num">6</span><span>TAB 1 — Home</span></div>
+  <div class="toc-item"><span class="toc-num">7</span><span>TAB 2 — Applications</span></div>
+  <div class="toc-item"><span class="toc-num">8</span><span>TAB 3 — Payments</span></div>
+  <div class="toc-item"><span class="toc-num">9</span><span>TAB 4 — Notifications</span></div>
+  <div class="toc-item"><span class="toc-num">10</span><span>TAB 5 — Profile</span></div>
+  <div class="toc-item"><span class="toc-num">11</span><span>Cross-cutting commands</span></div>
+  <div class="toc-item"><span class="toc-num">12</span><span>Definition of done</span></div>
+  <div class="toc-item"><span class="toc-num">13</span><span>Sources</span></div>
+</div>
+
+<h3>0 &nbsp; Reading this document</h3>
+<p class="lead">
+  Every section headed <strong>COMMAND</strong> in a red box is an instruction to be executed as
+  written. Everything outside those boxes is the evidence and reasoning behind it — regulatory
+  citations, benchmark findings, and the admin-side data contract the mobile app must honour.
+</p>
+<table>
+  <tr><th style="width:26%">Convention</th><th>Meaning</th></tr>
+  <tr><td><span class="tag tag-r">BUILD</span></td><td>New screen, flow, or component that does not exist in the app today.</td></tr>
+  <tr><td><span class="tag tag-p">EXTEND</span></td><td>A surface that exists but is incomplete against this specification.</td></tr>
+  <tr><td><span class="tag tag-a">KEEP</span></td><td>Already correct. Do not rebuild; wire it to the real contract.</td></tr>
+  <tr><td><span class="tag tag-i">SERVER</span></td><td>Depends on a backend endpoint that does not exist yet. Build against the stated contract behind a repository interface, keep the mock implementation, and swap later.</td></tr>
+  <tr><td><code>lifecycleStatus</code></td><td>Field names in monospace are the exact identifiers used by the eBPCO Web Admin domain. Do not rename them on the mobile side.</td></tr>
+</table>
+<div class="callout warn">
+  <strong>Scope discipline.</strong> This document specifies the <em>applicant-facing</em> app only.
+  Evaluation, assessment, approval, and release are admin-side acts. The mobile app never performs
+  them — it reports them, explains them, and collects what the applicant owes in response. Any
+  command that appears to let an applicant advance their own application is a defect.
+</div>
+
+<div class="section"></div>
+<h2>1 &nbsp; The Master Command</h2>
+<p class="lead">Standing context. Every tab command in Sections 6–10 inherits this and must not contradict it.</p>
+
+<div class="cmd">
+  <div class="cmd-head">Master Command</div>
+  <div class="cmd-body">
+    <p>Build the applicant-facing frontend of eBPCO Mobile as the single place a Philippine
+    property owner, business owner, or their authorised representative can prepare, file, pay for,
+    track, and receive construction-related permits and the Certificate of Occupancy from their
+    LGU's Office of the Building Official — without visiting the City Hall except where physical
+    presence is legally unavoidable.</p>
+    <p>Every screen must answer three questions without the user asking: <strong>where is my
+    application right now</strong>, <strong>what do I owe or must do next</strong>, and
+    <strong>when will this be done</strong>. A screen that cannot answer all three for its subject
+    is not finished.</p>
+  </div>
+</div>
+
+<h3>1.1 &nbsp; Who this is for</h3>
+<p>The primary user is not a design professional. They are an owner who has engaged an architect or
+engineer and who now has to deal with the LGU. They are on a mid-range Android phone, frequently on
+mobile data, and they are anxious about delay and about being asked for money outside the official
+schedule. Two secondary users share the same app: the <strong>authorised representative</strong>
+acting under a notarised Special Power of Attorney, and the <strong>design professional</strong>
+tagged to an application whose PRC and PTR credentials must be captured and kept current.</p>
+
+<h3>1.2 &nbsp; Non-negotiables</h3>
+<table>
+  <tr><th style="width:24%">Principle</th><th>What it forces in the UI</th></tr>
+  <tr><td><strong>Pledged dates, not vague states</strong></td><td>Every in-flight application shows a target completion date derived from its RA 11032 classification (3, 7, or 20 working days), counted in working days, with the day count remaining. "Under Review" alone is a failure.</td></tr>
+  <tr><td><strong>Deficiency is the critical path</strong></td><td>A Letter of Instruction or a Revision Required result is the single most important thing the app can surface. It preempts everything else: top of Home, badge on the tab, push notification, and a persistent banner until resolved.</td></tr>
+  <tr><td><strong>Money is never ambiguous</strong></td><td>Fees appear only from an official Order of Payment, itemised, with the total in pesos and centavos. The app never estimates an amount that the LGU has not assessed. Never present a payment channel that is not officially accepted.</td></tr>
+  <tr><td><strong>Zero-contact by default</strong></td><td>Where RA 11032's zero-contact policy applies, the app must not invite the user to "follow up in person". Every follow-up path is in-app, and any required physical step is stated explicitly with its reason.</td></tr>
+  <tr><td><strong>Offline-tolerant</strong></td><td>Drafts, downloaded permits, and the document vault are readable with no connection. Only submission, payment, and refresh require network.</td></tr>
+  <tr><td><strong>Filipino-legible</strong></td><td>Plain language over bureaucratic phrasing. Where a legal term is unavoidable (locational clearance, FSEC, FSIC, Order of Payment), it is shown with a one-line plain explanation on first use.</td></tr>
+</table>
+
+<h3>1.3 &nbsp; Technical constitution</h3>
+<pre><code>Stack        Flutter (Dart SDK ^3.12.2) · provider/ChangeNotifier · go_router
+Navigation   StatefulShellRoute.indexedStack, 5 tabs, per-tab state preserved
+Structure    lib/features/&lt;feature&gt;/presentation  ·  lib/core/{models,providers,
+             repositories,services,theme}  ·  lib/shared/widgets
+Theme        AppColors · AppTypography (Poppins) · AppSpacing · AppShadows.
+             No literal colours, no ad-hoc EdgeInsets, no bare TextStyle.
+Data         Every screen reads a provider. Providers read repositories.
+             Repositories are the ONLY place a mock is allowed to live, so the
+             backend swap is a repository change and nothing else.
+Testing      Every flow gets a widget test that drives real fields end to end.
+             Attach-document flows install debugAttachDocumentOverride.
+Quality gate flutter analyze clean AND flutter test green before any command
+             is considered executed.</code></pre>
+
+<div class="callout">
+  <strong>Naming rule.</strong> The web admin already defines the canonical vocabulary in
+  <code>core/domain/status.model.ts</code> and explicitly maps its 19-state lifecycle onto mobile's
+  7 applicant-visible statuses. Mobile must not invent a third vocabulary. Where mobile needs more
+  granularity than its 7 statuses provide, it reads <code>lifecycleStatus</code> directly and
+  presents it — it does not create a new enum.
+</div>
+
+<div class="section"></div>
+<h2>2 &nbsp; Philippine regulatory baseline</h2>
+<p class="lead">
+  Each instrument below constrains the frontend. The right-hand column is the binding UI consequence —
+  these are requirements, not background reading.
+</p>
+
+<table>
+  <tr><th style="width:27%">Instrument</th><th style="width:35%">What it establishes</th><th>Binding consequence for eBPCO Mobile</th></tr>
+  <tr>
+    <td><strong>PD 1096</strong><br>National Building Code, and its 2004 Revised IRR</td>
+    <td>Building permits are issued by the Building Official on satisfactory plans and a duly notarised application. Ancillary and accessory permits sit under the building permit. A permit expires and becomes null and void if the work is not commenced within one year of issue, or if work is suspended or abandoned.</td>
+    <td>The permit record must carry an issue date and drive a <strong>commencement countdown</strong>. The app warns at 60 and 30 days before the one-year lapse and states the consequence plainly. Applications must distinguish ancillary/accessory permits from the parent building permit and link them.</td>
+  </tr>
+  <tr>
+    <td><strong>RA 11032</strong><br>Ease of Doing Business and Efficient Government Service Delivery Act of 2018</td>
+    <td>Prescribed maximum processing times of 3 working days (simple), 7 (complex), and 20 (highly technical). Zero-contact policy. Mandatory Citizen's Charter. Automatic approval where an agency fails to act within the prescribed period. Business One-Stop Shop.</td>
+    <td>Every application is stamped with its classification and a working-day countdown to the pledged date. The app surfaces the LGU's Citizen's Charter entry for the service. It shows an <strong>overdue</strong> state when the pledge lapses, and tells the applicant what recourse exists rather than silently continuing to show "Under Review".</td>
+  </tr>
+  <tr>
+    <td><strong>Amended JMC 2021-01</strong><br>ARTA–DPWH–DILG–DICT–DTI–PRC–BFP, amending JMC 2018-01</td>
+    <td>Service standards for construction-related permits. Classification into simple, complex, and highly technical. Unified Building Permit Application Form and Unified Application Form for Certificates of Occupancy. Co-located one-stop shop (OBO, Treasury, Zoning, Assessor, BFP) and joint inspection teams.</td>
+    <td>Application wizards must map field-for-field onto the <strong>unified forms</strong>, not onto a bespoke schema. Because inspections are joint, the app models <strong>one inspection event with multiple attending offices</strong>, not a queue of separate inspections.</td>
+  </tr>
+  <tr>
+    <td><strong>RA 9514</strong><br>Fire Code of the Philippines</td>
+    <td>The BFP issues a Fire Safety Evaluation Clearance as a prerequisite to the building permit, and a Fire Safety Inspection Certificate before a newly constructed building may be occupied.</td>
+    <td>FSEC is a tracked dependency of the building permit; FSIC is a tracked dependency of the Certificate of Occupancy. Both appear as first-class items with their own status, not as generic uploads buried in a document list.</td>
+  </tr>
+  <tr>
+    <td><strong>RA 10173</strong><br>Data Privacy Act of 2012</td>
+    <td>Transparency, legitimate purpose, and proportionality. Informed consent before collection, with consent specific to purpose for sensitive personal information. Breach notification to the NPC and to affected data subjects.</td>
+    <td>A <strong>privacy notice and explicit consent gate</strong> before the first document or photo is captured, stating purpose, retention, and recipients. In-app rights: access, correction, and deletion of uploaded documents. Camera, photo, and storage permission primers must state the purpose before the OS prompt.</td>
+  </tr>
+  <tr>
+    <td><strong>RA 8792</strong><br>Electronic Commerce Act of 2000</td>
+    <td>Functional equivalence: electronic documents and signatures cannot be denied legal effect for being electronic, and electronic documents are admissible. Documents requiring notarisation are excluded.</td>
+    <td>A permit downloaded in-app can be presented as a valid copy, so the app must offer a <strong>verifiable digital permit</strong> with permit number and a QR or reference for validation. Conversely, notarised items (application form, affidavits, Certificate of Completion, SPA) must be flagged in-app as requiring a wet-signed notarised original.</td>
+  </tr>
+  <tr>
+    <td><strong>Zoning / Locational Clearance</strong><br>issued by the City or Municipal Planning and Development Office / Zoning Administrator</td>
+    <td>Certifies that the location and nature of the proposed development conform to the LGU's land-use rules. Secured prior to the building permit application.</td>
+    <td>Modelled as a <strong>prerequisite with its own status</strong> on the building permit, with an explicit "already secured / not yet secured" branch at the start of the wizard so an applicant is not walked through nine steps only to be blocked.</td>
+  </tr>
+  <tr>
+    <td><strong>LGU-issued supporting documents</strong></td>
+    <td>Barangay Clearance from the barangay with territorial jurisdiction; real property tax declarations from the City Assessor; RPT clearance from the City Treasurer; proof of ownership (Certified True Copy of TCT) from the Land Registration Authority.</td>
+    <td>Each required document carries a <strong>"where to secure"</strong> line naming the issuing office, mirroring the LGU Citizen's Charter format. This is one of the highest-value, lowest-cost features in the entire app.</td>
+  </tr>
+</table>
+
+<div class="callout law">
+  <strong>Deemed approval, handled carefully.</strong> RA 11032 provides for automatic approval where
+  an office fails to act within the prescribed period, but implementing rules exclude matters
+  implicating public health, safety, and national security — which is precisely the territory of
+  building permits and occupancy. The app must therefore <strong>never assert to a user that their
+  permit is automatically approved</strong>. It surfaces the lapsed pledge, the elapsed working days,
+  and the available recourse, and leaves the legal conclusion to the LGU and ARTA.
+</div>
+
+<div class="section"></div>
+<h2>3 &nbsp; Philippine platform benchmarks</h2>
+<p class="lead">
+  What Philippine LGU e-permitting already does, and what eBPCO Mobile must therefore match or beat.
+</p>
+
+<h3>3.1 &nbsp; QC e-Services — Department of the Building Official</h3>
+<p>The most complete Philippine reference implementation for construction permits, and the closest
+analogue to eBPCO's scope. Its published Citizen's Charter for the Issuance of Construction Permits
+establishes a flow the mobile app should adopt wholesale:</p>
+<table>
+  <tr><th style="width:30%">QC e-Services mechanism</th><th>What eBPCO Mobile must take from it</th></tr>
+  <tr><td><strong>Confirmed online appointment</strong> as the first basic requirement</td><td>Appointment booking is a first-class app feature, not an afterthought — with a reminder notification and the ability to reschedule.</td></tr>
+  <tr><td><strong>Generated Checklist Online</strong> — the requirement list is generated per application type rather than published as one static list</td><td>The required-documents step must be <strong>derived from the answers already given</strong>, and the resulting checklist must be exportable and shareable with the applicant's professional.</td></tr>
+  <tr><td><strong>Tagging of professionals</strong> — the design professional holds their own account and is tagged to the application</td><td>Model the professional as a linked party with their own PRC and PTR credentials and validity dates, not as free text typed by the owner.</td></tr>
+  <tr><td><strong>Letter of Instruction (LOI)</strong> issued to applicant and professional when documents are deficient</td><td>The LOI is a distinct, high-priority object in the app with its own screen, itemised deficiencies, a resubmission action, and notification to both parties.</td></tr>
+  <tr><td><strong>Order of Payment (O.P.)</strong> delivered by email once the application is clean</td><td>The O.P. is the trigger for the entire Payments tab. It arrives in-app with its line items intact, not as an opaque total.</td></tr>
+  <tr><td><strong>Real-time status</strong> by application number, with statuses such as for evaluation, for payment, and released</td><td>Status lookup by application number must work, and the timeline must be granular enough to distinguish evaluation from assessment from release.</td></tr>
+  <tr><td><strong>Multiple follow-up channels</strong> — portal, email, Viber community, Facebook page</td><td>Give a single authoritative in-app channel so the applicant never has to guess which one is current, plus the OBO's published contact details as fallback.</td></tr>
+</table>
+
+<h3>3.2 &nbsp; eBPLS — DICT / DILG</h3>
+<p>The national Electronic Business Permit and Licensing System, provided free to LGUs by the DICT
+under RA 11032, establishes the baseline expectation that Filipino applicants now carry into any
+LGU app: <strong>online submission of applications, digital payment, and issuance of electronic
+permits, licences, and clearances</strong>. eBPCO Mobile must meet all three or it is a regression
+against a system its users may already have used.</p>
+
+<h3>3.3 &nbsp; Pasig City OBO — Occupancy Permit checklist</h3>
+<p>Pasig's published checklist shows the true shape of an occupancy submission, and it is materially
+heavier than a generic upload list. It demands the Unified Application Form for Certificate of
+Occupancy; three notarised copies of the Certificate of Completion signed and sealed by the
+supervising architect or civil engineer — or by the contractor's Authorised Managing Officer where
+work was contracted; two sets of approved plans across architectural, civil/structural, and
+plumbing/sanitary; detailed bills of materials at actual cost; current PTR and valid PRC ID for each
+professional; photographs of the completed structure showing inside, front, sides, and rear; copies
+of the building and ancillary permits; the daily construction logbook; and separate signed and
+sealed completion forms for electrical, mechanical, and electronics works.</p>
+<div class="callout">
+  <strong>Design consequence.</strong> The Certificate of Occupancy flow is not a five-step form with
+  an upload screen. It is a <strong>compilation task</strong> spanning months of construction. The app
+  must therefore let the applicant accumulate occupancy evidence progressively — logbook entries,
+  progress photographs, completion forms per discipline — from the moment the building permit is
+  released, so that filing for occupancy is an act of assembly rather than a scramble.
+</div>
+
+<div class="section"></div>
+<h2>4 &nbsp; Admin portal scope, projected to mobile</h2>
+<p class="lead">
+  The eBPCO Web Admin is the source of truth for state. Everything the mobile app displays is a
+  projection of a record the admin owns. This section fixes that projection so the two apps cannot drift.
+</p>
+
+<h3>4.1 &nbsp; What the admin does that the applicant must see</h3>
+<table>
+  <tr><th style="width:22%">Admin module</th><th style="width:39%">Admin capability</th><th>Applicant-facing obligation</th></tr>
+  <tr><td>Applications</td><td>Receive, verify documents, transition lifecycle status against a validated transition table</td><td>Timeline showing every transition with its timestamp; no state the applicant cannot name</td></tr>
+  <tr><td>Evaluations</td><td>Record a result per stage — Initial, Zoning, Fire Safety, OBO, Final Approval — with remarks mandatory on Revision Required or Rejected</td><td>Per-stage progress with the evaluator's remarks shown verbatim; remarks are the applicant's instructions</td></tr>
+  <tr><td>Payments</td><td>Assess fees, accept a bank transfer reference or record an onsite payment, verify payment</td><td>Itemised Order of Payment, submission of proof of payment, and a visible verification state</td></tr>
+  <tr><td>Permit release</td><td>Generate the permit, mark ready for release, record release to a claimant or authorised representative</td><td>Permit number, downloadable permit, claim instructions, and who may claim</td></tr>
+  <tr><td>Businesses</td><td>Hold the business and applicant records an application belongs to</td><td>Business profile and the ability to file under the correct business</td></tr>
+  <tr><td>Audit trail</td><td>Immutable record of every action with actor, role, timestamp, and remarks</td><td>The applicant-visible subset is the timeline and the notification feed — both derive from it</td></tr>
+</table>
+
+<h3>4.2 &nbsp; Lifecycle projection — 19 admin states to 7 applicant states</h3>
+<p>This mapping is already defined in the admin as <code>LIFECYCLE_TO_MOBILE_LABEL</code>. Mobile must
+render the applicant label as the headline and the admin <code>lifecycleStatus</code> as the
+sub-line, so the applicant sees a stable, comprehensible status without losing the detail that tells
+them what is actually happening.</p>
+<table>
+  <tr><th style="width:26%">Admin <code>lifecycleStatus</code></th><th style="width:22%">Applicant headline</th><th>Sub-line the applicant reads</th></tr>
+  <tr><td>Draft</td><td><span class="tag tag-n">Draft</span></td><td>Not yet filed. Continue where you left off.</td></tr>
+  <tr><td>Submitted</td><td><span class="tag tag-i">Submitted</span></td><td>Filed and awaiting receipt by the Office of the Building Official.</td></tr>
+  <tr><td>Received</td><td><span class="tag tag-i">Submitted</span></td><td>Received by the OBO. Processing has started.</td></tr>
+  <tr><td>Document Verification</td><td><span class="tag tag-p">Under Review</span></td><td>Your documents are being checked for completeness.</td></tr>
+  <tr><td>Under Evaluation</td><td><span class="tag tag-p">Under Review</span></td><td>Technical evaluation in progress.</td></tr>
+  <tr><td>Revision Required</td><td><span class="tag tag-r">Under Review</span></td><td><strong>Action needed from you.</strong> See the evaluator's instructions.</td></tr>
+  <tr><td>Assessed</td><td><span class="tag tag-p">Payment Verification</span></td><td>Your Order of Payment is ready. Fees are now due.</td></tr>
+  <tr><td>Payment Submitted</td><td><span class="tag tag-p">Payment Verification</span></td><td>We have your payment details and are checking them.</td></tr>
+  <tr><td>Payment Under Verification</td><td><span class="tag tag-p">Payment Verification</span></td><td>The Treasurer's Office is verifying your payment.</td></tr>
+  <tr><td>Payment Verified</td><td><span class="tag tag-p">Payment Verification</span></td><td>Payment confirmed. Awaiting final approval.</td></tr>
+  <tr><td>For Approval</td><td><span class="tag tag-p">Payment Verification</span></td><td>With the Building Official for signature.</td></tr>
+  <tr><td>Approved</td><td><span class="tag tag-a">Approved</span></td><td>Approved. Your permit is being generated.</td></tr>
+  <tr><td>Permit Generated</td><td><span class="tag tag-a">Approved</span></td><td>Permit generated. Preparing for release.</td></tr>
+  <tr><td>Ready for Release</td><td><span class="tag tag-a">Ready for Release</span></td><td>Ready to claim. See claim instructions.</td></tr>
+  <tr><td>Released</td><td><span class="tag tag-a">Ready for Release</span></td><td>Released. Download your copy.</td></tr>
+  <tr><td>Completed</td><td><span class="tag tag-a">Ready for Release</span></td><td>Complete.</td></tr>
+  <tr><td>Rejected</td><td><span class="tag tag-r">Rejected</span></td><td>Not approved. Reason and next options below.</td></tr>
+  <tr><td>Cancelled</td><td><span class="tag tag-r">Rejected</span></td><td>Cancelled.</td></tr>
+  <tr><td>Expired</td><td><span class="tag tag-r">Rejected</span></td><td>Lapsed for inaction. You may refile.</td></tr>
+</table>
+
+<div class="callout warn">
+  <strong>Three states are currently collapsed and must not be.</strong> <code>Revision Required</code>,
+  <code>Assessed</code>, and <code>Ready for Release</code> all demand action from the applicant, yet the
+  first two are today folded into passive headlines. Mobile must add an <strong>action-required flag</strong>
+  independent of the status label, derived as: <code>lifecycleStatus ∈ {Revision Required, Assessed,
+  Ready for Release}</code> or an unresolved Letter of Instruction. This flag drives the tab badge, the
+  Home banner, and push priority.
+</div>
+
+<h3>4.3 &nbsp; Supporting vocabularies — use exactly as defined by the admin</h3>
+<pre><code>EvaluationStage      Initial · Zoning · Fire Safety · OBO · Final Approval   (ordered)
+EvaluationResult     Pending · Passed · Revision Required · Rejected
+PaymentStatus        Not Yet Available · Pending Verification · Paid · Overdue
+PermitReleaseStatus  Not Ready · Ready for Release · Released
+DocumentStatus       Pending · Approved · Rejected · Missing
+PaymentMethod        Bank Transfer · Onsite
+ReleaseMethod        Physical Claim · Authorized Representative
+ApplicationAction    New · Renewal · Amendment
+ServiceDomain        Business Permit · Construction Permit
+
+AssessmentFeeCentavos { filing, processing, architectural, structural,
+                        electrical, others }     // all amounts in centavos</code></pre>
+<div class="callout">
+  <strong>Currency rule.</strong> The admin stores money in <strong>centavos as integers</strong>. Mobile must
+  do the same and format only at the edge. Never hold a peso amount in a <code>double</code>: a fee
+  schedule rendered with a floating-point rounding error is a defect an applicant will notice at the
+  cashier.
+</div>
+
+<div class="section"></div>
+<h2>5 &nbsp; Canonical notification catalog</h2>
+<p class="lead">
+  Every notification the applicant can receive, with its trigger, priority, and destination. Tab
+  commands reference these by ID. Nothing may be notified that is not on this list, and every event
+  on this list must be implemented.
+</p>
+
+<h4>Priority definitions</h4>
+<p><span class="tag tag-r">P1 Action</span> Push, in-app banner, tab badge, persists until resolved. &nbsp;
+<span class="tag tag-p">P2 Progress</span> Push and feed entry; no persistent banner. &nbsp;
+<span class="tag tag-n">P3 Ambient</span> Feed entry only; no push.</p>
+
+<table>
+  <tr><th style="width:9%">ID</th><th style="width:23%">Event</th><th style="width:9%">Priority</th><th style="width:30%">Message the applicant reads</th><th>Deep link</th></tr>
+  <tr><td><code>N-01</code></td><td>Application submitted</td><td><span class="tag tag-p">P2</span></td><td>Application {ref} for {permitType} has been filed. Target release: {pledgeDate}.</td><td>Application detail</td></tr>
+  <tr><td><code>N-02</code></td><td>Received by OBO</td><td><span class="tag tag-p">P2</span></td><td>The Office of the Building Official has received {ref}. Processing has started.</td><td>Timeline</td></tr>
+  <tr><td><code>N-03</code></td><td>Document verification started</td><td><span class="tag tag-n">P3</span></td><td>Your documents for {ref} are being checked.</td><td>Documents</td></tr>
+  <tr><td><code>N-04</code></td><td><strong>Letter of Instruction issued</strong></td><td><span class="tag tag-r">P1</span></td><td>Action needed on {ref}. {n} item(s) must be corrected or supplied. Tap to see the list.</td><td>LOI detail</td></tr>
+  <tr><td><code>N-05</code></td><td>Evaluation stage passed</td><td><span class="tag tag-p">P2</span></td><td>{stage} evaluation passed for {ref}.</td><td>Timeline</td></tr>
+  <tr><td><code>N-06</code></td><td><strong>Revision required</strong></td><td><span class="tag tag-r">P1</span></td><td>{stage} evaluation returned {ref} for revision. Evaluator's remarks: "{remarks}"</td><td>Revision detail</td></tr>
+  <tr><td><code>N-07</code></td><td>FSEC cleared by BFP</td><td><span class="tag tag-p">P2</span></td><td>Fire Safety Evaluation Clearance issued for {ref}.</td><td>Timeline</td></tr>
+  <tr><td><code>N-08</code></td><td><strong>Order of Payment issued</strong></td><td><span class="tag tag-r">P1</span></td><td>Your Order of Payment for {ref} is ready: PHP {total}. Tap to view the breakdown.</td><td>Payments</td></tr>
+  <tr><td><code>N-09</code></td><td>Payment received</td><td><span class="tag tag-p">P2</span></td><td>We received your payment details for {ref}. Verification usually takes {n} working days.</td><td>Payment detail</td></tr>
+  <tr><td><code>N-10</code></td><td>Payment verified</td><td><span class="tag tag-p">P2</span></td><td>Payment for {ref} is verified. Official receipt {orNumber}.</td><td>Payment detail</td></tr>
+  <tr><td><code>N-11</code></td><td>Payment overdue</td><td><span class="tag tag-r">P1</span></td><td>The Order of Payment for {ref} is past due. Unpaid applications may lapse.</td><td>Payments</td></tr>
+  <tr><td><code>N-12</code></td><td>Approved</td><td><span class="tag tag-p">P2</span></td><td>{ref} has been approved by the Building Official.</td><td>Application detail</td></tr>
+  <tr><td><code>N-13</code></td><td>Permit generated</td><td><span class="tag tag-p">P2</span></td><td>Permit {permitNumber} has been generated for {ref}.</td><td>Permit</td></tr>
+  <tr><td><code>N-14</code></td><td><strong>Ready for release</strong></td><td><span class="tag tag-r">P1</span></td><td>Permit {permitNumber} is ready to claim. Tap for claim instructions and requirements.</td><td>Claim instructions</td></tr>
+  <tr><td><code>N-15</code></td><td>Released</td><td><span class="tag tag-p">P2</span></td><td>Permit {permitNumber} was released to {claimant} on {date}. Your digital copy is available.</td><td>Permit</td></tr>
+  <tr><td><code>N-16</code></td><td>Rejected</td><td><span class="tag tag-r">P1</span></td><td>{ref} was not approved. Reason: "{remarks}". You may refile or appeal.</td><td>Rejection detail</td></tr>
+  <tr><td><code>N-17</code></td><td>Inspection scheduled</td><td><span class="tag tag-r">P1</span></td><td>Joint inspection for {ref} on {date} at {time}. Attending: {offices}.</td><td>Inspection detail</td></tr>
+  <tr><td><code>N-18</code></td><td>Appointment reminder</td><td><span class="tag tag-p">P2</span></td><td>Your appointment at the OBO is tomorrow, {date} {time}. Bring: {items}.</td><td>Appointment</td></tr>
+  <tr><td><code>N-19</code></td><td>Pledged date approaching</td><td><span class="tag tag-n">P3</span></td><td>{ref} is due for release in {n} working days under its {classification} classification.</td><td>Timeline</td></tr>
+  <tr><td><code>N-20</code></td><td><strong>Pledged date lapsed</strong></td><td><span class="tag tag-r">P1</span></td><td>{ref} has passed its {n}-working-day service pledge. Tap to see your options.</td><td>Recourse screen</td></tr>
+  <tr><td><code>N-21</code></td><td>Permit commencement warning</td><td><span class="tag tag-r">P1</span></td><td>Work under permit {permitNumber} must start by {date} or the permit lapses. {n} days remain.</td><td>Permit</td></tr>
+  <tr><td><code>N-22</code></td><td>Professional credential expiring</td><td><span class="tag tag-p">P2</span></td><td>The PRC ID of {professional} expires on {date}. Update it before your next filing.</td><td>Professional profile</td></tr>
+  <tr><td><code>N-23</code></td><td>Draft idle</td><td><span class="tag tag-n">P3</span></td><td>Your {permitType} draft is {n}% complete and has not been touched in {days} days.</td><td>Draft wizard</td></tr>
+  <tr><td><code>N-24</code></td><td>Occupancy now possible</td><td><span class="tag tag-p">P2</span></td><td>Construction under {permitNumber} is complete on record. You may now file for your Certificate of Occupancy.</td><td>CoO wizard</td></tr>
+</table>
+
+<div class="cmd">
+  <div class="cmd-head">Command N — Notification engine</div>
+  <div class="cmd-body">
+    <p><span class="tag tag-r">BUILD</span> <span class="tag tag-i">SERVER</span>
+    Implement a single <code>NotificationEvent</code> model carrying <code>id</code>,
+    <code>type</code> (one of N-01…N-24), <code>priority</code>, <code>applicationId</code>,
+    <code>payload</code>, <code>createdAt</code>, <code>readAt</code>, and <code>resolvedAt</code>.
+    Every notification in the app is one of these — there are no ad-hoc SnackBar-only events for
+    anything on this list.</p>
+    <p>P1 events remain <strong>unresolved</strong> until the applicant completes the corresponding
+    action, and an unresolved P1 keeps its banner and badge regardless of read state. Reading is not
+    resolving. This distinction is the single most important behaviour in the notification system.</p>
+  </div>
+</div>
+
+<div class="section"></div>
+<h2>6 &nbsp; TAB 1 — Home</h2>
+
+<div class="cmd">
+  <div class="cmd-head">Command 1 — Home</div>
+  <div class="cmd-body">
+    <p>Build Home as a <strong>triage surface</strong>, not a welcome screen. Its sole job is to put
+    what the applicant owes at the top, what is moving in the middle, and what they can start at the
+    bottom. If the applicant has an unresolved P1 notification, Home must be about that and nothing
+    else above the fold.</p>
+    <p>The current dashboard shows a greeting, one active application, counters, quick actions, and
+    recent notifications. Keep the structure; <strong>invert the priority</strong> so that action
+    items outrank decoration, and replace every mock counter with a real projection.</p>
+  </div>
+</div>
+
+<h3>6.1 &nbsp; Composition, in render order</h3>
+<table>
+  <tr><th style="width:7%">#</th><th style="width:24%">Block</th><th style="width:11%">State</th><th>Behaviour</th></tr>
+  <tr><td>1</td><td><strong>Action Required stack</strong></td><td><span class="tag tag-r">BUILD</span></td><td>One card per unresolved P1. Card states the application reference, the permit type, what is required, and a single primary action. Ordered by regulatory urgency: overdue payment, LOI, revision, ready-for-release, inspection, commencement lapse. Absent entirely when there is nothing to act on — never an empty placeholder.</td></tr>
+  <tr><td>2</td><td><strong>Header</strong></td><td><span class="tag tag-a">KEEP</span></td><td>Greeting, name, business selector when the applicant holds more than one business, profile avatar. Compresses to a single line when block 1 is present.</td></tr>
+  <tr><td>3</td><td><strong>Active applications</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Horizontally scrollable cards, one per in-flight application. Each shows reference, permit type, applicant status headline, admin sub-line, stage progress, and the working-day countdown to the pledged date. Countdown turns amber inside 2 days and red once lapsed.</td></tr>
+  <tr><td>4</td><td><strong>Start an application</strong></td><td><span class="tag tag-a">KEEP</span></td><td>Primary call to action into the permit catalog. Remains prominent when the applicant has nothing in flight.</td></tr>
+  <tr><td>5</td><td><strong>Summary counters</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>In Progress · Action Needed · Approved · Released. Each is a filter link into Applications, not a dead statistic.</td></tr>
+  <tr><td>6</td><td><strong>My permits</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Released permits with permit number and, for building permits, the one-year commencement countdown under PD 1096. Tapping opens the digital permit.</td></tr>
+  <tr><td>7</td><td><strong>Recent activity</strong></td><td><span class="tag tag-a">KEEP</span></td><td>Last five feed entries, read and unread, linking into Notifications.</td></tr>
+</table>
+
+<h3>6.2 &nbsp; States</h3>
+<table>
+  <tr><th style="width:22%">State</th><th>Treatment</th></tr>
+  <tr><td>First run, no business</td><td>Single card: register your business or property owner profile. Blocks 3–7 hidden.</td></tr>
+  <tr><td>Business, no application</td><td>Guidance card explaining the sequence — secure your locational clearance, engage your professional, then file — with the catalog beneath.</td></tr>
+  <tr><td>Loading</td><td>Skeleton cards matching final layout. Never a bare centred spinner on a tab root.</td></tr>
+  <tr><td>Offline</td><td>Last-known state with an "as of {timestamp}" stamp and a non-blocking offline chip. Action cards remain visible and tappable; the action itself explains it needs a connection.</td></tr>
+  <tr><td>Error</td><td>Inline retry inside the affected block. A failure loading counters must not blank the action stack.</td></tr>
+</table>
+
+<h3>6.3 &nbsp; Acceptance criteria</h3>
+<ul class="ac">
+  <li>An unresolved P1 always renders above the fold on a 360×640 dp viewport.</li>
+  <li>The working-day countdown excludes Saturdays, Sundays, and Philippine regular and special non-working holidays, and is computed from an injectable calendar service so it is testable.</li>
+  <li>Every counter navigates to Applications pre-filtered to exactly the set it counted.</li>
+  <li>Blocks render independently; one failing repository cannot blank the tab.</li>
+  <li>Widget test drives: no-business, business-without-application, one-in-flight, one-LOI-outstanding, and overdue-payment states.</li>
+</ul>
+
+<div class="section"></div>
+<h2>7 &nbsp; TAB 2 — Applications</h2>
+
+<div class="cmd">
+  <div class="cmd-head">Command 2 — Applications</div>
+  <div class="cmd-body">
+    <p>Build Applications as the <strong>full lifecycle record</strong> of everything the applicant has
+    filed or started, plus the catalog for starting more. The sixteen permit wizards already exist and
+    are substantially complete — do not rebuild them. Build the layer <em>around</em> them: the list,
+    the detail, the timeline, the deficiency loop, the inspection record, and the permit itself.</p>
+    <p>The single largest gap in the app today is that an application effectively ends at submission.
+    Everything after submission — evaluation stages, letters of instruction, revisions, inspections,
+    approval, permit generation, release — currently has no home. That is what this command builds.</p>
+  </div>
+</div>
+
+<h3>7.1 &nbsp; Screens</h3>
+<table>
+  <tr><th style="width:26%">Screen</th><th style="width:11%">State</th><th>Content</th></tr>
+  <tr><td><strong>Application list</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Segmented by Drafts · In Progress · Needs Action · Completed. Search by reference, project title, or address. Filter by permit type, status, business, and date range. Each row: reference, permit type, status headline, action flag, pledged-date countdown.</td></tr>
+  <tr><td><strong>Permit catalog</strong></td><td><span class="tag tag-a">KEEP</span></td><td>The four existing groups — Building Permit, Ancillary, Other, Certificates. Add a per-item "what this is for" line and an estimated document count so the applicant can judge readiness before entering a nine-step wizard.</td></tr>
+  <tr><td><strong>Pre-flight check</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Short gate before any wizard: do you have your locational/zoning clearance, proof of ownership, and a tagged design professional? Answering no routes to guidance naming the issuing office rather than into a wizard that will stall.</td></tr>
+  <tr><td><strong>Wizards ×16</strong></td><td><span class="tag tag-a">KEEP</span></td><td>Already built with per-step validation, draft save and resume, review with Edit jumps, and submission confirmation. Audit field-for-field against the Unified Building Permit Application Form and Unified Application Form for Certificate of Occupancy; correct any divergence.</td></tr>
+  <tr><td><strong>Application detail</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Header with reference, permit type, business, project location, classification, and pledged date. Tabs or sections for Timeline, Documents, Evaluations, Payment, Inspection, Permit.</td></tr>
+  <tr><td><strong>Timeline</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Vertical stepper of every lifecycle transition with timestamp and acting office. Future steps shown greyed so the applicant can see the whole road. Revision loops render as a branch returning to evaluation, not as a linear step.</td></tr>
+  <tr><td><strong>Letter of Instruction</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Itemised deficiencies, each with the evaluator's verbatim remark, the document or field concerned, and an inline resolve action. A progress meter — resolved of total — and a single Resubmit action enabled only when all items are addressed.</td></tr>
+  <tr><td><strong>Evaluations</strong></td><td><span class="tag tag-r">BUILD</span></td><td>The five stages in order — Initial, Zoning, Fire Safety, OBO, Final Approval — each with result, evaluator, date, and remarks. Fire Safety displays the FSEC as a named artefact, not a generic attachment.</td></tr>
+  <tr><td><strong>Inspection</strong></td><td><span class="tag tag-r">BUILD</span></td><td>One joint inspection event with date, time, attending offices, the applicant's preparation checklist, and the outcome. Modelled as joint because JMC 2021-01 requires joint inspection teams.</td></tr>
+  <tr><td><strong>Digital permit</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Permit number, issue date, scope, conditions, QR or reference for verification, share and download. For building permits, the one-year commencement deadline stated on the face of the record.</td></tr>
+  <tr><td><strong>Claim instructions</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Where to claim, office hours, what to bring, who may claim — the claimant personally or an authorised representative — and what the representative must present.</td></tr>
+  <tr><td><strong>Rejection detail</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Verbatim reason, the stage that rejected, and the applicant's options: refile, appeal, or contact the OBO. Never a bare red badge.</td></tr>
+</table>
+
+<h3>7.2 &nbsp; Data contract</h3>
+<pre><code>ApplicationSummary {
+  id, referenceNumber, businessId, permitType, applicationAction,
+  serviceDomain, projectTitle, location,
+  lifecycleStatus,            // 19-value admin vocabulary, verbatim
+  applicantStatus,            // derived via LIFECYCLE_TO_MOBILE_LABEL
+  actionRequired: bool,       // derived — see §4.2
+  classification,             // Simple | Complex | Highly Technical
+  dateSubmitted, pledgedCompletionDate, workingDaysRemaining,
+  evaluationStage, evaluationResult,
+  paymentStatus, permitReleaseStatus, assessedAmountCentavos,
+  openInstructionCount
+}
+ApplicationDetail extends ApplicationSummary {
+  timeline: [ { status, occurredAt, office, actor, remarks } ],
+  documents: [ { id, label, fileName, status, uploadedAt, remarks } ],
+  evaluations: [ { stage, result, evaluator, evaluatedAt, remarks } ],
+  instructions: [ { id, issuedAt, items: [ { subject, remark, resolvedAt } ] } ],
+  inspection: { scheduledAt, offices[], checklist[], outcome, remarks } | null,
+  permit: { permitNumber, issuedDate, commenceByDate, fileUrl } | null,
+  release: { status, method, claimant, releasedAt, instructions } | null
+}</code></pre>
+
+<h3>7.3 &nbsp; Behaviour rules</h3>
+<ul>
+  <li><strong>The applicant never changes status.</strong> Every action the app offers is a submission
+  into the admin's queue — resubmit after an LOI, submit proof of payment, confirm an appointment.
+  Status changes arrive from the server only.</li>
+  <li><strong>Remarks are instructions.</strong> Wherever the admin recorded remarks on a Revision
+  Required or Rejected result, render them verbatim and prominently. Never summarise, truncate behind
+  a "more" link, or paraphrase an evaluator.</li>
+  <li><strong>Drafts are durable.</strong> A draft survives app restart, is listed with its completion
+  percentage, and can be resumed at the exact step it was left on. This already works — preserve it.</li>
+  <li><strong>Ancillary permits link to their parent.</strong> An electrical, mechanical, sanitary, or
+  electronics permit filed against an existing building permit shows that parent in its header and in
+  the parent's detail.</li>
+</ul>
+
+<h3>7.4 &nbsp; Acceptance criteria</h3>
+<ul class="ac">
+  <li>Every one of the 19 <code>lifecycleStatus</code> values renders with a correct headline, sub-line, and timeline entry — verified by a table-driven widget test over all 19.</li>
+  <li>An application with an open LOI cannot reach a state where the applicant sees no route to resolve it.</li>
+  <li>The timeline renders a revision loop without duplicating or reordering earlier steps.</li>
+  <li>The digital permit is readable and shareable with no network connection once downloaded.</li>
+  <li>All 16 wizards still pass their existing widget tests after the surrounding layer is added.</li>
+</ul>
+
+<div class="section"></div>
+<h2>8 &nbsp; TAB 3 — Payments</h2>
+
+<div class="cmd">
+  <div class="cmd-head">Command 3 — Payments</div>
+  <div class="cmd-body">
+    <p>Build Payments around the <strong>Order of Payment</strong> as the only legitimate source of an
+    amount due. The tab exists to do four things: show what is owed and why, let the applicant pay or
+    record a payment, prove the payment was made, and produce the official receipt afterwards.</p>
+    <p>The app must never display an amount the LGU has not assessed. Where no assessment exists, the
+    correct state is <code>Not Yet Available</code> with an explanation of what triggers assessment —
+    not a zero, not an estimate, and not a blank.</p>
+  </div>
+</div>
+
+<h3>8.1 &nbsp; Screens</h3>
+<table>
+  <tr><th style="width:26%">Screen</th><th style="width:11%">State</th><th>Content</th></tr>
+  <tr><td><strong>Payments list</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Grouped Due Now · Awaiting Verification · Paid. Each row: application reference, permit type, amount, status, and due date where one applies. Total due across all applications pinned at the top.</td></tr>
+  <tr><td><strong>Order of Payment</strong></td><td><span class="tag tag-r">BUILD</span></td><td>The assessment itself, itemised across filing, processing, architectural, structural, electrical, and other fees, each as a line with its own amount, then the total. Assessing officer, assessment date, O.P. number, and validity period. Downloadable and shareable.</td></tr>
+  <tr><td><strong>Fee explainer</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Per line item, a plain-language note on what the fee covers and the schedule it derives from. Addresses the single most common applicant anxiety — that a charge is not official.</td></tr>
+  <tr><td><strong>Pay</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Method selection limited to what the LGU actually accepts: <code>Bank Transfer</code> and <code>Onsite</code>. Bank transfer shows the payee account details and captures the reference number and proof of payment. Onsite shows the Treasurer's Office window, hours, and what to bring.</td></tr>
+  <tr><td><strong>Proof of payment</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Capture or import the deposit slip or transaction screenshot, attach the reference number and payment date, and submit for verification. Reuses the document capture pipeline.</td></tr>
+  <tr><td><strong>Verification status</strong></td><td><span class="tag tag-r">BUILD</span></td><td>What was submitted, when, and where it stands: Pending Verification, Paid, or Overdue. On verification, shows the official receipt number and date recorded by the Treasurer's Office.</td></tr>
+  <tr><td><strong>Payment history</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Every transaction across every application, filterable by business and year, with export.</td></tr>
+</table>
+
+<h3>8.2 &nbsp; State machine</h3>
+<pre><code>Not Yet Available  ──(admin assesses; lifecycleStatus → Assessed)──▶  Due Now
+Due Now            ──(applicant submits reference + proof)────────▶  Pending Verification
+Due Now            ──(due date passes, unpaid)────────────────────▶  Overdue
+Pending Verification ──(Treasury verifies)────────────────────────▶  Paid
+Pending Verification ──(rejected: wrong amount/reference)─────────▶  Due Now  + P1 notice
+Overdue            ──(applicant pays)─────────────────────────────▶  Pending Verification</code></pre>
+
+<div class="callout warn">
+  <strong>Do not build a payment gateway into this release.</strong> The admin domain accepts exactly two
+  methods — Bank Transfer and Onsite — and payment is verified by the Treasurer's Office rather than
+  captured by the app. Present only those two. E-wallet and over-the-counter channels used elsewhere in
+  Philippine LGU practice may be added later, but only once the LGU has formally accepted them; offering
+  an unaccepted channel would strand an applicant's money.
+</div>
+
+<h3>8.3 &nbsp; Acceptance criteria</h3>
+<ul class="ac">
+  <li>All monetary values are held as integer centavos end to end and formatted only for display, as <code>PHP 12,345.67</code>.</li>
+  <li>The sum of rendered line items always equals the rendered total; a mismatch is a hard error state, never a silently rounded figure.</li>
+  <li>No screen can display an amount when <code>assessedAmountCentavos</code> is null.</li>
+  <li>Proof of payment cannot be submitted without both a reference number and an attachment.</li>
+  <li>Overdue state is reachable and tested, and raises <code>N-11</code>.</li>
+</ul>
+
+<div class="section"></div>
+<h2>9 &nbsp; TAB 4 — Notifications</h2>
+
+<div class="cmd">
+  <div class="cmd-head">Command 4 — Notifications</div>
+  <div class="cmd-body">
+    <p>Rebuild Notifications from a passive list into a <strong>work queue</strong>. Its organising
+    principle is not chronology but resolution: things that still require the applicant to act sit
+    above things that are merely news, regardless of age.</p>
+    <p>Implement the full catalog in Section 5. Every entry deep-links to the exact screen where the
+    thing can be dealt with — never to a tab root, and never to a dead end.</p>
+  </div>
+</div>
+
+<h3>9.1 &nbsp; Structure</h3>
+<table>
+  <tr><th style="width:24%">Section</th><th>Contents and behaviour</th></tr>
+  <tr><td><strong>Needs your action</strong></td><td>All unresolved P1 events, ordered by urgency then age. Each carries its primary action inline. An item leaves this section only when its underlying condition is resolved — reading it does not remove it.</td></tr>
+  <tr><td><strong>Updates</strong></td><td>P2 progress events, reverse-chronological, grouped by day with Today and Yesterday headers.</td></tr>
+  <tr><td><strong>Earlier</strong></td><td>P3 ambient events and everything already read and resolved. Collapsed by default beyond 30 days.</td></tr>
+  <tr><td><strong>Filters</strong></td><td>By application, by business, and unread-only. Mark all as read applies to read state only and never clears an unresolved action.</td></tr>
+</table>
+
+<h3>9.2 &nbsp; Delivery rules</h3>
+<ul>
+  <li><strong>Push is earned, not assumed.</strong> P1 always pushes. P2 pushes unless the applicant has
+  muted that category. P3 never pushes.</li>
+  <li><strong>Quiet hours.</strong> No push between 21:00 and 07:00 Philippine Standard Time except for a
+  P1 whose deadline falls within the following 24 hours.</li>
+  <li><strong>Per-category preferences</strong> live in Profile and must genuinely gate delivery. A
+  preferences screen that does not change behaviour is a defect — this is the current state and must
+  be corrected.</li>
+  <li><strong>Badging</strong> on the tab shows the count of <em>unresolved P1s</em>, not unread count.
+  This is deliberate: the number should mean "things you must do", not "things you have not looked at".</li>
+  <li><strong>Every notification carries its application reference</strong> in the body text, because an
+  applicant with several permits in flight cannot otherwise tell which one is being discussed.</li>
+</ul>
+
+<h3>9.3 &nbsp; Acceptance criteria</h3>
+<ul class="ac">
+  <li>Each of N-01 through N-24 is produced, rendered, and deep-links to a live destination — covered by one table-driven test.</li>
+  <li>Marking all as read leaves every unresolved P1 in Needs your action, with the tab badge unchanged.</li>
+  <li>Muting a category suppresses its push and continues to record the feed entry.</li>
+  <li>Deep links resolve correctly from a cold start, not only when the app is already running.</li>
+</ul>
+
+<div class="section"></div>
+<h2>10 &nbsp; TAB 5 — Profile</h2>
+
+<div class="cmd">
+  <div class="cmd-head">Command 5 — Profile</div>
+  <div class="cmd-body">
+    <p>Build Profile as the <strong>identity, evidence, and compliance</strong> tab. It holds who the
+    applicant is, the businesses and properties they file under, the design professionals tagged to
+    their applications, the reusable document vault, and the privacy controls the Data Privacy Act
+    requires. Settings are the least important thing here and should not dominate it.</p>
+    <p>The document vault is the highest-leverage feature in this tab. An applicant who has already
+    uploaded their PRC ID, TCT, and barangay clearance should never be asked to find them again for
+    the next permit.</p>
+  </div>
+</div>
+
+<h3>10.1 &nbsp; Sections</h3>
+<table>
+  <tr><th style="width:26%">Section</th><th style="width:11%">State</th><th>Content</th></tr>
+  <tr><td><strong>Identity</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Name, mobile, email, photo, and verification state. Mobile and email must be individually verified because both carry official correspondence.</td></tr>
+  <tr><td><strong>Businesses &amp; properties</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Each business or property owner profile with its address, ownership evidence, and the applications filed under it. Applications are always filed under one of these, never against a bare user.</td></tr>
+  <tr><td><strong>Design professionals</strong></td><td><span class="tag tag-r">BUILD</span></td><td>Architects and engineers tagged to the applicant's projects, each with PRC number and validity, PTR number, date and place of issue, discipline, and their PRC ID and PTR images. Expiry drives <code>N-22</code>. Directly mirrors the tagging-of-professionals model used by QC e-Services.</td></tr>
+  <tr><td><strong>Authorised representatives</strong></td><td><span class="tag tag-r">BUILD</span></td><td>People permitted to file or claim on the applicant's behalf, each with their notarised Special Power of Attorney and valid ID on file. Feeds the Authorized Representative release method.</td></tr>
+  <tr><td><strong>My Documents</strong></td><td><span class="tag tag-a">KEEP</span></td><td>Already built — camera, gallery, and file import; categorisation; in-app PDF and image preview; reuse into any permit upload slot. Add expiry dates for time-bound documents and a validity warning.</td></tr>
+  <tr><td><strong>Privacy &amp; data</strong></td><td><span class="tag tag-r">BUILD</span></td><td>The privacy notice, the consents given with their dates, and working controls to access, correct, export, and delete personal data — the Data Privacy Act rights made operational rather than described.</td></tr>
+  <tr><td><strong>Security</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Change password, biometric unlock, active sessions, and sign out. See the warning below.</td></tr>
+  <tr><td><strong>Help &amp; charter</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>The LGU's Citizen's Charter entry for each permit service — classification, pledged processing time, fees, and requirements — plus OBO contact details, office hours, and the ARTA complaint route.</td></tr>
+  <tr><td><strong>Settings</strong></td><td><span class="tag tag-p">EXTEND</span></td><td>Notification preferences that genuinely gate delivery. Language: either implement localisation for the listed Philippine languages or reduce the picker to what is actually supported.</td></tr>
+</table>
+
+<div class="callout warn">
+  <strong>Security defect to correct before any pilot.</strong> The app currently stores credentials in
+  plain text in <code>SharedPreferences</code> to simulate login. Under the Data Privacy Act this is
+  indefensible once real applicant data is present. Replace with a token-based session, store tokens in
+  the platform keychain or keystore via secure storage, and never persist a password on the device.
+  Treat this as blocking for any release that touches real personal data.
+</div>
+
+<div class="callout warn">
+  <strong>Language picker.</strong> The screen lists twenty Philippine languages but changes nothing —
+  it only moves a radio button. Presenting a choice that does not function is worse than presenting no
+  choice. Either wire localisation properly, starting with English and Filipino, or reduce the list to
+  the languages actually supported and mark the rest as coming soon.
+</div>
+
+<h3>10.2 &nbsp; Acceptance criteria</h3>
+<ul class="ac">
+  <li>No password is written to disk in any form; a static analysis check enforces this.</li>
+  <li>A document in the vault can be attached to a permit upload slot in three taps or fewer.</li>
+  <li>Every notification preference toggle demonstrably changes delivery, proven by test.</li>
+  <li>Data deletion removes the local file from app storage as well as the record, and says what it cannot delete server-side and why.</li>
+  <li>Every permit type in the catalog has a reachable Citizen's Charter entry stating its classification and pledged processing time.</li>
+</ul>
+
+<div class="section"></div>
+<h2>11 &nbsp; Cross-cutting commands</h2>
+<p class="lead">These cut across all five tabs. Each is owned by no single tab and must be built once, centrally.</p>
+
+<div class="cmd">
+  <div class="cmd-head">Command X1 — Working-day and service-pledge engine</div>
+  <div class="cmd-body">
+    <p>Implement a single <code>ServicePledgeService</code> that, given an application's classification
+    and date of filing, returns the pledged completion date, working days elapsed, working days
+    remaining, and whether the pledge has lapsed. It must exclude weekends and Philippine regular and
+    special non-working holidays from an injectable calendar, so tests are deterministic and the
+    holiday list can be updated yearly without touching logic. Every countdown in the app reads from
+    this one service. Nothing computes dates locally.</p>
+  </div>
+</div>
+
+<div class="cmd">
+  <div class="cmd-head">Command X2 — Document pipeline and vault</div>
+  <div class="cmd-body">
+    <p>Consolidate document handling on the existing attach-document sheet — camera, gallery, system
+    file picker, and My Documents — for every upload slot in the app. Eleven of the sixteen wizards
+    still fabricate mock documents; migrate them all, and add <code>debugAttachDocumentOverride</code>
+    to each wizard's test file in the same change.</p>
+    <p>Every stored document carries a category, an optional expiry date, its source, and a
+    server-side status of Pending, Approved, Rejected, or Missing. A document rejected by an evaluator
+    displays its rejection remark wherever it appears.</p>
+  </div>
+</div>
+
+<div class="cmd">
+  <div class="cmd-head">Command X3 — Privacy, consent, and permissions</div>
+  <div class="cmd-body">
+    <p>Gate the first capture of any personal document behind a privacy notice stating purpose,
+    retention, and who receives the data, with explicit recorded consent and its timestamp. Precede
+    every OS permission prompt with a primer explaining the purpose in plain language — the app
+    already has this pattern for camera, photos, and file access; extend it consistently. Provide
+    working access, correction, export, and deletion controls in Profile.</p>
+  </div>
+</div>
+
+<div class="cmd">
+  <div class="cmd-head">Command X4 — Accessibility and low-end device performance</div>
+  <div class="cmd-body">
+    <p>Every interactive target at least 48×48 dp — already an app constant, apply it without exception.
+    All content legible at 200% text scale with no clipping; the nine-step wizards are the highest risk
+    and must be tested at that scale. Semantic labels on every icon-only control. Contrast at WCAG AA
+    against the existing palette. Target a mid-range Android device on a throttled connection as the
+    reference, not a simulator on a desktop.</p>
+  </div>
+</div>
+
+<div class="cmd">
+  <div class="cmd-head">Command X5 — Offline and sync</div>
+  <div class="cmd-body">
+    <p>Drafts, the document vault, and downloaded permits are fully available offline. Every remote-backed
+    surface carries an "as of {timestamp}" stamp when serving cached data. Submissions attempted offline
+    queue with an explicit pending-submission state and retry; they never fail silently and never
+    double-submit on retry.</p>
+  </div>
+</div>
+
+<div class="section"></div>
+<h2>12 &nbsp; Definition of done</h2>
+<p class="lead">A command is executed only when every line below is true of it.</p>
+
+<div class="grid2">
+  <div>
+    <h4>Engineering</h4>
+    <ul class="ac">
+      <li><code>flutter analyze</code> reports no issues</li>
+      <li><code>flutter test</code> is green, including new tests</li>
+      <li>Screens read providers; providers read repositories</li>
+      <li>No mock data outside <code>lib/mock/</code> and repositories</li>
+      <li>No literal colours, spacings, or text styles</li>
+      <li>Money held as integer centavos throughout</li>
+      <li>Admin field names preserved verbatim</li>
+    </ul>
+    <h4>Experience</h4>
+    <ul class="ac">
+      <li>Loading, empty, error, and offline states all designed</li>
+      <li>Every list has a genuine empty state, not a spinner</li>
+      <li>Action-required items visible above the fold</li>
+      <li>Legible at 200% text scale</li>
+      <li>Targets at least 48×48 dp</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Compliance</h4>
+    <ul class="ac">
+      <li>Every fee traces to an official Order of Payment</li>
+      <li>Pledged dates shown in working days</li>
+      <li>No claim of automatic approval anywhere in the app</li>
+      <li>Consent captured before first personal-data capture</li>
+      <li>No credential persisted in plain text</li>
+      <li>Notarised requirements flagged as needing wet-signed originals</li>
+      <li>Every required document names its issuing office</li>
+    </ul>
+    <h4>Content</h4>
+    <ul class="ac">
+      <li>Evaluator remarks rendered verbatim, never summarised</li>
+      <li>Every legal term explained in plain language on first use</li>
+      <li>Every notification names its application reference</li>
+      <li>No notification deep-links to a tab root</li>
+    </ul>
+  </div>
+</div>
+
+<h3>12.1 &nbsp; Suggested execution order</h3>
+<table>
+  <tr><th style="width:8%">Order</th><th style="width:30%">Command</th><th>Why here</th></tr>
+  <tr><td>1</td><td>X1 Working-day engine · §4 status projection</td><td>Every other surface depends on correct status and dates. Nothing downstream is right until these are.</td></tr>
+  <tr><td>2</td><td>Command 2 — Applications detail, timeline, LOI</td><td>The largest functional gap. Post-submission life currently has no home in the app at all.</td></tr>
+  <tr><td>3</td><td>Command N · Command 4 — Notifications</td><td>The LOI and Order of Payment are worthless if the applicant is not told they exist.</td></tr>
+  <tr><td>4</td><td>Command 3 — Payments</td><td>Unblocks the money path once assessment can reach the applicant.</td></tr>
+  <tr><td>5</td><td>Command 1 — Home</td><td>Triage is only meaningful once there is real state to triage.</td></tr>
+  <tr><td>6</td><td>Command 5 — Profile · X3 privacy · security fix</td><td>Blocking for any pilot handling real applicant data.</td></tr>
+  <tr><td>7</td><td>X2 · X4 · X5</td><td>Consolidation and hardening across everything built above.</td></tr>
+</table>
+
+<div class="section"></div>
+<h2>13 &nbsp; Sources</h2>
+<p class="lead">Philippine legal instruments and Philippine platform references consulted for this document.</p>
+
+<h4>Law and national issuances</h4>
+<ul>
+  <li>Presidential Decree No. 1096, National Building Code of the Philippines, and its 2004 Revised Implementing Rules and Regulations — <span style="color:#6B7280">dpwh.gov.ph/DPWH/files/nbc/PD.pdf</span></li>
+  <li>Republic Act No. 11032, Ease of Doing Business and Efficient Government Service Delivery Act of 2018, and its Implementing Rules and Regulations (CSC–ARTA–DTI JMC No. 2019-001) — <span style="color:#6B7280">elibrary.judiciary.gov.ph</span></li>
+  <li>DILG–DPWH–DICT–DTI Joint Memorandum Circular No. 2018-01, Guidelines in Streamlining the Processes for the Issuance of Building Permits and Certificates of Occupancy — <span style="color:#6B7280">dilg.gov.ph/issuances</span></li>
+  <li>ARTA–DPWH–DILG–DICT–DTI–PRC–BFP Amended Joint Memorandum Circular No. 2021-01 — <span style="color:#6B7280">arta.gov.ph</span></li>
+  <li>Republic Act No. 9514, Revised Fire Code of the Philippines, on the Fire Safety Evaluation Clearance and Fire Safety Inspection Certificate</li>
+  <li>Republic Act No. 10173, Data Privacy Act of 2012, and National Privacy Commission guidance — <span style="color:#6B7280">privacy.gov.ph</span></li>
+  <li>Republic Act No. 8792, Electronic Commerce Act of 2000 — <span style="color:#6B7280">officialgazette.gov.ph</span></li>
+</ul>
+
+<h4>Philippine platform and LGU references</h4>
+<ul>
+  <li>Quezon City Government, Citizen's Charter — Issuance of Construction Permits, Department of the Building Official — <span style="color:#6B7280">quezoncity.gov.ph</span></li>
+  <li>QC e-Services, online registration, appointment, generated checklist, and status portal — <span style="color:#6B7280">qceservices.quezoncity.gov.ph</span></li>
+  <li>City Government of Pasig, Office of the Building Official — Checklist of Requirements, Occupancy Permit Application (AR-OP-002) — <span style="color:#6B7280">pasigcity.gov.ph</span></li>
+  <li>DICT / DILG electronic Business Permit and Licensing System (eBPLS) and electronic Business One-Stop Shop (e-BOSS) programme materials — <span style="color:#6B7280">dilg.gov.ph</span></li>
+  <li>City / Municipal Planning and Development Office practice on Locational and Zoning Clearance as a prerequisite to the building permit</li>
+</ul>
+
+<h4>Internal</h4>
+<ul>
+  <li>eBPCO Web Admin domain model — <code>src/app/core/domain/{status,application,payment,permit,document,evaluation}.model.ts</code></li>
+  <li>eBPCO Mobile — <code>lib/core/models/</code>, <code>lib/routes/app_router.dart</code>, and the sixteen permit wizards under <code>lib/features/applications/presentation/</code></li>
+</ul>
+
+<div style="margin-top:34px; padding-top:14px; border-top:2px solid #C81E2C; font-size:8pt; color:#9CA3AF;">
+  eBPCO Mobile — Frontend Master Command v1.0 &nbsp;·&nbsp; 18 August 2026 &nbsp;·&nbsp;
+  Applicant-facing scope only &nbsp;·&nbsp; Republic of the Philippines
+</div>
+
+</body>
+</html>
