@@ -172,6 +172,10 @@ class _DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         break;
       case DocumentCardAction.rename:
         await _handleRename(provider, document);
+      case DocumentCardAction.setExpiry:
+        // Expiry is set from the list, where the whole set is visible and a
+        // stale document can be spotted next to its neighbours.
+        break;
       case DocumentCardAction.changeCategory:
         await _handleChangeCategory(provider, document);
       case DocumentCardAction.useForApplication:

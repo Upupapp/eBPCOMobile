@@ -311,6 +311,37 @@ class DocumentsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets or clears a document's expiry date.
+  ///
+  /// Optional by design: most imports have no meaningful expiry, and
+  /// demanding a date for every file would make importing tedious enough that
+  /// people stop doing it.
+  Future<void> setExpiryDate(String id, DateTime? expiry) async {
+    _documents = [
+      for (final doc in _documents)
+        if (doc.id == id)
+          doc.copyWith(expiryDate: expiry, clearExpiryDate: expiry == null)
+        else
+          doc,
+    ];
+    await _repository.saveAll(_documents);
+    notifyListeners();
+  }
+
+  /// Documents that have lapsed or are about to, soonest first.
+  ///
+  /// Attaching an expired clearance gets an application returned, so this is
+  /// worth surfacing before a filing rather than after one.
+  List<SavedDocumentModel> documentsNeedingAttention(DateTime asOf) {
+    final due = _documents.where((d) => d.needsAttention(asOf)).toList();
+    due.sort((a, b) {
+      final left = a.daysUntilExpiry(asOf) ?? 0;
+      final right = b.daysUntilExpiry(asOf) ?? 0;
+      return left.compareTo(right);
+    });
+    return due;
+  }
+
   /// Marks a document as used just now — called when it's attached to a
   /// permit application via "Choose from My Documents". The document
   /// itself is never removed or duplicated by this.

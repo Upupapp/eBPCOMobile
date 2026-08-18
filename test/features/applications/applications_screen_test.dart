@@ -38,7 +38,40 @@ import 'package:ebpco_user_app/features/applications/presentation/renovation_per
 import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/sign_permit/sign_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
+import 'package:ebpco_user_app/features/applications/presentation/pre_flight_screen.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+
+/// Taps a permit in the catalog and clears the pre-flight gate.
+///
+/// The catalog no longer opens a wizard directly — it asks three
+/// prerequisite questions first — so these tests answer them and continue.
+Future<void> _openFromCatalog(WidgetTester tester, Finder permit) async {
+  await tester.tap(permit);
+  await tester.pumpAndSettle();
+
+  expect(
+    find.text('Before you start'),
+    findsOneWidget,
+    reason: 'every catalog entry must pass through the gate',
+  );
+  for (final question in const [
+    'Do you have your Locational or Zoning Clearance?',
+    'Do you have proof of ownership, or the right to build?',
+    'Have you engaged a licensed architect or engineer?',
+  ]) {
+    final card = find.ancestor(
+      of: find.text(question),
+      matching: find.byType(Container),
+    );
+    await tester.tap(
+      find.descendant(of: card.first, matching: find.text('Yes')),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  await tester.tap(find.text('Start the application'));
+  await tester.pumpAndSettle();
+}
 
 Widget _wrapWithRouter() {
   final router = GoRouter(
@@ -52,6 +85,20 @@ Widget _wrapWithRouter() {
         path: '/applications/new',
         builder: (context, state) =>
             const Scaffold(body: Text('New Application Screen')),
+      ),
+      GoRoute(
+        path: '/applications/pre-flight',
+        builder: (context, state) {
+          final params = state.uri.queryParameters;
+          return PreFlightScreen(
+            permitType: params['permitType'] ?? 'this permit',
+            wizardRoute: params['next'] ?? '/applications/new',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/charter/:permitType',
+        builder: (context, state) => const Scaffold(body: Text('Charter')),
       ),
       GoRoute(
         path: '/applications/new/building-permit',
@@ -230,8 +277,7 @@ void main() {
     await tester.pumpWidget(_wrapWithRouter());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('New Construction'));
-    await tester.pumpAndSettle();
+    await _openFromCatalog(tester, find.text('New Construction'));
     expect(tester.takeException(), isNull);
 
     expect(find.widgetWithText(AppBar, 'Building Permit'), findsOneWidget);
@@ -247,8 +293,7 @@ void main() {
     await tester.pumpWidget(_wrapWithRouter());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Renovation'));
-    await tester.pumpAndSettle();
+    await _openFromCatalog(tester, find.text('Renovation'));
     expect(tester.takeException(), isNull);
 
     expect(find.widgetWithText(AppBar, 'Renovation Permit'), findsOneWidget);
@@ -264,8 +309,7 @@ void main() {
       await tester.pumpWidget(_wrapWithRouter());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Addition / Extension'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Addition / Extension'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -285,8 +329,7 @@ void main() {
     await tester.pumpWidget(_wrapWithRouter());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Demolition'));
-    await tester.pumpAndSettle();
+    await _openFromCatalog(tester, find.text('Demolition'));
     expect(tester.takeException(), isNull);
 
     expect(find.widgetWithText(AppBar, 'Demolition Permit'), findsOneWidget);
@@ -304,8 +347,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Architectural'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Architectural'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Architectural'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -327,8 +369,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Civil / Structural'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Civil / Structural'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Civil / Structural'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -350,8 +391,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Electrical'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Electrical'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Electrical'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -373,8 +413,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Mechanical'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Mechanical'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Mechanical'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -396,8 +435,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Sanitary / Plumbing'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sanitary / Plumbing'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Sanitary / Plumbing'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -419,8 +457,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Plumbing'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Plumbing'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Plumbing'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -446,8 +483,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Electronics'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Electronics'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Electronics'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -469,8 +505,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Interior'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Interior'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Interior'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -492,8 +527,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Fencing'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Fencing'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Fencing'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -514,8 +548,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Sign Permit'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign Permit'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Sign Permit'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -536,8 +569,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Excavation'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Excavation'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Excavation'));
       expect(tester.takeException(), isNull);
 
       expect(
@@ -558,8 +590,7 @@ void main() {
 
       await tester.ensureVisible(find.text('Certificate of Occupancy'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Certificate of Occupancy'));
-      await tester.pumpAndSettle();
+      await _openFromCatalog(tester, find.text('Certificate of Occupancy'));
       expect(tester.takeException(), isNull);
 
       expect(

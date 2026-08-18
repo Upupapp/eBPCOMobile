@@ -7,6 +7,7 @@ import '../shared/widgets/states/error_state.dart';
 import '../features/applications/presentation/addition_extension_permit/addition_extension_application_submitted_screen.dart';
 import '../features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
 import '../features/applications/presentation/application_list_screen.dart';
+import '../features/applications/presentation/pre_flight_screen.dart';
 import '../features/applications/presentation/detail/application_detail_screen.dart';
 import '../features/applications/presentation/detail/application_outcome_screen.dart';
 import '../features/applications/presentation/detail/digital_permit_screen.dart';
@@ -134,6 +135,18 @@ class AppRouter {
         GoRoute(
           path: '/applications/new',
           builder: (context, state) => const ApplicationsScreen(),
+        ),
+        // The gate sits between the catalog and each wizard, so every permit
+        // gets it without each wizard having to remember.
+        GoRoute(
+          path: '/applications/pre-flight',
+          builder: (context, state) {
+            final params = state.uri.queryParameters;
+            return PreFlightScreen(
+              permitType: params['permitType'] ?? 'this permit',
+              wizardRoute: params['next'] ?? '/applications/new',
+            );
+          },
         ),
         GoRoute(
           path: '/applications/new/business-permit',

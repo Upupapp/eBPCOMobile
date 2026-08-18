@@ -12,6 +12,7 @@ enum DocumentCardAction {
   preview,
   rename,
   changeCategory,
+  setExpiry,
   useForApplication,
   viewInfo,
   remove,
@@ -93,6 +94,10 @@ class DocumentCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (document.isTimeBound) ...[
+                  const SizedBox(height: 4),
+                  _ExpiryChip(document: document),
+                ],
               ],
             ),
           ),
@@ -107,6 +112,12 @@ class DocumentCard extends StatelessWidget {
               const PopupMenuItem(
                 value: DocumentCardAction.rename,
                 child: Text('Rename'),
+              ),
+              PopupMenuItem(
+                value: DocumentCardAction.setExpiry,
+                child: Text(
+                  document.isTimeBound ? 'Change expiry date' : 'Set expiry date',
+                ),
               ),
               const PopupMenuItem(
                 value: DocumentCardAction.changeCategory,
@@ -129,6 +140,68 @@ class DocumentCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/// Expiry state, shown on the card rather than only in the detail sheet.
+///
+/// An expired barangay clearance or a stale Certified True Copy gets an
+/// application returned, and the cost of that lands on the applicant in
+/// weeks. It is worth a line on the row they are about to attach from.
+class _ExpiryChip extends StatelessWidget {
+  final SavedDocumentModel document;
+
+  const _ExpiryChip({required this.document});
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final days = document.daysUntilExpiry(now)!;
+    final expired = document.isExpired(now);
+    final soon = document.needsAttention(now);
+
+    final tone = expired
+        ? AppColors.statusRejected
+        : soon
+        ? AppColors.statusPending
+        : AppColors.textSecondary;
+
+    final label = expired
+        ? 'Expired ${_dateFormat.format(document.expiryDate!)}'
+        : days == 0
+        ? 'Expires today'
+        : soon
+        ? 'Expires in \$days days'
+        : 'Valid to ${_dateFormat.format(document.expiryDate!)}';
+
+    return Semantics(
+      label: expired
+          ? '\$label. This document will not be accepted.'
+          : label,
+      excludeSemantics: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            expired ? Icons.error_outline : Icons.schedule_outlined,
+            size: 13,
+            color: tone,
+          ),
+          const SizedBox(width: 3),
+          Flexible(
+            child: Text(
+              label,
+              style: AppTypography.caption.copyWith(
+                color: tone,
+                fontWeight: soon ? FontWeight.w600 : null,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

@@ -94,6 +94,15 @@ class SavedDocumentModel {
   final DateTime? lastUsedDate;
   final SavedDocumentCategory category;
 
+  /// When this document stops being accepted, if it is time-bound.
+  ///
+  /// Several requirements have a shelf life an applicant is unlikely to have
+  /// memorised — a barangay clearance and a tax clearance are annual, a
+  /// Certified True Copy of a title is commonly refused beyond six months,
+  /// and a PRC ID lapses on its own date. Attaching an expired one gets the
+  /// application returned, and the applicant pays for that in weeks.
+  final DateTime? expiryDate;
+
   const SavedDocumentModel({
     required this.id,
     required this.originalFileName,
@@ -104,7 +113,36 @@ class SavedDocumentModel {
     required this.dateImported,
     this.lastUsedDate,
     this.category = SavedDocumentCategory.uncategorized,
+    this.expiryDate,
   });
+
+  bool get isTimeBound => expiryDate != null;
+
+  bool isExpired(DateTime asOf) {
+    final expiry = expiryDate;
+    if (expiry == null) return false;
+    return _day(expiry).isBefore(_day(asOf));
+  }
+
+  /// Days until it lapses; negative once it has. Null when not time-bound.
+  int? daysUntilExpiry(DateTime asOf) {
+    final expiry = expiryDate;
+    if (expiry == null) return null;
+    return _day(expiry).difference(_day(asOf)).inDays;
+  }
+
+  /// Worth warning about — expired, or lapsing within 30 days.
+  ///
+  /// Thirty rather than sixty: unlike a PRC licence, most of these are
+  /// re-obtained in a single visit, so warning too early would nag without
+  /// giving the applicant anything useful to do.
+  bool needsAttention(DateTime asOf) {
+    final days = daysUntilExpiry(asOf);
+    return days != null && days <= 30;
+  }
+
+  static DateTime _day(DateTime value) =>
+      DateTime(value.year, value.month, value.day);
 
   /// The name shown throughout the UI — the custom display name when set,
   /// otherwise the original imported file name.
@@ -119,6 +157,8 @@ class SavedDocumentModel {
     String? displayName,
     DateTime? lastUsedDate,
     SavedDocumentCategory? category,
+    DateTime? expiryDate,
+    bool clearExpiryDate = false,
   }) {
     return SavedDocumentModel(
       id: id,
@@ -128,6 +168,7 @@ class SavedDocumentModel {
       fileType: fileType,
       fileSizeBytes: fileSizeBytes,
       dateImported: dateImported,
+      expiryDate: clearExpiryDate ? null : (expiryDate ?? this.expiryDate),
       lastUsedDate: lastUsedDate ?? this.lastUsedDate,
       category: category ?? this.category,
     );
@@ -143,6 +184,7 @@ class SavedDocumentModel {
     'dateImported': dateImported.toIso8601String(),
     'lastUsedDate': lastUsedDate?.toIso8601String(),
     'category': category.name,
+    'expiryDate': expiryDate?.toIso8601String(),
   };
 
   factory SavedDocumentModel.fromJson(Map<String, dynamic> json) {
@@ -159,6 +201,11 @@ class SavedDocumentModel {
       dateImported: DateTime.parse(json['dateImported'] as String),
       lastUsedDate: json['lastUsedDate'] != null
           ? DateTime.parse(json['lastUsedDate'] as String)
+          : null,
+      // Absent in documents saved before expiry tracking existed, which is
+      // correct — an unknown expiry is not an expired one.
+      expiryDate: json['expiryDate'] != null
+          ? DateTime.parse(json['expiryDate'] as String)
           : null,
       category: SavedDocumentCategory.values.firstWhere(
         (c) => c.name == json['category'],

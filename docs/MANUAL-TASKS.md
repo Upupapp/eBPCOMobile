@@ -5,7 +5,7 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: API client wired behind a config flag, 18 August 2026.
+Last updated: scope audit — three unbuilt rows closed, one outstanding. 18 August 2026.
 
 ---
 
@@ -42,6 +42,13 @@ Last updated: API client wired behind a config flag, 18 August 2026.
 | M-10 | Provide the Unified Building Permit Application Form and Unified Application Form for Certificate of Occupancy so wizard fields can be audited field-for-field | Needs the actual DPWH/JMC forms |
 | M-11 | Supply the LGU's claim location, office hours, and bring-with-you list for permit release | LGU-specific operational detail |
 | M-12 | Amend the holiday calendar when Eidul Fitr and Eidul Adha 2026 are proclaimed, and again for the 2027 proclamation | Proclamations are issued during the year; dates cannot be derived |
+
+## Known unbuilt scope
+
+| # | Item | Status |
+|---|---|---|
+| M-23 | **Payment history with filtering and export** (§8.1, listed EXTEND) | Not built. Found by a self-audit after TAB 3 was certified — the §8.3 acceptance criteria did not cover it, which is how it was missed. Needs a decision on export format (CSV? PDF receipt?) and whether history spans businesses |
+| M-24 | **Appointment booking** (§3.1 benchmark) | Not built and not in the §7.1 screens table, so arguably out of scope. QC e-Services treats a confirmed online appointment as the *first* basic requirement, so if this LGU does the same it belongs in TAB 2 |
 
 ## Product decisions I have deliberately left open
 

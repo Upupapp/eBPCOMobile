@@ -175,6 +175,8 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
         await _handleRename(provider, document);
       case DocumentCardAction.changeCategory:
         await _handleChangeCategory(provider, document);
+      case DocumentCardAction.setExpiry:
+        await _handleSetExpiry(provider, document);
       case DocumentCardAction.useForApplication:
         if (widget.selectionMode) {
           await provider.markUsed(document.id);
@@ -190,6 +192,32 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
       case DocumentCardAction.remove:
         await _handleRemove(provider, document);
     }
+  }
+
+  /// Sets, changes, or clears a document's expiry date.
+  ///
+  /// Offers "No expiry" as a first-class choice rather than leaving clearing
+  /// to a long-press or a delete-and-reimport: plenty of documents genuinely
+  /// have none, and a date set by mistake would otherwise nag forever.
+  Future<void> _handleSetExpiry(
+    DocumentsProvider provider,
+    SavedDocumentModel document,
+  ) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: document.expiryDate ?? now.add(const Duration(days: 365)),
+      // Past dates allowed on purpose: an applicant may be recording a
+      // document they already know has lapsed, and the app should let them
+      // see that rather than refuse the input.
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 20),
+      helpText: 'Valid until',
+    );
+    if (picked == null || !mounted) return;
+    await provider.setExpiryDate(document.id, picked);
+    if (!mounted) return;
+    _showMessage('Expiry date saved.');
   }
 
   Future<void> _handleRename(

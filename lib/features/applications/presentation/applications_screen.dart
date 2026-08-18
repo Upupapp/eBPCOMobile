@@ -179,11 +179,18 @@ class ApplicationsScreen extends StatelessWidget {
 
   void _handleTap(BuildContext context, _PermitOption option) {
     final routePath = option.routePath;
-    if (routePath != null) {
-      context.push(routePath);
-    } else {
+    if (routePath == null) {
       _showComingSoon(context);
+      return;
     }
+    // Through the pre-flight gate rather than straight into the wizard. The
+    // three questions it asks are the ones that most often stall an
+    // application, and asking them first costs a minute instead of an evening.
+    context.push(
+      '/applications/pre-flight'
+      '?permitType=${Uri.encodeQueryComponent(option.title)}'
+      '&next=${Uri.encodeQueryComponent(routePath)}',
+    );
   }
 
   @override
