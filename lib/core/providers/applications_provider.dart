@@ -331,6 +331,44 @@ class ApplicationsProvider extends ChangeNotifier {
     );
   }
 
+  /// Records what the applicant paid against an existing Order of Payment.
+  ///
+  /// This never creates or changes an assessment, and never marks a payment
+  /// Paid — only the Treasurer's Office verifies. It moves the record to
+  /// Pending Verification, which is a statement about what the applicant has
+  /// submitted, not about whether the money arrived.
+  void submitProofOfPayment(
+    String applicationId, {
+    required PaymentMethod method,
+    required String referenceNumber,
+    required DocumentModel proof,
+  }) {
+    final application = byId(applicationId);
+    final payment = application?.payment;
+    if (application == null || payment == null) return;
+    if (!payment.isAssessed) return;
+
+    _replace(
+      application.copyWith(
+        payment: payment.copyWith(
+          status: PaymentAssessmentStatus.pending,
+          method: method,
+          referenceNumber: referenceNumber,
+          proof: proof,
+          submittedAt: _clock(),
+        ),
+      ),
+    );
+
+    _notifications.addNotification(
+      title: 'Proof of payment submitted',
+      message:
+          'Your ${method.label} payment for ${application.applicationNumber} '
+          'is now with the Treasurer’s Office for verification.',
+      icon: Icons.payments_outlined,
+    );
+  }
+
   void _replace(ApplicationModel updated) {
     _applications = [
       for (final application in _applications)

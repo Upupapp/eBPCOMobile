@@ -7,6 +7,7 @@ import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/business_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
+import 'package:ebpco_user_app/core/models/order_of_payment.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 import 'package:ebpco_user_app/core/models/permit_classification.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
@@ -264,9 +265,13 @@ void main() {
           applications: [
             _application(
               lifecycleStatus: ApplicationLifecycleStatus.assessed,
-              payment: const PaymentAssessmentModel(
-                amount: 5250,
+              payment: PaymentAssessmentModel(
                 status: PaymentAssessmentStatus.overdue,
+                orderOfPayment: OrderOfPayment(
+                  number: 'OP-2026-000001',
+                  assessedAt: DateTime(2026, 8, 10),
+                  fees: const AssessmentFees(filing: 50000, processing: 475000),
+                ),
               ),
             ),
           ],

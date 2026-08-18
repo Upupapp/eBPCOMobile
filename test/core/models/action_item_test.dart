@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebpco_user_app/core/models/action_item.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
+import 'package:ebpco_user_app/core/models/order_of_payment.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 
 ApplicationModel _application({
@@ -95,9 +96,13 @@ void main() {
       _application(
         id: 'app-overdue',
         lifecycleStatus: ApplicationLifecycleStatus.assessed,
-        payment: const PaymentAssessmentModel(
-          amount: 5250,
+        payment: PaymentAssessmentModel(
           status: PaymentAssessmentStatus.overdue,
+          orderOfPayment: OrderOfPayment(
+            number: 'OP-2026-000001',
+            assessedAt: DateTime(2026, 8, 10),
+            fees: const AssessmentFees(filing: 50000, processing: 475000),
+          ),
         ),
       ),
     ], asOf: asOf);
@@ -168,9 +173,13 @@ void main() {
       _application(
         id: 'app-overdue',
         lifecycleStatus: ApplicationLifecycleStatus.assessed,
-        payment: const PaymentAssessmentModel(
-          amount: 5250,
+        payment: PaymentAssessmentModel(
           status: PaymentAssessmentStatus.overdue,
+          orderOfPayment: OrderOfPayment(
+            number: 'OP-2026-000001',
+            assessedAt: DateTime(2026, 8, 10),
+            fees: const AssessmentFees(filing: 50000, processing: 475000),
+          ),
         ),
       ),
     ], asOf: asOf);

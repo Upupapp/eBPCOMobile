@@ -325,11 +325,12 @@ class _PaymentSummary extends StatelessWidget {
         style: AppTypography.bodyMuted,
       );
     }
+    final due = payment.amountDue;
     return Row(
       children: [
         Expanded(
           child: Text(
-            'PHP ${payment.amount.toStringAsFixed(2)}',
+            due?.formatted ?? 'Not yet assessed',
             style: AppTypography.cardTitle,
           ),
         ),

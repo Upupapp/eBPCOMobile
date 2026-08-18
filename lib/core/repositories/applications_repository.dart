@@ -76,16 +76,22 @@ class MockApplicationsRepository implements ApplicationsRepository {
       throw StateError('Application $applicationId not found.');
     }
     final application = _applications[index];
-    final amount = applicationTypeAssessmentAmounts[application.type] ?? 5250.0;
+    // The assessment itself comes from the LGU. Attaching proof of payment
+    // never creates or alters one — it only records what the applicant paid
+    // against the Order of Payment already on file.
+    final existing = application.payment;
     final updated = application.copyWith(
       status: ApplicationStatus.paymentVerification,
-      payment: PaymentAssessmentModel(
-        amount: amount,
-        status: PaymentAssessmentStatus.pending,
-        referenceNumber: 'OR-${DateTime.now().microsecondsSinceEpoch}',
-        method: method,
-        proof: proof,
-      ),
+      payment: (existing ??
+              const PaymentAssessmentModel(
+                status: PaymentAssessmentStatus.notYetAvailable,
+              ))
+          .copyWith(
+            status: PaymentAssessmentStatus.pending,
+            method: method,
+            proof: proof,
+            submittedAt: DateTime.now(),
+          ),
       statusHistory: [
         ...application.statusHistory,
         StatusHistoryEntry(

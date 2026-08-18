@@ -1,7 +1,9 @@
 import '../core/models/application_detail.dart';
+import '../core/models/order_of_payment.dart';
 import '../core/models/application_model.dart';
 import '../core/models/document_model.dart';
 import '../core/models/lifecycle_status.dart';
+import '../core/models/payment_assessment_model.dart';
 import '../core/models/permit_classification.dart';
 
 /// Seed data for [MockApplicationsRepository] — one in-progress application
@@ -66,6 +68,25 @@ ApplicationModel buildSeedApplication() {
         office: 'Office of the Building Official',
       ),
     ],
+    // An Order of Payment already assessed but not yet settled — the state
+    // the Payments tab exists to handle.
+    payment: PaymentAssessmentModel(
+      status: PaymentAssessmentStatus.notYetAvailable,
+      orderOfPayment: OrderOfPayment(
+        number: 'OP-2026-004821',
+        assessedAt: submitted.add(const Duration(days: 2)),
+        assessedBy: 'Assessment Section, OBO',
+        dueDate: submitted.add(const Duration(days: 32)),
+        fees: const AssessmentFees(
+          filing: 50000,
+          processing: 120000,
+          architectural: 285050,
+          structural: 341275,
+          electrical: 96500,
+          others: 42000,
+        ),
+      ),
+    ),
     evaluations: [
       EvaluationRecord(
         stage: EvaluationStage.initial,
