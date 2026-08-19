@@ -17,6 +17,7 @@ if [ ! -d "$CONTRACT" ]; then
   exit 1
 fi
 
-cp "$CONTRACT/reconciliation/lifecycle-projection.json" "$DEST/lifecycle-projection.json"
-echo "synced lifecycle-projection.json from $CONTRACT"
+cp "$CONTRACT/reconciliation/lifecycle-projection.json"  "$DEST/lifecycle-projection.json"
+cp "$CONTRACT/reconciliation/notification-catalog.json"  "$DEST/notification-catalog.json"
+echo "synced lifecycle-projection.json and notification-catalog.json from $CONTRACT"
 git -C "$(dirname "$DEST")/.." diff --stat -- test/contract || true
