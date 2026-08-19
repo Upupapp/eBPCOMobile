@@ -110,7 +110,10 @@ class ApiClient {
     if (status >= 200 && status < 300) return;
 
     final failure = switch (status) {
-      401 || 403 => ApiFailure.unauthorized,
+      401 => ApiFailure.unauthorized,
+      // Separate from 401: signing in again achieves nothing for a permissions
+      // problem, and sending someone to a login screen for one is a loop.
+      403 => ApiFailure.forbidden,
       404 => ApiFailure.notFound,
       409 || 422 => ApiFailure.rejected,
       _ when status >= 500 => ApiFailure.server,
@@ -123,6 +126,9 @@ class ApiClient {
       failure,
       '$method $uri returned $status: ${_briefly(response.body)}',
       statusCode: status,
+      // RFC 9457. Null when the server sent something else, which is a failure
+      // with no structured detail rather than a parse error.
+      problem: ProblemDetails.tryParse(response.body),
     );
   }
 

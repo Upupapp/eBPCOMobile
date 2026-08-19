@@ -18,13 +18,12 @@ import 'notifications_provider.dart';
 class ApplicationsProvider extends ChangeNotifier {
   ApplicationsProvider({
     required this._notifications,
-    ApplicationsRepository? repository,
+    required this._repository,
     ServicePledgeService? pledgeService,
     this.actionItemBuilder = const ActionItemBuilder(),
     DateTime Function()? clock,
-  }) : _repository = repository ?? MockApplicationsRepository(),
-       _pledgeService = pledgeService ?? const ServicePledgeService(),
-       _clock = clock ?? DateTime.now {
+  })  : _pledgeService = pledgeService ?? const ServicePledgeService(),
+        _clock = clock ?? DateTime.now {
     _load();
   }
 

@@ -63,11 +63,14 @@ class _EbpcoAppState extends State<EbpcoApp> {
         // `create` callbacks can read it via `context.read` to post
         // notifications for submit/pay/advance/register actions.
         ChangeNotifierProvider<NotificationsProvider>(
-          create: (_) => NotificationsProvider(),
+          create: (context) => NotificationsProvider(
+            repository: context.read<RepositoryFactory>().notifications(),
+          ),
         ),
         ChangeNotifierProvider<BusinessProvider>(
           create: (context) => BusinessProvider(
             notifications: context.read<NotificationsProvider>(),
+            repository: context.read<RepositoryFactory>().businesses(),
           ),
         ),
         ChangeNotifierProvider<ApplicationsProvider>(

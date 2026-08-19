@@ -12,11 +12,10 @@ import '../repositories/notifications_repository.dart';
 /// has corrected nothing.
 class NotificationsProvider extends ChangeNotifier {
   NotificationsProvider({
-    NotificationsRepository? repository,
+    required this._repository,
     DateTime Function()? clock,
     this.preferences = const NotificationPreferences(),
-  }) : _repository = repository ?? MockNotificationsRepository(),
-       _clock = clock ?? DateTime.now {
+  })  : _clock = clock ?? DateTime.now {
     _load();
   }
 

@@ -1,5 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
@@ -10,8 +14,8 @@ void main() {
     test(
       'submit -> underReview -> pay -> paymentVerification -> approved -> released, posting a notification at each step',
       () async {
-        final notifications = NotificationsProvider();
-        final applications = ApplicationsProvider(notifications: notifications);
+        final notifications = NotificationsProvider(repository: MockNotificationsRepository());
+        final applications = ApplicationsProvider(notifications: notifications, repository: MockApplicationsRepository());
         // Let both providers' initial mock-repository loads settle before
         // taking a baseline, so seeded notifications aren't mistaken for
         // ones posted by the actions below.

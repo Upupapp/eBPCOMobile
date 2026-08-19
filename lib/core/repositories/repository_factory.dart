@@ -2,7 +2,13 @@ import '../api/api_client.dart';
 import '../config/app_config.dart';
 import '../services/secure_session_store.dart';
 import 'applications_repository.dart';
+import 'auth_repository.dart';
+import 'business_repository.dart';
 import 'http_applications_repository.dart';
+import 'http_auth_repository.dart';
+import 'http_business_repository.dart';
+import 'http_notifications_repository.dart';
+import 'notifications_repository.dart';
 
 /// Chooses between the mock repositories and the live API, in one place.
 ///
@@ -44,11 +50,32 @@ class RepositoryFactory {
     );
   }
 
+  // ── the domains ─────────────────────────────────────────────────────────
+  //
+  // Every one goes through this class. That is what makes the guarantee in the
+  // comment above a fact rather than an intention: there is one `client` and
+  // one decision, so a build cannot end up with applications from the server
+  // and notifications from seed data. `test/core/repositories/live_graph_test`
+  // asserts it by walking the whole graph.
+
   ApplicationsRepository applications() {
     final api = client;
-    return api == null
-        ? MockApplicationsRepository()
-        : HttpApplicationsRepository(api);
+    return api == null ? MockApplicationsRepository() : HttpApplicationsRepository(api);
+  }
+
+  AuthRepository auth() {
+    final api = client;
+    return api == null ? MockAuthRepository() : HttpAuthRepository(api, _session);
+  }
+
+  BusinessRepository businesses() {
+    final api = client;
+    return api == null ? MockBusinessRepository() : HttpBusinessRepository(api);
+  }
+
+  NotificationsRepository notifications() {
+    final api = client;
+    return api == null ? MockNotificationsRepository() : HttpNotificationsRepository(api);
   }
 
   void dispose() => _client?.close();

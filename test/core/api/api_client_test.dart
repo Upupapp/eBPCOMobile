@@ -112,9 +112,20 @@ void main() {
       fail('expected $status to throw');
     }
 
-    test('401 and 403 are unauthorized', () async {
+    test('401 is unauthorized: the session is gone', () async {
       expect((await failureFor(401)).failure, ApiFailure.unauthorized);
-      expect((await failureFor(403)).failure, ApiFailure.unauthorized);
+    });
+
+    test('403 is forbidden, NOT unauthorized', () async {
+      // They used to be merged. The remedies are opposite: signing in again
+      // fixes a 401 and achieves nothing for a 403, and sending someone to a
+      // login screen for a permissions problem is a loop they cannot escape.
+      expect((await failureFor(403)).failure, ApiFailure.forbidden);
+    });
+
+    test('a forbidden failure does not offer signing in again', () async {
+      expect(ApiFailure.forbidden.applicantMessage, isNot(contains('sign in')));
+      expect(ApiFailure.unauthorized.applicantMessage, contains('sign in'));
     });
 
     test('404 is notFound', () async {

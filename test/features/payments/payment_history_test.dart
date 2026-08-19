@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,7 +94,7 @@ Widget _wrap(List<ApplicationModel> applications) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(),
+        create: (_) => NotificationsProvider(repository: MockNotificationsRepository()),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(

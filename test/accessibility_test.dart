@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:ebpco_user_app/core/repositories/business_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -93,9 +95,7 @@ Widget _app(Widget home, {double textScale = 1.0}) {
         ),
       ),
       ChangeNotifierProvider<BusinessProvider>(
-        create: (context) => BusinessProvider(
-          notifications: context.read<NotificationsProvider>(),
-        ),
+        create: (context) => BusinessProvider(notifications: context.read<NotificationsProvider>(), repository: MockBusinessRepository()),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(
