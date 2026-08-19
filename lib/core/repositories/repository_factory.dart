@@ -1,6 +1,6 @@
 import '../api/api_client.dart';
 import '../config/app_config.dart';
-import '../services/local_storage_service.dart';
+import '../services/secure_session_store.dart';
 import 'applications_repository.dart';
 import 'http_applications_repository.dart';
 
@@ -11,11 +11,17 @@ import 'http_applications_repository.dart';
 /// cannot half-happen, with applications coming from a server while payments
 /// still come from seed data.
 class RepositoryFactory {
-  RepositoryFactory({ApiClient? apiClient, LocalStorageService? storage})
-    : _storage = storage ?? LocalStorageService(),
-      _injectedClient = apiClient;
+  RepositoryFactory({
+    ApiClient? apiClient,
+    SessionStore? session,
+  })  : _session = session ?? SecureSessionStore(),
+        _injectedClient = apiClient;
 
-  final LocalStorageService _storage;
+  /// The keychain, not SharedPreferences. The token used to be read from an
+  /// unencrypted preferences file; it now comes from the platform keystore, and
+  /// it is asked for per request so a token issued after sign-in is picked up
+  /// without rebuilding anything.
+  final SessionStore _session;
   final ApiClient? _injectedClient;
 
   ApiClient? _client;
@@ -34,7 +40,7 @@ class RepositoryFactory {
       timeout: const Duration(seconds: AppConfig.apiTimeoutSeconds),
       // Asked for per request, so a token issued after sign-in is picked up
       // without rebuilding anything.
-      authToken: _storage.sessionToken,
+      authToken: _session.accessToken,
     );
   }
 

@@ -181,23 +181,15 @@ class LocalStorageService {
   /// shown once — after that, file-access requests go straight to the OS
   /// permission flow instead of re-showing eBPCO's own explanation dialog
   /// every time.
-  /// The API session token, or null when signed out.
+  /// Removes any session token left in SharedPreferences by an earlier build.
   ///
-  /// Returns null today because nothing issues one yet — the mock login has
-  /// no server behind it. Wiring this up is the second half of M-22; the
-  /// client already asks for a token on every request, so a real one starts
-  /// working the moment this returns it.
-  Future<String?> sessionToken() async {
-    final prefs = await _prefs;
-    return prefs.getString(AppConstants.prefSessionToken);
-  }
-
-  Future<void> saveSessionToken(String token) async {
-    final prefs = await _prefs;
-    await prefs.setString(AppConstants.prefSessionToken, token);
-  }
-
-  Future<void> clearSessionToken() async {
+  /// The token used to be stored here, unencrypted. It now lives in the
+  /// platform keychain ([SecureSessionStore]), and this runs once on startup so
+  /// an app upgraded from a version that wrote one does not leave it sitting in
+  /// a plain XML file forever. It returned null in every shipped build, so
+  /// there is very likely nothing to purge — but "very likely" is not a reason
+  /// to skip it, and the cost is one key removal.
+  Future<void> purgeLegacySessionToken() async {
     final prefs = await _prefs;
     await prefs.remove(AppConstants.prefSessionToken);
   }

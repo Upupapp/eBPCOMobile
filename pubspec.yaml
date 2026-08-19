@@ -55,6 +55,7 @@ dependencies:
   # HTTP transport for the eBPCO API client. Chosen over dart:io's HttpClient
   # because this app also builds for web, where dart:io is unavailable.
   http: ^1.2.0
+  flutter_secure_storage: ^10.3.1
 
 dev_dependencies:
   flutter_test:

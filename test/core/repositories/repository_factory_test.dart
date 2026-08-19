@@ -6,7 +6,7 @@ import 'package:ebpco_user_app/core/config/app_config.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/http_applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/repository_factory.dart';
-import 'package:ebpco_user_app/core/services/local_storage_service.dart';
+import 'package:ebpco_user_app/core/services/secure_session_store.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -57,21 +57,32 @@ void main() {
   });
 
   group('session token', () {
-    test('is absent until something issues one', () async {
-      // Nothing does yet — the mock login has no server behind it — so the
-      // client sends no Authorization header rather than a bogus one.
-      final storage = LocalStorageService();
-      expect(await storage.sessionToken(), isNull);
+    test('comes from the keychain, not from preferences', () async {
+      // It used to be read from SharedPreferences, which is an unencrypted file
+      // on both platforms. The factory now takes a SessionStore, and the only
+      // production implementation is keychain-backed.
+      final session = InMemorySessionStore();
+      final factory = RepositoryFactory(apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'), session: session);
+
+      expect(factory.isLive, isTrue);
+      expect(await session.accessToken(), isNull);
     });
 
-    test('round-trips and clears', () async {
-      final storage = LocalStorageService();
+    test('is absent until something issues one', () async {
+      // Nothing does yet on a mock build, so the client sends no Authorization
+      // header rather than a bogus one.
+      expect(await InMemorySessionStore().accessToken(), isNull);
+    });
 
-      await storage.saveSessionToken('token-abc');
-      expect(await storage.sessionToken(), 'token-abc');
+    test('is picked up per request, so a token issued after sign-in works', () async {
+      // The client asks for the token on every request rather than capturing it
+      // at construction, so signing in does not require rebuilding the graph.
+      final session = InMemorySessionStore();
+      RepositoryFactory(apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'), session: session);
 
-      await storage.clearSessionToken();
-      expect(await storage.sessionToken(), isNull);
+      await session.save(accessToken: 'issued-after-construction', refreshToken: 'r');
+
+      expect(await session.accessToken(), 'issued-after-construction');
     });
   });
 }
