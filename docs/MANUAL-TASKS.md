@@ -30,7 +30,6 @@ Command are what closing them actually requires.
 | M-17 | Raise the PBKDF2 iteration count and move derivation off the main isolate | Needs device profiling on the target mid-range Android hardware | TAB 5 |
 | M-18 | Run the app on a physical mid-range Android device on a throttled connection | X4 verifies text scale, touch targets, and screen-reader labels under test; real-device performance cannot be asserted in a widget test | §11 · X4 |
 | M-19 | Confirm colour contrast meets WCAG AA against the brand palette | Needs a contrast audit tool against rendered output; the palette is fixed by brand and any failure is a brand decision, not a code fix | §11 · X4 |
-| M-20 | Implement a real offline submission queue once a backend exists | X5 ships staleness stamping and non-destructive degradation; queueing a submission requires something to submit to | §11 · X5 |
 
 ## Repository and delivery
 
@@ -100,5 +99,12 @@ Command are what closing them actually requires.
   the screen never honoured, so the suite began failing when the date rolled over.
   Both providers now expose `now`; both screens read it.
 - **Dead `quick_action_card.dart`**, unreferenced since Quick Actions was cut from Home.
+- **No offline submission queue** (M-20). TAB 12 ships a durable queue in the
+  platform keychain with idempotent replay, dependency-aware ordering, jittered
+  backoff, and honest status — a queued submission reads "Queued", never
+  "Submitted". Two things remain and are TAB work rather than manual: wiring the
+  wizards to enqueue instead of calling the API directly, and a
+  connectivity-triggered flush (needs `connectivity_plus` and a
+  background-execution decision).
 - **Payment history with filtering and export** (§8.1), the last of the four
   audit findings. Export format was decided rather than deferred — see M-26.
