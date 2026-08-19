@@ -5,7 +5,15 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: payment history built; one scope row outstanding. 18 August 2026.
+Last updated: 19 August 2026 — post-sweep. The register below is now a subset of
+a larger programme: see `docs/eBPCO-Production-Master-Command.pdf`, which maps every
+item here onto one of 21 TABs and adds the backend work none of these items covered.
+
+**The finding that reframes this list:** there is no backend. The Angular web admin
+makes zero HTTP calls and runs off an in-memory seed; mobile's API client targets an
+assumed contract and defaults to mock. M-02 and M-21 were written as "the server half
+remains" — in fact the server does not exist at all, and TABs 01–09 of the Master
+Command are what closing them actually requires.
 
 ---
 
@@ -61,6 +69,15 @@ Last updated: payment history built; one scope row outstanding. 18 August 2026.
 
 ---
 
+## Raised by the 19 August 2026 sweep
+
+| # | Task | Why manual |
+|---|---|---|
+| M-27 | **Decide the backend technology, hosting, and who operates it.** Master Command decisions E-1 and E-2. Constrained by the LGU's procurement rules and the DICT Cloud First Policy, not by engineering preference | Owner and LGU call |
+| M-28 | **Establish production Android signing keys.** `android/app/build.gradle` still signs release builds with the debug key and carries the generated TODO. A key set up late cannot be changed later without every user reinstalling — this blocks even internal pilot distribution | Requires key custody decisions and a Play publisher account |
+| M-29 | **Confirm final bundle identifiers.** `com.ebpco.ebpco_user_app` / `com.ebpco.ebpcoUserApp` are development placeholders. They cannot be changed after publication without losing the listing | Owner call; likely LGU-branded |
+| M-30 | **Resolve the uncommitted iOS project changes.** `ios/Runner.xcodeproj/project.pbxproj` is modified and two SwiftPM `xcshareddata` directories are untracked. Not mine to commit or discard without knowing whether they were intentional | Owner call |
+
 ## Closed
 
 - **Plain-text password storage** (was blocking). TAB 5 replaced it with a
@@ -77,5 +94,11 @@ Last updated: payment history built; one scope row outstanding. 18 August 2026.
   allows withdrawal from Privacy & Data.
 - **Pre-flight check and document expiry** (§7.1 and §10.1), both listed in
   TAB scope tables but never built until the scope audit.
+- **Two sources of truth for "today"** (19 August 2026 sweep). `professionals_screen`
+  and `notifications_screen` read `DateTime.now()` while their providers carried
+  injectable clocks. The professionals test pinned the clock and asserted a day count
+  the screen never honoured, so the suite began failing when the date rolled over.
+  Both providers now expose `now`; both screens read it.
+- **Dead `quick_action_card.dart`**, unreferenced since Quick Actions was cut from Home.
 - **Payment history with filtering and export** (§8.1), the last of the four
   audit findings. Export format was decided rather than deferred — see M-26.

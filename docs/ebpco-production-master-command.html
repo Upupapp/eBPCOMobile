@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>eBPCO — Production Launch Master Command</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 9.4pt; line-height: 1.5; color: #1F2937; margin: 0; }
+h1,h2,h3,h4 { color: #1F2937; margin: 0 0 6px; line-height: 1.25; }
+h2 { font-size: 16pt; letter-spacing: -0.2px; border-bottom: 2.5px solid #C81E2C; padding-bottom: 6px; margin: 0 0 14px; }
+h3 { font-size: 11.5pt; margin: 18px 0 7px; color: #A01823; }
+h4 { font-size: 9.4pt; margin: 13px 0 5px; text-transform: uppercase; letter-spacing: 0.6px; color: #6B7280; }
+p { margin: 0 0 8px; }
+ul, ol { margin: 0 0 9px; padding-left: 17px; }
+li { margin-bottom: 3px; }
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.2pt; background: #F5F7FA; padding: 1px 4px; border-radius: 3px; color: #A01823; }
+pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.8pt; background: #F5F7FA; border: 1px solid #E6E6EC; border-left: 3px solid #2563EB; border-radius: 4px; padding: 9px 11px; white-space: pre-wrap; line-height: 1.45; margin: 0 0 10px; }
+pre code { background: none; padding: 0; color: #1F2937; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 8.3pt; }
+th { background: #1F2937; color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 8pt; letter-spacing: 0.3px; }
+td { padding: 5px 8px; border-bottom: 1px solid #E6E6EC; vertical-align: top; }
+tr:nth-child(even) td { background: #FAFAFA; }
+.section { page-break-before: always; }
+.no-break { page-break-inside: avoid; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+.cover-top { border-top: 9px solid #C81E2C; padding-top: 26px; }
+.cover-eyebrow { font-size: 9pt; letter-spacing: 3.5px; text-transform: uppercase; color: #C81E2C; font-weight: 700; margin-bottom: 26px; }
+.cover-title { font-size: 38pt; font-weight: 800; line-height: 1.03; letter-spacing: -1.4px; margin-bottom: 16px; }
+.cover-title span { color: #C81E2C; }
+.cover-sub { font-size: 12.5pt; color: #6B7280; line-height: 1.45; max-width: 138mm; font-weight: 300; }
+.cover-rule { width: 62px; height: 4px; background: #2563EB; margin: 26px 0; }
+.cover-meta { display: flex; gap: 30px; flex-wrap: wrap; font-size: 9pt; }
+.cover-meta div span { display: block; text-transform: uppercase; letter-spacing: 1.3px; font-size: 7.2pt; color: #9CA3AF; margin-bottom: 3px; font-weight: 700; }
+.cover-note { border-left: 3px solid #C81E2C; background: #FEE2E2; padding: 12px 15px; font-size: 9pt; color: #1F2937; }
+.cmd { border: 1.5px solid #C81E2C; border-radius: 6px; padding: 0; margin: 0 0 14px; page-break-inside: avoid; overflow: hidden; }
+.cmd-head { background: #C81E2C; color: #fff; padding: 7px 13px; font-size: 8.4pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+.cmd-body { padding: 12px 14px; background: #FFF9F9; font-size: 9.6pt; }
+.cmd-body p:last-child { margin-bottom: 0; }
+.callout { background: #F5F7FA; border-left: 3px solid #6B7280; padding: 9px 13px; margin: 0 0 11px; font-size: 8.6pt; }
+.callout.law { background: #E8F1FF; border-left-color: #2563EB; }
+.callout.warn { background: #FEF3C7; border-left-color: #F59E0B; }
+.callout.stop { background: #FEE2E2; border-left-color: #C81E2C; }
+.callout strong { color: #1F2937; }
+.tag { display: inline-block; font-size: 7pt; font-weight: 700; padding: 2px 7px; border-radius: 9px; letter-spacing: 0.6px; text-transform: uppercase; }
+.tag-p0 { background: #FEE2E2; color: #B91C1C; }
+.tag-p1 { background: #FEF3C7; color: #B45309; }
+.tag-p2 { background: #DBEAFE; color: #1D4ED8; }
+.tag-be { background: #DCFCE7; color: #15803D; }
+.tag-mob { background: #EDE9FE; color: #6D28D9; }
+.tag-adm { background: #FFE4E6; color: #9F1239; }
+.tag-ops { background: #F5F7FA; color: #6B7280; }
+.ac { list-style: none; padding-left: 0; }
+.ac li { padding-left: 21px; position: relative; margin-bottom: 4px; }
+.ac li:before { content: "\2610"; position: absolute; left: 0; color: #C81E2C; font-size: 11pt; line-height: 1; top: 1px; }
+.toc { column-count: 2; column-gap: 24px; font-size: 8.6pt; }
+.toc-item { display: flex; gap: 8px; margin-bottom: 4px; break-inside: avoid; }
+.toc-num { color: #C81E2C; font-weight: 700; min-width: 40px; }
+.lead { font-size: 10.2pt; color: #4B5563; margin-bottom: 15px; font-weight: 300; line-height: 1.55; }
+.tabhead { display: flex; align-items: baseline; gap: 10px; border-bottom: 2.5px solid #C81E2C; padding-bottom: 6px; margin: 0 0 12px; }
+.tabhead .n { font-size: 22pt; font-weight: 800; color: #C81E2C; letter-spacing: -1px; }
+.tabhead .t { font-size: 15pt; font-weight: 700; letter-spacing: -0.2px; }
+.tabmeta { font-size: 7.6pt; color: #6B7280; margin: -6px 0 12px; }
+.tabmeta b { color: #1F2937; }
+.phase { background: #1F2937; color: #fff; padding: 14px 18px; border-radius: 6px; margin: 0 0 16px; page-break-inside: avoid; }
+.phase .ph-n { font-size: 7.4pt; letter-spacing: 2.6px; text-transform: uppercase; color: #F59E0B; font-weight: 700; margin-bottom: 5px; }
+.phase .ph-t { font-size: 15pt; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+.phase .ph-d { font-size: 8.8pt; color: #D1D5DB; font-weight: 300; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-eyebrow">Production Launch Programme &nbsp;·&nbsp; Philippines</div>
+    <div class="cover-title">eBPCO<br><span>Master Command</span></div>
+    <div class="cover-rule"></div>
+    <div class="cover-sub">
+      A tab-indexed, executable command set taking the Electronic Building Permit and
+      Certificate of Occupancy system from two disconnected front ends to a single
+      production service &mdash; a backend of record, a ratified contract, and both the
+      applicant mobile app and the LGU web admin fully integrated against it.
+    </div>
+  </div>
+  <div>
+    <div class="cover-note">
+      <strong>The finding that shapes this entire document.</strong> As measured on
+      19 August 2026, <strong>no backend exists</strong>. The Angular web admin makes zero
+      HTTP calls and runs entirely off an in-memory seed file. The Flutter mobile app ships a
+      client for an <em>assumed</em> contract and defaults to mock data. Neither application
+      has ever exchanged a byte with the other. Every command in Phase A exists because of
+      this, and no client work in Phase B can be verified until Phase A stands up.
+    </div>
+    <div class="cover-rule"></div>
+    <div class="cover-meta">
+      <div><span>Document</span>Production Launch Master Command</div>
+      <div><span>Issued</span>19 August 2026</div>
+      <div><span>Structure</span>21 TABs · 3 phases</div>
+      <div><span>Baseline</span>analyze clean · 443 tests green</div>
+      <div><span>Status</span>For execution</div>
+    </div>
+  </div>
+</div>
+
+<h2>Contents</h2>
+<div class="toc">
+  <div class="toc-item"><span class="toc-num">0</span><span>Reading this document</span></div>
+  <div class="toc-item"><span class="toc-num">1</span><span>The Master Command</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><span>Where the system actually stands</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><span>Regulatory baseline for production</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><span>Target architecture</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><span>Standards this programme is held to</span></div>
+  <div class="toc-item"><span class="toc-num">A</span><span><b>Phase A — Contract &amp; backend of record</b></span></div>
+  <div class="toc-item"><span class="toc-num">01</span><span>Ratify the API contract</span></div>
+  <div class="toc-item"><span class="toc-num">02</span><span>Stand up the backend service</span></div>
+  <div class="toc-item"><span class="toc-num">03</span><span>Identity, authentication, session</span></div>
+  <div class="toc-item"><span class="toc-num">04</span><span>Canonical data model &amp; persistence</span></div>
+  <div class="toc-item"><span class="toc-num">05</span><span>Application lifecycle engine</span></div>
+  <div class="toc-item"><span class="toc-num">06</span><span>Document service</span></div>
+  <div class="toc-item"><span class="toc-num">07</span><span>Assessment &amp; payments</span></div>
+  <div class="toc-item"><span class="toc-num">08</span><span>Notification &amp; delivery service</span></div>
+  <div class="toc-item"><span class="toc-num">09</span><span>Audit trail &amp; the RA 11032 clock</span></div>
+  <div class="toc-item"><span class="toc-num">B</span><span><b>Phase B — Client integration</b></span></div>
+  <div class="toc-item"><span class="toc-num">10</span><span>Mobile: complete the live repository layer</span></div>
+  <div class="toc-item"><span class="toc-num">11</span><span>Mobile: secure credential &amp; session storage</span></div>
+  <div class="toc-item"><span class="toc-num">12</span><span>Mobile: offline queue &amp; sync</span></div>
+  <div class="toc-item"><span class="toc-num">13</span><span>Admin: replace the in-memory store</span></div>
+  <div class="toc-item"><span class="toc-num">C</span><span><b>Phase C — Production hardening</b></span></div>
+  <div class="toc-item"><span class="toc-num">14</span><span>Security hardening &amp; assessment</span></div>
+  <div class="toc-item"><span class="toc-num">15</span><span>Observability, SLOs, incident response</span></div>
+  <div class="toc-item"><span class="toc-num">16</span><span>Performance &amp; capacity</span></div>
+  <div class="toc-item"><span class="toc-num">17</span><span>Accessibility &amp; localisation</span></div>
+  <div class="toc-item"><span class="toc-num">18</span><span>Test strategy &amp; CI/CD</span></div>
+  <div class="toc-item"><span class="toc-num">19</span><span>Release engineering &amp; store delivery</span></div>
+  <div class="toc-item"><span class="toc-num">20</span><span>Data privacy compliance (RA 10173)</span></div>
+  <div class="toc-item"><span class="toc-num">21</span><span>Go-live: cutover &amp; readiness review</span></div>
+  <div class="toc-item"><span class="toc-num">D</span><span>Dependency map &amp; critical path</span></div>
+  <div class="toc-item"><span class="toc-num">E</span><span>Decisions the owner must make</span></div>
+</div>
+
+<h3>0 &nbsp; Reading this document</h3>
+<p>
+  Each TAB is one self-contained command. A TAB carries the imperative, the reason it
+  exists, a scope table, a concrete technical specification, the standards it is held to,
+  and acceptance criteria that can be checked without asking anybody's opinion. TABs are
+  executed in order within a phase; phases overlap only where the dependency map in
+  section D says they may.
+</p>
+<p>
+  <strong>A TAB is complete when its acceptance criteria pass on evidence</strong> &mdash; a
+  test run, a scan report, a signed decision &mdash; not when the work feels done. That
+  distinction is not pedantry: the previous programme recorded five TABs as complete on
+  section-level acceptance while rows of their own scope tables had never been built, and
+  the gap was only found by auditing the tables directly.
+</p>
+<p>Priority and owner tags appear on every TAB:</p>
+<p>
+  <span class="tag tag-p0">P0 launch blocker</span>&nbsp;
+  <span class="tag tag-p1">P1 required for pilot</span>&nbsp;
+  <span class="tag tag-p2">P2 required for scale</span>&nbsp;&nbsp;
+  <span class="tag tag-be">Backend</span>&nbsp;
+  <span class="tag tag-mob">Mobile</span>&nbsp;
+  <span class="tag tag-adm">Admin</span>&nbsp;
+  <span class="tag tag-ops">Ops / governance</span>
+</p>
+
+<div class="section"></div>
+<h2>1 &nbsp; The Master Command</h2>
+<p class="lead">
+  Build and operate one authoritative eBPCO service, and integrate the applicant mobile app
+  and the LGU web admin against it, so that a building permit application submitted on a
+  phone and the officer's decision on it are the same record &mdash; to a standard that
+  survives an audit, a penetration test, and the Data Privacy Act.
+</p>
+
+<h3>1.1 &nbsp; Non-negotiables</h3>
+<table>
+<tr><th style="width:26%">Rule</th><th>Why it is not open for discussion</th></tr>
+<tr><td><b>The server is the record</b></td><td>Lifecycle status, classification, assessed amounts, evaluations, and release records are decided by the backend and never by a client. Two clients each computing their own view of a permit's state is how an applicant and an officer end up disagreeing about whether a permit was issued.</td></tr>
+<tr><td><b>One contract, machine-readable</b></td><td>The OpenAPI document is the single source of truth. Mobile DTOs, admin TypeScript models, and server handlers are all generated from or validated against it. A contract that lives in three hand-written copies has already drifted.</td></tr>
+<tr><td><b>Money is integer centavos, end to end</b></td><td>Already true in mobile (<code>PesoAmount</code>) and admin (<code>assessedAmountCentavos</code>). The wire format and the database must match. A float anywhere in a fee path is a defect, not a rounding preference.</td></tr>
+<tr><td><b>No invented figures, ever</b></td><td>No Order of Payment means no amount is shown and no payment can be started. An estimate on a government fee screen is a misrepresentation.</td></tr>
+<tr><td><b>Unknown enum values are rejected, not defaulted</b></td><td>Mobile's DTO layer already throws on an unrecognised status. Keep it. Silently mapping an unknown server state to a plausible client state is how an applicant is told a rejected permit is under review.</td></tr>
+<tr><td><b>Never assert a pledge the LGU has not made</b></td><td>RA 11032 countdowns must derive from the LGU's published Citizen's Charter. Where charter data is missing, the app says "approximate" or "awaiting classification". Guessing risks falsely accusing the LGU of lateness.</td></tr>
+<tr><td><b>Personal data is minimised and accounted for</b></td><td>Every field collected must map to a lawful basis and a retention period under RA 10173. "We might need it later" is not a basis.</td></tr>
+<tr><td><b>No production action without a runbook</b></td><td>Deploys, migrations, and rollbacks are written down and rehearsed before they are performed on real applicant data.</td></tr>
+</table>
+
+<h3>1.2 &nbsp; Technical constitution</h3>
+<ul>
+  <li><b>Trunk-based development</b> with short-lived branches; every merge to <code>main</code> is releasable.</li>
+  <li><b>Conventional Commits</b> and <b>Semantic Versioning</b> across all three repositories.</li>
+  <li><b>Everything as code</b> &mdash; infrastructure, pipelines, database schema, alerts, dashboards.</li>
+  <li><b>No shared mutable state between services without a migration path.</b> The in-memory admin store is the thing being removed; do not recreate it server-side as a singleton.</li>
+  <li><b>Tests are the specification.</b> A behaviour without a test is a behaviour nobody has agreed to.</li>
+  <li><b>One clock per feature.</b> Time is injected, never read from the wall clock inside presentation code &mdash; see the 19 August 2026 fix in TAB 18.</li>
+</ul>
+
+<div class="section"></div>
+<h2>2 &nbsp; Where the system actually stands</h2>
+<p class="lead">Measured on 19 August 2026 against the working tree, not against prior completion reports.</p>
+
+<h3>2.1 &nbsp; The three tiers</h3>
+<table>
+<tr><th style="width:20%">Tier</th><th style="width:16%">Technology</th><th>State as measured</th></tr>
+<tr><td><b>Applicant mobile</b><br><code>eBPCO-Mobile-App</code></td><td>Flutter 3.47<br>Dart 3.13</td><td>357 Dart source files, 51 test files, <b>443 tests green, analyzer clean</b>. All five original TABs plus cross-cutting work complete. An HTTP client exists for applications only, behind <code>--dart-define=EBPCO_API_BASE_URL</code>; the default build is entirely mock.</td></tr>
+<tr><td><b>LGU web admin</b><br><code>E-BPCO-Software-main</code></td><td>Angular 22<br>RxJS 7.8</td><td><b>Zero HTTP calls in the entire source tree.</b> No <code>HttpClient</code>, no <code>fetch</code>, no API base URL. State is an in-memory store hydrated from <code>application-seed.ts</code> and lost on refresh. Twelve page modules, a 19-value lifecycle vocabulary, and a permissions model &mdash; all of it front-end only.</td></tr>
+<tr><td><b>Backend</b></td><td>&mdash;</td><td><b>Does not exist.</b> No repository, no schema, no deployment, no environment.</td></tr>
+</table>
+
+<div class="callout stop">
+  <strong>The integration has never been exercised.</strong> Mobile's contract in
+  <code>lib/core/api/</code> was written against the admin's published vocabulary, which is
+  the right instinct, but it was authored unilaterally and recorded as an assumption
+  (M-21). Until a server answers those five endpoints, every "integrated" claim is
+  untested. TAB 01 exists to convert that assumption into an agreement before anybody
+  builds to it.
+</div>
+
+<h3>2.2 &nbsp; What the 19 August sweep found and fixed</h3>
+<table>
+<tr><th style="width:30%">Finding</th><th>Disposition</th></tr>
+<tr><td><b>Two sources of truth for "today"</b> in two features whose entire job is judging dates. <code>professionals_screen</code> and <code>notifications_screen</code> read <code>DateTime.now()</code> directly while their providers carried injectable clocks.</td><td><b>Fixed.</b> Both providers now expose <code>now</code>; both screens read it. This was not theoretical: the professionals test pinned the clock to 2026-08-18 and asserted "expires in 44&nbsp;days", the screen ignored the pin and counted from the real date, and the suite began failing the day the date rolled over &mdash; and would have failed differently every subsequent day.</td></tr>
+<tr><td><b>Dead widget.</b> <code>quick_action_card.dart</code> unreferenced since the Quick Actions grid was cut from Home.</td><td><b>Removed.</b></td></tr>
+<tr><td><b>Route reachability.</b> All 66 routes checked for inbound navigation.</td><td><b>Clean.</b> Only <code>/splash</code> is unreferenced, correctly, as the router's initial location.</td></tr>
+<tr><td><b>Orphaned source files.</b> Every file in <code>lib/</code> checked for an inbound import.</td><td><b>Clean</b> after the removal above; only <code>main.dart</code> remains unimported, as the entry point.</td></tr>
+</table>
+
+<h3>2.3 &nbsp; The gaps this programme closes</h3>
+<table>
+<tr><th style="width:6%">#</th><th style="width:32%">Gap</th><th style="width:10%">Severity</th><th>Closed by</th></tr>
+<tr><td>G1</td><td>No backend of record</td><td><span class="tag tag-p0">P0</span></td><td>TABs 02, 04, 05</td></tr>
+<tr><td>G2</td><td>API contract assumed, never agreed</td><td><span class="tag tag-p0">P0</span></td><td>TAB 01</td></tr>
+<tr><td>G3</td><td>Admin has no persistence &mdash; a browser refresh loses an officer's work</td><td><span class="tag tag-p0">P0</span></td><td>TAB 13</td></tr>
+<tr><td>G4</td><td>No server-issued session; mobile sends no <code>Authorization</code> header</td><td><span class="tag tag-p0">P0</span></td><td>TABs 03, 11</td></tr>
+<tr><td>G5</td><td>Session token would be stored in unencrypted SharedPreferences</td><td><span class="tag tag-p0">P0</span></td><td>TAB 11</td></tr>
+<tr><td>G6</td><td>Android release builds are signed with the <b>debug key</b></td><td><span class="tag tag-p0">P0</span></td><td>TAB 19</td></tr>
+<tr><td>G7</td><td>Only <code>applications</code> has a live repository; auth, notifications, business, documents, professionals and payments are mock-only</td><td><span class="tag tag-p0">P0</span></td><td>TAB 10</td></tr>
+<tr><td>G8</td><td>No CI/CD of any kind in any repository</td><td><span class="tag tag-p1">P1</span></td><td>TAB 18</td></tr>
+<tr><td>G9</td><td>No crash reporting, no logging, no metrics, no alerting</td><td><span class="tag tag-p1">P1</span></td><td>TAB 15</td></tr>
+<tr><td>G10</td><td>No offline submission queue; a dropped connection loses a submission</td><td><span class="tag tag-p1">P1</span></td><td>TAB 12</td></tr>
+<tr><td>G11</td><td>No NPC registration, privacy notice, DPO contact, or retention policy</td><td><span class="tag tag-p0">P0</span></td><td>TAB 20</td></tr>
+<tr><td>G12</td><td>No document malware scanning on an upload path open to the public</td><td><span class="tag tag-p0">P0</span></td><td>TAB 06</td></tr>
+<tr><td>G13</td><td>Citizen's Charter data (classifications, pledged days, fee schedules) not supplied</td><td><span class="tag tag-p1">P1</span></td><td>TAB 09 + owner decision E-3</td></tr>
+<tr><td>G14</td><td>Language picker is display-only; no Filipino localisation</td><td><span class="tag tag-p2">P2</span></td><td>TAB 17</td></tr>
+<tr><td>G15</td><td>No performance or capacity evidence on target hardware or networks</td><td><span class="tag tag-p1">P1</span></td><td>TAB 16</td></tr>
+<tr><td>G16</td><td>No independent security assessment</td><td><span class="tag tag-p0">P0</span></td><td>TAB 14</td></tr>
+</table>
+
+<div class="section"></div>
+<h2>3 &nbsp; Regulatory baseline for production</h2>
+<p class="lead">
+  This is a government service handling personal data and statutory deadlines. These
+  instruments are constraints on the build, not background reading.
+</p>
+<table>
+<tr><th style="width:26%">Instrument</th><th>Binding effect on this programme</th></tr>
+<tr><td><b>PD 1096</b><br>National Building Code</td><td>Defines the permits themselves, the signing-and-sealing requirement for licensed professionals, and occupancy certification. The permit catalog and wizard field sets answer to it.</td></tr>
+<tr><td><b>RA 11032</b><br>Ease of Doing Business and Efficient Government Service Delivery Act, 2018</td><td>Prescribed processing periods by transaction classification (simple / complex / highly technical), the Citizen's Charter obligation, and the zero-contact policy. The pledge clock in TAB 09 is a compliance mechanism, not a UX feature. ARTA is the oversight body.</td></tr>
+<tr><td><b>Amended JMC 2021-01</b><br>DPWH / DILG / DICT / ARTA</td><td>Streamlining of building permit and occupancy issuance, unified application forms, and the mandate for electronic processing. Wizard field sets must be auditable against the unified forms.</td></tr>
+<tr><td><b>RA 9514</b><br>Fire Code of the Philippines</td><td>Fire Safety Evaluation Clearance sits inside the permit path; the lifecycle must be able to represent an external clearance the LGU does not itself issue.</td></tr>
+<tr><td><b>RA 10173</b><br>Data Privacy Act of 2012, its IRR, and NPC issuances</td><td>Lawful basis, proportionality, transparency, data subject rights (access, correction, erasure, portability, objection), breach notification within 72 hours, appointment of a Data Protection Officer, and registration of data processing systems. <b>NPC Circular 16-01</b> sets security requirements specific to government agencies. Governs TABs 03, 04, 06, 11, 14 and 20.</td></tr>
+<tr><td><b>RA 8792</b><br>E-Commerce Act of 2000</td><td>Legal recognition of electronic documents and signatures &mdash; the basis on which an electronically filed application and an electronically issued permit are valid. Drives the integrity and non-repudiation requirements in TAB 09.</td></tr>
+<tr><td><b>RA 11055</b><br>Philippine Identification System Act</td><td>Relevant if PhilSys is adopted for identity proofing. Note the Act constrains how PhilSys data may be used and retained &mdash; adopting it is a decision (E-5), not a default.</td></tr>
+<tr><td><b>BSP regulation</b> of payment channels</td><td>Any channel beyond Bank Transfer and Onsite requires the LGU to formally accept it and a regulated provider to process it. Offering an unaccepted channel would strand an applicant's money.</td></tr>
+</table>
+<div class="callout law">
+  <strong>Legal review is a gate, not a review.</strong> The privacy notice, retention
+  schedule, terms of service, and any e-signature claim must be reviewed by counsel and by
+  the LGU's Data Protection Officer before the first real applicant record is accepted.
+  This document cannot substitute for that and does not attempt to.
+</div>
+
+<div class="section"></div>
+<h2>4 &nbsp; Target architecture</h2>
+
+<pre><code>                    ┌──────────────────────────────┐
+   Applicant  ─────►│  eBPCO Mobile (Flutter)      │──┐
+                    │  provider · go_router        │  │
+                    └──────────────────────────────┘  │
+                                                      │  HTTPS / OAuth 2.0 bearer
+                    ┌──────────────────────────────┐  │  OpenAPI 3.1 contract
+   LGU officer ────►│  eBPCO Web Admin (Angular)   │──┤
+                    │  RxJS · route guards         │  │
+                    └──────────────────────────────┘  │
+                                                      ▼
+        ┌─────────────────────────────────────────────────────────────┐
+        │                    eBPCO API (backend of record)            │
+        │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌─────────────┐  │
+        │  │ Identity  │ │ Lifecycle │ │ Documents │ │  Payments   │  │
+        │  │ & session │ │  engine   │ │  & scan   │ │ assessment  │  │
+        │  └───────────┘ └───────────┘ └───────────┘ └─────────────┘  │
+        │  ┌───────────┐ ┌───────────┐ ┌───────────────────────────┐  │
+        │  │Notifications│ │ Audit &  │ │ RA 11032 pledge clock     │  │
+        │  │ & push     │ │  trail   │ │ (Citizen's Charter data)  │  │
+        │  └───────────┘ └───────────┘ └───────────────────────────┘  │
+        └─────────────────────────────────────────────────────────────┘
+              │                  │                    │
+        ┌─────▼──────┐    ┌──────▼───────┐    ┌───────▼────────┐
+        │ PostgreSQL │    │ Object store │    │ Push provider  │
+        │  (record)  │    │ (documents)  │    │  (FCM / APNs)  │
+        └────────────┘    └──────────────┘    └────────────────┘</code></pre>
+
+<h3>4.1 &nbsp; Architectural decisions to record before Phase A begins</h3>
+<table>
+<tr><th style="width:22%">Decision</th><th style="width:30%">Recommendation</th><th>Reasoning</th></tr>
+<tr><td>Backend language and framework</td><td><b>NestJS on Node/TypeScript</b>, or <b>Spring Boot</b> if the LGU's IT unit is Java-shopped</td><td>NestJS shares TypeScript with the existing Angular admin, so the domain vocabulary in <code>core/domain/*.model.ts</code> can be lifted into shared packages rather than retyped &mdash; which is exactly the drift this programme is trying to prevent. Pick for the team that will operate it, not for novelty.</td></tr>
+<tr><td>Database</td><td><b>PostgreSQL 16+</b></td><td>Relational integrity is the point: an application, its documents, its assessment and its audit trail must not be able to disagree. Row-level security and strong JSON support cover the flexible fields without giving up constraints.</td></tr>
+<tr><td>Document storage</td><td><b>S3-compatible object store</b>, server-side encrypted, private buckets, pre-signed short-lived URLs</td><td>Permit attachments are large, numerous, and personal data. They do not belong in the database, and they must never be reachable by an unauthenticated URL.</td></tr>
+<tr><td>Hosting</td><td>Per <b>DICT Cloud First Policy</b>; government community cloud or an accredited provider with in-country data residency</td><td>Data residency and the LGU's own procurement rules constrain this more than technology does. Confirm with the LGU before designing around any provider.</td></tr>
+<tr><td>API style</td><td><b>REST over HTTPS, OpenAPI 3.1</b></td><td>Both clients already assume REST. Mobile's <code>ApiClient</code> exposes <code>getObject</code>/<code>getList</code>/<code>post</code>/<code>patch</code> and nothing that would need reworking.</td></tr>
+<tr><td>Auth</td><td><b>OAuth 2.0 / OIDC</b> with short-lived access tokens and rotating refresh tokens</td><td>NIST SP 800-63B. Also the only design in which "sign out everywhere" and token revocation are possible at all.</td></tr>
+</table>
+
+<div class="section"></div>
+<h2>5 &nbsp; Standards this programme is held to</h2>
+<table>
+<tr><th style="width:28%">Standard</th><th>Applied in</th></tr>
+<tr><td><b>OpenAPI 3.1</b> + JSON Schema 2020-12</td><td>TAB 01 &mdash; the contract, and the code generated from it</td></tr>
+<tr><td><b>OWASP ASVS 4.0</b> (Level 2)</td><td>TAB 14 &mdash; backend and admin verification baseline</td></tr>
+<tr><td><b>OWASP MASVS</b> + MASTG</td><td>TABs 11, 14 &mdash; mobile storage, crypto, network, platform interaction</td></tr>
+<tr><td><b>OWASP API Security Top 10 (2023)</b></td><td>TABs 02, 03, 05, 14 &mdash; especially BOLA/BFLA, which is the dominant risk in a system where one applicant must never read another's permit</td></tr>
+<tr><td><b>NIST SP 800-63B</b></td><td>TAB 03 &mdash; authenticator, session, and credential lifecycle requirements</td></tr>
+<tr><td><b>NIST SP 800-53 / ISO&nbsp;27001</b></td><td>TABs 14, 15, 21 &mdash; control selection and evidence</td></tr>
+<tr><td><b>The Twelve-Factor App</b></td><td>TAB 02 &mdash; configuration, backing services, disposability, logs as streams</td></tr>
+<tr><td><b>OpenTelemetry</b></td><td>TAB 15 &mdash; traces, metrics, and logs from one instrumentation layer</td></tr>
+<tr><td><b>Google SRE practice</b> (SLI / SLO / error budget)</td><td>TABs 15, 16, 21 &mdash; what "working" means numerically</td></tr>
+<tr><td><b>DORA metrics</b></td><td>TAB 18 &mdash; delivery performance, measured rather than asserted</td></tr>
+<tr><td><b>Consumer-driven contract testing</b> (Pact or equivalent)</td><td>TAB 18 &mdash; proving the three tiers still agree, per build</td></tr>
+<tr><td><b>WCAG 2.2 Level AA</b></td><td>TAB 17 &mdash; and the existing <code>accessibility_test.dart</code> is the seed of its evidence</td></tr>
+<tr><td><b>Semantic Versioning</b> + <b>Conventional Commits</b></td><td>TABs 18, 19 &mdash; release identity across three repositories</td></tr>
+<tr><td><b>ISO/IEC 25010</b></td><td>TAB 21 &mdash; the quality model the readiness review scores against</td></tr>
+<tr><td><b>SLSA</b> build provenance</td><td>TABs 18, 19 &mdash; supply-chain integrity for artefacts that will be signed and published</td></tr>
+</table>
+
+<div class="section"></div>
+<div class="phase">
+  <div class="ph-n">Phase A &nbsp;·&nbsp; TABs 01 – 09</div>
+  <div class="ph-t">Contract and backend of record</div>
+  <div class="ph-d">
+    Nothing downstream is verifiable until a server exists and both clients agree on what it
+    says. Phase A produces a ratified contract, a deployed service, an authoritative data
+    model, and the four domain services the clients already assume are there. No Phase B TAB
+    may be marked complete against a mock.
+  </div>
+</div>
+
+<div class="tabhead"><span class="n">TAB 01</span><span class="t">Ratify the API contract</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-mob">Mobile</span> <span class="tag tag-adm">Admin</span> &nbsp;·&nbsp; <b>Depends on</b> nothing &nbsp;·&nbsp; <b>Blocks</b> every other TAB</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Produce a single, versioned, machine-readable OpenAPI 3.1 description of the eBPCO API,
+reconciled against the admin's domain vocabulary and the mobile client's existing DTO
+layer, reviewed and formally accepted by the LGU and both client owners. Generate client
+and server types from it. Retire every hand-maintained copy of the contract.
+</div></div>
+
+<h4>Why this is TAB 01</h4>
+<p>
+  Mobile already ships a client for five endpoints and a JSON shape it invented. Admin
+  already ships a 19-value lifecycle vocabulary, a payment model in centavos, and document
+  and evaluation models. These two were written to describe the same permits and have never
+  been compared field by field. Building a server against either one, or against a third
+  reading, guarantees an integration failure discovered late &mdash; and the loudest failures
+  will be enum mismatches, which mobile is designed to reject loudly rather than absorb.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:34%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Contract repository</td><td>A dedicated <code>ebpco-contract</code> repository (or a top-level directory in the backend repo) holding the OpenAPI document, shared JSON Schemas, and example payloads. Versioned with SemVer independently of the services.</td></tr>
+<tr><td>Vocabulary reconciliation</td><td>A field-by-field table mapping admin's <code>ApplicationRecord</code>, <code>PaymentTransaction</code>, <code>ApplicationDocument</code>, <code>EvaluationRecord</code>, <code>GeneratedPermit</code>, <code>PermitReleaseRecord</code> and <code>AuditEvent</code> onto mobile's models and onto the canonical wire shape. Every divergence resolved in writing.</td></tr>
+<tr><td>Lifecycle projection, formalised</td><td>The 19 admin states → 7 applicant-visible states mapping moves out of a TypeScript comment (<code>LIFECYCLE_TO_MOBILE_LABEL</code>) and into the contract as a normative table, so both clients project identically.</td></tr>
+<tr><td>Endpoint set</td><td>Confirm, correct, or replace the five endpoints mobile assumes, and add the ones no client has yet needed. Minimum surface in the specification below.</td></tr>
+<tr><td>Generated types</td><td>Dart models for mobile, TypeScript models for admin, server types for the backend &mdash; all generated in CI from the contract, never edited by hand.</td></tr>
+<tr><td>Formal acceptance</td><td>Signed acceptance from the LGU's technical representative and both client owners. The contract stops being an assumption at this signature and not before.</td></tr>
+</table>
+
+<h4>Minimum endpoint surface</h4>
+<pre><code>Identity
+  POST   /auth/token                  password or authorization_code grant
+  POST   /auth/token/refresh          rotating refresh
+  POST   /auth/revoke                 sign out / sign out everywhere
+  POST   /auth/register               applicant self-registration
+  POST   /auth/password/forgot        initiate reset
+  POST   /auth/password/reset         complete reset
+  GET    /me                          profile of the authenticated applicant
+  PATCH  /me                          correction of own data (RA 10173 right)
+  POST   /me/export                   data portability request
+  DELETE /me                          erasure request (subject to retention rules)
+
+Applications
+  GET    /applications                list own; filter, sort, paginate
+  POST   /applications                submit (Idempotency-Key required)
+  GET    /applications/{id}           full record incl. timeline, evaluations,
+                                      instructions, inspection, permit, release
+  PATCH  /applications/{id}           draft edits only; server rejects otherwise
+  POST   /applications/{id}/cancel    subject to owner decision E-4
+  GET    /applications/{id}/timeline
+  POST   /applications/{id}/instructions/{letterId}/resubmit
+
+Documents
+  POST   /documents                   multipart or pre-signed upload init
+  GET    /documents/{id}              metadata
+  GET    /documents/{id}/content      short-lived signed redirect
+  DELETE /documents/{id}              subject to retention rules
+
+Payments
+  GET    /applications/{id}/order-of-payment
+  POST   /applications/{id}/payments  submit proof (Idempotency-Key required)
+  GET    /payments                    history; filterable; CSV via Accept header
+
+Notifications
+  GET    /notifications               feed, paginated
+  POST   /notifications/{id}/read
+  POST   /notifications/{id}/resolve
+  GET    /notification-preferences
+  PUT    /notification-preferences
+  POST   /devices                     push token registration
+  DELETE /devices/{id}
+
+Reference data
+  GET    /permit-types                catalog incl. requirements
+  GET    /citizens-charter            classifications, pledged days, fee schedule
+  GET    /holidays?year=              non-working days for the pledge clock
+  GET    /health  /ready  /version</code></pre>
+
+<h4>Contract rules that must be normative, not advisory</h4>
+<ul>
+  <li><b>Money.</b> Every monetary field is an integer of centavos, named with a <code>Centavos</code> suffix. Floats are rejected by schema, not coerced.</li>
+  <li><b>Enums.</b> Closed enumerations carrying the admin's exact string labels. Clients reject unknown values; the contract therefore treats adding an enum value as a <b>breaking change</b> requiring a version bump.</li>
+  <li><b>Timestamps.</b> RFC 3339 with explicit offset. The server stores UTC; the Philippines has no DST but the app must not assume a fixed offset in perpetuity.</li>
+  <li><b>Errors.</b> RFC 9457 <em>Problem Details for HTTP APIs</em> for every non-2xx, with a stable machine-readable <code>type</code>. Mobile's <code>ApiException</code> maps onto it.</li>
+  <li><b>Idempotency.</b> Every non-GET that creates or moves money or state accepts an <code>Idempotency-Key</code> and returns the original result on replay. A resubmitted permit application after a dropped connection must not become two applications.</li>
+  <li><b>Pagination.</b> Cursor-based, stable under insertion. Offset pagination silently skips records when an officer files something mid-scroll.</li>
+  <li><b>Concurrency.</b> <code>ETag</code> / <code>If-Match</code> on mutable resources, so two officers editing one evaluation produce a 412 rather than a silent overwrite.</li>
+</ul>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>The OpenAPI document validates against the 3.1 specification in CI, on every commit.</li>
+  <li>Every field in admin's seven domain models appears in the contract or is explicitly recorded as client-local with a reason.</li>
+  <li>Every endpoint mobile's <code>ApiClient</code> calls exists in the contract with a matching shape, or mobile has been changed to match.</li>
+  <li>The 19→7 lifecycle projection is expressed in the contract, and a generated test asserts both clients implement it identically.</li>
+  <li>Mobile Dart DTOs and admin TypeScript models are generated artefacts; a CI job fails if a hand edit diverges from generation output.</li>
+  <li>A published example payload exists for every endpoint and is used as a fixture by all three tiers.</li>
+  <li>Written acceptance recorded from the LGU technical representative and both client owners, closing M-21.</li>
+</ul>
+
+<div class="callout warn">
+  <strong>Do not skip the reconciliation table.</strong> It is tempting to declare mobile's
+  assumed shape "the contract" because it is already written and already tested. It was
+  authored without the admin in the room, and the admin is the system of record for
+  everything it describes. Reconcile, then ratify.
+</div>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 02</span><span class="t">Stand up the backend service</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-ops">Ops</span> &nbsp;·&nbsp; <b>Depends on</b> TAB 01 &nbsp;·&nbsp; <b>Blocks</b> TABs 03–09</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Create the eBPCO backend repository and deploy a running, observable, secured service
+skeleton to three environments &mdash; development, staging, production &mdash; with
+infrastructure as code, automated deployment, health and readiness endpoints, and the
+contract served as live documentation. No business logic in this TAB: the deliverable is a
+service that can be deployed, monitored, rolled back, and trusted.
+</div></div>
+
+<h4>Why this comes before any domain logic</h4>
+<p>
+  A service that cannot be deployed repeatably cannot be corrected under pressure. Standing
+  up the delivery path first means every subsequent TAB is exercised end to end from its
+  first commit, and the first production deploy is the fiftieth deploy rather than the first.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:32%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Repository and skeleton</td><td>Layered structure &mdash; transport, application services, domain, persistence &mdash; so lifecycle rules never live in controllers. Dependency injection, configuration by environment only, no checked-in secrets.</td></tr>
+<tr><td>Twelve-factor configuration</td><td>Every environment-varying value from the environment. A secret manager for credentials. The application must be able to start with no local file present but its environment set.</td></tr>
+<tr><td>Containerisation</td><td>Multi-stage build, non-root runtime user, pinned base image digests, minimal final layer, reproducible builds.</td></tr>
+<tr><td>Three environments</td><td>Development, staging (production-shaped, synthetic data only), production. Staging never holds real applicant data &mdash; that is a privacy control, not a convenience.</td></tr>
+<tr><td>Infrastructure as code</td><td>Terraform or equivalent for network, database, object storage, secrets, and compute. No console-clicked resources; anything hand-made is invisible to review and unrecoverable in a disaster.</td></tr>
+<tr><td>Deployment pipeline</td><td>Build → test → scan → deploy to staging → manual gate → deploy to production. Automated rollback on failed health checks.</td></tr>
+<tr><td>Baseline hardening</td><td>TLS 1.2+ only with modern ciphers, HSTS, security headers, request size limits, timeouts, structured request logging with correlation IDs, and rate limiting at the edge.</td></tr>
+<tr><td>Operational endpoints</td><td><code>/health</code> (liveness), <code>/ready</code> (dependency checks), <code>/version</code> (build SHA and semantic version). Contract served at <code>/docs</code> in non-production only.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A commit to <code>main</code> reaches staging with no human action beyond review approval.</li>
+  <li>Production deployment requires an explicit, recorded, revocable approval.</li>
+  <li>A deliberately broken build is rejected by the pipeline and never reaches an environment.</li>
+  <li>A failed deployment rolls back automatically and raises an alert.</li>
+  <li>Every environment is reproducible from the IaC definitions into an empty account.</li>
+  <li>No secret appears in the repository, in an image layer, in a log line, or in an error response &mdash; verified by an automated scanner in CI.</li>
+  <li>TLS configuration scores at least A on an external scanner; plaintext HTTP is refused, not redirected, for API paths.</li>
+  <li>Container image scanning runs per build and fails on high or critical vulnerabilities with no accepted exception.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 03</span><span class="t">Identity, authentication, and session</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 01, 02 &nbsp;·&nbsp; <b>Blocks</b> TABs 05–13 &nbsp;·&nbsp; <b>Closes</b> M-01, M-22</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Implement server-side identity for two distinct populations &mdash; applicants and LGU staff
+&mdash; with OAuth 2.0 / OIDC token issuance, rotating refresh tokens, revocation, role and
+permission enforcement, and account recovery, meeting NIST SP 800-63B. Every API route
+except the explicitly public ones must be deniable by default.
+</div></div>
+
+<h4>Why</h4>
+<p>
+  Mobile currently authenticates against a local PBKDF2 verifier and sends no
+  <code>Authorization</code> header because <code>LocalStorageService.sessionToken()</code>
+  returns null. Admin has a session service and route guards with no server behind them. Both
+  are honest placeholders for a thing that does not exist. Until it does, there is no
+  identity, no authorisation, and no way to answer "who changed this permit".
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Area</th><th>Requirement</th></tr>
+<tr><td>Two populations, one mechanism</td><td>Applicants self-register and can only ever see their own records. LGU staff are provisioned by an administrator and carry roles. Both authenticate through the same token endpoint with different scopes &mdash; one mechanism, so there is one place to get it right.</td></tr>
+<tr><td>Credential storage</td><td>Argon2id (memory-hard, tuned to the deployment) or PBKDF2-HMAC-SHA256 at a current iteration count, unique salt per credential, pepper in the secret manager. Never reversible, never logged, never returned.</td></tr>
+<tr><td>Password policy</td><td>Per NIST SP 800-63B: minimum length over composition rules, screening against known-breached password lists, no forced periodic rotation, no knowledge-based questions.</td></tr>
+<tr><td>Tokens</td><td>Short-lived access token (≤15 min) carrying subject, scopes and roles. Refresh token, long-lived, <b>rotating with reuse detection</b> &mdash; a replayed refresh token invalidates the whole family and raises a security event.</td></tr>
+<tr><td>Revocation</td><td>Sign out, sign out everywhere, and administrative revocation, all effective within one access-token lifetime.</td></tr>
+<tr><td>Authorisation</td><td>Deny by default. Object-level checks on every record access &mdash; OWASP API Security's top risk is exactly an applicant reading another applicant's permit by changing an ID. Enforce in the domain layer so no new controller can forget.</td></tr>
+<tr><td>Brute-force and enumeration defence</td><td>Rate limiting and progressive delay per account and per source. Registration, login and password-reset responses must not reveal whether an account exists.</td></tr>
+<tr><td>Account recovery</td><td>Single-use, short-expiry, side-channel-delivered reset tokens. Completing a reset revokes all existing sessions.</td></tr>
+<tr><td>MFA for staff</td><td>TOTP at minimum for any role that can approve, assess, or release a permit. Optional for applicants; mandatory for staff.</td></tr>
+<tr><td>Identity proofing</td><td>Decision E-5: how an applicant is proven to be who they claim. Options range from email verification to PhilSys. Affects legal weight of a filing under RA 8792.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Every route is denied without a valid token except a documented public allow-list, proven by an automated test that enumerates routes from the contract.</li>
+  <li>An applicant requesting another applicant's application by ID receives 404 &mdash; not 403, which confirms existence &mdash; and the attempt is recorded as a security event.</li>
+  <li>A staff member without the required permission receives 403 and no partial data.</li>
+  <li>Replaying a rotated refresh token invalidates the family and raises an alert; a test asserts it.</li>
+  <li>Password reset invalidates all sessions; a test asserts an old access token stops working within its stated lifetime.</li>
+  <li>No credential material appears in any log at any level; asserted by a log-scanning test.</li>
+  <li>Timing and response bodies for login and registration are indistinguishable between existing and non-existing accounts.</li>
+  <li>Staff MFA cannot be disabled by the staff member alone.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 04</span><span class="t">Canonical data model and persistence</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 01, 02 &nbsp;·&nbsp; <b>Blocks</b> TABs 05–09</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Design and migrate the authoritative relational schema for applicants, businesses,
+applications, documents, evaluations, assessments, payments, permits, releases,
+notifications and audit events &mdash; with referential integrity, constraints that make the
+non-negotiables unrepresentable, versioned migrations, and a retention model that satisfies
+RA 10173 by construction rather than by policy document.
+</div></div>
+
+<h4>Design rules</h4>
+<ul>
+  <li><b>Make illegal states unrepresentable.</b> If a payment cannot exist without an Order of Payment, that is a foreign key and a NOT NULL, not a code comment. If money is centavos, the column is <code>BIGINT</code> and there is a CHECK constraint that it is non-negative.</li>
+  <li><b>The lifecycle is data, and its transitions are constrained.</b> Status is an enumerated column; a transition table records which moves are legal. An officer cannot jump an application from Submitted to Released because a UI bug allowed it.</li>
+  <li><b>Every mutation is attributable.</b> <code>created_by</code>, <code>updated_by</code>, <code>created_at</code>, <code>updated_at</code> on every table, non-null, set by the persistence layer rather than by callers.</li>
+  <li><b>Soft-delete only where the law requires retention</b>; hard-delete where the law requires erasure. Decide per table, in writing, and enforce it in the schema.</li>
+  <li><b>No natural keys as primary keys.</b> Permit numbers change format; UUIDs do not.</li>
+  <li><b>Personal data is inventoried at the column level</b>, tagged in the schema, so TAB 20's records of processing can be generated rather than hand-compiled.</li>
+</ul>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Schema and ERD</td><td>Derived from the ratified contract, not invented alongside it. Published as part of the contract repository.</td></tr>
+<tr><td>Migration framework</td><td>Versioned, forward-only, reviewed, each migration reversible or explicitly documented as not. Applied automatically in the pipeline; never by hand in production.</td></tr>
+<tr><td>Seed and fixture data</td><td>Reference data (permit types, charter classifications, holidays) seeded reproducibly. Synthetic applicants for staging &mdash; never a copy of production.</td></tr>
+<tr><td>Encryption</td><td>Encryption at rest for the database and object store. Field-level encryption for identity documents and any government-issued identifier, with keys in a managed key service and a documented rotation procedure.</td></tr>
+<tr><td>Backup and recovery</td><td>Automated backups, encrypted, retention per policy, and &mdash; the part usually skipped &mdash; a <b>rehearsed restore</b> with a measured recovery time.</td></tr>
+<tr><td>Indexing and constraints</td><td>Indexes for every query the contract implies. Unique constraints on anything the domain says is unique, including permit numbers.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Migrations run cleanly from empty to current on every pipeline run.</li>
+  <li>A test proves an illegal lifecycle transition is rejected by the database, not merely by the service.</li>
+  <li>A test proves a payment row cannot exist without its Order of Payment.</li>
+  <li>A test proves no monetary column accepts a non-integer or negative value.</li>
+  <li>A restore from backup into a clean environment is performed and timed; the measured recovery time is recorded against the RTO in TAB 21.</li>
+  <li>Every column holding personal data is tagged, and the tag list reconciles with the TAB 20 processing record.</li>
+  <li>No production migration has ever been applied by hand; the pipeline is the only path.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 05</span><span class="t">Application lifecycle engine</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 03, 04 &nbsp;·&nbsp; <b>Blocks</b> TABs 10, 13 &nbsp;·&nbsp; <b>Closes</b> M-02</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Implement the 19-state application lifecycle as a server-authoritative state machine with
+explicit, permission-gated, audited transitions; project it onto the 7 applicant-visible
+states exactly as the contract defines; and expose submission, revision loops, evaluation,
+approval, permit generation and release as API operations that no client can bypass.
+</div></div>
+
+<h4>Why the engine belongs on the server and nowhere else</h4>
+<p>
+  Both clients currently advance status locally. Mobile's <code>ApplicationsProvider</code>
+  calls <code>advanceStatus</code>; admin's in-memory store mutates records directly. That is
+  two independent implementations of a regulated process. When they disagree &mdash; and they
+  will &mdash; there is no tie-breaker. Moving the machine to the server makes the clients
+  displays of a decision rather than participants in it.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Transition table</td><td>Every legal move, its required permission, its required preconditions, and its side effects, declared as data. Revision Required loops back from Document Verification, Under Evaluation and For Approval rather than sitting in the sequence. Rejected, Cancelled and Expired are terminal exits.</td></tr>
+<tr><td>Preconditions as guards</td><td>An application cannot reach Assessed without an Order of Payment. It cannot reach Ready for Release without a generated permit. Guards live in the domain, are individually tested, and produce a specific Problem Details error naming the unmet precondition.</td></tr>
+<tr><td>The projection</td><td>The 19→7 mapping is implemented once, server-side, and returned in the payload. Clients render what they are given. Neither client may recompute it &mdash; that is how two vocabularies fork.</td></tr>
+<tr><td>Revision loop</td><td>Letters of Instruction as first-class records with their own state, an open count the applicant can act on, and a resubmission endpoint that reopens exactly the steps the letter names. Evaluator remarks are stored and returned <b>verbatim</b>; never summarised, never truncated.</td></tr>
+<tr><td>Classification</td><td>Server assigns transaction classification from the Citizen's Charter. Where a permit could fall into more than one, the <b>longer</b> classification is taken, so the system never accuses the LGU of lateness it has not incurred. Unclassified applications return no countdown and the clients say "Awaiting classification".</td></tr>
+<tr><td>Concurrency</td><td>Optimistic locking on the record. Two officers acting simultaneously produce a 412, not a lost update.</td></tr>
+<tr><td>Events</td><td>Every transition emits a domain event consumed by notifications (TAB 08) and the audit trail (TAB 09). Notifications are never posted by the transport layer.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A table-driven test exercises every legal transition and asserts every illegal one is refused with a specific error.</li>
+  <li>Each transition's permission requirement is asserted independently of its precondition.</li>
+  <li>A test asserts the 19→7 projection matches the contract table for all 19 states.</li>
+  <li>A test asserts no assessment means no amount is returned anywhere in the payload.</li>
+  <li>A test asserts evaluator remarks survive a round trip byte for byte.</li>
+  <li>Concurrent conflicting transitions produce exactly one winner and one 412; asserted under real parallelism.</li>
+  <li>Every transition produces exactly one audit event and the expected notification events, and no duplicates on retry.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 06</span><span class="t">Document service</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 03, 04 &nbsp;·&nbsp; <b>Blocks</b> TABs 10, 13 &nbsp;·&nbsp; <b>Closes</b> G12</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Build the document upload, storage, scanning, retrieval and retention service. Every file an
+applicant submits is validated, scanned for malware, stored encrypted in a private object
+store, reachable only through short-lived authorised URLs, and subject to a retention rule
+that is enforced by a job rather than by a promise.
+</div></div>
+
+<div class="callout stop">
+  <strong>This is the single most exposed surface in the system.</strong> An unauthenticated
+  public can upload arbitrary files, which LGU officers then open on government workstations.
+  Without scanning and content validation, the permit portal becomes a malware delivery
+  channel into the LGU network. Nothing in this TAB is optional.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Control</th><th>Requirement</th></tr>
+<tr><td>Content validation</td><td>Allow-list of MIME types (PDF, JPEG, PNG) verified by <b>magic-byte inspection</b>, not by extension and not by the client-supplied content type. Per-file and per-application size caps. Page and dimension limits to stop decompression bombs.</td></tr>
+<tr><td>Malware scanning</td><td>Every upload scanned before it is retrievable by anyone. Quarantine on detection, notify the applicant that the file was rejected, raise a security event. A file that has not completed scanning is not downloadable.</td></tr>
+<tr><td>Storage</td><td>Private buckets, server-side encryption, no public ACL possible. Object keys are opaque and non-enumerable. Storage is separate from the record; the database holds metadata and a reference.</td></tr>
+<tr><td>Retrieval</td><td>Short-lived pre-signed URLs issued only after an authorisation check on the parent application. URLs expire in minutes and are single-purpose. Never a permanent link.</td></tr>
+<tr><td>Integrity</td><td>SHA-256 recorded at upload and verified on retrieval, so an altered attachment is detectable &mdash; a requirement that follows directly from RA 8792's treatment of electronic documents as evidence.</td></tr>
+<tr><td>Metadata scrubbing</td><td>Strip EXIF from images, including GPS coordinates. An applicant photographing a document at home should not be publishing their home location to the LGU.</td></tr>
+<tr><td>Expiry</td><td>Document expiry (already modelled in mobile) enforced server-side, so an expired clearance cannot be relied on for a filing.</td></tr>
+<tr><td>Retention and erasure</td><td>Per-category retention periods (owner decision E-6), enforced by a scheduled job with an audit record of every deletion. Erasure requests honoured within statutory time except where retention law overrides, and the override recorded.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A file whose extension and magic bytes disagree is rejected.</li>
+  <li>A known test malware signature (EICAR) is quarantined, never retrievable, and raises a security event.</li>
+  <li>A file is not downloadable between upload and scan completion; asserted by a test.</li>
+  <li>An expired pre-signed URL returns 403; a URL for another applicant's document is never issued.</li>
+  <li>Uploading an image with GPS EXIF results in stored bytes with no GPS EXIF.</li>
+  <li>Checksum mismatch on retrieval fails closed and alerts.</li>
+  <li>The retention job deletes exactly the eligible objects, records each deletion, and is proven idempotent.</li>
+  <li>Object store is confirmed non-public by an automated configuration check per deploy.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 07</span><span class="t">Assessment and payments</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 04, 05 &nbsp;·&nbsp; <b>Blocks</b> TABs 10, 13</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Implement the Order of Payment as the sole authoritative source of any amount owed, with a
+line-itemised fee schedule, integer-centavo arithmetic end to end, proof-of-payment
+submission, officer verification, and a reconciliation trail that balances against the LGU's
+collections.
+</div></div>
+
+<h4>Rules carried forward, and now enforced server-side</h4>
+<ul>
+  <li><b>No Order of Payment, no amount.</b> Not zero, not an estimate, not a placeholder. The field is absent and the client cannot start a payment.</li>
+  <li><b>Money is <code>BIGINT</code> centavos everywhere</b> &mdash; wire, service, and column. Totals are computed by summing integer line items; there is no rounding step because there is nothing to round.</li>
+  <li><b>Submitting proof sets Payment Submitted, never Paid.</b> Only an officer's verification moves it to Payment Verified. A client must never be able to declare itself paid.</li>
+  <li><b>Channels are Bank Transfer and Onsite</b> until the LGU formally accepts others (decision E-7). Offering an unaccepted channel strands an applicant's money.</li>
+</ul>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Fee schedule</td><td>Reference data, versioned and effective-dated, sourced from the LGU's published schedule (M-08). An assessment records <b>which version</b> it was computed under, so a historical Order of Payment can always be explained.</td></tr>
+<tr><td>Order of Payment</td><td>Line-itemised, each line naming its statutory or ordinance basis. Issued by an officer, immutable once issued; a correction is a new Order superseding the old with a reason, never an edit.</td></tr>
+<tr><td>Proof submission</td><td>Applicant submits reference number, date, channel, and an attachment routed through TAB 06. Idempotency-keyed so a retried submission does not double-post.</td></tr>
+<tr><td>Verification</td><td>Officer verifies or rejects with a reason. Rejection returns the applicant to a state that tells them exactly what to do next.</td></tr>
+<tr><td>Reconciliation</td><td>A report reconciling verified payments against the LGU's collection records, with a documented handling path for discrepancies.</td></tr>
+<tr><td>History and export</td><td>Payment history filterable and exportable. The current mobile export is clipboard CSV; format and medium are owner decisions M-25/M-26.</td></tr>
+<tr><td>Partial and multiple payments</td><td>Decide explicitly whether an Order may be settled in parts (decision E-8). If yes, the balance is derived, never stored, so it cannot drift from the sum of its payments.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Property-based tests assert no arithmetic path can produce a non-integer or negative amount.</li>
+  <li>A test asserts an application without an Order of Payment returns no amount field and refuses a payment attempt.</li>
+  <li>A test asserts submitting proof cannot reach Payment Verified without an officer action.</li>
+  <li>A replayed payment submission with the same Idempotency-Key produces exactly one payment record.</li>
+  <li>An issued Order of Payment is immutable; a correction produces a supersession chain with reasons, asserted by test.</li>
+  <li>The sum of an Order's line items equals its total, asserted for every seeded and generated case.</li>
+  <li>A reconciliation report over a synthetic month balances to zero discrepancy.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 08</span><span class="t">Notification and delivery service</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-mob">Mobile</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 05, 03 &nbsp;·&nbsp; <b>Blocks</b> TAB 10</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Move notification generation to the server as a consumer of lifecycle events, implement push
+delivery to registered devices with per-category preferences and quiet hours, and preserve
+the existing semantics exactly: read and resolved are different things, reading never
+resolves, muting suppresses the push but never the feed entry, and every
+application-lifecycle notification is one of the 24 catalog types.
+</div></div>
+
+<h4>Semantics that must survive the move</h4>
+<p>
+  These were decided deliberately in the mobile build and are easy to lose when the logic
+  changes tier. They are restated here as requirements on the server, not as history.
+</p>
+<ul>
+  <li><b><code>readAt</code> and <code>resolvedAt</code> are independent.</b> Opening a notification does not discharge the action it describes. The tab badge counts <em>unresolved actions</em>, not unread items &mdash; an applicant who reads "revision required" and does nothing still owes an action.</li>
+  <li><b>The catalog is closed.</b> 24 types. Free-text notifications are not permitted; a new situation earns a new catalog entry and a contract version bump.</li>
+  <li><b>Muting a category suppresses delivery only.</b> The feed entry is still recorded, because the LGU must be able to show it told the applicant.</li>
+  <li><b>Quiet hours are 21:00–07:00.</b> Suppressed pushes are delivered on the next open window, not dropped.</li>
+</ul>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Event-driven generation</td><td>Notifications are produced by consuming lifecycle domain events, in a transactional outbox so a transition that commits always produces its notification exactly once, and a rolled-back one produces none.</td></tr>
+<tr><td>Device registry</td><td>Push tokens registered per device per user, with platform, app version and locale. Tokens rotate; stale tokens are pruned on delivery failure.</td></tr>
+<tr><td>Delivery</td><td>FCM and APNs, with retry and backoff. Delivery outcome recorded per notification so an undelivered critical notice is visible rather than assumed.</td></tr>
+<tr><td>Preferences</td><td>Server-held per-category preferences, so a reinstall does not silently re-enable everything. <code>NotificationsProvider</code> remains the client's single owner of preference state &mdash; SettingsProvider must not keep a second copy.</td></tr>
+<tr><td>Escalation channel</td><td>Decision E-9: whether SMS or email is used for notices with statutory consequence, since a push to an uninstalled app reaches nobody.</td></tr>
+<tr><td>Deep links</td><td>Every notification carries a route to the exact screen that resolves it. A notification that cannot be acted on from itself will not be acted on.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A rolled-back transition produces no notification; a committed one produces exactly one, asserted under induced failure.</li>
+  <li>Marking read leaves <code>resolvedAt</code> null and the badge count unchanged; asserted by test.</li>
+  <li>A muted category still records a feed entry and sends no push; asserted by test.</li>
+  <li>A push generated inside quiet hours is delivered at the next window, not discarded.</li>
+  <li>Every generated notification's type is a member of the 24-item catalog; a test enumerates and asserts this.</li>
+  <li>Every notification's deep link resolves to a real route in the shipped app.</li>
+  <li>Tests touching quiet hours pin the clock; an unpinned test passes by day and fails at night, and CI runs at all hours.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 09</span><span class="t">Audit trail and the RA 11032 clock</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-ops">Governance</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 04, 05 &nbsp;·&nbsp; <b>Closes</b> M-12 partially</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Implement an append-only audit trail covering every access to and mutation of applicant data,
+and move the RA 11032 processing-day computation to the server as the authoritative pledge
+clock &mdash; sourced from the LGU's Citizen's Charter and a maintained holiday calendar, with
+explicit handling for the case where the data is incomplete.
+</div></div>
+
+<h4>Why these are one TAB</h4>
+<p>
+  Both answer the same question from different directions: <em>can this LGU prove what it did
+  and when</em>. The audit trail is the evidence; the pledge clock is the measure the evidence
+  is judged against. Building either without the other leaves the LGU able to say only half of
+  what RA 11032 and RA 10173 require it to be able to say.
+</p>
+
+<h4>Audit trail</h4>
+<table>
+<tr><th style="width:28%">Requirement</th><th>Detail</th></tr>
+<tr><td>Coverage</td><td>Every state transition, every document access, every assessment and payment action, every permission change, every export of personal data, every failed authorisation. Read access to applicant data is auditable &mdash; NPC Circular 16-01 expects government agencies to account for who viewed personal data, not only who changed it.</td></tr>
+<tr><td>Content</td><td>Actor, actor role, action, subject record, before and after where applicable, timestamp with offset, source address, correlation ID, and outcome.</td></tr>
+<tr><td>Integrity</td><td>Append-only, tamper-evident (hash chaining or write-once storage), retained per policy, and <b>not deletable by application credentials</b> &mdash; including administrative ones.</td></tr>
+<tr><td>Privacy</td><td>The audit trail is itself personal data. It is access-controlled, retained on its own schedule, and never used for a purpose outside accountability.</td></tr>
+<tr><td>Usability</td><td>An officer can answer "what happened to this application" without a database query. That view is a product feature, not a DBA task.</td></tr>
+</table>
+
+<h4>The pledge clock</h4>
+<table>
+<tr><th style="width:28%">Requirement</th><th>Detail</th></tr>
+<tr><td>Single implementation</td><td>Processing dates are computed in exactly one place server-side, mirroring the discipline already established in mobile's <code>ServicePledgeService</code>. Clients display; they do not compute.</td></tr>
+<tr><td>Charter-sourced</td><td>Classification and pledged days come from the LGU's published Citizen's Charter (M-08), stored as effective-dated reference data. Nothing is invented.</td></tr>
+<tr><td>Holiday calendar</td><td>Injectable and maintained. Philippine regular and special non-working days are proclaimed annually; Eidul Fitr and Eidul Adha dates are proclaimed during the year (M-12). Missing data must set an explicit incompleteness flag.</td></tr>
+<tr><td>Honest degradation</td><td>Where the calendar is incomplete, the computed date is presented as <b>approximate</b> and never asserted. Where classification is unknown, no countdown is produced at all &mdash; the client says "Awaiting classification". Under-guessing would falsely accuse the LGU of missing a statutory pledge.</td></tr>
+<tr><td>Clock stops</td><td>RA 11032 periods exclude time the applicant is responding to a deficiency. The engine must model suspension on Revision Required and resumption on resubmission, and record both.</td></tr>
+<tr><td>Reporting</td><td>Compliance reporting by classification and by permit type, suitable for ARTA reporting obligations.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Every lifecycle transition, document access and personal-data export produces exactly one audit event; asserted by an exhaustive test.</li>
+  <li>An attempt to modify or delete an audit record through any application path fails and raises an alert.</li>
+  <li>A test asserts the pledge clock excludes weekends, calendar holidays, and applicant-response suspension periods.</li>
+  <li>A test asserts an incomplete calendar year yields an approximate flag rather than an asserted date.</li>
+  <li>A test asserts an unclassified application produces no countdown anywhere in the payload.</li>
+  <li>A compliance report over synthetic data reconciles against hand-computed expectations.</li>
+</ul>
+
+<div class="section"></div>
+<div class="phase">
+  <div class="ph-n">Phase B &nbsp;·&nbsp; TABs 10 – 13</div>
+  <div class="ph-t">Client integration</div>
+  <div class="ph-d">
+    Both clients stop being self-contained demonstrations and become views onto the service.
+    The rule for this phase: a TAB is complete only when the behaviour is verified against a
+    running backend. Passing against a mock proves the mock, and the mock is the thing being
+    replaced.
+  </div>
+</div>
+
+<div class="tabhead"><span class="n">TAB 10</span><span class="t">Mobile: complete the live repository layer</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-mob">Mobile</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 01–09 &nbsp;·&nbsp; <b>Closes</b> G7</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Extend <code>RepositoryFactory</code> to build live implementations for <em>every</em> domain
+&mdash; authentication, applications, documents, payments, notifications, business,
+professionals and profile &mdash; so a build configured with a base URL is fully live, and a
+build without one is fully mock. Eliminate the possibility of a half-live build.
+</div></div>
+
+<h4>Why this is one TAB and not eight</h4>
+<p>
+  <code>RepositoryFactory</code> already carries the right idea and says so in its own
+  comment: one place decides what this build talks to, "so a build cannot end up half-live,
+  with applications coming from a server while payments still come from seed data". Today it
+  only implements <code>applications()</code>, so that guarantee is currently a comment rather
+  than a fact. Delivering the domains one at a time across releases would create exactly the
+  hybrid state the design exists to prevent.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Deliverable</th><th>Detail</th></tr>
+<tr><td>HTTP implementations</td><td><code>HttpAuthRepository</code>, <code>HttpDocumentRepository</code>, <code>HttpPaymentsRepository</code>, <code>HttpNotificationsRepository</code>, <code>HttpBusinessRepository</code>, <code>HttpProfessionalsRepository</code> &mdash; each against generated DTOs from TAB 01.</td></tr>
+<tr><td>Factory completion</td><td>Every provider takes its repository from the factory. Providers must stop defaulting to <code>Mock*Repository()</code> in their constructors &mdash; that default is what allows a provider to silently go mock inside a live build. Make the repository a required parameter.</td></tr>
+<tr><td>Error surface</td><td>Problem Details mapped to typed failures, and every screen given a defined behaviour for offline, timeout, unauthorised, forbidden, conflict, and server error. "Something went wrong" is not a defined behaviour.</td></tr>
+<tr><td>Loading and staleness</td><td>Existing staleness stamping extended to every live surface, so an applicant always knows whether they are looking at fresh data.</td></tr>
+<tr><td>Strictness preserved</td><td>DTO parsing continues to <b>throw on unknown enum values</b> rather than defaulting. This is a deliberate decision and must not be softened when live data starts arriving; a surprise value is a contract breach and must be loud.</td></tr>
+<tr><td>Pagination</td><td>Lists consume cursor pagination rather than fetching everything, on the assumption an applicant may accumulate many applications over years.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A test asserts that with a base URL configured, <b>no</b> <code>Mock*Repository</code> is instantiated anywhere in the graph &mdash; the half-live guarantee proven, not asserted.</li>
+  <li>A test asserts that with no base URL, no HTTP client is constructed and no network call is attempted.</li>
+  <li>Every repository has contract tests running against the generated fixtures from TAB 01.</li>
+  <li>Every screen has a defined, tested rendering for each of the six error classes.</li>
+  <li>An unknown enum value from the server produces a visible, reportable failure &mdash; never a silently wrong status.</li>
+  <li>The full journey &mdash; register, sign in, create, attach, submit, receive assessment, pay, receive permit &mdash; is exercised end to end against a running staging backend.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 11</span><span class="t">Mobile: secure credential and session storage</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-mob">Mobile</span> &nbsp;·&nbsp; <b>Depends on</b> TAB 03 &nbsp;·&nbsp; <b>Closes</b> M-01, M-22, G5</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Move session tokens out of SharedPreferences into the platform keychain and keystore, implement
+transparent refresh with rotation, add certificate pinning, and bring the app to OWASP MASVS
+compliance for storage, cryptography, network and platform interaction.
+</div></div>
+
+<div class="callout stop">
+  <strong>Today's read point is the wrong storage.</strong>
+  <code>LocalStorageService.sessionToken()</code> reads SharedPreferences, which is
+  unencrypted on both platforms and readable on a rooted or jailbroken device and in some
+  backup paths. It returns null today, so nothing is currently exposed &mdash; which means
+  this must be fixed <em>before</em> TAB 03 starts issuing real tokens, not after.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Secure storage</td><td>iOS Keychain with an appropriate accessibility class and no iCloud sync for tokens; Android Keystore-backed encryption via EncryptedSharedPreferences. Tokens excluded from device backups.</td></tr>
+<tr><td>Session lifecycle</td><td>Transparent refresh on 401 with a single-flight guard so ten concurrent requests produce one refresh, not ten. Refresh failure signs the user out cleanly, clears state, and routes to login with an explanation.</td></tr>
+<tr><td>Certificate pinning</td><td>Pin to the API's certificate chain with a documented rotation plan and a backup pin, so a certificate renewal does not brick every installed app. Include a kill switch.</td></tr>
+<tr><td>Local data at rest</td><td>Review everything cached on device. Applicant records, documents and drafts are personal data; decide per category whether it is cached at all, and encrypt what is.</td></tr>
+<tr><td>Sign-out completeness</td><td>Sign-out clears tokens, caches, cached documents, and in-memory provider state; and revokes server-side. A subsequent launch must show nothing of the previous user.</td></tr>
+<tr><td>Screen protection</td><td>Consider <code>FLAG_SECURE</code> on screens showing identity documents and permits, and hide sensitive content in the app switcher snapshot.</td></tr>
+<tr><td>PBKDF2 retirement</td><td>Once the server authenticates, the local <code>CredentialVerifier</code> ceases to be an authentication mechanism. Keep it only if it backs a local unlock feature; otherwise remove it, along with M-17.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A test asserts no token, credential or personal identifier is present in SharedPreferences after sign-in &mdash; extending the existing password-storage test to the session.</li>
+  <li>Ten simultaneous 401s produce exactly one refresh call; asserted by test.</li>
+  <li>A refresh failure signs out and clears all local state; asserted by test.</li>
+  <li>A connection presenting an unpinned certificate is refused.</li>
+  <li>Certificate rotation is rehearsed against staging without an app update.</li>
+  <li>Sign-out leaves no cached document on the filesystem; asserted by test.</li>
+  <li>MASVS storage, crypto, network and platform requirements assessed with results recorded in TAB 14.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 12</span><span class="t">Mobile: offline queue and sync</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-mob">Mobile</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 10, 11 &nbsp;·&nbsp; <b>Closes</b> M-20, G10</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Implement a durable offline submission queue with idempotent replay, conflict handling, and
+honest status reporting, so an applicant on an intermittent connection never loses a
+completed application and is never told something was filed when it was not.
+</div></div>
+
+<h4>Why this is not a nice-to-have</h4>
+<p>
+  A permit application is fifteen or more screens of work and a stack of photographed
+  documents. Losing one to a dropped connection is not a minor inconvenience &mdash; it is the
+  kind of failure that sends the applicant back to the counter and defeats the purpose of the
+  system. Mobile connectivity in the target environment cannot be assumed.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Durable queue</td><td>Persisted to disk, surviving app termination and device restart. Encrypted, since queued items contain personal data.</td></tr>
+<tr><td>Idempotent replay</td><td>Each queued operation carries a client-generated <code>Idempotency-Key</code> created once at enqueue and reused on every retry, so a replay after an ambiguous failure cannot create a second application.</td></tr>
+<tr><td>Ordering</td><td>Operations on one application replay in order. Document uploads complete before the submission that references them.</td></tr>
+<tr><td>Backoff</td><td>Exponential backoff with jitter, and a cap. Trigger on connectivity restoration rather than polling, to protect battery.</td></tr>
+<tr><td>Honest status</td><td>A queued submission is shown as <b>Queued</b>, never as Submitted. The distinction is the whole point: an applicant must not believe a deadline was met when nothing reached the LGU.</td></tr>
+<tr><td>Conflict and failure</td><td>Permanent failures (validation, authorisation, contract) leave the item in a recoverable state with a plain explanation and a route to fix it. Nothing is discarded silently.</td></tr>
+<tr><td>Bounds</td><td>Queue size and age limits, with a clear user-facing consequence when reached, so an abandoned queue cannot fill a device.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A submission made offline survives force-quit and device restart and completes on reconnection; asserted by an integration test.</li>
+  <li>A submission interrupted after the server committed but before the response arrived produces exactly one application on replay.</li>
+  <li>A queued item is never displayed with a submitted status; asserted by widget test.</li>
+  <li>A permanently failing item surfaces a specific, actionable message and is never silently dropped.</li>
+  <li>Queue contents are encrypted at rest; asserted by inspecting stored bytes.</li>
+  <li>Replay order is preserved across a mixed queue of uploads and submissions.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 13</span><span class="t">Admin: replace the in-memory store</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-adm">Admin</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 01–09 &nbsp;·&nbsp; <b>Closes</b> G3</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Replace the Angular admin's in-memory <code>application-store</code> and seed data with the
+live API across all twelve page modules; wire the session service and route guards to
+server-issued tokens and server-enforced permissions; and remove the seed file from the
+production build entirely.
+</div></div>
+
+<div class="callout stop">
+  <strong>The admin currently loses an officer's work on a browser refresh.</strong> There is
+  no persistence of any kind &mdash; <code>application-seed.ts</code> is rehydrated on every
+  load. An officer who evaluates ten applications and refreshes has evaluated nothing. This
+  is a data-loss defect in the tier that holds the authoritative decisions, and it is the
+  single most urgent item in the admin repository.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:30%">Deliverable</th><th>Detail</th></tr>
+<tr><td>Data access layer</td><td>Typed Angular services over <code>HttpClient</code>, using models generated from the contract. An HTTP interceptor attaches the bearer token, handles 401 refresh, and maps Problem Details to typed errors.</td></tr>
+<tr><td>Store rewrite</td><td><code>application-store</code> becomes a cache over the API with explicit loading, error and stale states &mdash; not a source of truth. Its existing spec suite is the regression net; keep and extend it.</td></tr>
+<tr><td>Migration-bridge fields</td><td><code>type</code> and <code>status</code> are denormalised projections maintained by store mutations. With the server authoritative, either the server returns them or the templates are migrated off them. Do not leave a client recomputing a projection the contract defines.</td></tr>
+<tr><td>Session and guards</td><td><code>session.service</code> holds server-issued tokens; <code>auth.guard</code> and <code>permissions</code> reflect server-returned roles. Client-side permission checks become a UX affordance only &mdash; the server is the enforcement point, always.</td></tr>
+<tr><td>Optimistic concurrency</td><td>Handle 412 conflicts with a rendered "this record changed" resolution path rather than an overwrite or a silent failure.</td></tr>
+<tr><td>Seed removal</td><td><code>application-seed.ts</code> excluded from the production bundle. A build-time check fails if it is reachable from a production entry point.</td></tr>
+<tr><td>Officer-critical UX</td><td>Long lists paginate server-side; evaluations and Letters of Instruction autosave as drafts, because an officer typing detailed remarks must never lose them to a session timeout.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A browser refresh after an officer action shows the action persisted; asserted by an end-to-end test.</li>
+  <li>No component imports the seed file in a production build; asserted by a build-time check.</li>
+  <li>Every page module reads from the API, with loading, empty and error states rendered and tested.</li>
+  <li>An expired session redirects to login without losing unsaved work, and returns the officer to where they were.</li>
+  <li>A permission the server denies is not merely hidden in the UI &mdash; a direct request is refused; asserted by test.</li>
+  <li>Two officers editing one record produce a conflict dialog, not a lost update.</li>
+  <li>An applicant-submitted application appears in the admin queue, and the officer's decision appears in the mobile app &mdash; the full loop, demonstrated.</li>
+</ul>
+
+<div class="section"></div>
+<div class="phase">
+  <div class="ph-n">Phase C &nbsp;·&nbsp; TABs 14 – 21</div>
+  <div class="ph-t">Production hardening and launch</div>
+  <div class="ph-d">
+    The system works; this phase establishes that it will keep working, that it can be
+    operated, that it is lawful, and that a failure is survivable. TABs 14, 18 and 20 should
+    start during Phase A rather than after it &mdash; security, testing and privacy are cheaper
+    designed in than retrofitted.
+  </div>
+</div>
+
+<div class="tabhead"><span class="n">TAB 14</span><span class="t">Security hardening and assessment</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-mob">Mobile</span> <span class="tag tag-adm">Admin</span> &nbsp;·&nbsp; <b>Start during Phase A</b> &nbsp;·&nbsp; <b>Closes</b> G16</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Bring all three tiers to OWASP ASVS Level 2 and OWASP MASVS, embed automated security testing
+in every pipeline, and commission an independent penetration test whose high and critical
+findings are closed and retested before go-live.
+</div></div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Threat model</td><td>STRIDE or equivalent over the whole system, revisited when architecture changes. Explicitly model the malicious applicant, the compromised officer account, and the malicious upload &mdash; these are the realistic adversaries, not an abstract attacker.</td></tr>
+<tr><td>API Top 10</td><td>Systematic verification against OWASP API Security Top 10 (2023), with <b>broken object-level and function-level authorisation</b> given the most attention. In a permit system, an applicant reading or altering another's application is the worst plausible outcome short of data exfiltration.</td></tr>
+<tr><td>Input handling</td><td>Schema validation at the edge from the contract. Parameterised queries only. Output encoding in both clients. Strict CSP on the admin.</td></tr>
+<tr><td>Dependency and supply chain</td><td>SCA on every build across all three repositories, SBOM per release, pinned and verified dependencies, SLSA build provenance. Note the mobile repo currently carries 21 packages behind their latest versions &mdash; a policy for currency is part of this TAB.</td></tr>
+<tr><td>Static and dynamic analysis</td><td>SAST and secret scanning in CI; DAST against staging on a schedule; container and IaC scanning.</td></tr>
+<tr><td>Mobile-specific</td><td>MASVS verification: no sensitive data in logs, screenshots, or backups; anti-tampering appropriate to the risk; no debug or verbose logging in release builds; obfuscation where it does not impede crash triage.</td></tr>
+<tr><td>Independent test</td><td>External penetration test of API, admin, and mobile against production-shaped staging. Findings tracked to closure with retest evidence. <b>Not a formality:</b> no P0 or P1 finding may be open at go-live.</td></tr>
+<tr><td>Vulnerability disclosure</td><td>A published route for reporting a vulnerability, and a policy for triage and response. A government service without one gets its disclosures on social media instead.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>ASVS L2 verification recorded with evidence per requirement, and every non-applicable item justified.</li>
+  <li>MASVS verification recorded for the mobile app.</li>
+  <li>SAST, SCA, secret scanning, container and IaC scanning all run per build and fail on high or critical findings.</li>
+  <li>An SBOM is produced and archived for every release artefact.</li>
+  <li>Independent penetration test completed; all high and critical findings closed and retested.</li>
+  <li>An automated authorisation test suite attempts cross-tenant access on every object-scoped endpoint and is refused every time.</li>
+  <li>A vulnerability disclosure policy is published with a monitored contact.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 15</span><span class="t">Observability, SLOs, and incident response</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-ops">Ops</span> &nbsp;·&nbsp; <b>Depends on</b> TAB 02 &nbsp;·&nbsp; <b>Closes</b> G9</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Instrument all three tiers with OpenTelemetry, define service level objectives with error
+budgets, build the dashboards and alerts that make a degradation visible before an applicant
+reports it, and establish an on-call and incident response process including the 72-hour
+breach notification path RA 10173 requires.
+</div></div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Instrumentation</td><td>OpenTelemetry traces, metrics and logs. Correlation IDs propagated from client through to database. Structured JSON logs with <b>no personal data and no credentials</b> &mdash; enforced by a redaction layer and an automated log-content test, not by reviewer diligence.</td></tr>
+<tr><td>Crash and error reporting</td><td>Mobile crash reporting with symbol upload per release. Admin front-end error reporting. Both with an opt-in consent path, since crash payloads can carry personal data.</td></tr>
+<tr><td>SLIs and SLOs</td><td>Availability, latency (p50/p95/p99), and error rate per critical journey &mdash; sign-in, list applications, submit application, upload document, submit payment. Numeric targets with error budgets, agreed with the LGU.</td></tr>
+<tr><td>Business telemetry</td><td>Submissions, approvals, rejections, average processing days by classification, pledge-compliance rate. The LGU needs these for ARTA reporting; deriving them from logs later is far harder than emitting them now.</td></tr>
+<tr><td>Alerting</td><td>Alert on symptoms (error budget burn, journey failure), not causes (CPU). Every alert has a runbook link and a named owner. Alerts nobody acts on are deleted.</td></tr>
+<tr><td>Incident response</td><td>Severity definitions, on-call rota, escalation, communication templates for applicants and the LGU, and blameless post-incident review with tracked actions.</td></tr>
+<tr><td>Breach response</td><td>A specific, rehearsed procedure for personal data breach: containment, assessment, and notification to the National Privacy Commission and affected data subjects within 72 hours of knowledge.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>A single request is traceable end to end from client action to database query.</li>
+  <li>An automated test asserts no personal data or credential appears in any log stream at any level.</li>
+  <li>Every critical journey has a published SLO and a dashboard showing error budget consumption.</li>
+  <li>A synthetically induced failure fires the expected alert within its stated detection window.</li>
+  <li>Every alert links to a runbook that has been followed at least once in a drill.</li>
+  <li>A breach notification drill is completed end to end within the 72-hour window and the timings recorded.</li>
+  <li>Crash reports from a release build symbolicate to source.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 16</span><span class="t">Performance and capacity</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-mob">Mobile</span> &nbsp;·&nbsp; <b>Depends on</b> TABs 10, 13, 15 &nbsp;·&nbsp; <b>Closes</b> M-18, G15</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Establish performance budgets, load-test the API to and beyond expected peak, profile the
+mobile app on representative mid-range Android hardware over a throttled connection, and size
+the infrastructure against measured evidence rather than estimate.
+</div></div>
+
+<h4>Why the device and network matter more than the server here</h4>
+<p>
+  The app was built and previewed largely on desktop Chrome at 1.0× scale on a fast
+  connection. That environment hides precisely the failures this audience will hit &mdash;
+  which is why the app already clamps text scaling to 1.3× after "fine on browser, broken on
+  Android" overflow, and why wizard forms are tested at a 400dp viewport. Those were the right
+  instincts; this TAB converts them into measurement on real hardware.
+</p>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Load profile</td><td>Model realistic peak. Permit filing is seasonal and deadline-driven &mdash; renewal periods and fiscal year boundaries produce spikes far above the mean. Size for the spike.</td></tr>
+<tr><td>API load testing</td><td>Sustained load at expected peak, spike tests at multiples of it, soak tests for leaks, and stress tests to find the breaking point and confirm it degrades gracefully rather than collapsing.</td></tr>
+<tr><td>Document path</td><td>Concurrent large uploads over slow connections &mdash; the heaviest and most failure-prone path in the system. Include scanning throughput; the scanner is a bottleneck that will not appear in an endpoint benchmark.</td></tr>
+<tr><td>Database</td><td>Query analysis under load, index verification, connection pool sizing, slow query alerting.</td></tr>
+<tr><td>Mobile profiling</td><td>Cold and warm start, frame rendering through the wizards and long lists, memory under document capture, battery over a realistic session, and install size. On a physical mid-range Android device on a throttled network (M-18).</td></tr>
+<tr><td>Budgets</td><td>Numeric budgets enforced in CI: install size, cold start, p95 journey latency. A regression fails the build rather than being noticed a quarter later.</td></tr>
+<tr><td>Capacity plan</td><td>Documented sizing with headroom, autoscaling policy, and cost model at expected and peak load.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>API sustains modelled peak within SLO for a sustained soak with no memory or connection leak.</li>
+  <li>Beyond breaking point the system sheds load and returns correct errors rather than corrupting data.</li>
+  <li>Concurrent large uploads on a throttled connection complete or fail cleanly and resumably.</li>
+  <li>Mobile cold start, frame timings, memory and battery measured on target hardware and recorded against budgets.</li>
+  <li>Performance budgets enforced in CI, with a deliberate regression proven to fail the build.</li>
+  <li>Capacity plan and cost model reviewed and accepted by the LGU.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 17</span><span class="t">Accessibility and localisation</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-mob">Mobile</span> <span class="tag tag-adm">Admin</span> &nbsp;·&nbsp; <b>Closes</b> M-13, M-19, G14</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Bring both clients to WCAG 2.2 Level AA, complete Filipino localisation or reduce the language
+picker to what is genuinely supported, and verify with assistive technology on real devices
+&mdash; not only in widget tests.
+</div></div>
+
+<div class="callout law">
+  <strong>A public service cannot be optional about this.</strong> RA 11032 obliges government
+  services to be accessible to the public they serve. A permit portal only some citizens can
+  operate has not delivered the service; it has moved the queue.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Existing foundation</td><td><code>accessibility_test.dart</code> already guards 200% text scale, 48dp targets and screen-reader labels, and correctly applies <code>AppTheme.lightTheme</code> rather than Material defaults. Extend its coverage to every screen; it is the right test in the right shape.</td></tr>
+<tr><td>Text scaling</td><td>The app clamps to 1.3× because layouts were built at 1.0×. That is a pragmatic mitigation, not an accessible outcome &mdash; a user who needs 200% is being denied it. Rework the layouts that cannot hold larger text and raise the clamp.</td></tr>
+<tr><td>Contrast</td><td>Audit against WCAG AA on rendered output (M-19). Where the brand palette fails, that is a brand decision to escalate, not a code fix to improvise.</td></tr>
+<tr><td>Assistive technology</td><td>Manual testing with TalkBack and VoiceOver through the complete filing journey. Traversal order, focus management on navigation and dialogs, and announcements for asynchronous state changes.</td></tr>
+<tr><td>Forms</td><td>Every field programmatically labelled; errors associated with their field and announced; the 16 wizards navigable and completable entirely by screen reader.</td></tr>
+<tr><td>Localisation</td><td>Decision E-10. Either implement Filipino properly &mdash; extraction, translation, plurals, dates, currency, and layout that survives longer strings &mdash; or reduce the picker to English only. <b>A language picker that changes nothing is worse than no picker</b>, because it promises the service in a language the user is then denied.</td></tr>
+<tr><td>Admin accessibility</td><td>The same standard applies. LGU staff use this all day, and staff include people who use assistive technology.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Automated accessibility checks cover every screen in both clients and run in CI.</li>
+  <li>The complete filing journey is completed end to end using only TalkBack, and again using only VoiceOver, by a tester who did not build it.</li>
+  <li>Contrast audit passes AA on rendered output, or every failure is escalated as a recorded brand decision.</li>
+  <li>Text scale is supported to the platform maximum on every screen, or each exception is individually justified.</li>
+  <li>Localisation is either complete for the offered languages or the picker offers only what is complete.</li>
+  <li>No untranslated string appears in a shipped locale; asserted by a resource-completeness test.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 18</span><span class="t">Test strategy and CI/CD</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p1">P1</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-be">Backend</span> <span class="tag tag-mob">Mobile</span> <span class="tag tag-adm">Admin</span> &nbsp;·&nbsp; <b>Start during Phase A</b> &nbsp;·&nbsp; <b>Closes</b> G8</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Establish continuous integration for all three repositories, add consumer-driven contract
+testing between the tiers, build an end-to-end suite over the critical journeys, and enforce
+the quality gates that make "it passed" mean something.
+</div></div>
+
+<div class="callout warn">
+  <strong>There is no CI in any repository today.</strong> The mobile app's 443 tests and clean
+  analyzer are real and valuable, but they are run by hand. That is why a time-dependent test
+  could sit broken until someone happened to run the suite &mdash; and why nothing catches an
+  admin change that breaks the contract. CI is the mechanism that turns a good test suite into
+  a guarantee.
+</div>
+
+<h4>Test strategy</h4>
+<table>
+<tr><th style="width:24%">Layer</th><th>Coverage</th></tr>
+<tr><td>Unit</td><td>Domain logic, state machines, money arithmetic, the pledge clock. Fast, deterministic, no I/O. Property-based tests for arithmetic and date computation, where example-based tests systematically miss edge cases.</td></tr>
+<tr><td>Contract</td><td>Consumer-driven contracts (Pact or equivalent) between each client and the API. Provider verification runs in the backend pipeline, so a breaking server change fails <b>before</b> it reaches a client &mdash; the single highest-value test type in a three-tier system with two independent client teams.</td></tr>
+<tr><td>Integration</td><td>Backend against a real database and object store in containers. No mocked persistence: the constraints in TAB 04 are part of the behaviour under test.</td></tr>
+<tr><td>Widget / component</td><td>Mobile widget tests (extend the existing 443) and Angular component tests. Forms tested at a 400dp viewport &mdash; a wider window hides real overflows, which is how a missing <code>isExpanded</code> on the discipline dropdown nearly shipped.</td></tr>
+<tr><td>End-to-end</td><td>The full loop across both clients and the API: register → create → attach → submit → officer evaluates → assessment issued → applicant pays → officer verifies → permit generated → released. Run against staging per release.</td></tr>
+<tr><td>Non-functional</td><td>Accessibility, performance budgets, and security scanning as pipeline gates, not as periodic projects.</td></tr>
+</table>
+
+<h4>Determinism rules, learned here</h4>
+<ul>
+  <li><b>Pin the clock in any test whose outcome depends on a date.</b> On 19 August 2026 the mobile suite failed because <code>professionals_screen</code> read the wall clock while its test pinned the provider's, so an assertion of "expires in 44 days" decayed by one day, every day. The screens now read the provider's clock and the test is the regression guard.</li>
+  <li><b>Run CI at varied times of day, or pin the clock.</b> Quiet hours are 21:00–07:00; an unpinned notification test passes in the morning and fails at night.</li>
+  <li><b>Add an architecture test that fails on <code>DateTime.now()</code> in presentation code.</b> The two defects found by this sweep were the same defect twice; a lint is cheaper than finding it a third time.</li>
+  <li><b>No sleeps, no network, no shared mutable fixtures.</b> A flaky test that is retried is a test nobody believes.</li>
+</ul>
+
+<h4>Pipeline gates</h4>
+<pre><code>every pull request     format · analyze/lint · unit · widget/component ·
+                       contract (consumer) · SAST · secret scan · SCA
+merge to main          all of the above · integration · contract (provider) ·
+                       build artefacts · SBOM · deploy to staging
+release                e2e on staging · performance budgets · accessibility ·
+                       DAST · manual approval · deploy to production ·
+                       smoke tests · automatic rollback on failure</code></pre>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>All three repositories have CI running on every pull request, with required status checks that cannot be bypassed.</li>
+  <li>A breaking API change fails provider contract verification before any client is affected; proven by a deliberate break.</li>
+  <li>The end-to-end journey runs green against staging on every release candidate.</li>
+  <li>An architecture test fails the build on a wall-clock read in presentation code.</li>
+  <li>The suite is proven deterministic: 50 consecutive runs, at different times of day, all green.</li>
+  <li>Coverage is measured and reported per repository, with agreed thresholds on domain logic specifically rather than on the codebase as an average.</li>
+  <li>DORA metrics are collected: deployment frequency, lead time, change failure rate, restore time.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 19</span><span class="t">Release engineering and store delivery</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-mob">Mobile</span> <span class="tag tag-ops">Ops</span> &nbsp;·&nbsp; <b>Depends on</b> TAB 18 &nbsp;·&nbsp; <b>Closes</b> M-04, M-06, G6</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Establish signed, reproducible, attributable releases for all three tiers: production signing
+keys held securely, versioning consistent across repositories, app store listings and privacy
+declarations prepared, staged rollout with a kill switch, and a forced-update mechanism for
+the day a security fix cannot be optional.
+</div></div>
+
+<div class="callout stop">
+  <strong>Android release builds are currently signed with the debug key.</strong>
+  <code>android/app/build.gradle</code> carries the generated placeholder and its TODO. A
+  debug-signed build cannot be published, and more importantly a key established late cannot
+  be changed later without every user reinstalling. This is resolved before any distribution,
+  including internal pilot distribution.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Area</th><th>Requirement</th></tr>
+<tr><td>Signing</td><td>Android upload and app-signing keys under Play App Signing; iOS distribution certificates and provisioning profiles. Keys in a secret manager or hardware-backed store, never in the repository, with documented custody, rotation, and recovery. <b>Losing the signing key ends the app's identity</b> &mdash; treat custody as seriously as a database backup.</td></tr>
+<tr><td>Identifiers</td><td>Confirm final bundle identifiers. Current values (<code>com.ebpco.ebpco_user_app</code> / <code>com.ebpco.ebpcoUserApp</code>) are development placeholders and should reflect the owning LGU or agency. <b>Identifiers cannot be changed after publication</b> without losing the listing.</td></tr>
+<tr><td>Versioning</td><td>SemVer, mapped to platform version codes, derived from tags rather than hand-edited. Build metadata (commit SHA, build time, environment) surfaced in-app for support &mdash; the About screen's <code>backendDescription</code> is the right idea; extend it.</td></tr>
+<tr><td>Store listings</td><td>Descriptions, screenshots at required sizes, and the accounts to publish under. Government publisher accounts often require organisational verification &mdash; start early; it is a common cause of launch slippage.</td></tr>
+<tr><td>Privacy declarations</td><td>Google Play Data Safety and Apple Privacy Nutrition Labels, plus iOS privacy manifests for the app and its SDKs. These must match TAB 20's processing record exactly; a discrepancy is both a store rejection and a privacy misstatement.</td></tr>
+<tr><td>Permission justification</td><td>Camera, photo library and storage permissions must be justified in-app before the prompt and in the listing. The manifest already scopes <code>READ_EXTERNAL_STORAGE</code> to API ≤32 with <code>READ_MEDIA_IMAGES</code> above it &mdash; keep that discipline as target SDK rises.</td></tr>
+<tr><td>Rollout and kill switch</td><td>Staged rollout with monitored crash and error rates and defined halt criteria. A server-side kill switch for a broken client version, and a forced-update path for security fixes.</td></tr>
+<tr><td>Repository hygiene</td><td>Create the remote and publish <code>main</code> (M-04). Remove or relocate the stray <code>flutter_0*.png</code> artefacts at the repo root (M-06). Resolve the pending iOS <code>project.pbxproj</code> and SwiftPM working-tree changes rather than carrying them into a release.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Release builds are signed with production keys; no debug-signed artefact can be produced by the release pipeline.</li>
+  <li>Signing key custody, rotation and recovery are documented, and recovery has been rehearsed.</li>
+  <li>Version numbers derive from tags and are identical in the artefact, the About screen, and <code>/version</code>.</li>
+  <li>Store privacy declarations reconcile line by line with the TAB 20 processing record.</li>
+  <li>A staged rollout can be halted and rolled back; rehearsed on a pre-release track.</li>
+  <li>The kill switch is proven to disable an obsolete client version against staging.</li>
+  <li>A forced update is proven to block use of an outdated version without data loss.</li>
+  <li>Repository root is free of stray artefacts and the working tree is clean at the release tag.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 20</span><span class="t">Data privacy compliance (RA 10173)</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-ops">Governance</span> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Start during Phase A</b> &nbsp;·&nbsp; <b>Closes</b> M-03, M-15, M-16, G11</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Complete Data Privacy Act compliance: appoint and publish a Data Protection Officer, register
+the data processing system with the National Privacy Commission, conduct a Privacy Impact
+Assessment, publish a counsel-reviewed privacy notice, enforce a retention schedule, and make
+every data subject right exercisable in the product rather than by email.
+</div></div>
+
+<div class="callout law">
+  <strong>This is a legal precondition, not a launch task.</strong> Processing real applicant
+  personal data without a registered processing system, a designated DPO, and a lawful basis
+  exposes the LGU to NPC enforcement. It must be complete before the first real record, not
+  before general availability.
+</div>
+
+<h4>Scope</h4>
+<table>
+<tr><th style="width:28%">Deliverable</th><th>Detail</th></tr>
+<tr><td>DPO</td><td>Designated, trained, registered with the NPC, and <b>contactable from inside the app</b>. The Privacy &amp; Data screen currently names the role without contact details (M-16); an unreachable DPO does not discharge the obligation.</td></tr>
+<tr><td>Registration</td><td>Register the data processing system with the NPC per its current requirements for government agencies.</td></tr>
+<tr><td>Privacy Impact Assessment</td><td>Full PIA covering collection, storage, transfer, retention and disposal across all three tiers and every third-party processor. Reviewed when the architecture changes.</td></tr>
+<tr><td>Records of processing</td><td>Generated from the column-level personal data tags in TAB 04, so the record and the system cannot drift. Each field mapped to purpose, lawful basis, retention period and recipients.</td></tr>
+<tr><td>Privacy notice</td><td>Plain-language, layered, in every offered language, reviewed by counsel (M-03). The app already ships a plain-language disclosure &mdash; that is the draft, not the approved text.</td></tr>
+<tr><td>Consent</td><td>The existing consent gate before first document capture, with a recorded timestamp and withdrawal, is the correct pattern. Extend it to every processing activity relying on consent, and be clear where the basis is legal obligation rather than consent &mdash; consent that cannot be refused is not consent.</td></tr>
+<tr><td>Data subject rights</td><td>Access, correction, erasure, portability, objection &mdash; each exercisable in-product with a defined response time. Erasure must reconcile with statutory retention: where the LGU must retain, say so and say why.</td></tr>
+<tr><td>Retention schedule</td><td>Per data category, agreed and enforced by the TAB 06 job. Decision E-6, currently open as M-15.</td></tr>
+<tr><td>Processor agreements</td><td>Data sharing or outsourcing agreements with every processor &mdash; hosting, push, crash reporting, scanning &mdash; before any of them touches personal data.</td></tr>
+<tr><td>Breach procedure</td><td>The 72-hour notification path in TAB 15, rehearsed, with named responsibilities.</td></tr>
+</table>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>DPO appointed, registered, and reachable from the app with a monitored channel.</li>
+  <li>Processing system registered with the NPC; registration evidence filed.</li>
+  <li>PIA completed, reviewed, and its actions closed or accepted in writing.</li>
+  <li>Records of processing generated from the schema and reconciled with store privacy declarations.</li>
+  <li>Privacy notice reviewed by counsel and published in every offered language.</li>
+  <li>Each data subject right demonstrably exercisable end to end within its stated response time.</li>
+  <li>Retention job proven to delete on schedule, with an audit record per deletion.</li>
+  <li>A signed agreement is in place with every processor before it receives personal data.</li>
+</ul>
+
+<div class="section"></div>
+<div class="tabhead"><span class="n">TAB 21</span><span class="t">Go-live: cutover and readiness review</span></div>
+<div class="tabmeta"><b>Priority</b> <span class="tag tag-p0">P0</span> &nbsp;·&nbsp; <b>Owner</b> <span class="tag tag-ops">Ops</span> <span class="tag tag-be">Backend</span> &nbsp;·&nbsp; <b>Depends on</b> all TABs</div>
+
+<div class="cmd"><div class="cmd-head">Command</div><div class="cmd-body">
+Run the production readiness review, complete operational documentation and LGU training,
+rehearse disaster recovery, execute a piloted cutover with a defined rollback, and hold a
+hypercare period with explicit exit criteria before declaring general availability.
+</div></div>
+
+<h4>Production readiness review</h4>
+<p>A structured gate, scored against ISO/IEC 25010 quality characteristics. Each line is evidenced or the launch does not proceed.</p>
+<table>
+<tr><th style="width:26%">Dimension</th><th>Evidence required</th></tr>
+<tr><td>Functional suitability</td><td>End-to-end journey green on production-shaped staging; every TAB's acceptance criteria signed off.</td></tr>
+<tr><td>Reliability</td><td>SLOs defined and met during soak; backup restore rehearsed and timed; failover tested.</td></tr>
+<tr><td>Security</td><td>Penetration test closed with no open high or critical finding; ASVS L2 and MASVS evidence complete.</td></tr>
+<tr><td>Performance</td><td>Load, spike and soak results within budget; capacity plan accepted.</td></tr>
+<tr><td>Usability &amp; accessibility</td><td>WCAG 2.2 AA verified; assistive-technology journey completed; usability testing with real applicants, including low-digital-literacy participants.</td></tr>
+<tr><td>Maintainability</td><td>CI green across three repositories; runbooks written; on-call staffed; dependency currency policy in force.</td></tr>
+<tr><td>Compliance</td><td>NPC registration, DPO, PIA, privacy notice, retention schedule, processor agreements all complete.</td></tr>
+<tr><td>Operability</td><td>Dashboards, alerts and runbooks in place; at least one drill executed per severity level.</td></tr>
+</table>
+
+<h4>Cutover</h4>
+<table>
+<tr><th style="width:26%">Stage</th><th>Detail</th></tr>
+<tr><td>Data migration</td><td>If historical applications exist, migrate them with a rehearsed, reversible, validated procedure and a reconciliation report. If none exist, record that explicitly &mdash; an unstated assumption here is a discovery on go-live day.</td></tr>
+<tr><td>Pilot</td><td>A limited cohort of real applicants and a single LGU office, with heightened monitoring and a direct feedback channel. Defined success criteria and a defined abort condition.</td></tr>
+<tr><td>Parallel running</td><td>Where a counter or legacy process exists, run both until the pilot's success criteria are met. Do not remove the fallback before the replacement has proven itself under real load.</td></tr>
+<tr><td>Rollback plan</td><td>Written, rehearsed, with a decision owner and a time limit on deliberation. Rollback that requires improvisation is not a rollback.</td></tr>
+<tr><td>Hypercare</td><td>A defined period of elevated support with daily review and published exit criteria. General availability is declared on those criteria, not on a date.</td></tr>
+</table>
+
+<h4>Documentation and training</h4>
+<ul>
+  <li><b>Operations:</b> runbooks per alert, deployment and rollback procedures, backup and restore, incident and breach response, on-call handbook.</li>
+  <li><b>LGU staff:</b> role-based training for officers, evaluators, cashiers and administrators, with materials the LGU can re-run for new staff without the vendor.</li>
+  <li><b>Applicants:</b> in-app help, a public FAQ, and a support channel with a published response time. The Help screen exists; connect it to a staffed channel.</li>
+  <li><b>Handover:</b> architecture documentation, the contract, decision records, and a maintenance plan &mdash; so the LGU is not dependent on the original team's memory.</li>
+</ul>
+
+<h4>Acceptance criteria</h4>
+<ul class="ac">
+  <li>Readiness review completed with every dimension evidenced and signed by a named owner.</li>
+  <li>Disaster recovery drill executed; measured recovery time and recovery point within agreed objectives.</li>
+  <li>Rollback rehearsed successfully on production-shaped infrastructure.</li>
+  <li>Pilot completed against its success criteria, with findings closed or accepted.</li>
+  <li>LGU staff trained and independently able to operate the system.</li>
+  <li>Support channel live and staffed with a published response time.</li>
+  <li>Hypercare exit criteria met before general availability is declared.</li>
+</ul>
+
+<div class="section"></div>
+<h2>D &nbsp; Dependency map and critical path</h2>
+
+<pre><code>PHASE A ─────────────────────────────────────────────────────────────────────
+
+  01 Contract ──┬─► 02 Service ──┬─► 03 Identity ──┬─► 05 Lifecycle ──┐
+                │                │                 │                  │
+                │                └─► 04 Data model ┤                  │
+                │                                  ├─► 06 Documents ──┤
+                │                                  ├─► 07 Payments ───┤
+                │                                  └─► 09 Audit+clock ┤
+                │                                                     │
+                └──────────────────────────► 08 Notifications ────────┤
+                                                                      │
+PHASE B ──────────────────────────────────────────────────────────────┤
+                                                                      ▼
+        11 Secure storage ──► 10 Mobile live layer ──► 12 Offline queue
+                                        │
+                                        └──────► 13 Admin integration
+
+PHASE C ─────────────────────────────────────────────────────────────────────
+
+  14 Security ────┐   (start in Phase A)
+  18 CI/CD ───────┤   (start in Phase A)
+  20 Privacy ─────┤   (start in Phase A)
+                  ├─► 15 Observability ──► 16 Performance ──┐
+  17 Access/l10n ─┤                                         ├─► 21 Go-live
+  19 Release ─────┘                                         ┘</code></pre>
+
+<h4>Critical path</h4>
+<p>
+  <b>01 → 02 → 03 → 04 → 05 → 10 → 13 → 21.</b> Everything else can be parallelised with
+  enough people, but nothing shortens this chain. TAB 01 is the constraint on the entire
+  programme: until the contract is ratified, backend, mobile and admin work all proceed on
+  assumptions, and any one of them being wrong invalidates work in the other two.
+</p>
+
+<h4>Sequencing advice</h4>
+<ul>
+  <li><b>Start 14, 18 and 20 in week one</b> alongside TAB 01. Security, CI and privacy are design inputs; retrofitting any of them costs several times what building with them costs.</li>
+  <li><b>Do TAB 11 before TAB 03 ships tokens.</b> Fixing token storage after real tokens are issued means every issued token was, for a period, stored insecurely.</li>
+  <li><b>Do not begin TAB 13 before TAB 05 is stable.</b> The admin is the heavier client and reworking it against a moving lifecycle engine is expensive.</li>
+  <li><b>Treat TAB 19's signing key as a week-one procurement item.</b> It is a dependency on people, not on code, and those have the longest lead times.</li>
+</ul>
+
+<div class="section"></div>
+<h2>E &nbsp; Decisions the owner must make</h2>
+<p class="lead">
+  These are not engineering choices and must not be made by whoever happens to reach them
+  first. Each blocks the TAB named. Several are carried forward from the existing manual
+  task register.
+</p>
+<table>
+<tr><th style="width:5%">#</th><th style="width:24%">Decision</th><th style="width:9%">Blocks</th><th>What is actually being decided</th></tr>
+<tr><td>E-1</td><td>Backend technology and hosting</td><td>TAB 02</td><td>Who operates this in five years. Choose for the team that will maintain it and for the LGU's procurement and data-residency constraints, not for the framework that benchmarks best.</td></tr>
+<tr><td>E-2</td><td>Who owns and operates the service</td><td>TAB 21</td><td>LGU IT, a vendor under contract, or a shared regional service. Determines on-call, key custody, and what "handover" means.</td></tr>
+<tr><td>E-3</td><td>Citizen's Charter data <i>(M-08)</i></td><td>TABs 07, 09</td><td>Classification, pledged days, fee schedule and requirements per permit type. <b>Must be supplied, never invented.</b> The pledge clock and every fee are built on it.</td></tr>
+<tr><td>E-4</td><td>May applicants cancel their own applications? <i>(M-14)</i></td><td>TAB 05</td><td>A policy question with regulatory consequences, including what happens to fees already assessed or paid.</td></tr>
+<tr><td>E-5</td><td>Identity proofing standard</td><td>TAB 03</td><td>Email verification, in-person verification, or PhilSys. Determines the legal weight of a filing under RA 8792 and the fraud exposure the LGU accepts.</td></tr>
+<tr><td>E-6</td><td>Retention periods per data category <i>(M-15)</i></td><td>TABs 06, 20</td><td>Balancing RA 10173 data minimisation against records retention obligations for permits. Needs counsel and the LGU records officer.</td></tr>
+<tr><td>E-7</td><td>Accepted payment channels <i>(M-09)</i></td><td>TAB 07</td><td>Bank Transfer and Onsite are implemented. Any e-wallet requires formal LGU acceptance and a regulated provider &mdash; offering an unaccepted channel would strand an applicant's money.</td></tr>
+<tr><td>E-8</td><td>Partial payments permitted?</td><td>TAB 07</td><td>Changes the payment model and the lifecycle. Cheap to decide now, expensive to retrofit.</td></tr>
+<tr><td>E-9</td><td>Escalation channel for statutory notices</td><td>TAB 08</td><td>Whether SMS or email backs up push for notices with legal consequence. A push notification to an uninstalled app reaches nobody, and the LGU may need to prove it gave notice.</td></tr>
+<tr><td>E-10</td><td>Localisation scope <i>(M-13)</i></td><td>TAB 17</td><td>Implement Filipino properly, or reduce the picker to English. The current display-only picker is the one option that should not survive.</td></tr>
+<tr><td>E-11</td><td>Appointment booking <i>(M-24)</i></td><td>TAB 05</td><td>QC e-Services treats a confirmed online appointment as the first basic requirement. If this LGU does too, it is in scope and affects the lifecycle.</td></tr>
+<tr><td>E-12</td><td>Export format for payment records <i>(M-25, M-26)</i></td><td>TAB 07</td><td>Clipboard CSV today. A printable receipt or a share sheet needs a plugin and a product decision about what applicants actually take to their accountant.</td></tr>
+<tr><td>E-13</td><td>Repository visibility and remote</td><td>TAB 19</td><td>M-04 remains open: the mobile remote does not exist. Also decide public versus private, given the repositories will soon describe a live government system's attack surface.</td></tr>
+<tr><td>E-14</td><td>Unified forms for field audit <i>(M-10)</i></td><td>TAB 05</td><td>The DPWH/JMC Unified Building Permit and Occupancy forms, so the 16 wizards can be audited field-for-field against the legal instrument rather than against a reading of it.</td></tr>
+<tr><td>E-15</td><td>Release logistics <i>(M-11)</i></td><td>TAB 05</td><td>Claim location, office hours, and bring-with-you list. Small, and the last thing an applicant needs to be told correctly.</td></tr>
+</table>
+
+<div class="callout warn">
+  <strong>Fifteen open decisions is the real schedule risk.</strong> Most block a P0 TAB, and
+  several (E-3, E-6, E-7) need people outside the engineering team. Convert each into a named
+  owner and a date before Phase A starts. Engineering can proceed on stated assumptions in
+  most cases, but every assumption that turns out wrong costs rework in the tier that built on
+  it.
+</div>
+
+<div class="section"></div>
+<h2>F &nbsp; Definition of done, for the programme</h2>
+<p class="lead">The programme is complete when all of the following are true at once.</p>
+<ul class="ac">
+  <li>An applicant registers, files a permit application, attaches documents, receives an assessment, pays, and receives a permit &mdash; entirely through the mobile app, against the production backend.</li>
+  <li>An LGU officer receives that application, verifies its documents, evaluates it, issues an Order of Payment, verifies payment, approves, generates and releases the permit &mdash; entirely through the web admin, against the same backend.</li>
+  <li>Both applications display the same record, in their own vocabulary, from one authoritative source, with no client computing a status the server owns.</li>
+  <li>Every action either party took is in a tamper-evident audit trail, attributable and timestamped.</li>
+  <li>Processing time is measured against the LGU's published Citizen's Charter, with suspension while the applicant is responding, and is reportable to ARTA.</li>
+  <li>An independent penetration test has been completed and no high or critical finding remains open.</li>
+  <li>The system is registered with the NPC, has a reachable DPO, and every data subject right is exercisable in-product.</li>
+  <li>Continuous integration runs on all three repositories and a contract break fails the build before it reaches a client.</li>
+  <li>Service level objectives are published, monitored, and met; alerts have runbooks that have been used in a drill.</li>
+  <li>A restore from backup and a rollback have both been rehearsed, timed, and recorded.</li>
+  <li>The LGU can operate the system without the team that built it.</li>
+</ul>
+
+<div class="callout stop">
+  <strong>One measure above all others.</strong> The system is finished when an applicant who
+  files a permit on their phone and an officer who decides it in the office are, demonstrably
+  and auditably, looking at the same record. Everything in this document exists to make that
+  sentence true.
+</div>
+
+<h3>Document control</h3>
+<table>
+<tr><th style="width:22%">Field</th><th>Value</th></tr>
+<tr><td>Title</td><td>eBPCO — Production Launch Master Command</td></tr>
+<tr><td>Issued</td><td>19 August 2026</td></tr>
+<tr><td>Basis</td><td>Direct measurement of <code>eBPCO-Mobile-App</code> (Flutter) and <code>E-BPCO-Software-main</code> (Angular) working trees on the issue date; the existing Frontend Master Command; and the manual task register <code>docs/MANUAL-TASKS.md</code>.</td></tr>
+<tr><td>Verified baseline</td><td><code>flutter analyze</code> clean; <code>flutter test</code> 443 passed; 66 routes all reachable; no orphaned source files.</td></tr>
+<tr><td>Structure</td><td>21 TABs across 3 phases; 15 owner decisions; 16 tracked gaps.</td></tr>
+<tr><td>Supersedes</td><td>Nothing. Complements the Frontend Master Command, which remains authoritative for applicant-facing behaviour.</td></tr>
+<tr><td>Review</td><td>At each phase boundary, and whenever an owner decision in section E is resolved.</td></tr>
+</table>
+
+</body>
+</html>
