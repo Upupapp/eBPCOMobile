@@ -131,6 +131,11 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // From the provider, not DateTime.now(): the events below were stamped
+    // against the provider's clock, so "Today" has to mean the same day the
+    // stamps were made or a pinned clock labels every entry by real today.
+    final asOf = context.read<NotificationsProvider>().now;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
@@ -154,7 +159,7 @@ class _Section extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Text(
-                  _dayLabel(events[i].createdAt),
+                  _dayLabel(events[i].createdAt, asOf),
                   style: AppTypography.helper.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -177,9 +182,8 @@ class _Section extends StatelessWidget {
     return previous.day != current.day || previous.month != current.month;
   }
 
-  static String _dayLabel(DateTime at) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+  static String _dayLabel(DateTime at, DateTime asOf) {
+    final today = DateTime(asOf.year, asOf.month, asOf.day);
     final day = DateTime(at.year, at.month, at.day);
     final difference = today.difference(day).inDays;
     if (difference == 0) return 'Today';

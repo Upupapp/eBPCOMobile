@@ -22,6 +22,15 @@ class ProfessionalsProvider extends ChangeNotifier {
   final List<AuthorizedRepresentative> _representatives;
   final DateTime Function() _clock;
 
+  /// The date every credential judgement in this feature is made against.
+  ///
+  /// Exposed because the screen renders the same verdicts this provider
+  /// computes ("expires in N days", "cannot act yet"), and a screen reading
+  /// its own `DateTime.now()` is a second source of truth for today. The two
+  /// then disagree wherever the clock is pinned — which is every test, and
+  /// any future build that wants to preview a filing date.
+  DateTime get now => _clock();
+
   List<ProfessionalModel> get professionals =>
       List.unmodifiable(_professionals);
 

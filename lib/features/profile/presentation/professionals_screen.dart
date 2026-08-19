@@ -23,7 +23,10 @@ class ProfessionalsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProfessionalsProvider>();
-    final now = DateTime.now();
+    // From the provider, not DateTime.now(): the tiles below render the same
+    // expiry verdicts the provider computes, so both must be judging against
+    // the same day or the list and the warnings can disagree.
+    final now = provider.now;
 
     return Scaffold(
       backgroundColor: AppColors.background,

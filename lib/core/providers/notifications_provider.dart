@@ -23,6 +23,14 @@ class NotificationsProvider extends ChangeNotifier {
   final NotificationsRepository _repository;
   final DateTime Function() _clock;
 
+  /// The moment this provider judges everything against — quiet hours, read
+  /// and resolved stamps, and the "Today"/"Yesterday" grouping the feed draws.
+  ///
+  /// Exposed so the screen labels days against the same clock that stamped the
+  /// events. A screen reading its own `DateTime.now()` is a second source of
+  /// truth for today, and the two disagree wherever the clock is pinned.
+  DateTime get now => _clock();
+
   bool _isLoading = true;
   final List<NotificationEvent> _events = [];
 
