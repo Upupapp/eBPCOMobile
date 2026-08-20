@@ -5,15 +5,20 @@ production access, an external party, or a decision that is not mine to make.
 Anything I can do locally is not listed here — it is done, or it is in the TAB
 backlog.
 
-Last updated: 19 August 2026 — post-sweep. The register below is now a subset of
+Last updated: 20 August 2026 — TAB 21, the closing readiness review. The register below is now a subset of
 a larger programme: see `docs/eBPCO-Production-Master-Command.pdf`, which maps every
 item here onto one of 21 TABs and adds the backend work none of these items covered.
 
-**The finding that reframes this list:** there is no backend. The Angular web admin
-makes zero HTTP calls and runs off an in-memory seed; mobile's API client targets an
-assumed contract and defaults to mock. M-02 and M-21 were written as "the server half
-remains" — in fact the server does not exist at all, and TABs 01–09 of the Master
-Command are what closing them actually requires.
+**That finding is now closed.** When this list was written there was no backend at
+all: the admin made zero HTTP calls, mobile targeted a contract it had invented, and
+the two had never been compared. There is now a backend of record with 41 routes, a
+contract enforced by automated check against recorded server responses, and both
+clients verified against it. M-02 and M-21 are closed below.
+
+**What replaces it as the framing:** nothing has been deployed. The verdict of the
+TAB 21 readiness review is **NOT CERTIFIED**, and the single item blocking the most
+is E-1/M-27 — hosting and who operates it. See
+`ebpco-api/docs/READINESS-REVIEW.md` for the scoring and the critical path.
 
 ---
 
@@ -22,6 +27,12 @@ Command are what closing them actually requires.
 | # | Task | Why manual | Raised in |
 |---|---|---|---|
 | M-01 | Move authentication to a server-issued session token held in the platform keychain/keystore | Needs an auth backend to issue tokens. **Partially closed in TAB 5**: the password is no longer stored at all (PBKDF2 verifier + salt), so nothing recoverable remains on disk. What is left is genuinely server-dependent | TAB 1 · §10.1 |
+| M-31 | **Run both clients against a deployed server.** Mobile takes `EBPCO_API_BASE_URL` at build time and defaults to mock; the admin reads a `window` global. Both switches exist and neither has ever been thrown, so no client has spoken to the server. This is the single largest available reduction in risk | Needs a deployed environment |
+| M-32 | **Replace the two columns that store secrets unencrypted under an encrypted name** — `devices.push_token_encrypted` and `accounts.totp_secret_encrypted`. Both hold their bytes unchanged because no key-management service has been chosen. Recorded rather than described as encryption, and must not ship as is | Blocked on E-1 |
+| M-33 | **Commission a penetration test and assemble the ASVS L2 / MASVS evidence packs.** Needs a deployed target | External party |
+| M-34 | **Load, spike and soak.** `DB_POOL_MAX`, `RATE_LIMIT_MAX` and both shutdown timings are reasoned defaults, not measured ones | Needs a deployed environment |
+| M-35 | **Wire log aggregation and alerting**, starting with `scheduled_jobs.consecutive_failures` and readiness. Both are recorded and nothing watches them, so a job failing for a week looks like one that is working | Needs a deployed environment |
+| M-36 | **Write and rehearse a backup and restore procedure.** An untested restore is not a backup | Needs a deployed environment |
 | M-02 | Stand up the backend for the admin-authoritative fields — `lifecycleStatus`, `classification`, `openInstructionCount`, Orders of Payment, evaluations, Letters of Instruction, inspections, release records | Server-side work. **The client is now built and tested against the §7.2 contract** (`lib/core/api/`), so this is the server half only. See M-21 for the endpoints it expects | TABs 1–3 |
 | M-21 | **Confirm or correct the assumed API contract.** The client is now wired and will call these the moment a base URL is supplied: `GET /applications`, `GET /applications/:id`, `POST /applications`, `POST /applications/:id/payments`, `POST /applications/:id/instructions/:letterId/resubmit`; bearer-token auth; the §7.2 JSON shape with admin-vocabulary enum labels and fees as integer centavos. **Every one of these is my assumption, not an agreed contract** — treat this as a proposal to review, not a spec to build to | API layer |
 | M-22 | Decide the token storage and refresh mechanism. `LocalStorageService.sessionToken()` is the read point and returns null today, so the client sends no Authorization header. Note it currently reads SharedPreferences, which is **unencrypted and not where a session token belongs** — see M-01 | API layer |
@@ -79,6 +90,15 @@ Command are what closing them actually requires.
 
 ## Closed
 
+- **M-02 / M-21 — "there is no backend".** Closed by TABs 01–20. There is a
+  contract (46 paths, 54 operations, 97 schemas), a backend of record (41
+  routes, 12 migrations, 979 tests), and a gate that validates recorded server
+  responses against the contract and both clients against the server's real
+  route table. The contract stays at **0.1.0**: it is enforced, and it is not
+  ratified. Ratification is a signature, not a passing script.
+- **G3 — the admin lost an officer's work on refresh.** The store is a cache of
+  the server's answer; writes go to the server first and the cache changes only
+  after it commits.
 - **Plain-text password storage** (was blocking). TAB 5 replaced it with a
   PBKDF2-HMAC-SHA256 verifier and per-account salt, and purges the legacy key
   on upgrade. A test asserts no stored value anywhere in SharedPreferences
