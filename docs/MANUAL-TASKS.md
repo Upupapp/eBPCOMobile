@@ -46,7 +46,7 @@ is E-1/M-27 — hosting and who operates it. See
 
 | # | Task | Why manual |
 |---|---|---|
-| M-04 | Create `Upupapp/eBPCO-Mobile-App` on GitHub and push `main` | I am barred from remote/push operations. Commands are in the TAB 2 report |
+| M-04 | Push `main` to **`https://github.com/Upupapp/eBPCOMobile`** — the designated repo, public and currently empty. `origin` is already configured locally; the push itself is barred to me | I am barred from remote/push operations |
 | M-05 | Decide whether to keep or revert the `analysis_options.yaml` / `pubspec.lock` changes `flutter pub get` made on the SDK bump | Owner call on toolchain policy |
 | M-06 | Remove or relocate `flutter_01.png` … `flutter_06.png` at the repo root | Owner call; they are project artefacts, not mine to delete |
 | M-07 | Authorize the `claude.ai` and `Canva` MCP connectors | Requires an interactive OAuth flow this session cannot run |
