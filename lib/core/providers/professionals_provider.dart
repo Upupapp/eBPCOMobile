@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/professional_model.dart';
+import '../notifications/notification_evaluator.dart';
+import 'notifications_provider.dart';
 
 /// The licensed professionals and authorised representatives attached to the
 /// applicant's projects.
@@ -14,9 +16,17 @@ class ProfessionalsProvider extends ChangeNotifier {
     List<ProfessionalModel>? professionals,
     List<AuthorizedRepresentative>? representatives,
     DateTime Function()? clock,
+    this.notifications,
   }) : _professionals = [...?professionals],
        _representatives = [...?representatives],
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now {
+    _announceExpiringCredentials();
+  }
+
+  /// Optional: a lapsing PRC is worth telling the applicant about, but the
+  /// list itself is useful without a notification sink, and tests that only
+  /// exercise the list should not have to supply one.
+  final NotificationsProvider? notifications;
 
   final List<ProfessionalModel> _professionals;
   final List<AuthorizedRepresentative> _representatives;
@@ -69,6 +79,21 @@ class ProfessionalsProvider extends ChangeNotifier {
     return null;
   }
 
+  /// Puts an expiring PRC into the feed. Called on construction and whenever
+  /// the roster changes, since editing a professional is exactly when a stale
+  /// licence date gets corrected — or introduced.
+  void _announceExpiringCredentials() {
+    final sink = notifications;
+    if (sink == null) return;
+    sink.recordDerived(
+      const NotificationEvaluator().evaluate(
+        applications: const [],
+        professionals: _professionals,
+        asOf: _clock(),
+      ),
+    );
+  }
+
   void saveProfessional(ProfessionalModel professional) {
     final index = _professionals.indexWhere((p) => p.id == professional.id);
     if (index == -1) {
@@ -76,6 +101,7 @@ class ProfessionalsProvider extends ChangeNotifier {
     } else {
       _professionals[index] = professional;
     }
+    _announceExpiringCredentials();
     notifyListeners();
   }
 

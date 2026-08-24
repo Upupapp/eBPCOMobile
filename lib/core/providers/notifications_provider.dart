@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/notification_event.dart';
+import '../notifications/notification_evaluator.dart';
 import '../models/notification_preferences_model.dart';
 import '../repositories/notifications_repository.dart';
 
@@ -127,6 +128,44 @@ class NotificationsProvider extends ChangeNotifier {
     _events.insert(0, event);
     notifyListeners();
     return event;
+  }
+
+  /// Records notifications the app derived for itself, skipping any whose
+  /// condition is already in the feed.
+  ///
+  /// Returns how many were new. The evaluator runs on every load and keeps
+  /// deriving a condition for as long as it holds, so the skip is what stands
+  /// between an applicant and one identical entry per launch.
+  int recordDerived(Iterable<DerivedNotification> derived) {
+    final seen = {
+      for (final event in _events)
+        if (event.dedupeKey != null) event.dedupeKey!,
+    };
+
+    var added = 0;
+    for (final item in derived) {
+      if (seen.contains(item.dedupeKey)) continue;
+      seen.add(item.dedupeKey);
+
+      final now = _clock();
+      _events.insert(
+        0,
+        NotificationEvent(
+          id: 'n-${now.microsecondsSinceEpoch}-${_events.length}',
+          type: item.type,
+          applicationId: item.applicationId,
+          applicationNumber: item.applicationNumber,
+          payload: item.payload,
+          createdAt: now,
+          pushSuppressed: !shouldPush(item.type, at: now),
+          dedupeKey: item.dedupeKey,
+        ),
+      );
+      added++;
+    }
+
+    if (added > 0) notifyListeners();
+    return added;
   }
 
   /// Convenience for non-application events such as registering a business.

@@ -5,6 +5,7 @@ import '../models/application_detail.dart';
 import '../models/application_model.dart';
 import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
+import '../notifications/notification_evaluator.dart';
 import '../models/document_model.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
@@ -173,6 +174,16 @@ class ApplicationsProvider extends ChangeNotifier {
       _applications = await _repository.fetchAll();
       _loadError = null;
       _lastLoadedAt = _clock();
+
+      // Conditions the app can work out for itself — a lapsed service pledge,
+      // a permit approaching its PD 1096 deadline. Derived on every load and
+      // deduped, so they reach the feed once rather than never or endlessly.
+      _notifications.recordDerived(
+        const NotificationEvaluator().evaluate(
+          applications: _applications,
+          asOf: _clock(),
+        ),
+      );
     } catch (error) {
       // Keep whatever was already loaded. Losing the action stack because a
       // refresh timed out would hide exactly the information the applicant

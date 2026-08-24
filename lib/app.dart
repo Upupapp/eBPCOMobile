@@ -134,7 +134,9 @@ class _EbpcoAppState extends State<EbpcoApp> {
           create: (_) => SettingsProvider(),
         ),
         ChangeNotifierProvider<ProfessionalsProvider>(
-          create: (_) => ProfessionalsProvider(),
+          create: (context) => ProfessionalsProvider(
+            notifications: context.read<NotificationsProvider>(),
+          ),
         ),
       ],
       child: MaterialApp.router(

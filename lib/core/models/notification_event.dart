@@ -208,6 +208,15 @@ class NotificationEvent {
   /// quiet hours. The feed entry is recorded either way.
   final bool pushSuppressed;
 
+  /// Identifies the condition this was derived from, for events the app works
+  /// out itself rather than receives. Null for anything server-sent or posted
+  /// by a user action.
+  ///
+  /// The evaluator re-derives every condition on every load, so without this
+  /// an applicant whose pledge has lapsed would collect one identical entry
+  /// per app launch.
+  final String? dedupeKey;
+
   const NotificationEvent({
     required this.id,
     required this.type,
@@ -218,6 +227,7 @@ class NotificationEvent {
     this.readAt,
     this.resolvedAt,
     this.pushSuppressed = false,
+    this.dedupeKey,
   });
 
   bool get isRead => readAt != null;
@@ -241,6 +251,7 @@ class NotificationEvent {
         readAt: readAt ?? this.readAt,
         resolvedAt: resolvedAt ?? this.resolvedAt,
         pushSuppressed: pushSuppressed,
+        dedupeKey: dedupeKey,
       );
 
   String get title {
