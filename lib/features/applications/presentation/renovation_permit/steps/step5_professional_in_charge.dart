@@ -76,6 +76,8 @@ class _Step5ProfessionalInChargeState
   Future<void> _uploadPrcId() async {
     final result = await showAttachDocumentOptions(context, label: 'PRC ID');
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.prcIdUpload = result);
     widget.onChanged();
   }
@@ -86,6 +88,8 @@ class _Step5ProfessionalInChargeState
       label: 'PTR Document',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.ptrDocumentUpload = result);
     widget.onChanged();
   }
@@ -96,6 +100,8 @@ class _Step5ProfessionalInChargeState
       label: 'Signed and Sealed Professional Form',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.signedSealedFormUpload = result);
     widget.onChanged();
   }
@@ -106,6 +112,8 @@ class _Step5ProfessionalInChargeState
       label: 'Signed and Sealed Renovation Plans',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.signedSealedPlansUpload = result);
     widget.onChanged();
   }

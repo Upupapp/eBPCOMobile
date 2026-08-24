@@ -76,6 +76,8 @@ class _Step6ConsentAuthorizationState
       label: 'Authorization Letter / SPA',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.authorizationLetterUpload = result);
     widget.onChanged();
   }
@@ -86,6 +88,8 @@ class _Step6ConsentAuthorizationState
       label: 'Owner Valid ID',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.ownerValidIdUpload = result);
     widget.onChanged();
   }

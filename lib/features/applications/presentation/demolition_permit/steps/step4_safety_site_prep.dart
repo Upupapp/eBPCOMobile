@@ -128,6 +128,8 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
       label: '${type.label} Disconnection Document',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _safety.utilities[type]!.supportingDocument = picked; });
     widget.onChanged();
   }

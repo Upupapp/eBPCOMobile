@@ -70,6 +70,8 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
       label: 'Proof of payment',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _proof = result);
   }
 

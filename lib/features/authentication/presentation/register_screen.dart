@@ -153,6 +153,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       helpText: 'Select date of birth',
     );
     if (picked != null) {
+      // The picker can outlive this step; setState on a defunct State throws.
+      if (!mounted) return;
       setState(() => _dateOfBirth = picked);
     }
   }

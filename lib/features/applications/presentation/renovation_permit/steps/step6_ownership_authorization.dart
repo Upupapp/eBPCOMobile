@@ -83,6 +83,8 @@ class _Step6OwnershipAuthorizationState
       label: 'Authorization Letter / SPA',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.authorizationLetterUpload = result);
     widget.onChanged();
   }
@@ -93,6 +95,8 @@ class _Step6OwnershipAuthorizationState
       label: 'Registered Owner Valid ID',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.ownerValidIdUpload = result);
     widget.onChanged();
   }
@@ -103,6 +107,8 @@ class _Step6OwnershipAuthorizationState
       label: 'Authorized Representative Valid ID',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.representativeValidIdUpload = result);
     widget.onChanged();
   }
@@ -113,6 +119,8 @@ class _Step6OwnershipAuthorizationState
       label: 'Proof of Ownership',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _consent.proofOfOwnershipUpload = result);
     widget.onChanged();
   }

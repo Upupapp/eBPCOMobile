@@ -80,6 +80,8 @@ class _Step5DemolitionSupervisorState
       label: 'PRC ID',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.prcIdUpload = picked; });
     widget.onChanged();
   }
@@ -90,6 +92,8 @@ class _Step5DemolitionSupervisorState
       label: 'PTR Document',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.ptrDocumentUpload = picked; });
     widget.onChanged();
   }
@@ -100,6 +104,8 @@ class _Step5DemolitionSupervisorState
       label: 'Signed and Sealed Professional Form',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.signedSealedFormUpload = picked; });
     widget.onChanged();
   }
@@ -110,6 +116,8 @@ class _Step5DemolitionSupervisorState
       label: 'Demolition Plan',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.demolitionPlanUpload = picked; });
     widget.onChanged();
   }
@@ -120,6 +128,8 @@ class _Step5DemolitionSupervisorState
       label: 'Demolition Methodology',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.demolitionMethodologyUpload = picked; });
     widget.onChanged();
   }
@@ -130,6 +140,8 @@ class _Step5DemolitionSupervisorState
       label: 'Safety Program',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.safetyProgramUpload = picked; });
     widget.onChanged();
   }
@@ -140,6 +152,8 @@ class _Step5DemolitionSupervisorState
       label: 'Structural Assessment',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _professional.structuralAssessmentUpload = picked; });
     widget.onChanged();
   }

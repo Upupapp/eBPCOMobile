@@ -79,6 +79,8 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
       label: 'Lot Owner Consent',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _consent.lotOwnerConsentUpload = picked; });
     widget.onChanged();
   }
@@ -89,6 +91,8 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
       label: 'Authorization Letter / SPA',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _consent.authorizationLetterUpload = picked; });
     widget.onChanged();
   }
@@ -99,6 +103,8 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
       label: 'Registered Owner Valid ID',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _consent.ownerValidIdUpload = picked; });
     widget.onChanged();
   }
@@ -109,6 +115,8 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
       label: 'Authorized Representative Valid ID',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _consent.representativeValidIdUpload = picked; });
     widget.onChanged();
   }
@@ -119,6 +127,8 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
       label: 'Proof of Ownership',
     );
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() { _consent.proofOfOwnershipUpload = picked; });
     widget.onChanged();
   }

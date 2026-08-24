@@ -80,6 +80,8 @@ class _RepresentativeFormState extends State<_RepresentativeForm> {
   Future<void> _attach(String label, ValueChanged<DocumentModel> assign) async {
     final picked = await showAttachDocumentOptions(context, label: label);
     if (picked == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => assign(picked));
   }
 

@@ -95,6 +95,8 @@ class _ProfessionalFormState extends State<_ProfessionalForm> {
       firstDate: DateTime(now.year - 10),
       lastDate: DateTime(now.year + 10),
     );
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     if (picked != null) setState(() => onPicked(picked));
   }
 

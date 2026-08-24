@@ -75,6 +75,8 @@ class _Step5ProfessionalInChargeState
   Future<void> _uploadPrcId() async {
     final result = await showAttachDocumentOptions(context, label: 'PRC ID');
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.prcIdUpload = result);
     widget.onChanged();
   }
@@ -85,6 +87,8 @@ class _Step5ProfessionalInChargeState
       label: 'Current PTR',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.ptrUpload = result);
     widget.onChanged();
   }
@@ -95,6 +99,8 @@ class _Step5ProfessionalInChargeState
       label: 'Signed and Sealed Professional Certification',
     );
     if (result == null) return;
+    // The picker can outlive this step; setState on a defunct State throws.
+    if (!mounted) return;
     setState(() => _professional.signedSealedUpload = result);
     widget.onChanged();
   }
