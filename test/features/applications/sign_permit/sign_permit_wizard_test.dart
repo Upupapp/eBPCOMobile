@@ -436,7 +436,7 @@ void main() {
       await tester.tap(_submitButton());
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('Sign Permit Submitted!'), findsOneWidget);
+      expect(find.text('Sign Application Submitted!'), findsOneWidget);
       expect(find.textContaining('SGN-'), findsOneWidget);
     },
   );

@@ -376,7 +376,7 @@ void main() {
       await tester.tap(_submitButton());
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('Fencing Permit Submitted!'), findsOneWidget);
+      expect(find.text('Fencing Application Submitted!'), findsOneWidget);
       expect(find.textContaining('FNC-'), findsOneWidget);
     },
   );
