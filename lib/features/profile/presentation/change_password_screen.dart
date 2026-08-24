@@ -170,10 +170,15 @@ class _RequirementRow extends StatelessWidget {
             color: met ? AppColors.statusApproved : AppColors.textMuted,
           ),
           const SizedBox(width: AppSpacing.sm),
-          Text(
-            label,
-            style: AppTypography.helper.copyWith(
-              color: met ? AppColors.textSecondary : AppColors.textMuted,
+          // Expanded, not bare: these labels are sentences ("At least one
+          // number"), and beside a fixed-width icon they have to wrap rather
+          // than run off a 320dp screen.
+          Expanded(
+            child: Text(
+              label,
+              style: AppTypography.helper.copyWith(
+                color: met ? AppColors.textSecondary : AppColors.textMuted,
+              ),
             ),
           ),
         ],

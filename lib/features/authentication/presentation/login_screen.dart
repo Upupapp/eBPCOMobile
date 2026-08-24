@@ -12,6 +12,7 @@ import '../../../shared/widgets/alerts/app_alert.dart';
 import '../../../shared/widgets/branding/app_logo.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../shared/widgets/layout/reflowing_row.dart';
 import '../../../shared/widgets/text_fields/app_password_field.dart';
 import '../../../shared/widgets/text_fields/app_text_field.dart';
 
@@ -110,35 +111,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   onFieldSubmitted: (_) => _handleLogin(),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: InkWell(
-                        onTap: () => setState(() => _rememberMe = !_rememberMe),
-                        child: Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) => setState(
-                                () => _rememberMe = value ?? false,
-                              ),
-                            ),
-                            const Flexible(
-                              child: Text(
-                                'Remember me',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                ReflowingRow(
+                  leading: InkWell(
+                    onTap: () => setState(() => _rememberMe = !_rememberMe),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: (value) => setState(
+                            () => _rememberMe = value ?? false,
+                          ),
                         ),
-                      ),
+                        const Flexible(
+                          child: Text(
+                            'Remember me',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () => context.push('/forgot-password'),
-                      child: const Text('Forgot password?'),
-                    ),
-                  ],
+                  ),
+                  trailing: TextButton(
+                    onPressed: () => context.push('/forgot-password'),
+                    child: const Text('Forgot password?'),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 PrimaryButton(

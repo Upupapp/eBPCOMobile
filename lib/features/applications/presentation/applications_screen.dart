@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/layout/responsive_card_grid.dart';
 import 'widgets/application_option_card.dart';
 import 'widgets/before_you_start_card.dart';
 
@@ -276,15 +277,14 @@ class _PermitGridSection extends StatelessWidget {
       children: [
         Text(title, style: AppTypography.sectionTitle),
         const SizedBox(height: AppSpacing.md),
-        GridView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: AppSpacing.md,
-            mainAxisSpacing: AppSpacing.md,
-            mainAxisExtent: 214,
-          ),
+        // Not a GridView with a fixed `mainAxisExtent`. That pins every cell
+        // to a pixel height tuned against one phone at one font size, and the
+        // content overflowed it by 8px at 320dp. ResponsiveCardGrid exists
+        // for this: rows take their height from their tallest card.
+        ResponsiveCardGrid(
+          crossAxisCount: 2,
+          mainAxisSpacing: AppSpacing.md,
+          crossAxisSpacing: AppSpacing.md,
           children: [
             for (final option in options)
               ApplicationOptionCard(

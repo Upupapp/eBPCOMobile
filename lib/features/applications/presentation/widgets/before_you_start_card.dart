@@ -37,10 +37,14 @@ class BeforeYouStartCard extends StatelessWidget {
                 size: 22,
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                'Before you start',
-                style: AppTypography.bodyStrong.copyWith(
-                  color: AppColors.statusInfo,
+              // Expanded, as _ChecklistRow below already had it. Without it
+              // the heading ran 10px past a 320dp screen.
+              Expanded(
+                child: Text(
+                  'Before you start',
+                  style: AppTypography.bodyStrong.copyWith(
+                    color: AppColors.statusInfo,
+                  ),
                 ),
               ),
             ],
