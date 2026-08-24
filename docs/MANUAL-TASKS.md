@@ -74,7 +74,7 @@ is E-1/M-27 — hosting and who operates it. See
 | # | Decision | Why yours |
 |---|---|---|
 | M-37 | **Rename in the other lane.** The ruled name has not been applied to the monorepo's `docs/README.md` or the web admin's `auth-layout.html` tagline, both of which still say "Electronic Business Permit and Clearance Office". Out of scope here under the mobile-only rule | Different repository |
-| M-38 | **Accept or reject dropping iOS 13 and 14.** The plugin set forced `IPHONEOS_DEPLOYMENT_TARGET` from 13.0 to 15.0 during the first iOS build. Uncommitted. On a Philippine applicant base, older devices are not a rounding error | Audience call |
+| M-38 | ~~Accept or reject dropping iOS 13 and 14~~ — **CLOSED 19 Aug 2026, not a decision.** Flutter 3.47's `ios_deployment_target_migration` rewrites any target below 15.0 on every build; it is the SDK's floor, not a plugin's. Holding 13.0 would mean downgrading Flutter. No device is lost — iOS 15 runs on every iPhone that ran iOS 13 (6s and later); only users who declined a free OS update are affected | Closed, no action |
 
 ## Product decisions I have deliberately left open
 
