@@ -66,10 +66,11 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
       final created = await pending;
+      expect(created, isNotNull, reason: 'a successful submit returns the record');
       await tester.pump();
 
       expect(applications.applications.length, before + 1);
-      expect(applications.applications.last.id, created.id);
+      expect(applications.applications.last.id, created!.id);
 
       // The number the applicant was shown is the number that was stored —
       // not a second one invented by the repository.

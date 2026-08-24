@@ -25,22 +25,45 @@ import '../../../../core/providers/applications_provider.dart';
 /// [applicantName] fills `businessName`. A construction permit is filed by a
 /// person, not a business, and that field is what the detail screen labels
 /// "Business" — worth revisiting when the backend defines the real shape.
-Future<ApplicationModel> submitPermitApplication(
+///
+/// Returns null when the submission could not be recorded, having already told
+/// the applicant. Failure is handled here rather than in sixteen wizards for
+/// the usual reason, and because the alternative was worse than untidy: an
+/// unguarded throw skipped the `pushReplacement` below every call site, so
+/// pressing Submit did nothing at all — no confirmation, no error, no way to
+/// tell whether nine steps of work had been filed.
+///
+/// The draft is deliberately left alone on failure. The applicant is still on
+/// the last step with everything they entered, and can press Submit again.
+Future<ApplicationModel?> submitPermitApplication(
   BuildContext context, {
   required String referenceNumber,
   required String permitTypeLabel,
   required String applicantName,
-}) {
-  return context.read<ApplicationsProvider>().submitApplication(
-    businessId: '',
-    businessName: applicantName,
-    // The only options are new/renewal/amendment. Every permit wizard files a
-    // new one; [permitTypeLabel] is what actually names it on screen.
-    type: ApplicationType.newPermit,
-    documents: const [],
-    permitTypeLabel: permitTypeLabel,
-    applicationNumber: referenceNumber,
-  );
+}) async {
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    return await context.read<ApplicationsProvider>().submitApplication(
+      businessId: '',
+      businessName: applicantName,
+      // The only options are new/renewal/amendment. Every permit wizard files
+      // a new one; [permitTypeLabel] is what actually names it on screen.
+      type: ApplicationType.newPermit,
+      documents: const [],
+      permitTypeLabel: permitTypeLabel,
+      applicationNumber: referenceNumber,
+    );
+  } catch (_) {
+    messenger.showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Could not submit your application. Check your connection and try '
+          'again — nothing you entered has been lost.',
+        ),
+      ),
+    );
+    return null;
+  }
 }
 
 /// What to call the applicant on the application record.

@@ -219,7 +219,9 @@ class _AdditionExtensionPermitWizardScreenState
         lastName: _draft.applicant.lastName,
       ),
     );
-    if (!mounted) return;
+    // Null means the submission failed and the applicant has been told. Stay
+    // on the step so their work is still in front of them.
+    if (application == null || !mounted) return;
     context.pushReplacement(
       '/applications/new/addition-extension-permit/submitted',
       extra: {

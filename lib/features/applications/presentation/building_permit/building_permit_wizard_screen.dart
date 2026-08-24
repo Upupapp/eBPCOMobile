@@ -184,7 +184,7 @@ class _BuildingPermitWizardScreenState
     // This screen shows one action and never links to the application, so the
     // record's id is not needed here — but the record still has to exist, or
     // the applicant's Building Permit is absent from their own list.
-    await submitPermitApplication(
+    final application = await submitPermitApplication(
       context,
       referenceNumber: trackingId,
       permitTypeLabel: 'Building Permit',
@@ -194,7 +194,10 @@ class _BuildingPermitWizardScreenState
         lastName: _draft.applicant.lastName,
       ),
     );
-    if (!mounted) return;
+    // The id is unused here, but the null still matters: without this check a
+    // failed submission would show the applicant a confirmation screen for an
+    // application that was never filed.
+    if (application == null || !mounted) return;
     context.pushReplacement(
       '/applications/new/building-permit/submitted',
       extra: trackingId,

@@ -184,7 +184,9 @@ class _CertificateOfOccupancyWizardScreenState
         lastName: _draft.owner.lastName,
       ),
     );
-    if (!mounted) return;
+    // Null means the submission failed and the applicant has been told. Stay
+    // on the step so their work is still in front of them.
+    if (application == null || !mounted) return;
     context.pushReplacement(
       '/applications/new/certificate-of-occupancy/submitted',
       extra: {

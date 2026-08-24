@@ -48,14 +48,33 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
     }
 
     setState(() => _isSubmitting = true);
-    final business = await context.read<BusinessProvider>().registerBusiness(
-      name: _nameController.text.trim(),
-      category: _category!,
-      street: _streetController.text.trim(),
-      barangay: _barangayController.text.trim(),
-      city: _cityController.text.trim(),
-      province: _provinceController.text.trim(),
-    );
+
+    final BusinessModel business;
+    try {
+      business = await context.read<BusinessProvider>().registerBusiness(
+        name: _nameController.text.trim(),
+        category: _category!,
+        street: _streetController.text.trim(),
+        barangay: _barangayController.text.trim(),
+        city: _cityController.text.trim(),
+        province: _provinceController.text.trim(),
+      );
+    } catch (_) {
+      // `_isSubmitting` was set true before the await, so an unguarded throw
+      // left the button spinning for good: no message, no way back, and a
+      // filled-in form the applicant could not resubmit.
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not register the business. Check your connection and try '
+            'again — nothing you entered has been lost.',
+          ),
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
