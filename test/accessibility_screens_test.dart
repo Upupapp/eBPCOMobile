@@ -313,16 +313,17 @@ void main() {
     });
   });
 
-  group('no text is cut off by a fixed-height box', () {
-    // Distinct from the overflow groups above: a box that pins its height does
-    // not report an overflow when its text outgrows it, the text just stops
-    // rendering. That is how the bottom navigation bar clipped "Applications"
-    // on every screen while three scales of render tests passed.
+  group('no text is cut off', () {
+    // Distinct from the overflow groups above. A box that pins its height, a
+    // ClipRect, a Stack — none of them report an overflow when their text
+    // outgrows them; the text just stops rendering. That is how the bottom
+    // navigation bar clipped "Applications" on every screen while three
+    // scales of render tests passed.
     for (final scale in [1.0, 2.0]) {
       _screens.forEach((name, screen) {
         testWidgets('$name at ${scale}x', (tester) async {
           await _open(tester, screen, textScale: scale);
-          expectNoTextClippedByFixedHeight(tester, context: name);
+          expectNoClippedText(tester, context: name);
         });
       });
     }

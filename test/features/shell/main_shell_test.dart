@@ -166,7 +166,7 @@ void main() {
       for (final width in [320.0, 360.0]) {
         testWidgets('at ${scale}x on ${width.toInt()}dp', (tester) async {
           await _pump(tester, scale, width: width);
-          expectNoTextClippedByFixedHeight(
+          expectNoClippedText(
             tester,
             context: 'MainShell ${scale}x/${width.toInt()}dp',
           );
