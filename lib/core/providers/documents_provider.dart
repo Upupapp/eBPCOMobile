@@ -61,6 +61,7 @@ class DocumentsProvider extends ChangeNotifier {
   final DocumentStorageService _storageService;
 
   bool _isLoading = true;
+  Object? _loadError;
   List<SavedDocumentModel> _documents = const [];
   PickedDocumentFile? _pendingImport;
 
@@ -71,6 +72,10 @@ class DocumentsProvider extends ChangeNotifier {
   DocumentSortOrder _sortOrder = DocumentSortOrder.newestFirst;
 
   bool get isLoading => _isLoading;
+
+  /// Why the last load failed, or null if it did not.
+  Object? get loadError => _loadError;
+  bool get hasLoadError => _loadError != null;
   List<SavedDocumentModel> get allDocuments => _documents;
   String get searchQuery => _searchQuery;
   DocumentTypeFilter get typeFilter => _typeFilter;
@@ -84,9 +89,20 @@ class DocumentsProvider extends ChangeNotifier {
       _categoryFilter != null;
 
   Future<void> _load() async {
-    _documents = await _repository.loadAll();
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _documents = await _repository.loadAll();
+      _loadError = null;
+    } catch (error) {
+      // Keep what is already there; a failed reload should not look like the
+      // applicant's documents were deleted.
+      _loadError = error;
+    } finally {
+      // In the `finally`, not the `try`: without it a thrown load left
+      // `_isLoading` true for the rest of the session and My Documents spun
+      // forever, with the exception escaping unhandled on top.
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> refresh() => _load();

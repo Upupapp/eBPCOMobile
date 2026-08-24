@@ -11,6 +11,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
 import '../../../shared/widgets/states/empty_state.dart';
+import '../../../shared/widgets/states/load_failure_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
 
 class BusinessListScreen extends StatefulWidget {
@@ -37,6 +38,12 @@ class _BusinessListScreenState extends State<BusinessListScreen> {
       body: SafeArea(
         child: businessProvider.isLoading
             ? const LoadingView()
+            : businessProvider.hasLoadError &&
+                  businessProvider.businesses.isEmpty
+            ? LoadFailureState(
+                what: 'your businesses',
+                onRetry: businessProvider.refresh,
+              )
             : Column(
                 children: [
                   Padding(

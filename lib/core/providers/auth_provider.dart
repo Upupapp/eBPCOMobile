@@ -80,6 +80,17 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// What to tell the applicant when sign-in or registration could not reach
+  /// the server at all.
+  ///
+  /// Deliberately not the exception's own text: a `SocketException` or a
+  /// stack trace on the sign-in screen tells the applicant nothing they can
+  /// act on. What matters is that this is not the same as being turned away —
+  /// saying "incorrect email or password" when the request never arrived
+  /// would send someone to reset a password that was fine.
+  static const String _couldNotReachServer =
+      'Could not reach the server. Check your connection and try again.';
+
   Future<bool> login({
     required String email,
     required String password,
@@ -89,10 +100,19 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final user = await _repository.authenticate(
-      email: email,
-      password: password,
-    );
+    final UserModel? user;
+    try {
+      user = await _repository.authenticate(email: email, password: password);
+    } catch (_) {
+      // Without this the button spun forever on any transport failure: the
+      // throw skipped every `_isLoading = false` below it, and the applicant
+      // got no message at all — the one screen where that is least affordable.
+      _errorMessage = _couldNotReachServer;
+      _status = AuthStatus.unauthenticated;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
 
     if (user != null) {
       await _storage.setLoggedIn(true);
@@ -126,13 +146,21 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final success = await _repository.registerAccount(
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      mobileNumber: mobileNumber,
-      password: password,
-    );
+    final bool success;
+    try {
+      success = await _repository.registerAccount(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        mobileNumber: mobileNumber,
+        password: password,
+      );
+    } catch (_) {
+      _errorMessage = _couldNotReachServer;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
 
     if (!success) {
       _errorMessage = 'This email address is already in use.';

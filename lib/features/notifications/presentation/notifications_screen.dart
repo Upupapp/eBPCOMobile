@@ -10,6 +10,7 @@ import '../../../core/providers/notifications_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/states/empty_state.dart';
+import '../../../shared/widgets/states/load_failure_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
 
 /// Notifications as a work queue.
@@ -72,7 +73,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ],
       ),
       body: SafeArea(
-        child: isEmpty
+        child: provider.hasLoadError && provider.events.isEmpty
+            ? LoadFailureState(
+                what: 'your notifications',
+                onRetry: provider.refresh,
+              )
+            : isEmpty
             ? const EmptyState(
                 icon: Icons.notifications_none_outlined,
                 title: 'Nothing here',

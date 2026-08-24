@@ -32,9 +32,14 @@ class NotificationsProvider extends ChangeNotifier {
   DateTime get now => _clock();
 
   bool _isLoading = true;
+  Object? _loadError;
   final List<NotificationEvent> _events = [];
 
   bool get isLoading => _isLoading;
+
+  /// Why the last fetch failed, or null if it did not.
+  Object? get loadError => _loadError;
+  bool get hasLoadError => _loadError != null;
   NotificationPreferences preferences;
 
   List<NotificationEvent> get events => List.unmodifiable(_events);
@@ -70,12 +75,23 @@ class NotificationsProvider extends ChangeNotifier {
   List<NotificationEvent> get recent => _events.take(3).toList();
 
   Future<void> _load() async {
-    final fetched = await _repository.fetchAll();
-    _events
-      ..clear()
-      ..addAll(fetched);
-    _isLoading = false;
-    notifyListeners();
+    try {
+      final fetched = await _repository.fetchAll();
+      _events
+        ..clear()
+        ..addAll(fetched);
+      _loadError = null;
+    } catch (error) {
+      // Anything already in the feed stays. A failed refresh should not empty
+      // the applicant's notifications.
+      _loadError = error;
+    } finally {
+      // In the `finally`, not the `try`: without it a thrown fetch left
+      // `_isLoading` true for the rest of the session and the feed spun
+      // forever, with the exception escaping unhandled on top.
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> refresh() => _load();

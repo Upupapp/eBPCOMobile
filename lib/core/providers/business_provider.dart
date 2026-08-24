@@ -20,8 +20,13 @@ class BusinessProvider extends ChangeNotifier {
 
   bool _isLoading = true;
   List<BusinessModel> _businesses = const [];
+  Object? _loadError;
 
   bool get isLoading => _isLoading;
+
+  /// Why the last fetch failed, or null if it did not.
+  Object? get loadError => _loadError;
+  bool get hasLoadError => _loadError != null;
   List<BusinessModel> get businesses => _businesses;
 
   BusinessModel? byId(String id) {
@@ -31,10 +36,24 @@ class BusinessProvider extends ChangeNotifier {
     return null;
   }
 
+  /// Re-fetch, for the retry offered when a load failed.
+  Future<void> refresh() => _load();
+
   Future<void> _load() async {
-    _businesses = await _repository.fetchAll();
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _businesses = await _repository.fetchAll();
+      _loadError = null;
+    } catch (error) {
+      // Keep whatever was already loaded rather than blanking the list on a
+      // failed refresh.
+      _loadError = error;
+    } finally {
+      // In the `finally`, not the `try`: without it a thrown fetch left
+      // `_isLoading` true for the rest of the session and the screen spun
+      // forever, with the exception escaping unhandled on top.
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<BusinessModel> registerBusiness({

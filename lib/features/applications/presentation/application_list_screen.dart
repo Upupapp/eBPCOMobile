@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
 import '../../../shared/widgets/states/empty_state.dart';
+import '../../../shared/widgets/states/load_failure_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
 import 'widgets/application_list_tile.dart';
 
@@ -142,6 +143,14 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
             Expanded(
               child: provider.isLoading
                   ? const LoadingView()
+                  // Failure before emptiness: "you have nothing here" is a
+                  // claim about the applicant's own filings, and a timed-out
+                  // request is not grounds for making it.
+                  : provider.hasLoadError && provider.applications.isEmpty
+                  ? LoadFailureState(
+                      what: 'your applications',
+                      onRetry: provider.refresh,
+                    )
                   : matching.isEmpty
                   ? _EmptyFor(segment: _segment, hasQuery: _query.isNotEmpty)
                   : RefreshIndicator(

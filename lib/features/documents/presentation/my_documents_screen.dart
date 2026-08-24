@@ -12,6 +12,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
 import '../../../shared/widgets/dialogs/permission_dialogs.dart';
 import '../../../shared/widgets/states/empty_state.dart';
+import '../../../shared/widgets/states/load_failure_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
 import '../../../shared/widgets/text_fields/app_text_field.dart';
 import 'document_preview_screen.dart';
@@ -345,6 +346,15 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
           builder: (context, provider, _) {
             if (provider.isLoading) {
               return const LoadingView(message: 'Loading your documents...');
+            }
+
+            // Failure before emptiness: telling someone their documents are
+            // gone because a load failed is a claim about their own files.
+            if (provider.hasLoadError && provider.allDocuments.isEmpty) {
+              return LoadFailureState(
+                what: 'your documents',
+                onRetry: provider.refresh,
+              );
             }
 
             final visible = provider.visibleDocuments;
