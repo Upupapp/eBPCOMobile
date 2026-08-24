@@ -69,6 +69,12 @@ is E-1/M-27 — hosting and who operates it. See
 | M-25 | **Share-sheet export.** Payment history exports to the clipboard as CSV, which pastes into a spreadsheet or an email. A real share sheet or file save needs a platform plugin (`share_plus`) this app does not carry — a deliberate omission, not an oversight | Adding a plugin is a dependency decision |
 | M-26 | **Confirm the CSV export is fit for purpose.** Format was my call: CSV over a PDF receipt, since the destination is almost always a spreadsheet or an accountant. If applicants actually want a printable receipt, this needs redoing | Product decision |
 
+## Raised by the second 19 August sweep
+
+| # | Decision | Why yours |
+|---|---|---|
+| M-39 | **Are the four dormant subsystems staged or forgotten?** `CertificatePinner`, `SessionManager`, `SyncEngine`, and `OfflineQueue` are built and tested but called by nothing — `ApiClient` holds a plain `http.Client`, so there is no certificate pinning in effect. Very likely deliberate, since pinning needs the real host's certificate and sync needs a server; but nothing in the repo says so, and dormant security code reads as protection that is not there. Android lane's code to answer for; the pinning half also waits on M-21 | Other lane's code, and depends on the backend |
+
 ## Raised by the 19 August front-end sweep
 
 | # | Decision | Why yours |
