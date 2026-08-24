@@ -11,6 +11,10 @@ The companion Angular web admin lives in a separate repository.
 > held in memory or in `SharedPreferences`. See
 > [Prototype limitations](#prototype-limitations) before building on this.
 
+> **Two agents work on this repository.** iOS and macOS belong to one lane,
+> Android and Windows to the other. Read [`LANES.md`](LANES.md) before
+> touching `android/`, `ios/`, or `release/`.
+
 ## Requirements
 
 - Flutter 3.47.0 stable (Dart 3.13.0) — the SDK constraint is `^3.12.2`, so
