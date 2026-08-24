@@ -339,6 +339,8 @@ class _WizardProgressHeader extends StatelessWidget {
           Text(
             'Complete your Building Permit application step by step.',
             style: AppTypography.bodyMuted,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
@@ -356,9 +358,19 @@ class _WizardProgressHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(title, style: AppTypography.sectionTitle),
+          Text(
+            title,
+            style: AppTypography.sectionTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: AppSpacing.xs),
-          Text(subtitle, style: AppTypography.bodyMuted),
+          Text(
+            subtitle,
+            style: AppTypography.bodyMuted,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

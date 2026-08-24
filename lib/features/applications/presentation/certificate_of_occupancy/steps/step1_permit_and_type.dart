@@ -226,13 +226,18 @@ class _CertificateTypeOption extends StatelessWidget {
             size: 20,
           ),
           const SizedBox(width: AppSpacing.sm),
-          Text(
+          // Flexible, because the option labels are long enough to burst a
+          // centred Row on a 360dp phone even at normal text size.
+          Flexible(
+            child: Text(
             label,
+            textAlign: TextAlign.center,
             style: selected
                 ? AppTypography.bodyStrong.copyWith(
                     color: AppColors.secondaryBlueDark,
                   )
                 : AppTypography.body,
+            ),
           ),
         ],
       ),
