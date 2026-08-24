@@ -193,11 +193,11 @@ class ActionItemBuilder {
       }
 
       // PD 1096: a building permit is void if the work it authorises is not
-      // commenced within one year. Warn from 60 days out.
+      // commenced within one year.
       final commenceBy = application.commenceByDate;
       if (commenceBy != null) {
         final daysLeft = _daysBetween(asOf, commenceBy);
-        if (daysLeft <= 60) {
+        if (daysLeft <= ApplicationModel.commencementWarningDays) {
           items.add(
             ActionItem(
               id: '${application.id}-commencement',

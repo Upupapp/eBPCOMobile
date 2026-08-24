@@ -47,10 +47,6 @@ class NotificationEvaluator {
 
   final ServicePledgeService pledgeService;
 
-  /// Warn this far ahead of a permit lapsing under PD 1096. Matches the Home
-  /// action stack, so the two cannot disagree about what "soon" means.
-  static const int commencementWarningDays = 60;
-
   List<DerivedNotification> evaluate({
     required List<ApplicationModel> applications,
     List<ProfessionalModel> professionals = const [],
@@ -138,7 +134,7 @@ class NotificationEvaluator {
     final permitNumber = application.permitNumber ?? application.permit?.permitNumber;
     if (commenceBy != null) {
       final daysLeft = _daysBetween(asOf, commenceBy);
-      if (daysLeft <= commencementWarningDays) {
+      if (daysLeft <= ApplicationModel.commencementWarningDays) {
         yield DerivedNotification(
           type: NotificationType.permitCommencementWarning,
           // Bucketed, so the applicant is told once at sixty days, once at

@@ -244,6 +244,13 @@ class ApplicationModel {
     return null;
   }
 
+  /// How far ahead of the PD 1096 commencement deadline to start warning.
+  ///
+  /// Lives here, beside [commenceByDate], because two components need it —
+  /// the Home action stack and the notification evaluator — and when each
+  /// held its own literal they agreed only by coincidence.
+  static const int commencementWarningDays = 60;
+
   /// Date by which work must commence or the building permit lapses.
   ///
   /// PD 1096 voids a permit where the authorised work is not commenced within

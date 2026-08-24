@@ -8,7 +8,6 @@ import '../../../../core/models/plumbing_permit_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/plumbing_permit_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
@@ -21,6 +20,7 @@ import 'steps/step6_ownership_consent.dart';
 import 'steps/step7_required_documents.dart';
 import 'steps/step8_review_declaration.dart';
 import 'steps/step9_evaluation_status.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -270,7 +270,8 @@ class _PlumbingPermitWizardScreenState
         body: SafeArea(
           child: Column(
             children: [
-              _WizardProgressHeader(
+              WizardProgressHeader(
+                intro: 'Complete your Plumbing Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,
@@ -342,72 +343,6 @@ class _PlumbingPermitWizardScreenState
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _WizardProgressHeader extends StatelessWidget {
-  final int currentStep;
-  final int totalSteps;
-  final String title;
-  final String subtitle;
-
-  const _WizardProgressHeader({
-    required this.currentStep,
-    required this.totalSteps,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppConstants.screenPaddingHorizontal,
-        AppSpacing.sm,
-        AppConstants.screenPaddingHorizontal,
-        AppSpacing.md,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Complete your Plumbing Permit application step by step.',
-            style: AppTypography.bodyMuted,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Step ${currentStep + 1} of $totalSteps',
-            style: AppTypography.label,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppConstants.borderRadiusXs),
-            child: LinearProgressIndicator(
-              value: (currentStep + 1) / totalSteps,
-              minHeight: 6,
-              backgroundColor: AppColors.surfaceMuted,
-              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            title,
-            style: AppTypography.sectionTitle,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            subtitle,
-            style: AppTypography.bodyMuted,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ),
     );
   }
