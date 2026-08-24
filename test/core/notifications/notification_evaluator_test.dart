@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ebpco_user_app/core/models/application_model.dart';
+import 'package:ebpco_user_app/core/models/draft_summary.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 import 'package:ebpco_user_app/core/models/permit_classification.dart';
@@ -253,6 +254,73 @@ void main() {
         keyFor(DateTime(2026, 10, 1)),
         isNot(keyFor(DateTime(2026, 9, 20))),
       );
+    });
+  });
+
+  group('idle drafts', () {
+    DraftSummary draft({required DateTime? saved, String route = '/w/building'}) =>
+        DraftSummary(
+          permitTypeLabel: 'New Construction',
+          lastSavedAt: saved,
+          completedSteps: 3,
+          totalSteps: 9,
+          route: route,
+        );
+
+    test('an untouched draft is nudged with its progress', () {
+      final derived = _evaluator.evaluate(
+        applications: const [],
+        drafts: [draft(saved: DateTime(2026, 8, 5))],
+        asOf: _asOf,
+      );
+
+      expect(_types(derived), [NotificationType.draftIdle]);
+      expect(derived.single.payload['percent'], '33');
+      expect(derived.single.payload['days'], '13');
+    });
+
+    test('a recently-saved draft is left alone', () {
+      final derived = _evaluator.evaluate(
+        applications: const [],
+        drafts: [draft(saved: DateTime(2026, 8, 17))],
+        asOf: _asOf,
+      );
+
+      expect(derived, isEmpty);
+    });
+
+    test('it links back into the wizard, not the catalog', () {
+      // Making someone re-pick a permit they are part-way through is how a
+      // draft gets abandoned for good.
+      final derived = _evaluator.evaluate(
+        applications: const [],
+        drafts: [draft(saved: DateTime(2026, 8, 5), route: '/w/fencing')],
+        asOf: _asOf,
+      );
+
+      final event = NotificationEvent(
+        id: 'e',
+        type: derived.single.type,
+        payload: derived.single.payload,
+        createdAt: _asOf,
+      );
+      expect(event.deepLink, '/w/fencing');
+    });
+
+    test('editing and abandoning again re-arms the nudge', () {
+      String keyFor(DateTime saved) => _evaluator
+          .evaluate(
+            applications: const [],
+            drafts: [draft(saved: saved)],
+            asOf: _asOf,
+          )
+          .single
+          .dedupeKey;
+
+      // Same draft, touched on a later day and abandoned again — a new key,
+      // so the applicant is nudged about the new lapse rather than never
+      // again.
+      expect(keyFor(DateTime(2026, 8, 5)), isNot(keyFor(DateTime(2026, 8, 8))));
     });
   });
 

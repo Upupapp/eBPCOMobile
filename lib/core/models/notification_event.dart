@@ -428,6 +428,10 @@ class NotificationEvent {
       case NotificationType.pledgeLapsed:
         return id == null ? '/app/applications' : '/applications/$id/outcome';
       case NotificationType.draftIdle:
+        // Back into the wizard itself. Dropping the applicant at the catalog
+        // to re-pick a permit they are already part-way through is the kind
+        // of small indignity that makes people abandon the draft for good.
+        return payload['route'] ?? '/applications/new';
       case NotificationType.occupancyNowPossible:
         return '/applications/new';
       case NotificationType.professionalCredentialExpiring:

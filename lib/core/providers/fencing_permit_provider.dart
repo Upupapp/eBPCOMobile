@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/draft_summary.dart';
 import '../models/fencing_permit_model.dart';
 
 /// Holds the single in-progress Fencing Permit application draft for the
@@ -7,7 +8,7 @@ import '../models/fencing_permit_model.dart';
 /// or a server). Mirrors the other permit providers' shape exactly, but is
 /// a fully separate provider/class so this draft can never be overwritten
 /// by, or overwrite, any other permit's draft.
-class FencingPermitProvider extends ChangeNotifier {
+class FencingPermitProvider extends ChangeNotifier implements DraftSource {
   FencingPermitDraft? _draft;
   int _currentStep = 0;
 
@@ -68,5 +69,30 @@ class FencingPermitProvider extends ChangeNotifier {
     _draft = null;
     _currentStep = 0;
     notifyListeners();
+  }
+
+  /// What this wizard's unfinished draft looks like from outside.
+  ///
+  /// Null when there is nothing to resume, which is also what stops a
+  /// just-submitted application from being reported as an idle draft.
+  @override
+  DraftSummary? get draftSummary {
+    final draft = _draft;
+    if (draft == null || !hasResumableDraft) return null;
+    return DraftSummary(
+      permitTypeLabel: 'Fencing',
+      lastSavedAt: draft.lastSavedAt,
+      completedSteps: (draft.isStep1Valid ? 1 : 0) +
+      (draft.isStep2Valid ? 1 : 0) +
+      (draft.isStep3Valid ? 1 : 0) +
+      (draft.isStep4Valid ? 1 : 0) +
+      (draft.isStep5Valid ? 1 : 0) +
+      (draft.isStep6Valid ? 1 : 0) +
+      (draft.isStep7Valid ? 1 : 0) +
+      (draft.isStep8Valid ? 1 : 0) +
+      (draft.isStep9Valid ? 1 : 0),
+      totalSteps: 9,
+      route: '/applications/new/fencing-permit',
+    );
   }
 }

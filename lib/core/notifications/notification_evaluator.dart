@@ -1,4 +1,5 @@
 import '../models/application_model.dart';
+import '../models/draft_summary.dart';
 import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
 import '../models/permit_classification.dart';
@@ -53,6 +54,7 @@ class NotificationEvaluator {
   List<DerivedNotification> evaluate({
     required List<ApplicationModel> applications,
     List<ProfessionalModel> professionals = const [],
+    List<DraftSummary> drafts = const [],
     required DateTime asOf,
   }) {
     final derived = <DerivedNotification>[];
@@ -64,8 +66,31 @@ class NotificationEvaluator {
       final credential = _forProfessional(professional, asOf);
       if (credential != null) derived.add(credential);
     }
+    for (final draft in drafts) {
+      final idle = _forDraft(draft, asOf);
+      if (idle != null) derived.add(idle);
+    }
 
     return derived;
+  }
+
+  DerivedNotification? _forDraft(DraftSummary draft, DateTime asOf) {
+    if (!draft.isIdle(asOf)) return null;
+    final days = draft.daysSinceSaved(asOf)!;
+    return DerivedNotification(
+      type: NotificationType.draftIdle,
+      // Keyed on the save date, so the nudge repeats if the applicant opens
+      // the draft, changes something, and abandons it again — but not while
+      // the same untouched draft simply sits there.
+      dedupeKey:
+          '${draft.route}:${_dateKey(draft.lastSavedAt!)}',
+      payload: {
+        'permitType': draft.permitTypeLabel,
+        'percent': '${draft.percentComplete}',
+        'days': '$days',
+        'route': draft.route,
+      },
+    );
   }
 
   Iterable<DerivedNotification> _forApplication(

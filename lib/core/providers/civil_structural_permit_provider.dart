@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/draft_summary.dart';
 import '../models/civil_structural_permit_model.dart';
 
 /// Holds the single in-progress Civil / Structural Permit application
@@ -9,7 +10,7 @@ import '../models/civil_structural_permit_model.dart';
 /// this draft can never be overwritten by, or overwrite, a New
 /// Construction, Renovation, Addition/Extension, Demolition, or
 /// Architectural draft.
-class CivilStructuralPermitProvider extends ChangeNotifier {
+class CivilStructuralPermitProvider extends ChangeNotifier implements DraftSource {
   CivilStructuralPermitDraft? _draft;
   int _currentStep = 0;
 
@@ -70,5 +71,30 @@ class CivilStructuralPermitProvider extends ChangeNotifier {
     _draft = null;
     _currentStep = 0;
     notifyListeners();
+  }
+
+  /// What this wizard's unfinished draft looks like from outside.
+  ///
+  /// Null when there is nothing to resume, which is also what stops a
+  /// just-submitted application from being reported as an idle draft.
+  @override
+  DraftSummary? get draftSummary {
+    final draft = _draft;
+    if (draft == null || !hasResumableDraft) return null;
+    return DraftSummary(
+      permitTypeLabel: 'Civil / Structural',
+      lastSavedAt: draft.lastSavedAt,
+      completedSteps: (draft.isStep1Valid ? 1 : 0) +
+      (draft.isStep2Valid ? 1 : 0) +
+      (draft.isStep3Valid ? 1 : 0) +
+      (draft.isStep4Valid ? 1 : 0) +
+      (draft.isStep5Valid ? 1 : 0) +
+      (draft.isStep6Valid ? 1 : 0) +
+      (draft.isStep7Valid ? 1 : 0) +
+      (draft.isStep8Valid ? 1 : 0) +
+      (draft.isStep9Valid ? 1 : 0),
+      totalSteps: 9,
+      route: '/applications/new/civil-structural-permit',
+    );
   }
 }
