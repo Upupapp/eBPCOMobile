@@ -29,6 +29,7 @@ import 'core/repositories/repository_factory.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/providers/sign_permit_provider.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/text_scale_clamp.dart';
 import 'routes/app_router.dart';
 
 /// Root widget for the E-BPCO User App. Wires up global providers, the
@@ -144,27 +145,10 @@ class _EbpcoAppState extends State<EbpcoApp> {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routerConfig: _router,
-        // Real Android devices commonly run with the system font-size
-        // (Settings → Display → Font size) set above 100% — unlike the
-        // desktop/Chrome preview used during development, which always
-        // renders at exactly 1.0x. Layouts here (the 5-item bottom nav
-        // bar, status badge pills, fixed-height cards) were built and
-        // tested against that 1.0x baseline, so an unclamped device
-        // scale factor of e.g. 1.3–1.5x is what actually produces the
-        // "fine on browser, broken on Android" overflow/clipping this
-        // audit was tracking down. Clamping — rather than disabling
-        // scaling outright — keeps text legibly larger for users who
-        // increase it, without letting it exceed what any screen here
-        // was designed to hold.
-        builder: (context, child) {
-          final clampedScaler = MediaQuery.textScalerOf(
-            context,
-          ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.3);
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaler: clampedScaler),
-            child: child!,
-          );
-        },
+        // The scale ceiling, and why it is where it is, live in
+        // TextScaleClamp — next to the constant rather than in a comment on
+        // the widget that happens to apply it.
+        builder: (context, child) => TextScaleClamp(child: child!),
       ),
     );
   }

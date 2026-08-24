@@ -63,11 +63,22 @@ class _MainShellState extends State<MainShell> {
         child: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onTap,
-          // Slightly taller than Material 3's 80dp default so that if a
-          // label ever still wraps to two lines on an unusually narrow
-          // device or high text-scale combination, the second line has
-          // room to render instead of being clipped at the bar's edge.
-          height: 88,
+          // 88dp — slightly over Material 3's 80dp default — holds one line
+          // of label at 1.0x with room for a second if a narrow device wraps
+          // one. It does not hold two lines of scaled-up label: at 2.0x on a
+          // 320dp screen "Applications" wraps and ran 4dp past the bottom of
+          // the bar. NavigationBar clips rather than reporting an overflow,
+          // so that failed silently, on every primary screen at once, and
+          // only a test asserting the label's rect against the bar's caught
+          // it.
+          //
+          // So the bar grows with the text scale rather than staying put.
+          // Bounded at 2x because that is where the app clamps scaling, and
+          // an unbounded bar would eventually leave no room for the screen
+          // above it.
+          height:
+              88 *
+              MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 2.0),
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),
