@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Swift Package Manager artefacts, regenerated on every iOS build.
+ios/**/xcshareddata/swiftpm/

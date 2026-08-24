@@ -69,6 +69,13 @@ is E-1/M-27 — hosting and who operates it. See
 | M-25 | **Share-sheet export.** Payment history exports to the clipboard as CSV, which pastes into a spreadsheet or an email. A real share sheet or file save needs a platform plugin (`share_plus`) this app does not carry — a deliberate omission, not an oversight | Adding a plugin is a dependency decision |
 | M-26 | **Confirm the CSV export is fit for purpose.** Format was my call: CSV over a PDF receipt, since the destination is almost always a spreadsheet or an accountant. If applicants actually want a printable receipt, this needs redoing | Product decision |
 
+## Raised by the 19 August front-end sweep
+
+| # | Decision | Why yours |
+|---|---|---|
+| M-27 | **Rule on the product name.** Every source in the project says "Electronic Business Permit and Clearance Office"; the Master Command PDF I wrote says "Electronic Building Permit and Certificate of Occupancy". The app is right and my spec is wrong — but the deeper problem is that the project's *name* says business permits while its *scope* is sixteen construction permits under PD 1096 plus a Certificate of Occupancy. Which is it? | It is the product's name |
+| M-28 | **Accept or reject dropping iOS 13 and 14.** The plugin set forced `IPHONEOS_DEPLOYMENT_TARGET` from 13.0 to 15.0 during the first iOS build. Uncommitted. On a Philippine applicant base, older devices are not a rounding error | Audience call |
+
 ## Product decisions I have deliberately left open
 
 | # | Decision | Why yours |
