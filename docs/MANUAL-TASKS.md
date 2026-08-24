@@ -100,6 +100,7 @@ is E-1/M-27 — hosting and who operates it. See
 | M-28 | **Establish production Android signing keys.** `android/app/build.gradle` still signs release builds with the debug key and carries the generated TODO. A key set up late cannot be changed later without every user reinstalling — this blocks even internal pilot distribution | Requires key custody decisions and a Play publisher account |
 | M-29 | **Confirm final bundle identifiers.** `com.ebpco.ebpco_user_app` / `com.ebpco.ebpcoUserApp` are development placeholders. They cannot be changed after publication without losing the listing | Owner call; likely LGU-branded |
 | M-30 | **Resolve the uncommitted iOS project changes.** `ios/Runner.xcodeproj/project.pbxproj` is modified and two SwiftPM `xcshareddata` directories are untracked. Not mine to commit or discard without knowing whether they were intentional | Owner call |
+| M-40 | **Decide whether to `dart format` the whole tree, and when.** The repo is not formatted to the current `dart format` style: running it over `lib/` rewrites ~230 files, most of them the Android lane's. Doing it needs both lanes to land it at the same moment or it becomes an unmergeable diff. Until then, format single files only | Needs coordination between the iOS and Android lanes |
 
 ## Closed
 
