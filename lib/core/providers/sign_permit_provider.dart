@@ -80,7 +80,7 @@ class SignPermitProvider extends ChangeNotifier implements DraftSource {
     final draft = _draft;
     if (draft == null || !hasResumableDraft) return null;
     return DraftSummary(
-      permitTypeLabel: 'Sign Permit',
+      permitTypeLabel: 'Sign',
       lastSavedAt: draft.lastSavedAt,
       completedSteps: (draft.isStep1Valid ? 1 : 0) +
       (draft.isStep2Valid ? 1 : 0) +

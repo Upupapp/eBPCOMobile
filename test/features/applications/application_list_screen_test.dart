@@ -18,6 +18,9 @@ import 'package:ebpco_user_app/features/applications/presentation/application_li
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 
+import '../../support/wizard_providers.dart';
+import 'package:ebpco_user_app/core/providers/fencing_permit_provider.dart';
+
 class _FakeRepository implements ApplicationsRepository {
   _FakeRepository(this.applications);
   final List<ApplicationModel> applications;
@@ -69,7 +72,10 @@ ApplicationModel _application({
   );
 }
 
-Widget _wrap(List<ApplicationModel> applications) {
+Widget _wrap(
+  List<ApplicationModel> applications, {
+  FencingPermitProvider? fencing,
+}) {
   final router = GoRouter(
     initialLocation: '/list',
     routes: [
@@ -91,6 +97,12 @@ Widget _wrap(List<ApplicationModel> applications) {
           clock: () => DateTime(2026, 8, 18),
         ),
       ),
+      // Everything DraftRegistry looks up, for the Drafts segment. A caller
+      // that wants a real draft passes its own fencing provider, which
+      // replaces the empty one.
+      ...wizardProviders(),
+      if (fencing != null)
+        ChangeNotifierProvider<FencingPermitProvider>.value(value: fencing),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
@@ -110,6 +122,7 @@ Future<void> _search(WidgetTester tester, String query) async {
 }
 
 void main() {
+  _draftsGroup();
   // These wizards now attach documents through the real chooser sheet, which
   // reaches for the camera, gallery, and system file picker — none of them
   // available under `flutter test`. Swap it for a stub that returns a
@@ -215,5 +228,62 @@ void main() {
     await tester.tap(find.text('Drafts (0)'));
     await tester.pumpAndSettle();
     expect(find.text('No drafts'), findsOneWidget);
+  });
+}
+
+/// Drafts live in the sixteen wizard providers, not in `ApplicationsProvider`.
+///
+/// Nothing in this app ever creates an application with
+/// `ApplicationStatus.draft`, so the Drafts segment — which filtered for
+/// exactly that — read "Drafts (0)" however many half-finished applications
+/// the applicant had. Their drafts were known: `MainShell` reads the same
+/// registry to nudge them about idle ones. The app was notifying people about
+/// work it gave them nowhere to see.
+void _draftsGroup() {
+  group('the Drafts segment', () {
+    testWidgets('shows a wizard draft, and counts it', (tester) async {
+      final fencing = FencingPermitProvider();
+      fencing.startNew();
+      fencing.saveAsDraft();
+
+      await tester.pumpWidget(_wrap(const [], fencing: fencing));
+      await _settle(tester);
+
+      expect(
+        find.textContaining('Drafts (1)'),
+        findsOneWidget,
+        reason: 'the chip counts drafts from the wizards',
+      );
+
+      await tester.tap(find.textContaining('Drafts ('));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Fencing'), findsOneWidget);
+      expect(find.textContaining('% complete'), findsOneWidget);
+    });
+
+    testWidgets('resumes the wizard when tapped', (tester) async {
+      final fencing = FencingPermitProvider();
+      fencing.startNew();
+      fencing.saveAsDraft();
+
+      await tester.pumpWidget(_wrap(const [], fencing: fencing));
+      await _settle(tester);
+      await tester.tap(find.textContaining('Drafts ('));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Fencing'));
+      await tester.pumpAndSettle();
+
+      // The draft's own route, not the applications list.
+      expect(find.byType(ApplicationListScreen), findsNothing);
+    });
+
+    testWidgets('still says nothing when there are no drafts', (tester) async {
+      await tester.pumpWidget(_wrap(const []));
+      await _settle(tester);
+
+      expect(find.textContaining('Drafts (0)'), findsOneWidget);
+    });
   });
 }

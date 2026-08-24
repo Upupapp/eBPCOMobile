@@ -21,6 +21,8 @@ import 'package:ebpco_user_app/features/business/presentation/business_list_scre
 import 'package:ebpco_user_app/features/notifications/presentation/notifications_screen.dart';
 import 'package:ebpco_user_app/shared/widgets/states/load_failure_state.dart';
 
+import '../support/wizard_providers.dart';
+
 /// A list that could not load is not a list that is empty.
 ///
 /// Every list screen branched `isLoading ? spinner : isEmpty ? empty : list`,
@@ -101,6 +103,8 @@ Widget _host(Widget screen) {
           repository: _ThrowingBusinesses(),
         ),
       ),
+          // Everything DraftRegistry looks up, for the Drafts segment.
+      ...wizardProviders(),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,

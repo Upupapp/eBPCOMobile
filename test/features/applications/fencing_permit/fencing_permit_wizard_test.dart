@@ -16,6 +16,8 @@ import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/application_list_screen.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 
+import '../../../support/wizard_providers.dart';
+
 /// End-to-end coverage of the Fencing Permit wizard — fully separate from
 /// every other permit wizard in this app, driven the same way those
 /// wizards' tests drive them. Unlike other permits' Professionals step,
@@ -90,6 +92,8 @@ Widget _wrap() {
       ChangeNotifierProvider<FencingPermitProvider>(
         create: (_) => FencingPermitProvider(),
       ),
+          // Everything DraftRegistry looks up, for the Drafts segment.
+      ...wizardProviders(),
     ],
     child: MaterialApp.router(routerConfig: router),
   );

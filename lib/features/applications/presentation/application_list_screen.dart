@@ -5,9 +5,13 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/application_model.dart';
+import '../../../core/models/draft_summary.dart';
 import '../../../core/providers/applications_provider.dart';
+import '../../../core/providers/draft_registry.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/badges/status_badge.dart';
+import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
 import '../../../shared/widgets/states/empty_state.dart';
 import '../../../shared/widgets/states/load_failure_state.dart';
@@ -78,6 +82,17 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
     final provider = context.watch<ApplicationsProvider>();
     final all = provider.applications;
 
+    // Drafts come from the wizards, not from ApplicationsProvider. Nothing in
+    // the app ever creates an application with `ApplicationStatus.draft`, so
+    // the Drafts segment filtered for a status that never occurs and read
+    // "Drafts (0)" no matter how many half-finished applications the applicant
+    // had. Their drafts were known — MainShell already nudges about idle ones
+    // — just never shown anywhere.
+    final drafts = DraftRegistry.summaries(context).where((draft) {
+      if (_query.isEmpty) return true;
+      return draft.permitTypeLabel.toLowerCase().contains(_query.toLowerCase());
+    }).toList();
+
     final matching = all.where((application) {
       if (!_segment.matches(application)) return false;
       if (_query.isEmpty) return true;
@@ -129,7 +144,9 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
                       padding: const EdgeInsets.only(right: AppSpacing.sm),
                       child: _SegmentChip(
                         label: segment.label,
-                        count: all.where(segment.matches).length,
+                        count: segment == ApplicationSegment.drafts
+                            ? DraftRegistry.summaries(context).length
+                            : all.where(segment.matches).length,
                         selected: segment == _segment,
                         // Needs Action always reads as urgent, even when the
                         // applicant is looking at another segment.
@@ -141,7 +158,25 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
               ),
             ),
             Expanded(
-              child: provider.isLoading
+              child: _segment == ApplicationSegment.drafts
+                  ? (drafts.isEmpty
+                        ? _EmptyFor(
+                            segment: _segment,
+                            hasQuery: _query.isNotEmpty,
+                          )
+                        : ListView.separated(
+                            padding: const EdgeInsets.all(
+                              AppConstants.screenPaddingHorizontal,
+                            ),
+                            itemCount: drafts.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: AppSpacing.md),
+                            itemBuilder: (context, index) => _DraftTile(
+                              draft: drafts[index],
+                              onTap: () => context.push(drafts[index].route),
+                            ),
+                          ))
+                  : provider.isLoading
                   ? const LoadingView()
                   // Failure before emptiness: "you have nothing here" is a
                   // claim about the applicant's own filings, and a timed-out
@@ -279,5 +314,82 @@ class _EmptyFor extends StatelessWidget {
           message: 'Released and closed applications are kept here.',
         );
     }
+  }
+}
+
+/// One unfinished application, as the Drafts segment shows it.
+///
+/// Deliberately not [ApplicationListTile]: a draft has no reference number, no
+/// status and no service pledge — the things that tile is built to show. What
+/// it has is how far along it is and when it was last touched, which is what
+/// decides whether the applicant picks it back up.
+class _DraftTile extends StatelessWidget {
+  final DraftSummary draft;
+  final VoidCallback onTap;
+
+  const _DraftTile({required this.draft, required this.onTap});
+
+  String _lastTouched() {
+    final saved = draft.lastSavedAt;
+    if (saved == null) return 'Not saved yet';
+    final days = draft.daysSinceSaved(DateTime.now());
+    if (days == null || days == 0) return 'Last saved today';
+    if (days == 1) return 'Last saved yesterday';
+    return 'Last saved $days days ago';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  draft.permitTypeLabel,
+                  style: AppTypography.cardTitle,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: StatusBadge(
+                  label: 'Draft',
+                  color: AppColors.textSecondary,
+                  backgroundColor: AppColors.surfaceMuted,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(_lastTouched(), style: AppTypography.helper),
+          const SizedBox(height: AppSpacing.sm),
+          Semantics(
+            label:
+                '${draft.percentComplete}% complete, step '
+                '${draft.completedSteps} of ${draft.totalSteps}',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppConstants.borderRadiusXs),
+              child: LinearProgressIndicator(
+                value: draft.totalSteps == 0
+                    ? 0
+                    : draft.completedSteps / draft.totalSteps,
+                minHeight: 6,
+                backgroundColor: AppColors.surfaceMuted,
+                valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '${draft.percentComplete}% complete · Tap to continue',
+            style: AppTypography.bodyMuted,
+          ),
+        ],
+      ),
+    );
   }
 }

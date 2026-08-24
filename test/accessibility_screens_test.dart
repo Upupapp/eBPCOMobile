@@ -31,6 +31,8 @@ import 'package:ebpco_user_app/features/profile/presentation/professionals_scree
 
 import 'support/clipping.dart';
 
+import 'support/wizard_providers.dart';
+
 /// The seven screens the accessibility suites did not reach. The shared-widget
 /// suite covers their building blocks; this covers the composition, which is
 /// where both overflows found so far actually lived.
@@ -215,6 +217,8 @@ Widget _host(String initial, double textScale) {
         ),
       ),
       ChangeNotifierProvider<DocumentsProvider>(create: (_) => DocumentsProvider()),
+          // Everything DraftRegistry looks up, for the Drafts segment.
+      ...wizardProviders(),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,

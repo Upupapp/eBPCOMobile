@@ -5,27 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
-import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/renovation_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/addition_extension_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/demolition_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/architectural_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/civil_structural_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/electrical_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/mechanical_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/sanitary_plumbing_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/plumbing_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/electronics_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/interior_design_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/fencing_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/sign_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/excavation_permit_provider.dart';
-import 'package:ebpco_user_app/core/providers/certificate_of_occupancy_provider.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/theme/app_theme.dart';
 import 'package:ebpco_user_app/features/shell/presentation/main_shell.dart';
 
 import '../../support/clipping.dart';
+
+import '../../support/wizard_providers.dart';
 
 /// The bottom navigation bar is on every primary screen and had no test.
 ///
@@ -66,24 +52,8 @@ Widget _host(double textScale, {double width = 360}) {
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),
       ),
-      // MainShell nudges idle drafts on its first frame, which reads every
-      // wizard provider through DraftRegistry.
-      ChangeNotifierProvider<BuildingPermitProvider>(create: (_) => BuildingPermitProvider()),
-      ChangeNotifierProvider<RenovationPermitProvider>(create: (_) => RenovationPermitProvider()),
-      ChangeNotifierProvider<AdditionExtensionPermitProvider>(create: (_) => AdditionExtensionPermitProvider()),
-      ChangeNotifierProvider<DemolitionPermitProvider>(create: (_) => DemolitionPermitProvider()),
-      ChangeNotifierProvider<ArchitecturalPermitProvider>(create: (_) => ArchitecturalPermitProvider()),
-      ChangeNotifierProvider<CivilStructuralPermitProvider>(create: (_) => CivilStructuralPermitProvider()),
-      ChangeNotifierProvider<ElectricalPermitProvider>(create: (_) => ElectricalPermitProvider()),
-      ChangeNotifierProvider<MechanicalPermitProvider>(create: (_) => MechanicalPermitProvider()),
-      ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(create: (_) => SanitaryPlumbingPermitProvider()),
-      ChangeNotifierProvider<PlumbingPermitProvider>(create: (_) => PlumbingPermitProvider()),
-      ChangeNotifierProvider<ElectronicsPermitProvider>(create: (_) => ElectronicsPermitProvider()),
-      ChangeNotifierProvider<InteriorDesignPermitProvider>(create: (_) => InteriorDesignPermitProvider()),
-      ChangeNotifierProvider<FencingPermitProvider>(create: (_) => FencingPermitProvider()),
-      ChangeNotifierProvider<SignPermitProvider>(create: (_) => SignPermitProvider()),
-      ChangeNotifierProvider<ExcavationPermitProvider>(create: (_) => ExcavationPermitProvider()),
-      ChangeNotifierProvider<CertificateOfOccupancyProvider>(create: (_) => CertificateOfOccupancyProvider()),
+      // Everything DraftRegistry looks up, for the idle-draft nudge.
+      ...wizardProviders(),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,

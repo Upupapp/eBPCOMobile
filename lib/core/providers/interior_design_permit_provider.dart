@@ -80,7 +80,7 @@ class InteriorDesignPermitProvider extends ChangeNotifier implements DraftSource
     final draft = _draft;
     if (draft == null || !hasResumableDraft) return null;
     return DraftSummary(
-      permitTypeLabel: 'Interior',
+      permitTypeLabel: 'Interior Design',
       lastSavedAt: draft.lastSavedAt,
       completedSteps: (draft.isStep1Valid ? 1 : 0) +
       (draft.isStep2Valid ? 1 : 0) +
