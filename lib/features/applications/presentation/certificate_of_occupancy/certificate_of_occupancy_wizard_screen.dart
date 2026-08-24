@@ -11,12 +11,13 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
 import 'steps/step1_permit_and_type.dart';
 import 'steps/step2_owner_project_info.dart';
 import 'steps/step3_location_and_building.dart';
 import 'steps/step4_required_documents.dart';
 import 'steps/step5_certification_review_submission.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -167,15 +168,27 @@ class _CertificateOfOccupancyWizardScreenState
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<CertificateOfOccupancyProvider>();
     provider.submitApplication();
     final now = DateTime.now();
     final referenceNumber =
         'COO-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
+    final application = await submitPermitApplication(
+      context,
+      referenceNumber: referenceNumber,
+      permitTypeLabel: 'Certificate of Occupancy',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.owner.projectName,
+        firstName: _draft.owner.firstName,
+        lastName: _draft.owner.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/certificate-of-occupancy/submitted',
       extra: {
+        'applicationId': application.id,
         'referenceNumber': referenceNumber,
         'submissionDate': now,
         'buildingPermitNumber': _draft.permitInfo.buildingPermitNumber,

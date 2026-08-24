@@ -9,6 +9,10 @@ import 'package:ebpco_user_app/features/applications/presentation/renovation_per
 import 'package:ebpco_user_app/features/applications/presentation/renovation_permit/renovation_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// End-to-end coverage of the Renovation Permit wizard — a fully separate
 /// flow from the New Construction wizard, driven the same way the
@@ -47,6 +51,18 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      // The wizard now records the submission as a real application, so the
+      // provider that holds them has to be here.
+      ChangeNotifierProvider<ApplicationsProvider>(
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
+      ),
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<RenovationPermitProvider>(
         create: (_) => RenovationPermitProvider(),
@@ -363,6 +379,9 @@ void main() {
       );
 
       await tester.tap(_submitButton());
+      // The submission is recorded through the mock repository first, and its
+      // delay is a Future.delayed — which pumpAndSettle does not drain.
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('Renovation Application Submitted!'), findsOneWidget);

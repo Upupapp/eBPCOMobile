@@ -9,10 +9,15 @@ class AdditionExtensionApplicationSubmittedScreen extends StatelessWidget {
   final String referenceNumber;
   final DateTime submissionDate;
 
+  /// Null when the wizard did not create a record — kept nullable so a
+  /// route entered directly, without `extra`, still renders.
+  final String? applicationId;
+
   const AdditionExtensionApplicationSubmittedScreen({
     super.key,
     required this.referenceNumber,
     required this.submissionDate,
+    this.applicationId,
   });
 
   @override
@@ -24,6 +29,7 @@ class AdditionExtensionApplicationSubmittedScreen extends StatelessWidget {
           'initial review. You will be notified once the Office of '
           'the Building Official completes the assessment of your '
           'application.',
+      applicationId: applicationId,
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [

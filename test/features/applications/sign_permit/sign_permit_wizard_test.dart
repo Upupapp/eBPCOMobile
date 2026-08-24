@@ -9,6 +9,10 @@ import 'package:ebpco_user_app/features/applications/presentation/sign_permit/si
 import 'package:ebpco_user_app/features/applications/presentation/sign_permit/sign_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// End-to-end coverage of the Sign Permit wizard — fully separate from
 /// every other permit wizard in this app, driven the same way those
@@ -55,6 +59,18 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      // The wizard now records the submission as a real application, so the
+      // provider that holds them has to be here.
+      ChangeNotifierProvider<ApplicationsProvider>(
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
+      ),
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<SignPermitProvider>(
         create: (_) => SignPermitProvider(),
@@ -434,6 +450,9 @@ void main() {
       );
 
       await tester.tap(_submitButton());
+      // The submission is recorded through the mock repository first, and its
+      // delay is a Future.delayed — which pumpAndSettle does not drain.
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('Sign Application Submitted!'), findsOneWidget);

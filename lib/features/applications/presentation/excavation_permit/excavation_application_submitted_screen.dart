@@ -12,6 +12,10 @@ import '../widgets/application_submitted_view.dart';
 class ExcavationApplicationSubmittedScreen extends StatelessWidget {
   final String referenceNumber;
   final DateTime submissionDate;
+
+  /// Null when the wizard did not create a record — kept nullable so a
+  /// route entered directly, without `extra`, still renders.
+  final String? applicationId;
   final String relatedBuildingPermitNumber;
   final String relatedBuildingPermitStatus;
 
@@ -19,6 +23,7 @@ class ExcavationApplicationSubmittedScreen extends StatelessWidget {
     super.key,
     required this.referenceNumber,
     required this.submissionDate,
+    this.applicationId,
     required this.relatedBuildingPermitNumber,
     required this.relatedBuildingPermitStatus,
   });
@@ -38,6 +43,7 @@ class ExcavationApplicationSubmittedScreen extends StatelessWidget {
           ? 'This permit does not guarantee the granting of '
             'your related Building Permit application.'
           : null,
+      applicationId: applicationId,
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [

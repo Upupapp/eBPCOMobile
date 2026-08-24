@@ -15,6 +15,14 @@ abstract class ApplicationsRepository {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+    /// The permit's own name, e.g. "Fencing Permit". [ApplicationType] only
+    /// distinguishes new/renewal/amendment, which is enough for a business
+    /// permit and says nothing useful about a construction permit.
+    String? permitTypeLabel,
+    /// The reference the applicant was already shown on the confirmation
+    /// screen. Passed in rather than generated so the number on that screen
+    /// and the number in the list are the same number.
+    String? applicationNumber,
   });
 
   Future<ApplicationModel> attachPayment(
@@ -43,15 +51,19 @@ class MockApplicationsRepository implements ApplicationsRepository {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+    String? permitTypeLabel,
+    String? applicationNumber,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final now = DateTime.now();
     final sequence = (_applications.length + 1).toString().padLeft(6, '0');
     final application = ApplicationModel(
       id: 'app-${now.microsecondsSinceEpoch}',
-      applicationNumber: 'E-BPCO-${now.year}-$sequence',
+      applicationNumber:
+          applicationNumber ?? 'E-BPCO-${now.year}-$sequence',
       businessId: businessId,
       businessName: businessName,
+      permitTypeLabel: permitTypeLabel,
       type: type,
       status: ApplicationStatus.submitted,
       submittedDate: now,

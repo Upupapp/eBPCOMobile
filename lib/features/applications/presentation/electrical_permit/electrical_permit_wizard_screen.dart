@@ -11,6 +11,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
 import 'steps/step1_applicant_info.dart';
 import 'steps/step2_address_location.dart';
 import 'steps/step3_scope_of_work.dart';
@@ -20,7 +22,6 @@ import 'steps/step6_ownership_consent.dart';
 import 'steps/step7_required_documents.dart';
 import 'steps/step8_review_declaration.dart';
 import 'steps/step9_evaluation_status.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -197,15 +198,27 @@ class _ElectricalPermitWizardScreenState
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<ElectricalPermitProvider>();
     provider.submitApplication();
     final now = DateTime.now();
     final referenceNumber =
         'ELE-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
+    final application = await submitPermitApplication(
+      context,
+      referenceNumber: referenceNumber,
+      permitTypeLabel: 'Electrical Permit',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.applicant.enterpriseName,
+        firstName: _draft.applicant.firstName,
+        lastName: _draft.applicant.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/electrical-permit/submitted',
       extra: {
+        'applicationId': application.id,
         'referenceNumber': referenceNumber,
         'submissionDate': now,
         'relatedBuildingPermitNumber':

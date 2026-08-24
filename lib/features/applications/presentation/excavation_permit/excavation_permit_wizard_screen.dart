@@ -11,6 +11,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
 import 'steps/step1_permit_information.dart';
 import 'steps/step2_applicant_info.dart';
 import 'steps/step3_construction_location.dart';
@@ -20,7 +22,6 @@ import 'steps/step6_excavation_details.dart';
 import 'steps/step7_design_professional.dart';
 import 'steps/step8_supervisor.dart';
 import 'steps/step9_consent_review_submission.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -200,15 +201,27 @@ class _ExcavationPermitWizardScreenState
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<ExcavationPermitProvider>();
     provider.submitApplication();
     final now = DateTime.now();
     final referenceNumber =
         'EGP-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
+    final application = await submitPermitApplication(
+      context,
+      referenceNumber: referenceNumber,
+      permitTypeLabel: 'Excavation & Ground Preparation Permit',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.applicant.enterpriseName,
+        firstName: _draft.applicant.firstName,
+        lastName: _draft.applicant.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/excavation-permit/submitted',
       extra: {
+        'applicationId': application.id,
         'referenceNumber': referenceNumber,
         'submissionDate': now,
         'relatedBuildingPermitNumber':

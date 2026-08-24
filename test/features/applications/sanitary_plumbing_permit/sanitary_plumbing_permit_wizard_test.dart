@@ -9,6 +9,10 @@ import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumb
 import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// End-to-end coverage of the Sanitary / Plumbing Permit wizard — fully
 /// separate from the New Construction, Renovation, Addition/Extension,
@@ -54,6 +58,18 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      // The wizard now records the submission as a real application, so the
+      // provider that holds them has to be here.
+      ChangeNotifierProvider<ApplicationsProvider>(
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
+      ),
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(
         create: (_) => SanitaryPlumbingPermitProvider(),
@@ -428,6 +444,9 @@ void main() {
       );
 
       await tester.tap(_submitButton());
+      // The submission is recorded through the mock repository first, and its
+      // delay is a Future.delayed — which pumpAndSettle does not drain.
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(

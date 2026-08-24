@@ -202,12 +202,16 @@ class ApplicationsProvider extends ChangeNotifier {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+    String? permitTypeLabel,
+    String? applicationNumber,
   }) async {
     final application = await _repository.submitApplication(
       businessId: businessId,
       businessName: businessName,
       type: type,
       documents: documents,
+      permitTypeLabel: permitTypeLabel,
+      applicationNumber: applicationNumber,
     );
     _applications = [..._applications, application];
     notifyListeners();

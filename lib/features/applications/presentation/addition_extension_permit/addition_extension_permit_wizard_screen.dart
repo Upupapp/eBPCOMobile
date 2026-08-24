@@ -11,6 +11,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
 import 'steps/step1_applicant_info.dart';
 import 'steps/step2_address_location.dart';
 import 'steps/step3_project_information.dart';
@@ -20,7 +22,6 @@ import 'steps/step6_ownership_authorization.dart';
 import 'steps/step7_required_documents.dart';
 import 'steps/step8_review_declaration.dart';
 import 'steps/step9_assessment_payment.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -202,15 +203,30 @@ class _AdditionExtensionPermitWizardScreenState
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<AdditionExtensionPermitProvider>();
     provider.submitApplication();
     final now = DateTime.now();
     final referenceNumber =
         'ADX-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
+    final application = await submitPermitApplication(
+      context,
+      referenceNumber: referenceNumber,
+      permitTypeLabel: 'Building Permit — Addition / Extension',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.applicant.enterpriseName,
+        firstName: _draft.applicant.firstName,
+        lastName: _draft.applicant.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/addition-extension-permit/submitted',
-      extra: {'referenceNumber': referenceNumber, 'submissionDate': now},
+      extra: {
+        'applicationId': application.id,
+        'referenceNumber': referenceNumber,
+        'submissionDate': now,
+      },
     );
   }
 

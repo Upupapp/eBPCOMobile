@@ -56,6 +56,14 @@ class ApplicationSubmittedView extends StatelessWidget {
   /// because nothing in the shared shape had a place to put it.
   final Widget? extra;
 
+  /// Id of the application this submission created, when there is one.
+  ///
+  /// Without it "View Application" and "Return to Applications" sat side by
+  /// side and both went to `/app/applications` — two buttons, different
+  /// labels, identical behaviour. There was no id to route to because the
+  /// wizards were not creating an application at all.
+  final String? applicationId;
+
   final String primaryLabel;
   final String primaryRoute;
   final String secondaryLabel;
@@ -69,6 +77,7 @@ class ApplicationSubmittedView extends StatelessWidget {
     required this.referenceNumber,
     required this.submissionDate,
     required this.facts,
+    this.applicationId,
     this.extra,
     required this.primaryLabel,
     required this.primaryRoute,
@@ -159,7 +168,11 @@ class ApplicationSubmittedView extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xxl),
                 SecondaryButton(
                   label: secondaryLabel,
-                  onPressed: () => context.go(secondaryRoute),
+                  onPressed: () => context.go(
+                    applicationId == null
+                        ? secondaryRoute
+                        : '/applications/$applicationId',
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 PrimaryButton(

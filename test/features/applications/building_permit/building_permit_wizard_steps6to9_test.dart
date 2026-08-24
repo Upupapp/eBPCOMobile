@@ -8,6 +8,10 @@ import 'package:ebpco_user_app/features/applications/presentation/building_permi
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/building_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// Covers Steps 6-9 (Consent & Authorization, Required Documents, Review &
 /// Declaration, Assessment & Payment) plus final submission, mirroring the
@@ -39,8 +43,23 @@ Widget _wrap() {
       ),
     ],
   );
-  return ChangeNotifierProvider<BuildingPermitProvider>(
-    create: (_) => BuildingPermitProvider(),
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider<BuildingPermitProvider>(
+        create: (_) => BuildingPermitProvider(),
+      ),
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      // The wizard now records the submission as a real application.
+      ChangeNotifierProvider<ApplicationsProvider>(
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
+      ),
+    ],
     child: MaterialApp.router(routerConfig: router),
   );
 }
@@ -493,6 +512,9 @@ void main() {
       );
 
       await tester.tap(_submitButton());
+      // The submission goes through the mock repository first, and its delay
+      // is a Future.delayed — which pumpAndSettle does not drain.
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('Application Submitted!'), findsOneWidget);

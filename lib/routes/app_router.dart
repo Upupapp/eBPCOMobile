@@ -175,6 +175,7 @@ class AppRouter {
             return RenovationApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'REN-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
             );
@@ -192,6 +193,7 @@ class AppRouter {
             return AdditionExtensionApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'ADX-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
             );
@@ -208,6 +210,7 @@ class AppRouter {
             return DemolitionApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'DEM-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
             );
@@ -224,6 +227,7 @@ class AppRouter {
             return ArchitecturalApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'ARC-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -246,6 +250,7 @@ class AppRouter {
             return CivilStructuralApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'CVL-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -267,6 +272,7 @@ class AppRouter {
             return ElectricalApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'ELE-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -290,6 +296,7 @@ class AppRouter {
             return MechanicalApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'MEC-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -311,6 +318,7 @@ class AppRouter {
             return ElectronicsApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'ELX-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -333,6 +341,7 @@ class AppRouter {
             return InteriorDesignApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'IDP-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -354,6 +363,7 @@ class AppRouter {
             return FencingApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'FNC-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -375,6 +385,7 @@ class AppRouter {
             return SignApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'SGN-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -396,6 +407,7 @@ class AppRouter {
             return ExcavationApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'EGP-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -418,6 +430,7 @@ class AppRouter {
             return CertificateOfOccupancySubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'COO-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               buildingPermitNumber:
@@ -438,6 +451,7 @@ class AppRouter {
             return PlumbingApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'PLB-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:
@@ -460,6 +474,7 @@ class AppRouter {
             return SanitaryPlumbingApplicationSubmittedScreen(
               referenceNumber:
                   extra?['referenceNumber'] as String? ?? 'SAN-UNKNOWN',
+              applicationId: extra?['applicationId'] as String?,
               submissionDate:
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               relatedBuildingPermitNumber:

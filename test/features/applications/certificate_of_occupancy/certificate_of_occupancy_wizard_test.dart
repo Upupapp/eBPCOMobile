@@ -10,6 +10,10 @@ import 'package:ebpco_user_app/features/applications/presentation/certificate_of
 import 'package:ebpco_user_app/shared/widgets/uploads/document_upload_tile.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
 import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
+import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
+import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
+import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// End-to-end coverage of the Certificate of Occupancy wizard — a
 /// deliberately short, 5-step flow (fully separate from every ancillary
@@ -53,6 +57,18 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<NotificationsProvider>(
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      // The wizard now records the submission as a real application, so the
+      // provider that holds them has to be here.
+      ChangeNotifierProvider<ApplicationsProvider>(
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
+      ),
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<CertificateOfOccupancyProvider>(
         create: (_) => CertificateOfOccupancyProvider(),
@@ -281,6 +297,9 @@ void main() {
       );
 
       await tester.tap(_submitButton());
+      // The submission is recorded through the mock repository first, and its
+      // delay is a Future.delayed — which pumpAndSettle does not drain.
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(

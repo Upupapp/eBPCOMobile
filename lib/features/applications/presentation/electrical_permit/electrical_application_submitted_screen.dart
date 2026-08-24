@@ -8,6 +8,10 @@ import '../widgets/application_submitted_view.dart';
 class ElectricalApplicationSubmittedScreen extends StatelessWidget {
   final String referenceNumber;
   final DateTime submissionDate;
+
+  /// Null when the wizard did not create a record — kept nullable so a
+  /// route entered directly, without `extra`, still renders.
+  final String? applicationId;
   final String relatedBuildingPermitNumber;
   final String relatedBuildingPermitStatus;
   final bool electricalContractorRequired;
@@ -16,6 +20,7 @@ class ElectricalApplicationSubmittedScreen extends StatelessWidget {
     super.key,
     required this.referenceNumber,
     required this.submissionDate,
+    this.applicationId,
     required this.relatedBuildingPermitNumber,
     required this.relatedBuildingPermitStatus,
     required this.electricalContractorRequired,
@@ -36,6 +41,7 @@ class ElectricalApplicationSubmittedScreen extends StatelessWidget {
           ? 'This permit cannot be valid or issued until '
             'your Building Permit reference is satisfied.'
           : null,
+      applicationId: applicationId,
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [

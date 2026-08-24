@@ -39,11 +39,18 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+    String? permitTypeLabel,
+    String? applicationNumber,
   }) async {
     final json = await _api.post(
       '/applications',
       body: {
         'businessId': businessId,
+        // Sent when the caller is a construction-permit wizard, which knows
+        // its own permit name. The server assigns the reference, so the
+        // locally-generated one is deliberately not sent — the parsed
+        // response is the record of truth for the number.
+        'permitType': ?permitTypeLabel,
         'applicationAction': switch (type) {
           ApplicationType.newPermit => 'New',
           ApplicationType.renewal => 'Renewal',

@@ -35,6 +35,8 @@ class _FakeRepository implements ApplicationsRepository {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+    String? permitTypeLabel,
+    String? applicationNumber,
   }) => throw UnimplementedError();
 
   @override

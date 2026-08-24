@@ -10,6 +10,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
 import 'application_submitted_screen.dart';
 import 'steps/step1_applicant_info.dart';
 import 'steps/step2_address_location.dart';
@@ -20,7 +22,6 @@ import 'steps/step6_consent_authorization.dart';
 import 'steps/step7_required_documents.dart';
 import 'steps/step8_review_declaration.dart';
 import 'steps/step9_assessment_payment.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -174,12 +175,26 @@ class _BuildingPermitWizardScreenState
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<BuildingPermitProvider>();
     provider.submitApplication();
     final trackingId =
         'BP-${DateTime.now().year}-'
         '${(DateTime.now().millisecondsSinceEpoch % 900000 + 100000)}';
+    // This screen shows one action and never links to the application, so the
+    // record's id is not needed here — but the record still has to exist, or
+    // the applicant's Building Permit is absent from their own list.
+    await submitPermitApplication(
+      context,
+      referenceNumber: trackingId,
+      permitTypeLabel: 'Building Permit',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.applicant.enterpriseName,
+        firstName: _draft.applicant.firstName,
+        lastName: _draft.applicant.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/building-permit/submitted',
       extra: trackingId,

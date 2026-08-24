@@ -11,6 +11,9 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../../shared/widgets/layout/wizard_progress_header.dart';
+import '../widgets/submit_permit_application.dart';
+import 'steps/step10_review_submission.dart';
 import 'steps/step1_permit_information.dart';
 import 'steps/step2_applicant_info.dart';
 import 'steps/step3_construction_location.dart';
@@ -20,8 +23,6 @@ import 'steps/step6_required_documents.dart';
 import 'steps/step7_design_professional.dart';
 import 'steps/step8_supervisor.dart';
 import 'steps/step9_consent.dart';
-import 'steps/step10_review_submission.dart';
-import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 
 class _StepMeta {
   final String title;
@@ -202,15 +203,27 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
     }
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     final provider = context.read<SignPermitProvider>();
     provider.submitApplication();
     final now = DateTime.now();
     final referenceNumber =
         'SGN-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
+    final application = await submitPermitApplication(
+      context,
+      referenceNumber: referenceNumber,
+      permitTypeLabel: 'Sign Permit',
+      applicantName: applicantDisplayName(
+        enterpriseName: _draft.applicant.enterpriseName,
+        firstName: _draft.applicant.firstName,
+        lastName: _draft.applicant.lastName,
+      ),
+    );
+    if (!mounted) return;
     context.pushReplacement(
       '/applications/new/sign-permit/submitted',
       extra: {
+        'applicationId': application.id,
         'referenceNumber': referenceNumber,
         'submissionDate': now,
         'relatedBuildingPermitNumber':
