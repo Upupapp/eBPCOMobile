@@ -6,6 +6,7 @@ import '../../../../core/models/application_model.dart';
 import '../../../../core/services/service_pledge_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/badges/status_badge.dart';
 import '../../../dashboard/presentation/widgets/pledge_countdown.dart';
 
 /// One application in the list: reference, permit type, status headline, the
@@ -51,6 +52,7 @@ class ApplicationListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
@@ -58,23 +60,12 @@ class ApplicationListTile extends StatelessWidget {
                       style: AppTypography.cardTitle,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: status.backgroundColor,
-                      borderRadius: BorderRadius.circular(
-                        AppConstants.borderRadiusPill,
-                      ),
-                    ),
-                    child: Text(
-                      status.label,
-                      style: AppTypography.helper.copyWith(
-                        color: status.color,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Flexible(
+                    child: StatusBadge(
+                      label: status.label,
+                      color: status.color,
+                      backgroundColor: status.backgroundColor,
                     ),
                   ),
                 ],

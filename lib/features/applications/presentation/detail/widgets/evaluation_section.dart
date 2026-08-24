@@ -6,6 +6,7 @@ import '../../../../../core/constants/app_constants.dart';
 import '../../../../../core/models/application_detail.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
+import '../../../../../shared/widgets/badges/status_badge.dart';
 
 /// The five OBO evaluation stages, always shown in full and in order.
 ///
@@ -62,27 +63,17 @@ class _StageTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(stage.label, style: AppTypography.cardTitle),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: record.result.backgroundColor,
-                  borderRadius: BorderRadius.circular(
-                    AppConstants.borderRadiusPill,
-                  ),
-                ),
-                child: Text(
-                  record.result.label,
-                  style: AppTypography.helper.copyWith(
-                    color: record.result.color,
-                    fontWeight: FontWeight.w600,
-                  ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: StatusBadge(
+                  label: record.result.label,
+                  color: record.result.color,
+                  backgroundColor: record.result.backgroundColor,
                 ),
               ),
             ],

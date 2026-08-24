@@ -12,6 +12,7 @@ import '../../../core/models/payment_history.dart';
 import '../../../core/providers/applications_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/layout/amount_row.dart';
 import '../../../shared/widgets/states/empty_state.dart';
 
 /// Every payment across every application, filterable by business and year.
@@ -225,24 +226,21 @@ class _Total extends StatelessWidget {
         color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total paid', style: AppTypography.helper),
-                Text(total.formatted, style: AppTypography.cardTitle),
-              ],
-            ),
-          ),
-          Text(
-            settledCount == 1
-                ? '1 verified payment'
-                : '$settledCount verified payments',
-            style: AppTypography.helper,
-          ),
-        ],
+      child: AmountRow(
+        label: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Total paid', style: AppTypography.helper),
+            Text(total.formatted, style: AppTypography.cardTitle),
+          ],
+        ),
+        amount: Text(
+          settledCount == 1
+              ? '1 verified payment'
+              : '$settledCount verified payments',
+          style: AppTypography.helper,
+        ),
       ),
     );
   }
@@ -277,16 +275,15 @@ class _HistoryTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      entry.permitType,
-                      style: AppTypography.cardTitle,
-                    ),
-                  ),
-                  Text(entry.amount.formatted, style: AppTypography.bodyStrong),
-                ],
+              AmountRow(
+                label: Text(
+                  entry.permitType,
+                  style: AppTypography.cardTitle,
+                ),
+                amount: Text(
+                  entry.amount.formatted,
+                  style: AppTypography.bodyStrong,
+                ),
               ),
               Text(entry.businessName, style: AppTypography.bodyMuted),
               Text(

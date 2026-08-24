@@ -13,6 +13,7 @@ import '../../../../core/models/permit_classification.dart';
 import '../../../../core/providers/applications_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/badges/status_badge.dart';
 import '../../../../shared/widgets/states/empty_state.dart';
 import 'widgets/detail_action_banner.dart';
 import 'widgets/evaluation_section.dart';
@@ -170,6 +171,7 @@ class _Header extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(
@@ -177,23 +179,12 @@ class _Header extends StatelessWidget {
                   style: AppTypography.sectionTitle,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: status.backgroundColor,
-                  borderRadius: BorderRadius.circular(
-                    AppConstants.borderRadiusPill,
-                  ),
-                ),
-                child: Text(
-                  status.label,
-                  style: AppTypography.helper.copyWith(
-                    color: status.color,
-                    fontWeight: FontWeight.w600,
-                  ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: StatusBadge(
+                  label: status.label,
+                  color: status.color,
+                  backgroundColor: status.backgroundColor,
                 ),
               ),
             ],
@@ -327,6 +318,7 @@ class _PaymentSummary extends StatelessWidget {
     }
     final due = payment.amountDue;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text(
@@ -334,18 +326,12 @@ class _PaymentSummary extends StatelessWidget {
             style: AppTypography.cardTitle,
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.xs,
-          ),
-          decoration: BoxDecoration(
-            color: payment.status.backgroundColor,
-            borderRadius: BorderRadius.circular(AppConstants.borderRadiusPill),
-          ),
-          child: Text(
-            payment.status.label,
-            style: AppTypography.helper.copyWith(color: payment.status.color),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: StatusBadge(
+            label: payment.status.label,
+            color: payment.status.color,
+            backgroundColor: payment.status.backgroundColor,
           ),
         ),
       ],

@@ -11,6 +11,7 @@ import '../../../core/providers/applications_provider.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/layout/amount_row.dart';
 import '../../../shared/widgets/states/empty_state.dart';
 import 'widgets/proof_of_payment_sheet.dart';
 
@@ -165,13 +166,9 @@ class _FeeBreakdown extends StatelessWidget {
             _FeeRow(line: line),
             const Divider(height: AppSpacing.xl),
           ],
-          Row(
-            children: [
-              Expanded(
-                child: Text('Total', style: AppTypography.cardTitle),
-              ),
-              Text(order.total.formatted, style: AppTypography.cardTitle),
-            ],
+          AmountRow(
+            label: Text('Total', style: AppTypography.cardTitle),
+            amount: Text(order.total.formatted, style: AppTypography.cardTitle),
           ),
         ],
       ),
@@ -205,33 +202,28 @@ class _FeeRowState extends State<_FeeRow> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            widget.line.label,
-                            style: AppTypography.body,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Icon(
-                          _expanded
-                              ? Icons.expand_less
-                              : Icons.help_outline,
-                          size: 15,
-                          color: AppColors.textMuted,
-                        ),
-                      ],
+              AmountRow(
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget.line.label,
+                        style: AppTypography.body,
+                      ),
                     ),
-                  ),
-                  Text(
-                    widget.line.amount.formatted,
-                    style: AppTypography.bodyStrong,
-                  ),
-                ],
+                    const SizedBox(width: AppSpacing.xs),
+                    Icon(
+                      _expanded ? Icons.expand_less : Icons.help_outline,
+                      size: 15,
+                      color: AppColors.textMuted,
+                    ),
+                  ],
+                ),
+                amount: Text(
+                  widget.line.amount.formatted,
+                  style: AppTypography.bodyStrong,
+                ),
               ),
               if (_expanded) ...[
                 const SizedBox(height: AppSpacing.xs),
