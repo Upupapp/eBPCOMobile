@@ -142,7 +142,7 @@ class HelpSupportScreen extends StatelessWidget {
                     icon: Icons.location_on_outlined,
                     label: 'Office Address',
                     value:
-                        'Business Permit and Licensing Office, City Hall '
+                        'Office of the Building Official, City Hall '
                         'Building, Quezon City, Metro Manila, Philippines',
                   ),
                 ],

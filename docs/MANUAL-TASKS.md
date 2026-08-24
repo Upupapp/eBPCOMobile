@@ -73,7 +73,7 @@ is E-1/M-27 — hosting and who operates it. See
 
 | # | Decision | Why yours |
 |---|---|---|
-| M-27 | **Rule on the product name.** Every source in the project says "Electronic Business Permit and Clearance Office"; the Master Command PDF I wrote says "Electronic Building Permit and Certificate of Occupancy". The app is right and my spec is wrong — but the deeper problem is that the project's *name* says business permits while its *scope* is sixteen construction permits under PD 1096 plus a Certificate of Occupancy. Which is it? | It is the product's name |
+| M-29 | **Rename in the other lane.** The ruled name has not been applied to the monorepo's `docs/README.md` or the web admin's `auth-layout.html` tagline, both of which still say "Electronic Business Permit and Clearance Office". Out of scope here under the mobile-only rule | Different repository |
 | M-28 | **Accept or reject dropping iOS 13 and 14.** The plugin set forced `IPHONEOS_DEPLOYMENT_TARGET` from 13.0 to 15.0 during the first iOS build. Uncommitted. On a Philippine applicant base, older devices are not a rounding error | Audience call |
 
 ## Product decisions I have deliberately left open

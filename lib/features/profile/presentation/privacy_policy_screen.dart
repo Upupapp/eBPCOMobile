@@ -9,8 +9,9 @@ const _sections = [
   (
     title: 'Overview',
     body:
-        'This Privacy Policy explains how the Electronic Business Permit '
-        'and Clearance Office (eBPCO) mobile application collects, uses, '
+        'This Privacy Policy explains how the Electronic Building Permit '
+        'and Certificate of Occupancy (eBPCO) mobile application collects, '
+        'uses, '
         'and protects your information when you apply for building permits '
         'and related clearances. It is written to comply with the Data '
         'Privacy Act of 2012 (Republic Act No. 10173) and its implementing '
@@ -105,8 +106,8 @@ const _sections = [
     title: 'Contact Information',
     body:
         'Questions about this Privacy Policy or requests to exercise your '
-        'data privacy rights may be sent to the Business Permit and '
-        'Licensing Office at support@ebpco.gov.ph, or by calling '
+        'data privacy rights may be sent to the Office of the Building '
+        'Official at support@ebpco.gov.ph, or by calling '
         '(02) 8988-4242 during office hours, Monday to Friday, '
         '8:00 AM to 5:00 PM.',
   ),

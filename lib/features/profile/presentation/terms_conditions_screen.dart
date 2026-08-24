@@ -10,7 +10,8 @@ const _sections = [
     title: '1. Introduction',
     body:
         'These Terms and Conditions govern your access to and use of the '
-        'Electronic Business Permit and Clearance Office (eBPCO) mobile '
+        'Electronic Building Permit and Certificate of Occupancy (eBPCO) '
+        'mobile '
         'application. By creating an account or using any part of the app, '
         'you agree to be bound by these Terms. If you do not agree, please '
         'do not use the app.',
@@ -127,8 +128,8 @@ const _sections = [
   (
     title: '14. Contact Information',
     body:
-        'Questions about these Terms may be sent to the Business Permit and '
-        'Licensing Office at support@ebpco.gov.ph, or by calling '
+        'Questions about these Terms may be sent to the Office of the '
+        'Building Official at support@ebpco.gov.ph, or by calling '
         '(02) 8988-4242 during office hours, Monday to Friday, '
         '8:00 AM to 5:00 PM.',
   ),

@@ -4,9 +4,10 @@ class AppStrings {
 
   static const String appName = 'E-BPCO';
   static const String appFullName =
-      'Electronic Business Permit and Clearance Office';
-  static const String appTagline = 'Business Permit and Clearance Office';
-  static const String splashSubtitle = 'Permits and clearances, simplified.';
+      'Electronic Building Permit and Certificate of Occupancy';
+  static const String appTagline =
+      'Building Permit and Certificate of Occupancy';
+  static const String splashSubtitle = 'Permits and occupancy, simplified.';
 
   // Mock account (prototype only).
   static const String mockEmail = 'user@ebpco.com';
