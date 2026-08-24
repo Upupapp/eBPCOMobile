@@ -28,6 +28,8 @@ import 'package:ebpco_user_app/features/applications/presentation/sign_permit/si
 import 'package:ebpco_user_app/features/documents/presentation/document_preview_screen.dart';
 import 'package:ebpco_user_app/features/splash/presentation/splash_screen.dart';
 
+import 'support/clipping.dart';
+
 /// The last screens with no accessibility coverage: the sixteen terminal
 /// confirmation pages one per permit type, plus splash and document preview.
 ///
@@ -244,4 +246,20 @@ void main() {
       });
     });
   });
+
+  group('no text is cut off by a fixed-height box', () {
+    // Distinct from the overflow groups above: a box that pins its height does
+    // not report an overflow when its text outgrows it, the text just stops
+    // rendering. That is how the bottom navigation bar clipped "Applications"
+    // on every screen while three scales of render tests passed.
+    for (final scale in [1.0, 2.0]) {
+      _screens.forEach((name, screen) {
+        testWidgets('$name at ${scale}x', (tester) async {
+          await _open(tester, screen, textScale: scale);
+          expectNoTextClippedByFixedHeight(tester, context: name);
+        });
+      });
+    }
+  });
+
 }

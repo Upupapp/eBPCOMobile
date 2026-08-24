@@ -25,6 +25,8 @@ import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/theme/app_theme.dart';
 import 'package:ebpco_user_app/features/shell/presentation/main_shell.dart';
 
+import '../../support/clipping.dart';
+
 /// The bottom navigation bar is on every primary screen and had no test.
 ///
 /// It is also the first thing named in `app.dart`'s comment justifying the
@@ -155,4 +157,22 @@ void main() {
 
     expect(find.text('/payments'), findsOneWidget);
   });
+
+  group('nothing in the shell chrome is cut off', () {
+    // The same check the screen suites run, applied where the defect actually
+    // was. The explicit assertion above names the four labels; this one would
+    // catch a fifth destination, or anything else pinned inside the bar.
+    for (final scale in [1.0, 1.3, 2.0]) {
+      for (final width in [320.0, 360.0]) {
+        testWidgets('at ${scale}x on ${width.toInt()}dp', (tester) async {
+          await _pump(tester, scale, width: width);
+          expectNoTextClippedByFixedHeight(
+            tester,
+            context: 'MainShell ${scale}x/${width.toInt()}dp',
+          );
+        });
+      }
+    }
+  });
+
 }

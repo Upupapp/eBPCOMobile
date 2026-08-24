@@ -29,6 +29,8 @@ import 'package:ebpco_user_app/features/payments/presentation/payment_history_sc
 import 'package:ebpco_user_app/features/profile/presentation/privacy_data_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/professionals_screen.dart';
 
+import 'support/clipping.dart';
+
 /// The seven screens the accessibility suites did not reach. The shared-widget
 /// suite covers their building blocks; this covers the composition, which is
 /// where both overflows found so far actually lived.
@@ -308,4 +310,20 @@ void main() {
       });
     });
   });
+
+  group('no text is cut off by a fixed-height box', () {
+    // Distinct from the overflow groups above: a box that pins its height does
+    // not report an overflow when its text outgrows it, the text just stops
+    // rendering. That is how the bottom navigation bar clipped "Applications"
+    // on every screen while three scales of render tests passed.
+    for (final scale in [1.0, 2.0]) {
+      _screens.forEach((name, screen) {
+        testWidgets('$name at ${scale}x', (tester) async {
+          await _open(tester, screen, textScale: scale);
+          expectNoTextClippedByFixedHeight(tester, context: name);
+        });
+      });
+    }
+  });
+
 }

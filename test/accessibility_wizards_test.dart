@@ -39,6 +39,8 @@ import 'package:ebpco_user_app/features/applications/presentation/renovation_per
 import 'package:ebpco_user_app/features/applications/presentation/sanitary_plumbing_permit/sanitary_plumbing_permit_wizard_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/sign_permit/sign_permit_wizard_screen.dart';
 
+import 'support/clipping.dart';
+
 /// Command X4 names the nine-step wizards as the highest-risk surfaces for
 /// large text, and until now not one of the sixteen was asserted at any text
 /// scale. These open each at step 1 and check nothing bursts.
@@ -186,4 +188,20 @@ void main() {
       });
     });
   });
+
+  group('no wizard text is cut off by a fixed-height box', () {
+    // Not the same as the overflow groups: a box that pins its height does not
+    // report an overflow when its text outgrows it — the text is simply cut
+    // off. That is how the bottom navigation bar clipped "Applications" while
+    // render tests at three scales passed.
+    for (final scale in [1.0, 2.0]) {
+      _wizards.forEach((name, build) {
+        testWidgets('$name at ${scale}x', (tester) async {
+          await _pump(tester, build, textScale: scale);
+          expectNoTextClippedByFixedHeight(tester, context: name);
+        });
+      });
+    }
+  });
+
 }
