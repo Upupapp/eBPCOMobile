@@ -13,6 +13,8 @@ import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
+import 'package:ebpco_user_app/features/applications/presentation/application_list_screen.dart';
+import 'package:ebpco_user_app/core/models/notification_event.dart';
 
 /// End-to-end coverage of the Fencing Permit wizard — fully separate from
 /// every other permit wizard in this app, driven the same way those
@@ -45,6 +47,7 @@ Widget _wrap() {
         builder: (context, state) {
           final extra = state.extra as Map<String, Object?>?;
           return FencingApplicationSubmittedScreen(
+            applicationId: extra?['applicationId'] as String?,
             referenceNumber: extra?['referenceNumber'] as String? ?? 'FNC-X',
             submissionDate:
                 extra?['submissionDate'] as DateTime? ?? DateTime.now(),
@@ -54,6 +57,18 @@ Widget _wrap() {
                 extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
           );
         },
+      ),
+      // The two destinations the confirmation screen's buttons actually use.
+      // Registering the real screen, rather than a stub, is what makes the
+      // end-to-end assertion below mean anything.
+      GoRoute(
+        path: '/app/applications',
+        builder: (context, state) => const ApplicationListScreen(),
+      ),
+      GoRoute(
+        path: '/applications/:id',
+        builder: (context, state) =>
+            Scaffold(body: Text('detail:${state.pathParameters['id']}')),
       ),
     ],
   );
@@ -397,6 +412,74 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Fencing Application Submitted!'), findsOneWidget);
       expect(find.textContaining('FNC-'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a submitted permit reaches the applications list, and the confirmation '
+    'screen links to it',
+    (tester) async {
+      // The pieces of this are unit-tested elsewhere. This is the whole path
+      // an applicant actually walks, because the defect it guards was not in
+      // any one piece: every wizard submitted happily, the confirmation screen
+      // rendered happily, and the application simply was not anywhere
+      // afterwards. Nothing failed — it just did not exist.
+      await _useTallSurface(tester);
+      await _openWizard(tester);
+      await _completeStep1(tester);
+      await _completeStep2(tester);
+      await _completeStep3(tester);
+      await _completeStep4(tester);
+      await _completeStep5(tester);
+      await _completeStep6(tester);
+      await _completeStep7(tester);
+      await _completeStep8(tester);
+      await _checkAllDeclarations(tester);
+
+      await tester.tap(_submitButton());
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      final reference = (tester
+              .widgetList<Text>(find.byType(Text))
+              .map((t) => t.data)
+              .firstWhere((d) => d != null && d.startsWith('FNC-')))!;
+
+      // The submission is now a record, and the notification that announces
+      // it was posted — both come from ApplicationsProvider.submitApplication,
+      // which nothing used to reach.
+      final context = tester.element(find.byType(Scaffold).first);
+      final applications = context.read<ApplicationsProvider>();
+      final notifications = context.read<NotificationsProvider>();
+
+      expect(
+        applications.applications.map((a) => a.applicationNumber),
+        contains(reference),
+        reason: 'the reference on screen should name a real application',
+      );
+      expect(
+        notifications.events.any(
+          (e) => e.type == NotificationType.applicationSubmitted,
+        ),
+        isTrue,
+        reason: 'submitting should announce itself',
+      );
+
+      // Return to Applications is the button most applicants press, so that
+      // is the path this walks.
+      await tester.ensureVisible(find.text('Return to Applications'));
+      await tester.tap(find.text('Return to Applications'));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ApplicationListScreen), findsOneWidget);
+      expect(
+        find.textContaining(reference),
+        findsOneWidget,
+        reason: 'the permit just filed should be in the applicant\'s list',
+      );
+      expect(find.textContaining('Fencing Permit'), findsWidgets);
     },
   );
 
