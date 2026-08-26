@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>eBPCO Mobile — Admin-Portal Parity Master Command</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 9.4pt; line-height: 1.5; color: #1F2937; margin: 0; }
+h1,h2,h3,h4 { color: #1F2937; margin: 0 0 6px; line-height: 1.25; }
+h2 { font-size: 16pt; letter-spacing: -0.2px; border-bottom: 2.5px solid #C81E2C; padding-bottom: 6px; margin: 0 0 14px; }
+h3 { font-size: 11.5pt; margin: 18px 0 7px; color: #A01823; }
+h4 { font-size: 9.4pt; margin: 13px 0 5px; text-transform: uppercase; letter-spacing: 0.6px; color: #6B7280; }
+p { margin: 0 0 8px; }
+ul, ol { margin: 0 0 9px; padding-left: 17px; }
+li { margin-bottom: 3px; }
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.2pt; background: #F5F7FA; padding: 1px 4px; border-radius: 3px; color: #A01823; }
+pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.8pt; background: #F5F7FA; border: 1px solid #E6E6EC; border-left: 3px solid #2563EB; border-radius: 4px; padding: 9px 11px; white-space: pre-wrap; line-height: 1.45; margin: 0 0 10px; }
+pre code { background: none; padding: 0; color: #1F2937; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 8.3pt; }
+th { background: #1F2937; color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 8pt; letter-spacing: 0.3px; }
+td { padding: 5px 8px; border-bottom: 1px solid #E6E6EC; vertical-align: top; }
+tr:nth-child(even) td { background: #FAFAFA; }
+.section { page-break-before: always; }
+.no-break { page-break-inside: avoid; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+.cover-top { border-top: 9px solid #C81E2C; padding-top: 26px; }
+.cover-eyebrow { font-size: 9pt; letter-spacing: 3.5px; text-transform: uppercase; color: #C81E2C; font-weight: 700; margin-bottom: 26px; }
+.cover-title { font-size: 38pt; font-weight: 800; line-height: 1.03; letter-spacing: -1.4px; margin-bottom: 16px; }
+.cover-title span { color: #C81E2C; }
+.cover-sub { font-size: 12.5pt; color: #6B7280; line-height: 1.45; max-width: 138mm; font-weight: 300; }
+.cover-rule { width: 62px; height: 4px; background: #2563EB; margin: 26px 0; }
+.cover-meta { display: flex; gap: 30px; flex-wrap: wrap; font-size: 9pt; }
+.cover-meta div span { display: block; text-transform: uppercase; letter-spacing: 1.3px; font-size: 7.2pt; color: #9CA3AF; margin-bottom: 3px; font-weight: 700; }
+.cover-note { border-left: 3px solid #C81E2C; background: #FEE2E2; padding: 12px 15px; font-size: 9pt; color: #1F2937; }
+.cmd { border: 1.5px solid #C81E2C; border-radius: 6px; padding: 0; margin: 0 0 14px; page-break-inside: avoid; overflow: hidden; }
+.cmd-head { background: #C81E2C; color: #fff; padding: 7px 13px; font-size: 8.4pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+.cmd-body { padding: 12px 14px; background: #FFF9F9; font-size: 9.6pt; }
+.cmd-body p:last-child { margin-bottom: 0; }
+.callout { background: #F5F7FA; border-left: 3px solid #6B7280; padding: 9px 13px; margin: 0 0 11px; font-size: 8.6pt; }
+.callout.law { background: #E8F1FF; border-left-color: #2563EB; }
+.callout.warn { background: #FEF3C7; border-left-color: #F59E0B; }
+.callout.stop { background: #FEE2E2; border-left-color: #C81E2C; }
+.callout strong { color: #1F2937; }
+.tag { display: inline-block; font-size: 7pt; font-weight: 700; padding: 2px 7px; border-radius: 9px; letter-spacing: 0.6px; text-transform: uppercase; }
+.tag-p0 { background: #FEE2E2; color: #B91C1C; }
+.tag-p1 { background: #FEF3C7; color: #B45309; }
+.tag-p2 { background: #DBEAFE; color: #1D4ED8; }
+.tag-be { background: #DCFCE7; color: #15803D; }
+.tag-mob { background: #EDE9FE; color: #6D28D9; }
+.tag-adm { background: #FFE4E6; color: #9F1239; }
+.tag-ops { background: #F5F7FA; color: #6B7280; }
+.ac { list-style: none; padding-left: 0; }
+.ac li { padding-left: 21px; position: relative; margin-bottom: 4px; }
+.ac li:before { content: "\2610"; position: absolute; left: 0; color: #C81E2C; font-size: 11pt; line-height: 1; top: 1px; }
+.toc { column-count: 2; column-gap: 24px; font-size: 8.6pt; }
+.toc-item { display: flex; gap: 8px; margin-bottom: 4px; break-inside: avoid; }
+.toc-num { color: #C81E2C; font-weight: 700; min-width: 40px; }
+.lead { font-size: 10.2pt; color: #4B5563; margin-bottom: 15px; font-weight: 300; line-height: 1.55; }
+.tabhead { display: flex; align-items: baseline; gap: 10px; border-bottom: 2.5px solid #C81E2C; padding-bottom: 6px; margin: 0 0 12px; }
+.tabhead .n { font-size: 22pt; font-weight: 800; color: #C81E2C; letter-spacing: -1px; }
+.tabhead .t { font-size: 15pt; font-weight: 700; letter-spacing: -0.2px; }
+.tabmeta { font-size: 7.6pt; color: #6B7280; margin: -6px 0 12px; }
+.tabmeta b { color: #1F2937; }
+.phase { background: #1F2937; color: #fff; padding: 14px 18px; border-radius: 6px; margin: 0 0 16px; page-break-inside: avoid; }
+.phase .ph-n { font-size: 7.4pt; letter-spacing: 2.6px; text-transform: uppercase; color: #F59E0B; font-weight: 700; margin-bottom: 5px; }
+.phase .ph-t { font-size: 15pt; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+.phase .ph-d { font-size: 8.8pt; color: #D1D5DB; font-weight: 300; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-eyebrow">eBPCO · Mobile Front End · Master Command</div>
+    <div class="cover-title">Admin-Portal<br><span>Parity</span> Programme</div>
+    <div class="cover-rule"></div>
+    <div class="cover-sub">
+      Every form, field and state the Castilla admin portal keeps about an
+      application — and what the business owner’s app must show, collect or
+      act on so the two halves describe the same permit.
+    </div>
+  </div>
+  <div>
+    <div class="cover-note">
+      <strong>Scope: the Flutter app’s front end only.</strong> Nothing here
+      changes the admin portal, the backend, or the contract repo. Where a gap
+      cannot be closed without a server field, the TAB says so and records the
+      hand-off rather than inventing one.
+    </div>
+    <div class="cover-meta" style="margin-top:18px">
+      <div><span>Issued</span>25 August 2026</div>
+      <div><span>Mobile line</span>eBPCO-Mobile-App · <code>f603f53</code></div>
+      <div><span>Admin line swept</span>Upupapp/eBPCO-Web · <code>e3cd7c3</code></div>
+      <div><span>TABs</span>16</div>
+      <div><span>Gaps</span>21</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ §1 ============================ -->
+<div class="section">
+<h2>1 · Master Command</h2>
+
+<div class="cmd">
+  <div class="cmd-head">The command</div>
+  <div class="cmd-body">
+    <p>Bring the eBPCO mobile app to <strong>parity with the admin portal on
+    everything the business owner is a party to</strong>. The admin decides;
+    the applicant must be able to see what was decided, act on what is asked
+    of them, and hold the documents that result.</p>
+    <p style="margin-top:8px">Work TAB by TAB in order. Each TAB is complete
+    when its acceptance criteria pass, <code>flutter analyze</code> is clean,
+    and the whole suite is green. Record every unfinished item with its reason.</p>
+  </div>
+</div>
+
+<h3>What parity does and does not mean</h3>
+<p>The admin portal is a <em>case-management</em> tool. Much of it is rightly
+invisible to an applicant: user roles, system logs, payroll, tenants, the
+evaluation queue, the KPI dashboards, and every screen where staff record a
+decision. None of that belongs on the applicant’s phone.</p>
+
+<p>Parity here means something narrower and more demanding: <strong>wherever
+the admin records a fact about the applicant’s own application, the applicant
+can see that fact.</strong> Wherever the admin asks the applicant for
+something, the app can supply it. Wherever the admin issues something —
+an assessment, a receipt, a permit — the applicant can hold it.</p>
+
+<div class="callout stop">
+<strong>The failure this programme exists to prevent.</strong> An applicant
+whose payment was <em>rejected</em>, or whose land title was marked
+<em>Revision Required</em>, currently has no screen that can tell them so. The
+admin has recorded a precise reason; the app has nowhere to put it. The
+applicant waits, and the 3/7/20-day clock under RA 11032 keeps running.
+</div>
+
+<h3>How the gaps were found</h3>
+<p>The vendor monorepo <code>Upupapp/eBPCO-Web</code> was fetched and
+fast-forwarded nine commits to <code>e3cd7c3</code> (25 Aug), then its Angular
+admin — <code>EBPCO WEB ADMIN/E-BPCO-Software-main</code> — was read domain
+model by domain model and compared against the Flutter line at
+<code>f603f53</code>. Each gap below cites the file it came from on both sides.</p>
+
+<div class="callout warn">
+<strong>Two divergent lines.</strong> The vendor’s own mobile copy
+(<code>ebpco-web/ebpco-mobile</code>) is not this app, and in the nine commits
+just pulled it grew <code>fsic_permit</code> and <code>zoning_permit</code>
+wizards of its own. That is corroboration that TABs 03–05 are real gaps, and a
+reference to read — <strong>not</strong> code to copy: the two lines have
+diverged since 19 August and this one is ahead on almost everything else.
+</div>
+
+<h3>Table of contents</h3>
+<div class="toc">
+  <div class="toc-item"><span class="toc-num">§2</span><span>What the admin keeps, and what the app shows</span></div>
+  <div class="toc-item"><span class="toc-num">§3</span><span>Gap register G-01 … G-21</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 00</span><span>Shared vocabulary &amp; parity guard</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 01</span><span>Requirements catalog on mobile</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 02</span><span>Per-document review status</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 03</span><span>Zoning / Locational Clearance</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 04</span><span>FSEC for Building Permit</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 05</span><span>FSIC for Occupancy Permit</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 06</span><span>Partial payment &amp; balance</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 07</span><span>Official Receipt &amp; collecting agency</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 08</span><span>Assessment versions</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 09</span><span>Release, claim &amp; validity</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 10</span><span>Official forms &amp; checklists</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 11</span><span>Contact verification</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 12</span><span>Citizen’s Charter coverage</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 13</span><span>Notification alignment</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 14</span><span>Renewal &amp; amendment</span></div>
+  <div class="toc-item"><span class="toc-num">TAB 15</span><span>Closing certification</span></div>
+  <div class="toc-item"><span class="toc-num">§4</span><span>Cross-cutting requirements X1–X5</span></div>
+</div>
+</div>
+
+<!-- ============================ §2 ============================ -->
+<div class="section">
+<h2>2 · What the admin keeps, and what the app shows</h2>
+
+<h3>Already aligned — do not disturb</h3>
+<p>Three vocabularies match across both lines and should be treated as settled.
+They are listed so no TAB “fixes” them.</p>
+<table>
+<tr><th>Concept</th><th>Admin</th><th>Mobile</th><th>Verdict</th></tr>
+<tr><td>Application lifecycle</td><td>19 states, <code>status.model.ts</code></td><td>19 states, <code>lifecycle_status.dart</code></td><td>Aligned, incl. the applicant-label projection</td></tr>
+<tr><td>Evaluation stages</td><td>Initial · Zoning · Fire Safety · OBO · Final Approval</td><td>Same five, same order</td><td>Aligned</td></tr>
+<tr><td>Application action</td><td>New · Renewal · Amendment</td><td><code>ApplicationType</code></td><td>Type aligned; the flows are not — see TAB 14</td></tr>
+</table>
+
+<h3>The permit catalog</h3>
+<p>The admin defines <strong>19</strong> permit types in one place
+(<code>ALL_PERMIT_TYPES</code>, <code>permit.model.ts</code>) and guards them
+with <code>isValidPermitType</code>. The app files <strong>16</strong>.</p>
+
+<table>
+<tr><th>Permit type (admin’s exact string)</th><th>Requirement docs</th><th>Validity</th><th>Mobile</th></tr>
+<tr><td>Building Permit – New Construction</td><td>22</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Building Permit – Renovation / Alteration</td><td>9</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Building Permit – Addition / Extension</td><td>9</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Demolition Permit</td><td>9</td><td>6 mo</td><td>Yes</td></tr>
+<tr><td><strong>Zoning / Locational Clearance</strong></td><td><strong>16</strong></td><td>12 mo</td><td><strong>MISSING</strong></td></tr>
+<tr><td>Architectural Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Civil / Structural Permit</td><td>8</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Electrical Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Mechanical Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Sanitary Permit</td><td>7</td><td>12 mo</td><td>Yes — but named “Sanitary / Plumbing”</td></tr>
+<tr><td>Plumbing Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Electronics Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Interior Design Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Fencing Permit</td><td>6</td><td>6 mo</td><td>Yes</td></tr>
+<tr><td>Sign Permit</td><td>7</td><td>12 mo</td><td>Yes</td></tr>
+<tr><td>Excavation Permit</td><td>8</td><td>6 mo</td><td>Yes</td></tr>
+<tr><td><strong>FSEC for Building Permit (BFP)</strong></td><td><strong>9</strong></td><td>12 mo</td><td><strong>MISSING</strong></td></tr>
+<tr><td>Certificate of Occupancy</td><td>9</td><td>no expiry</td><td>Yes</td></tr>
+<tr><td><strong>FSIC for Occupancy Permit (BFP)</strong></td><td><strong>10</strong></td><td>12 mo</td><td><strong>MISSING</strong></td></tr>
+</table>
+
+<div class="callout">
+<strong>Counting note.</strong> Document counts are the admin’s own
+<code>REQUIREMENTS_CATALOG</code> entries: five common documents plus the
+type’s plan/professional/extra documents, except New Construction and Zoning,
+which replace the common set with a transcribed official Castilla checklist.
+A first pass at this table undercounted several types because the source
+splits specs across shared constants; the figures above are from a
+brace-matched parse and were spot-checked against the file.
+</div>
+
+<h3>The asymmetry that matters most</h3>
+<p>The app already collects a great deal — between 3 and 17 upload slots per
+wizard. What it does not have is the <em>catalog</em>: the admin’s per-permit
+statement of which documents are required, which office reviews each one, how
+long the permit is valid, what inspection follows, and which law or Castilla
+form the requirement comes from. The app’s lists are hardcoded inside sixteen
+wizards, so they can drift from the admin’s without anything failing.</p>
+
+<p>The clearest instance: Building Permit – New Construction carries
+<strong>6 upload slots on mobile</strong> against a <strong>22-line official
+checklist</strong> in the admin. That is not necessarily sixteen missing
+uploads — some mobile slots aggregate several checklist lines — but nothing in
+either codebase can currently tell you which.</p>
+</div>
+
+<!-- ============================ §3 ============================ -->
+<div class="section">
+<h2>3 · Gap register</h2>
+<p class="lead">Twenty-one gaps, each traced to the admin file that defines it
+and the mobile file that would carry it. Severity is the applicant’s exposure,
+not the size of the work.</p>
+
+<table>
+<tr><th>ID</th><th>Gap</th><th>Admin source</th><th>Sev</th><th>TAB</th></tr>
+<tr><td>G-01</td><td>Per-document review status absent — 8 admin states, mobile’s <code>DocumentModel</code> has none</td><td><code>document.model.ts</code></td><td><span class="tag tag-p0">P0</span></td><td>02</td></tr>
+<tr><td>G-02</td><td>Document rejection <code>remarks</code> never reach the applicant</td><td><code>ApplicationDocument.remarks</code></td><td><span class="tag tag-p0">P0</span></td><td>02</td></tr>
+<tr><td>G-03</td><td>Payment rejection reason has nowhere to display</td><td><code>PaymentTransaction.rejectionReason</code></td><td><span class="tag tag-p0">P0</span></td><td>06</td></tr>
+<tr><td>G-04</td><td>“Partially Paid” unrepresentable — mobile has 4 payment states to the admin’s 5</td><td><code>status.model.ts</code></td><td><span class="tag tag-p0">P0</span></td><td>06</td></tr>
+<tr><td>G-05</td><td>Official Receipt (number, date, issuer) not modelled</td><td><code>PaymentTransaction.orNumber</code></td><td><span class="tag tag-p0">P0</span></td><td>07</td></tr>
+<tr><td>G-06</td><td>Zoning / Locational Clearance cannot be filed</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p0">P0</span></td><td>03</td></tr>
+<tr><td>G-07</td><td>FSEC cannot be filed</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p0">P0</span></td><td>04</td></tr>
+<tr><td>G-08</td><td>FSIC cannot be filed</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p0">P0</span></td><td>05</td></tr>
+<tr><td>G-09</td><td>No requirements catalog — 16 hardcoded lists that can drift</td><td><code>requirements-catalog.ts</code> (894 lines)</td><td><span class="tag tag-p1">P1</span></td><td>01</td></tr>
+<tr><td>G-10</td><td>Permit validity / expiry not shown to the applicant</td><td><code>validityMonths</code>, <code>GeneratedPermit.expiryDate</code></td><td><span class="tag tag-p1">P1</span></td><td>09</td></tr>
+<tr><td>G-11</td><td>Release method &amp; claimant not modelled — admin’s own comment confirms</td><td><code>PermitReleaseRecord</code></td><td><span class="tag tag-p1">P1</span></td><td>09</td></tr>
+<tr><td>G-12</td><td>Collecting agency (OBO/LGU vs BFP) not distinguished</td><td><code>CollectingAgency</code></td><td><span class="tag tag-p1">P1</span></td><td>07</td></tr>
+<tr><td>G-13</td><td>Assessment supersession invisible — a revised assessment looks like the first</td><td><code>AssessmentStatus</code> ‘Superseded’</td><td><span class="tag tag-p1">P1</span></td><td>08</td></tr>
+<tr><td>G-14</td><td>Fee line items not itemised from a versioned assessment</td><td><code>AssessmentLineItem</code></td><td><span class="tag tag-p1">P1</span></td><td>08</td></tr>
+<tr><td>G-15</td><td>Official blank forms &amp; checklists not available in-app</td><td><code>permit-form-templates.ts</code></td><td><span class="tag tag-p1">P1</span></td><td>10</td></tr>
+<tr><td>G-16</td><td>Contact verification (email link / mobile OTP) absent</td><td><code>ContactVerification</code></td><td><span class="tag tag-p1">P1</span></td><td>11</td></tr>
+<tr><td>G-17</td><td>Citizen’s Charter covers 5 permit types of 19</td><td><code>REQUIREMENTS_CATALOG</code></td><td><span class="tag tag-p1">P1</span></td><td>12</td></tr>
+<tr><td>G-18</td><td>Document issuing office / issue &amp; expiry dates not captured</td><td><code>ApplicationDocument</code></td><td><span class="tag tag-p2">P2</span></td><td>02</td></tr>
+<tr><td>G-19</td><td>Payment adjustments (void, reversal, refund, correction) invisible</td><td><code>PaymentAdjustment</code></td><td><span class="tag tag-p2">P2</span></td><td>07</td></tr>
+<tr><td>G-20</td><td>Renewal &amp; amendment have no distinct flow despite a shared type</td><td><code>ApplicationAction</code></td><td><span class="tag tag-p2">P2</span></td><td>14</td></tr>
+<tr><td>G-21</td><td>“Sanitary Permit” filed as “Sanitary / Plumbing Permit” — string mismatch</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p2">P2</span></td><td>00</td></tr>
+</table>
+
+<div class="callout law">
+<strong>Why the P0s are P0.</strong> Each of G-01 through G-08 is a case where
+the admin has recorded something the applicant must act on — a rejected
+document, a rejected payment, a permit type they are legally required to
+obtain — and the app is structurally incapable of telling them. Under
+RA 11032 the processing clock does not stop because the applicant was never
+informed.
+</div>
+</div>
+
+<!-- ============================ PHASE A ============================ -->
+<div class="section">
+<div class="phase">
+  <div class="ph-n">Phase A</div>
+  <div class="ph-t">Make the two halves speak the same language</div>
+  <div class="ph-d">Before any screen is built, the app needs the admin’s
+  vocabularies as data rather than as sixteen hardcoded opinions. TABs 00–02
+  are the foundation every later TAB stands on.</div>
+</div>
+
+<div class="tabhead"><span class="n">00</span><span class="t">Shared vocabulary &amp; parity guard</span></div>
+<div class="tabmeta"><b>Closes</b> G-21 · <b>Enables</b> every other TAB · <span class="tag tag-mob">Mobile FE</span></div>
+
+<h4>Why</h4>
+<p>The admin defines its permit types, document statuses, payment statuses and
+assessment statuses once each, and validates against them. The app defines its
+own, in different files, with different strings. Nothing compares the two, so
+the first divergence is discovered by an applicant.</p>
+
+<h4>Build</h4>
+<ul>
+<li>A single <code>lib/core/contract/</code> module holding the admin’s exact
+vocabularies: <code>PermitType</code> (all 19 strings verbatim, including the
+en-dash in “Building Permit – New Construction”), <code>DocumentStatus</code>
+(8), <code>PaymentStatus</code> (5), <code>AssessmentStatus</code> (8),
+<code>PaymentTransactionStatus</code> (4), <code>CollectingAgency</code>,
+<code>ReleaseMethod</code>, <code>VerificationStatus</code>.</li>
+<li>Each with a <code>fromWire</code> that <strong>rejects</strong> an unknown
+value rather than defaulting — the admin does exactly this in
+<code>isValidPermitType</code>.</li>
+<li>Rename the app’s “Sanitary / Plumbing Permit” to the admin’s
+<strong>“Sanitary Permit”</strong> everywhere it is filed or displayed, and
+keep the wizard directory name as-is to avoid a pointless rename.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A test asserts all 19 permit-type strings byte-for-byte against a fixture copied from <code>ALL_PERMIT_TYPES</code>.</li>
+<li>A test asserts each vocabulary’s value count and rejects an unknown string.</li>
+<li>An architecture test fails if any wizard files a permit-type string not in the contract module.</li>
+<li>No user-visible string says “Sanitary / Plumbing Permit”.</li>
+</ul>
+
+<div class="callout warn">
+<strong>The trap this TAB is designed around.</strong> Two same-named enums in
+different files with different members have already caused a near-miss on this
+codebase (an <code>Architectural</code> status enum reading ‘Issued’ where
+thirteen others read ‘Approved’). Put the wire vocabulary in one module and
+make every consumer import it.
+</div>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">01</span><span class="t">Requirements catalog on mobile</span></div>
+<div class="tabmeta"><b>Closes</b> G-09 · <b>Depends on</b> TAB 00 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p><code>requirements-catalog.ts</code> is 894 lines and is the admin’s answer
+to “what does this permit actually require”. It carries, per permit type: the
+required official form, every document with a required flag and reviewing
+department, the evaluation sequence, payment and inspection requirements,
+validity rules and months, the final document issued, release requirements,
+and cited legal sources with a verification status distinguishing national law
+from a Castilla form from a pending placeholder.</p>
+<p>The app has none of it. Its document lists live inside sixteen wizard step
+files.</p>
+
+<h4>Build</h4>
+<ul>
+<li><code>lib/core/contract/requirements_catalog.dart</code> — a Dart mirror,
+one entry per permit type, generated from the admin file rather than retyped.</li>
+<li>Drive each wizard’s Required Documents step <em>from the catalog</em>
+instead of hardcoded slots. Where a mobile slot aggregates several catalog
+lines, make that explicit in the entry rather than silently dropping lines.</li>
+<li>Show, on the pre-flight screen: the required official form, the count of
+required vs optional documents, the validity period, and what inspection
+follows.</li>
+<li>Carry <code>verificationStatus</code> through: a requirement sourced from a
+<em>pending Castilla verification</em> must not be presented to an applicant as
+settled law.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A test asserts the Dart catalog has an entry for all 19 types and that document ids match the admin’s.</li>
+<li>Every wizard’s upload slots derive from the catalog; an architecture test fails on a hardcoded list.</li>
+<li>Pre-flight names the official form and the validity period for the chosen permit.</li>
+<li>Requirements not yet verified against a Castilla source are visibly marked as provisional.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">02</span><span class="t">Per-document review status</span></div>
+<div class="tabmeta"><b>Closes</b> G-01, G-02, G-18 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>The admin tracks each submitted document through <strong>Missing → Uploaded
+→ Submitted → Under Review → Accepted / Rejected / Revision Required /
+Expired</strong>, requires <code>remarks</code> whenever it lands on Rejected
+or Revision Required, keeps an append-only <code>history</code> of earlier
+submissions, and records the document’s own issuing office, issue date and
+expiry date.</p>
+<p>Mobile’s <code>DocumentModel</code> is <code>id · label · fileName ·
+uploadedAt · fileSizeBytes · filePath</code>. There is no status field at all.
+The applicant learns a document was rejected only if the office happens to
+raise a Letter of Instruction about it.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Extend the document model with status, remarks, issuing office, issue and
+expiry dates, and submission history.</li>
+<li>On the application detail screen, a requirements list showing each
+document’s current status, with rejected and revision-required items surfaced
+first and their remarks shown in full.</li>
+<li>A <strong>resubmit</strong> action on any document in an unresolved state,
+which appends to history rather than overwriting.</li>
+<li>A document whose <code>expiryDate</code> has passed is shown as Expired
+before the office marks it so — the applicant can act sooner than the desk.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Each of the 8 statuses renders distinctly, with colour never the only signal.</li>
+<li>A rejected document shows its remarks; a test asserts remarks are never silently dropped.</li>
+<li>Resubmission preserves the prior submission in history.</li>
+<li>The detail screen orders unresolved documents above resolved ones.</li>
+</ul>
+</div>
+
+<!-- ============================ PHASE B ============================ -->
+<div class="section">
+<div class="phase">
+  <div class="ph-n">Phase B</div>
+  <div class="ph-t">The three permits that cannot be filed</div>
+  <div class="ph-d">Zoning, FSEC and FSIC are in the admin’s catalog, have real
+  Castilla and BFP forms bundled, and route to offices other than the OBO. An
+  applicant cannot start any of them from the app.</div>
+</div>
+
+<div class="tabhead"><span class="n">03</span><span class="t">Zoning / Locational Clearance</span></div>
+<div class="tabmeta"><b>Closes</b> G-06 · <b>Office</b> MPDO, not OBO · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>Locational clearance is ordinarily a <em>precondition</em> of the Building
+Permit — the common document set for most other types lists it as a required
+input. The app asks applicants to upload a Locational Clearance it gives them
+no way to obtain.</p>
+
+<h4>What the admin specifies</h4>
+<p>Required form: <strong>Application for Locational Clearance / Certificate
+of Zoning Compliance (Form FM-MPD-12)</strong>, a real Castilla MPDO form.
+Sixteen documents, including a notarized letter request to the Zoning
+Administrator, site development plan, vicinity map, sketch plan, bill of
+materials, proof of ownership, tax declaration / COT / OCT, current land tax
+receipt, barangay building clearance, cedula, and — conditionally — DPWH
+clearance and an ECC. Twelve-month validity. Inspection: ocular site
+inspection and a project evaluation report by the Zoning Officer.</p>
+
+<h4>Build</h4>
+<ul>
+<li>A wizard following the app’s established shape, with steps derived from the
+catalog entry rather than invented.</li>
+<li>Route it to the MPDO in any office-facing copy —
+<code>responsibleDepartmentId</code> is <code>zoning</code>, not <code>obo</code>.</li>
+<li>Mark the two conditional documents (DPWH, ECC) as optional, with the
+“if applicable” condition stated.</li>
+<li>Register it in the permit catalog screen under the correct grouping and in
+<code>DraftRegistry</code>.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>The wizard files a permit whose type string is exactly <code>Zoning / Locational Clearance</code>.</li>
+<li>All 16 catalog documents are represented; required and optional are distinguished.</li>
+<li>The draft appears in the Drafts segment and resumes correctly.</li>
+<li>Accessibility suites cover it at 100%, 200%, 320dp and the 48dp floor.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">04</span><span class="t">FSEC for Building Permit (BFP)</span></div>
+<div class="tabmeta"><b>Closes</b> G-07 · <b>Office</b> Bureau of Fire Protection · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>The Fire Safety Evaluation Clearance is required under RA 9514 before a
+Building Permit issues. The admin bundles the real BFP Castilla Fire Station
+form and sources the requirement to the BFP’s own ARTA citizen’s charter. The
+app has no FSEC flow, and its Fire Safety evaluation stage therefore reports on
+a clearance the applicant cannot apply for.</p>
+
+<h4>Build</h4>
+<ul>
+<li>A wizard from the catalog’s nine-document entry.</li>
+<li>Fees collect to <strong>BFP, not the LGU</strong> — see TAB 07. Do not
+present an FSEC fee as payable at the OBO cashier.</li>
+<li>Explain the dependency plainly: this clearance is an input to the Building
+Permit, and its own notice should say so rather than implying it stands alone.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Files a permit typed exactly <code>FSEC for Building Permit (BFP)</code>.</li>
+<li>Any fee shown is attributed to the BFP as collecting agency.</li>
+<li>The relationship to the Building Permit is stated on both screens.</li>
+<li>Accessibility and clipping suites cover it.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">05</span><span class="t">FSIC for Occupancy Permit (BFP)</span></div>
+<div class="tabmeta"><b>Closes</b> G-08 · <b>Office</b> Bureau of Fire Protection · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>The Fire Safety Inspection Certificate is the occupancy-side counterpart and
+is a precondition of the Certificate of Occupancy. Ten documents in the admin’s
+catalog, real BFP form bundled. The app’s Certificate of Occupancy wizard asks
+for an FSIC it cannot produce.</p>
+
+<h4>Build</h4>
+<ul>
+<li>A wizard from the ten-document catalog entry.</li>
+<li>Link it from the Certificate of Occupancy wizard at the point where the
+FSIC is requested, so an applicant who lacks one can start it without leaving
+the flow and losing their draft.</li>
+<li>BFP collecting agency, as TAB 04.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Files a permit typed exactly <code>FSIC for Occupancy Permit (BFP)</code>.</li>
+<li>Starting an FSIC from inside the Certificate of Occupancy wizard preserves the occupancy draft.</li>
+<li>Accessibility and clipping suites cover it.</li>
+</ul>
+</div>
+
+<!-- ============================ PHASE C ============================ -->
+<div class="section">
+<div class="phase">
+  <div class="ph-n">Phase C</div>
+  <div class="ph-t">Money the applicant can account for</div>
+  <div class="ph-d">The admin runs a versioned assessment with line items,
+  partial payment, two collecting agencies, transaction-level verification and
+  official receipts. The app shows a single total and four states.</div>
+</div>
+
+<div class="tabhead"><span class="n">06</span><span class="t">Partial payment, rejection &amp; balance</span></div>
+<div class="tabmeta"><b>Closes</b> G-03, G-04 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>The admin’s own comment on <code>PaymentStatus</code> is explicit: it extends
+mobile’s four values with <strong>Partially Paid</strong>, because the
+versioned assessment model “supports genuine partial payment of a
+staged/legally-prescribed charge, which mobile’s coarser 4-value status has no
+room to represent”, and it instructs every consumer to handle it explicitly
+rather than falling through a default.</p>
+<p>Separately, a payment transaction can be <strong>Rejected</strong> with a
+required <code>rejectionReason</code>. Mobile cannot show either.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Add <code>partiallyPaid</code> to the payment status, and an amount-paid /
+balance-due pair alongside the total.</li>
+<li>Render each payment transaction the applicant has made, with its status,
+reference, date, and — when rejected — the reason in full and an obvious way to
+submit a corrected payment.</li>
+<li>Never let a rejected transaction count toward the balance; the admin
+excludes voided transactions from every total and the app must agree.</li>
+<li>Money stays integer centavos throughout. No <code>double</code>.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A partially paid assessment shows amount paid, balance due, and does not read as “Paid”.</li>
+<li>A rejected transaction shows its reason and offers a retry path.</li>
+<li>A test asserts rejected and voided transactions are excluded from the balance.</li>
+<li>No arithmetic on payment amounts uses floating point.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">07</span><span class="t">Official Receipt &amp; collecting agency</span></div>
+<div class="tabmeta"><b>Closes</b> G-05, G-12, G-19 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p0">P0</span></div>
+
+<h4>Why</h4>
+<p>The Official Receipt is the applicant’s proof of payment to a government
+office. The admin records <code>orNumber</code>, <code>orDate</code> and
+<code>orIssuedBy</code> per transaction and is careful to note they are never
+auto-filled. The app references an OR number in four wizard steps and one
+notification payload, but its <code>PaymentAssessmentModel</code> has no field
+for one — so there is nowhere for the real value to live.</p>
+<p>The admin also splits collection between <strong>OBO/LGU</strong> and
+<strong>BFP</strong>. An applicant paying an FSIC fee is paying a different
+office, at a different counter.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Carry the OR triple on the payment transaction and display it prominently
+once issued; make it copyable.</li>
+<li>Show the collecting agency on every fee, assessment and receipt.</li>
+<li>Surface payment adjustments — void, reversal, refund, correction — with
+their effect on the balance, rather than silently changing the number.</li>
+<li>Do not fabricate an OR number in any mock or seed path. An absent OR shows
+as “not yet issued”.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A verified payment shows OR number, date and issuing officer.</li>
+<li>Every fee line names its collecting agency; BFP fees are never shown as LGU.</li>
+<li>An adjustment is visible as an adjustment, with the prior balance still legible.</li>
+<li>A test asserts no code path invents an OR number.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">08</span><span class="t">Assessment versions &amp; line items</span></div>
+<div class="tabmeta"><b>Closes</b> G-13, G-14 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p>The admin’s assessment is versioned and immutable: each line item is a
+frozen copy of the fee rule as it stood when the assessment was built, and a
+correction after issuance creates a <strong>new version</strong> and marks the
+old one <code>Superseded</code>. An applicant who was assessed, then
+re-assessed after a revision, currently sees a single changed number with no
+indication that it changed or why.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Model the assessment as versioned, with status including Superseded and Voided.</li>
+<li>Show the current assessment’s line items with their basis, and offer the
+superseded version for comparison rather than discarding it.</li>
+<li>State plainly when an assessment has been replaced, and what to pay now.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A superseded assessment is labelled as such and is not payable.</li>
+<li>Line items show the fee basis captured at assessment time.</li>
+<li>A reassessment is visible as a change, with the prior version reachable.</li>
+</ul>
+</div>
+
+<!-- ============================ PHASE D ============================ -->
+<div class="section">
+<div class="phase">
+  <div class="ph-n">Phase D</div>
+  <div class="ph-t">The permit in the applicant’s hands</div>
+  <div class="ph-d">Issuance, claim and validity — plus the reference material
+  that should have been available before they started.</div>
+</div>
+
+<div class="tabhead"><span class="n">09</span><span class="t">Release, claim &amp; validity</span></div>
+<div class="tabmeta"><b>Closes</b> G-10, G-11 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p>The admin records a full release: releasing officer, claimant name, release
+method (<strong>Physical Claim</strong> or <strong>Authorized
+Representative</strong>), and timestamp — and its source comment states
+outright that “the mobile app itself has not implemented a
+releasing-officer/claimant/release-method model yet (its ApplicationModel only
+stamps permitNumber + issuedDate on release)”. It also computes an
+<code>expiryDate</code> from the catalog’s validity rule.</p>
+<p>So the app can tell an applicant a permit was issued, but not when it
+expires, who may collect it, or what to bring.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Show the permit’s validity period and expiry date, with a warning as expiry
+approaches — the app already has this shape for the PD 1096 commencement
+deadline and should reuse it rather than invent a second one.</li>
+<li>Show release requirements and the release method, and let the applicant
+nominate an authorized representative from the representatives they already
+manage in the app.</li>
+<li>Record nothing the office has not confirmed: a claim the applicant intends
+is not a release that happened.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>An issued permit shows issue date, expiry date and remaining validity.</li>
+<li>A Certificate of Occupancy shows no expiry, because its catalog validity is null.</li>
+<li>Nominating a representative reuses the existing representatives list.</li>
+<li>The expiry warning threshold is defined once and shared with the commencement warning.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">10</span><span class="t">Official forms &amp; checklists</span></div>
+<div class="tabmeta"><b>Closes</b> G-15 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p>The admin bundles the <strong>real</strong> Castilla and BFP forms per
+permit type — the OBO’s trade-permit forms, the Unified Application Form for
+Building Permit (one form serving all three building sub-types via its Scope of
+Work checkboxes), the MPDO Locational Clearance form, and the BFP FSEC and FSIC
+forms — plus a checklist PDF per type. Applicants who want to prepare offline,
+or who are helping a professional fill the paper form, have no access to any of
+it from the app.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Bundle the same PDFs and expose them from the pre-flight screen and the
+permit catalog: “View the official form” and “View the checklist”.</li>
+<li>Where the admin has no genuine Castilla form for a type — Architectural,
+Interior Design, Sign, Demolition, Certificate of Occupancy — say the template
+is a reference rather than the official form. Do not present a placeholder as
+an LGU document.</li>
+<li>Reuse the existing document preview screen; do not add a second viewer.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Every permit type with a bundled form can open it without leaving the app.</li>
+<li>Reference-only templates are labelled as such.</li>
+<li>A type with no form shows no broken link.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">11</span><span class="t">Contact verification</span></div>
+<div class="tabmeta"><b>Closes</b> G-16 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p>The admin models an applicant’s contact verification with four methods —
+email verification link, mobile OTP, manual administrator confirmation, and
+verified-document matching — and four statuses. The app registers an account
+and verifies nothing, so the office cannot rely on the contact details it will
+use to send every notice.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Show verification state on the profile, per channel, honestly: an
+unverified mobile number says Unverified.</li>
+<li>Offer the two applicant-driven methods (email link, mobile OTP) and handle
+the failure state, which the admin models explicitly.</li>
+<li>Do not gate existing functionality behind verification in this TAB —
+that is a product decision, recorded not taken.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Profile shows per-channel verification status.</li>
+<li>A failed verification is distinguishable from an unattempted one.</li>
+<li>Verification requests survive a failed network call — see X3.</li>
+</ul>
+
+<div class="callout warn">
+<strong>Backend hand-off.</strong> Email links and OTP cannot be completed
+front-end-only. This TAB builds the states, the screens and the honest
+reporting; the sending and checking is a backend item and must be recorded as
+one rather than mocked into looking finished.
+</div>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">12</span><span class="t">Citizen’s Charter coverage</span></div>
+<div class="tabmeta"><b>Closes</b> G-17 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+
+<h4>Why</h4>
+<p>The app’s Citizen’s Charter — which the pre-flight screen reads to tell an
+applicant how many documents they will need — covers <strong>five</strong>
+permit types: New Construction, Renovation, Addition / Extension, Demolition,
+and Certificate of Occupancy. The catalog has nineteen. For fourteen permit
+types the app cannot answer “what will this take”.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Extend the charter to all 19 types, sourced from the TAB 01 catalog so the
+two cannot disagree.</li>
+<li>Keep the RA 11032 processing-day pledge per type, and the working-day
+engine already built for it.</li>
+<li>Where a type’s requirements are still provisional, the charter says so.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>All 19 types have a charter entry; a test asserts the count matches the catalog.</li>
+<li>Pre-flight gives a document count for every type.</li>
+<li>Charter requirement counts are derived, never retyped.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">13</span><span class="t">Notification alignment</span></div>
+<div class="tabmeta"><b>Supports</b> G-01…G-05 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p2">P2</span></div>
+
+<h4>Why</h4>
+<p>The admin generates notifications from domain mutations, so every one
+references a real application. The app has its own catalog and its own
+evaluator for conditions it can derive locally. The new states introduced by
+TABs 02, 06 and 07 — document rejected, payment rejected, OR issued,
+assessment superseded — need notifications, or the applicant only finds out by
+opening the app and looking.</p>
+
+<h4>Build</h4>
+<ul>
+<li>Add notification types for each new applicant-actionable state, with stable
+dedupe keys in the pattern already established.</li>
+<li>Keep the read / resolved distinction: a notice about a rejected document is
+resolved when the document is resubmitted, not when it is read.</li>
+<li>Respect quiet hours as the existing evaluator does.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Every new state has a notification with a stable dedupe key.</li>
+<li>Resolving the underlying condition resolves the notice.</li>
+<li>No notification references an application that does not exist.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">14</span><span class="t">Renewal &amp; amendment</span></div>
+<div class="tabmeta"><b>Closes</b> G-20 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p2">P2</span></div>
+
+<h4>Why</h4>
+<p>Both lines carry New / Renewal / Amendment as a type, and every permit
+except the Certificate of Occupancy expires — six or twelve months. The app
+files everything as New. An applicant with an expiring Fencing Permit has no
+renewal path, and one correcting a filed application has no amendment path.</p>
+
+<h4>Build</h4>
+<ul>
+<li>A renewal flow that starts from an existing issued permit and carries
+forward what does not change.</li>
+<li>An amendment flow that references the application being amended.</li>
+<li>Prompt renewal from the expiry warning built in TAB 09.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>A renewal files with action Renewal and references the prior permit.</li>
+<li>An amendment references the amended application.</li>
+<li>Renewal is reachable from the expiring permit, not only from the catalog.</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="tabhead"><span class="n">15</span><span class="t">Closing certification</span></div>
+<div class="tabmeta"><b>Verifies</b> TABs 00–14 · <span class="tag tag-ops">Programme</span></div>
+
+<h4>Build</h4>
+<ul>
+<li>Re-run the full comparison that produced this document, against the admin
+line as it stands on the day, and record what has drifted since 25 August.</li>
+<li>A standing parity test: permit types, document statuses, payment statuses
+and assessment statuses each asserted against a fixture taken from the admin
+source, so the next divergence fails a test rather than reaching an applicant.</li>
+<li>A closing verdict — CERTIFIED or NOT CERTIFIED — with every open gap named,
+its reason, and whether it is front-end, backend or a decision.</li>
+</ul>
+
+<h4>Acceptance</h4>
+<ul class="ac">
+<li>Every G-## is closed, or open with a stated reason and an owner.</li>
+<li>The parity fixtures are dated and their source commit recorded.</li>
+<li>Backend-dependent items are recorded for the backend lane, not left implied.</li>
+</ul>
+</div>
+
+<!-- ============================ §4 ============================ -->
+<div class="section">
+<h2>4 · Cross-cutting requirements</h2>
+<p class="lead">These hold for every TAB. They are drawn from defects this
+codebase has already produced, not from general principle.</p>
+
+<h3>X1 · One definition, imported everywhere</h3>
+<p>This app has repeatedly grown a shared widget and then not reached for it:
+a wizard header copied sixteen times, a status badge hand-rolled five times, a
+responsive grid adopted by one screen of two, a confirmation screen copied
+fifteen times. Every TAB that introduces a shape used more than once must put
+it in one place and add an architecture test that fails on a copy.</p>
+
+<h3>X2 · Accessibility is not a later pass</h3>
+<p>Every new screen enters the existing suites: 100%, 200% text scale, 320dp,
+the 48dp touch floor, and the clipping check. The app clamps text scale at
+2.0 precisely because that is the ceiling everything is tested at; a new screen
+that fails at 2.0 lowers what the app can honestly offer.</p>
+
+<h3>X3 · Failure is a state, not an exception</h3>
+<p>Every read shows a distinct failure state rather than an empty one — “you
+have no documents” is a claim about the applicant’s records and must not be
+made because a request timed out. Every write reports its failure, leaves the
+applicant’s work intact, and offers a retry. Every <code>await</code> followed
+by <code>setState</code> checks <code>mounted</code> first.</p>
+
+<h3>X4 · Say what is provisional</h3>
+<p>The admin’s catalog distinguishes national-law-verified requirements from
+Castilla-official-form-verified ones from pending placeholders. Carry that
+distinction to the applicant. A requirement the LGU has not confirmed must not
+be presented in the same voice as PD 1096.</p>
+
+<h3>X5 · Record the backend hand-offs</h3>
+<p>Several gaps cannot close front-end-only: contact verification needs a
+sender and a checker; official receipts, rejection reasons and per-document
+statuses need server fields to carry them. Build the states and the screens,
+drive them from the mock, and record each server dependency explicitly. Do not
+mock a thing into looking finished.</p>
+
+<h2 style="margin-top:22px">5 · Sources</h2>
+<table>
+<tr><th>Artefact</th><th>Where</th></tr>
+<tr><td>Admin permit types, release model</td><td><code>core/domain/permit.model.ts</code></td></tr>
+<tr><td>Requirements catalog (894 lines, 19 entries)</td><td><code>core/domain/requirements-catalog.ts</code></td></tr>
+<tr><td>Lifecycle, evaluation, payment statuses</td><td><code>core/domain/status.model.ts</code></td></tr>
+<tr><td>Document statuses &amp; history</td><td><code>core/domain/document.model.ts</code></td></tr>
+<tr><td>Assessment versioning &amp; line items</td><td><code>core/domain/assessment.model.ts</code></td></tr>
+<tr><td>Payment transactions, receipts, adjustments</td><td><code>core/domain/payment.model.ts</code></td></tr>
+<tr><td>Applicant contact verification</td><td><code>core/domain/applicant.model.ts</code></td></tr>
+<tr><td>Official form &amp; checklist PDFs</td><td><code>core/domain/permit-form-templates.ts</code></td></tr>
+<tr><td>Admin routes &amp; pages</td><td><code>src/app/app.routes.ts</code>, <code>src/app/pages/</code></td></tr>
+<tr><td>Mobile line compared</td><td><code>eBPCO-Mobile-App</code> at <code>f603f53</code></td></tr>
+</table>
+
+<div class="callout law" style="margin-top:14px">
+<strong>Philippine basis carried through.</strong> PD 1096 (National Building
+Code), RA 11032 (Ease of Doing Business — 3/7/20 working days, Citizen’s
+Charter, zero contact), RA 9514 (Fire Code — FSEC/FSIC), Amended JMC 2021-01
+(unified forms, joint inspections), RA 10173 (Data Privacy), RA 8792
+(E-Commerce Act — functional equivalence, notarised documents excluded).
+Castilla-specific requirements come from the LGU’s own forms as transcribed in
+the admin catalog, and carry that catalog’s verification status.
+</div>
+</div>
+
+</body>
+</html>
