@@ -34,13 +34,10 @@ import '../support/wizard_providers.dart';
 /// a notification about an application the server has since dropped, or a link
 /// shared from another account.
 
+/// Routes a signed-in applicant can reach. The auth routes are not among
+/// them: the router deliberately bounces a signed-in user off /login and
+/// friends to /app/home, which is correct and is asserted separately below.
 const _paths = <String>[
-  '/splash',
-  '/onboarding',
-  '/login',
-  '/register',
-  '/forgot-password',
-  '/registration-success',
   '/business',
   '/business/register',
   '/business/does-not-exist',
@@ -130,6 +127,14 @@ Widget _app(AuthProvider auth, GoRouter router) {
   );
 }
 
+/// Routes reachable only before signing in — onboarding done, no session.
+const _preAuthPaths = <String>[
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/registration-success',
+];
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
@@ -140,26 +145,32 @@ void main() {
       addTearDown(tester.view.reset);
 
       final auth = AuthProvider();
-      // Signed in first. The router redirects every location to /splash while
-      // AuthStatus is unknown, so without this the whole sweep renders the
-      // splash screen fifty times and passes no matter what is behind those
-      // routes.
+      final router = AppRouter.build(auth);
+
+      // Mounted first, then signed in. The router redirects every location to
+      // /splash while AuthStatus is unknown, so without a session the whole
+      // sweep renders the splash screen fifty times and passes no matter what
+      // is behind those routes.
+      //
+      // The sign-in has to be pumped rather than plainly awaited: the mock
+      // repository answers after a Future.delayed, and awaiting one inside
+      // testWidgets without advancing the test clock hangs for ever.
+      await tester.pumpWidget(_app(auth, router));
+      await tester.pump();
+
       await auth.loadSession();
       await auth.completeOnboarding();
-      await auth.login(
+      final signIn = auth.login(
         email: AppStrings.mockEmail,
         password: AppStrings.mockPassword,
         rememberMe: false,
       );
-      expect(auth.isLoggedIn, isTrue, reason: 'the sweep needs a session');
-
-      // One router, mounted and then driven — building a second and calling
-      // `go` on it would navigate nothing and pass regardless.
-      final router = AppRouter.build(auth);
-
-      await tester.pumpWidget(_app(auth, router));
+      await tester.pump(const Duration(seconds: 2));
+      await signIn;
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
+
+      expect(auth.isLoggedIn, isTrue, reason: 'the sweep needs a session');
 
       router.go(path);
       await tester.pump();
@@ -181,4 +192,75 @@ void main() {
       );
     });
   }
+  for (final path in _preAuthPaths) {
+    testWidgets('$path renders for a signed-out applicant', (tester) async {
+      tester.view.physicalSize = const Size(400, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final auth = AuthProvider();
+      final router = AppRouter.build(auth);
+      await tester.pumpWidget(_app(auth, router));
+      await tester.pump();
+
+      // Onboarding done, but no session — the state the sign-in screens exist
+      // for. Without completing onboarding the router sends everything to
+      // /onboarding instead.
+      await auth.loadSession();
+      await auth.completeOnboarding();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+
+      router.go(path);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+
+      expect(
+        router.routerDelegate.currentConfiguration.uri.path,
+        path,
+        reason: '$path should be reachable when signed out',
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('a signed-in applicant is kept out of the sign-in screens', (
+    tester,
+  ) async {
+    // The other half of the contract, and the reason the auth routes are not
+    // in the main sweep: a session should send them to the app, not the login
+    // form. Asserted rather than assumed, because it is also what made an
+    // earlier version of this sweep vacuous.
+    tester.view.physicalSize = const Size(400, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    final auth = AuthProvider();
+    final router = AppRouter.build(auth);
+    await tester.pumpWidget(_app(auth, router));
+    await tester.pump();
+
+    await auth.loadSession();
+    await auth.completeOnboarding();
+    final signIn = auth.login(
+      email: AppStrings.mockEmail,
+      password: AppStrings.mockPassword,
+      rememberMe: false,
+    );
+    await tester.pump(const Duration(seconds: 2));
+    await signIn;
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+
+    for (final path in [..._preAuthPaths, '/splash', '/onboarding']) {
+      router.go(path);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+      expect(
+        router.routerDelegate.currentConfiguration.uri.path,
+        '/app/home',
+        reason: '$path should redirect a signed-in applicant to the app',
+      );
+    }
+  });
 }
