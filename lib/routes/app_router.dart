@@ -71,6 +71,8 @@ import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/terms_conditions_screen.dart';
 import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/presentation/splash_screen.dart';
+import '../features/applications/presentation/zoning_clearance/zoning_clearance_wizard_screen.dart';
+import '../features/applications/presentation/zoning_clearance/zoning_clearance_submitted_screen.dart';
 
 /// Builds the application's [GoRouter] configuration. A single router
 /// instance is created for the app's lifetime and driven by [authProvider]
@@ -415,6 +417,23 @@ class AppRouter {
               relatedBuildingPermitStatus:
                   extra?['relatedBuildingPermitStatus'] as String? ??
                       'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/zoning-clearance',
+          builder: (context, state) => const ZoningClearanceWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/zoning-clearance/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return ZoningClearanceSubmittedScreen(
+              applicationId: extra?['applicationId'] as String?,
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'ZON-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
             );
           },
         ),

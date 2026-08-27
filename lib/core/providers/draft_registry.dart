@@ -18,6 +18,7 @@ import 'fencing_permit_provider.dart';
 import 'sign_permit_provider.dart';
 import 'excavation_permit_provider.dart';
 import 'certificate_of_occupancy_provider.dart';
+import 'zoning_permit_provider.dart';
 
 /// Collects every wizard's draft in one place.
 ///
@@ -48,6 +49,7 @@ class DraftRegistry {
     context.read<SignPermitProvider>(),
     context.read<ExcavationPermitProvider>(),
     context.read<CertificateOfOccupancyProvider>(),
+    context.read<ZoningPermitProvider>(),
   ];
 
   /// The drafts that currently exist. Wizards with nothing resumable return

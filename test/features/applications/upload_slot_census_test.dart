@@ -127,6 +127,9 @@ import 'package:ebpco_user_app/features/applications/presentation/fencing_permit
     as w9s9;
 import 'package:ebpco_user_app/features/applications/presentation/excavation_permit/steps/step3_construction_location.dart'
     as w8s9;
+import 'package:ebpco_user_app/core/models/zoning_permit_model.dart' as mz;
+import 'package:ebpco_user_app/features/applications/presentation/zoning_clearance/steps/step4_required_documents.dart'
+    as wz;
 
 /// How many documents each wizard actually asks an applicant to upload.
 ///
@@ -153,6 +156,7 @@ const _expected = <String, int>{
   'architectural_permit': 29,
   'building_permit': 22,
   'certificate_of_occupancy': 13,
+  'zoning_clearance': 16,
   'civil_structural_permit': 61,
   'demolition_permit': 33,
   'electrical_permit': 51,
@@ -168,6 +172,16 @@ const _expected = <String, int>{
 };
 
 final _wizards = <String, List<Widget Function()> Function()>{
+  'zoning_clearance': () {
+    final draft = mz.ZoningPermitDraft();
+    return <Widget Function()>[
+      () => wz.Step4RequiredDocuments(
+        formKey: GlobalKey<FormState>(),
+        draft: draft,
+        onChanged: () {},
+      ),
+    ];
+  },
   'addition_extension_permit': () {
     final draft = m0.AdditionExtensionPermitDraft();
     return <Widget Function()>[

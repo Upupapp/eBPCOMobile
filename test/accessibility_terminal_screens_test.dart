@@ -29,6 +29,7 @@ import 'package:ebpco_user_app/features/documents/presentation/document_preview_
 import 'package:ebpco_user_app/features/splash/presentation/splash_screen.dart';
 
 import 'support/clipping.dart';
+import 'package:ebpco_user_app/features/applications/presentation/zoning_clearance/zoning_clearance_submitted_screen.dart';
 
 /// The last screens with no accessibility coverage: the sixteen terminal
 /// confirmation pages one per permit type, plus splash and document preview.
@@ -136,6 +137,10 @@ final _screens = <String, Widget Function()>{
     submissionDate: _submissionDate,
     relatedBuildingPermitNumber: _relatedNumber,
     relatedBuildingPermitStatus: _relatedStatus,
+  ),
+  'ZoningClearance': () => ZoningClearanceSubmittedScreen(
+    referenceNumber: _reference,
+    submissionDate: _submissionDate,
   ),
   'Splash': () => const SplashScreen(),
   'DocumentPreview': () =>

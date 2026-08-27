@@ -17,6 +17,7 @@ import 'package:ebpco_user_app/core/providers/plumbing_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/renovation_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/sanitary_plumbing_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/sign_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/zoning_permit_provider.dart';
 
 /// Every wizard provider, for tests that mount something reading
 /// `DraftRegistry`.
@@ -74,5 +75,8 @@ List<SingleChildWidget> wizardProviders() => [
   ),
   ChangeNotifierProvider<CertificateOfOccupancyProvider>(
     create: (_) => CertificateOfOccupancyProvider(),
+  ),
+  ChangeNotifierProvider<ZoningPermitProvider>(
+    create: (_) => ZoningPermitProvider(),
   ),
 ];

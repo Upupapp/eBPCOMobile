@@ -106,6 +106,15 @@ class ApplicationsScreen extends StatelessWidget {
 
   static const _ancillaryPermitOptions = [
     _PermitOption(
+      icon: Icons.map_outlined,
+      title: 'Zoning / Locational Clearance',
+      canonical: CanonicalPermitType.zoningLocationalClearance,
+      description:
+          'Confirms your proposed use is allowed on the lot. Most other '
+          'permits ask for this first. Issued by the MPDO.',
+      routePath: '/applications/new/zoning-clearance',
+    ),
+    _PermitOption(
       icon: Icons.architecture_outlined,
       title: 'Architectural',
       canonical: CanonicalPermitType.architecturalPermit,
