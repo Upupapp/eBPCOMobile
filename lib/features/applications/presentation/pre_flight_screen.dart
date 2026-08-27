@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/contract/requirements_catalog.dart';
 import '../../../core/models/citizens_charter.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -48,6 +49,9 @@ class _PreFlightScreenState extends State<PreFlightScreen> {
   @override
   Widget build(BuildContext context) {
     final charter = charterFor(widget.permitType);
+    // Null for a permit type the catalog does not name — the screen still
+    // works, it simply says less, rather than failing on an unmapped type.
+    final requirements = requirementsForLabel(widget.permitType);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -94,6 +98,38 @@ class _PreFlightScreenState extends State<PreFlightScreen> {
             ),
 
             const SizedBox(height: AppSpacing.xl),
+            // The office's own answer to "what does this take", from the
+            // requirements catalog mirrored off the admin portal. Shown before
+            // the applicant starts rather than discovered at the upload step.
+            if (requirements != null) ...[
+              _CatalogFact(
+                label: 'Official form',
+                value: requirements.requiredForm,
+              ),
+              _CatalogFact(
+                label: 'Documents required',
+                value:
+                    '${requirements.requiredDocumentCount} required'
+                    '${requirements.documents.length > requirements.requiredDocumentCount ? ', ${requirements.documents.length - requirements.requiredDocumentCount} more if they apply' : ''}',
+              ),
+              _CatalogFact(
+                label: 'Valid for',
+                value: requirements.validityMonths == null
+                    ? 'No fixed expiry'
+                    : '${requirements.validityMonths} months from issuance',
+              ),
+              if (!requirements.verified)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: Text(
+                    'These requirements follow national practice and are still '
+                    'being confirmed against the LGU’s own form. Check with the '
+                    'office before securing anything costly.',
+                    style: AppTypography.helper,
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.md),
+            ],
             Text(
               'You will need ${charter.requirements.length} documents in total. '
               'See the Citizen’s Charter for the full list and where to secure '
@@ -306,6 +342,29 @@ class _Guidance extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One fact from the requirements catalog, above the fold on pre-flight.
+class _CatalogFact extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _CatalogFact({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: AppTypography.caption),
+          const SizedBox(height: 2),
+          Text(value, style: AppTypography.bodyStrong),
         ],
       ),
     );
