@@ -38,9 +38,19 @@ void main() {
         final body = match.group(1)!;
         final isPill = body.contains('borderRadiusPill');
         final crowdsATitle = body.contains('Expanded(');
-        final usesSharedWidget = body.contains('StatusBadge');
 
-        if (isPill && crowdsATitle && !usesSharedWidget) {
+        // No `!body.contains('StatusBadge')` exemption. It was here, and it
+        // was a hole: a Row that hand-rolls a pill *beside* an existing
+        // StatusBadge contains both, so the exemption skipped exactly the
+        // case most likely to arise — someone adding a second badge next to
+        // the first. Found by injecting that violation and watching this test
+        // stay green.
+        //
+        // The exemption was never needed either: code that uses StatusBadge
+        // does not write `borderRadiusPill`, because the widget owns its own
+        // radius. Presence of the constant in a Row body means someone built
+        // the pill by hand.
+        if (isPill && crowdsATitle) {
           final line =
               '\n'.allMatches(source.substring(0, match.start)).length + 1;
           offenders.add('${file.path}:$line');
