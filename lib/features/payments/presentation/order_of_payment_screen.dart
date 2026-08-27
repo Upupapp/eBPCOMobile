@@ -66,9 +66,13 @@ class OrderOfPaymentScreen extends StatelessWidget {
           children: [
             _OrderHeader(application: application, order: order),
             const SizedBox(height: AppSpacing.lg),
-            _FeeBreakdown(order: order),
+            _FeeBreakdown(order: order, payment: payment),
             const SizedBox(height: AppSpacing.lg),
-            _StatusPanel(payment: payment!),
+            if (payment!.rejectedTransactions.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _RejectedPayments(payments: payment.rejectedTransactions),
+            ],
+            _StatusPanel(payment: payment),
             const SizedBox(height: AppSpacing.lg),
             if (payment.status == PaymentAssessmentStatus.notYetAvailable ||
                 payment.status == PaymentAssessmentStatus.overdue)
@@ -128,8 +132,9 @@ class _OrderHeader extends StatelessWidget {
 
 class _FeeBreakdown extends StatelessWidget {
   final OrderOfPayment order;
+  final PaymentAssessmentModel? payment;
 
-  const _FeeBreakdown({required this.order});
+  const _FeeBreakdown({required this.order, this.payment});
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +175,27 @@ class _FeeBreakdown extends StatelessWidget {
             label: Text('Total', style: AppTypography.cardTitle),
             amount: Text(order.total.formatted, style: AppTypography.cardTitle),
           ),
+          // Shown only once something has actually been accepted. A "Paid:
+          // ₱0.00 / Balance: ₱x" on an untouched assessment is noise dressed
+          // as information.
+          if ((payment?.amountPaid.centavos ?? 0) > 0) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AmountRow(
+              label: Text('Paid', style: AppTypography.body),
+              amount: Text(
+                payment!.amountPaid.formatted,
+                style: AppTypography.bodyStrong,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            AmountRow(
+              label: Text('Balance due', style: AppTypography.cardTitle),
+              amount: Text(
+                payment!.balanceDue?.formatted ?? '—',
+                style: AppTypography.cardTitle,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -207,10 +233,7 @@ class _FeeRowState extends State<_FeeRow> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                      child: Text(
-                        widget.line.label,
-                        style: AppTypography.body,
-                      ),
+                      child: Text(widget.line.label, style: AppTypography.body),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Icon(
@@ -261,6 +284,12 @@ class _StatusPanel extends StatelessWidget {
             'Verified'
             '${payment.verifiedAt != null ? ' ${format.format(payment.verifiedAt!)}' : ''}.'
             '${payment.officialReceiptNumber != null ? ' Official receipt ${payment.officialReceiptNumber}.' : ''}';
+      case PaymentAssessmentStatus.partiallyPaid:
+        final balance = payment.balanceDue;
+        body =
+            'Part of this assessment has been settled. '
+            '${payment.amountPaid.formatted} received'
+            '${balance != null ? ', ${balance.formatted} still due' : ''}.';
       case PaymentAssessmentStatus.overdue:
         body =
             'Past due. Unpaid applications may lapse — settle this as soon as '
@@ -379,6 +408,72 @@ class _MethodCard extends StatelessWidget {
                 Text(body, style: AppTypography.bodyMuted),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Payments the office turned back, and why.
+///
+/// Before this the applicant could see that a payment was "Pending
+/// Verification" and then, at some point, that it was not. The reason the
+/// office recorded against it had nowhere to appear, so the applicant could
+/// not tell whether to send the same proof again, a different one, or a
+/// different amount.
+class _RejectedPayments extends StatelessWidget {
+  final List<PaymentTransactionRecord> payments;
+
+  const _RejectedPayments({required this.payments});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = DateFormat('MMM d, yyyy');
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.statusRejectedBg,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            payments.length == 1
+                ? 'A payment was not accepted'
+                : '${payments.length} payments were not accepted',
+            style: AppTypography.cardTitle.copyWith(
+              color: AppColors.statusRejected,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          for (final payment in payments) ...[
+            AmountRow(
+              label: Text(
+                '${payment.method.label} · ${format.format(payment.submittedAt)}',
+                style: AppTypography.body,
+              ),
+              amount: Text(
+                payment.amount.formatted,
+                style: AppTypography.bodyStrong,
+              ),
+            ),
+            if (payment.reference.trim().isNotEmpty)
+              Text('Ref. ${payment.reference}', style: AppTypography.helper),
+            if (payment.rejectionReason != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.xs),
+                child: Text(
+                  payment.rejectionReason!,
+                  style: AppTypography.body,
+                ),
+              ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+          Text(
+            'This amount has not been credited to your assessment.',
+            style: AppTypography.helper,
           ),
         ],
       ),
