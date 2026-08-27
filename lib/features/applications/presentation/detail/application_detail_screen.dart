@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/application_detail.dart';
 import '../../../../core/models/application_model.dart';
+import '../../../../core/models/document_model.dart';
 import '../../../../core/models/lifecycle_status.dart';
 import '../../../../core/models/payment_assessment_model.dart';
 import '../../../../core/models/permit_classification.dart';
@@ -264,29 +266,147 @@ class _DocumentList extends StatelessWidget {
     if (application.documents.isEmpty) {
       return Text('No documents attached.', style: AppTypography.bodyMuted);
     }
+
+    // Anything the applicant has to act on goes first. A document turned back
+    // for revision, sitting eleventh in submission order, is a document the
+    // applicant does not know about.
+    final documents = [...application.documents]
+      ..sort((a, b) {
+        if (a.needsApplicantAction == b.needsApplicantAction) return 0;
+        return a.needsApplicantAction ? -1 : 1;
+      });
+
     return Column(
       children: [
-        for (final document in application.documents)
+        for (final document in documents)
           Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.description_outlined,
-                  size: 20,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(document.label, style: AppTypography.body),
-                      Text(document.fileName, style: AppTypography.helper),
-                    ],
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: _DocumentRow(document: document),
+          ),
+      ],
+    );
+  }
+}
+
+/// One submitted document, and whatever the office has said about it.
+class _DocumentRow extends StatelessWidget {
+  final DocumentModel document;
+
+  const _DocumentRow({required this.document});
+
+  ({Color colour, Color background, String label}) get _statusStyle {
+    if (document.isExpired) {
+      return (
+        colour: AppColors.statusRejected,
+        background: AppColors.statusRejectedBg,
+        label: 'Expired',
+      );
+    }
+    return switch (document.status) {
+      DocumentStatus.accepted => (
+        colour: AppColors.statusApproved,
+        background: AppColors.statusApprovedBg,
+        label: 'Accepted',
+      ),
+      DocumentStatus.rejected => (
+        colour: AppColors.statusRejected,
+        background: AppColors.statusRejectedBg,
+        label: 'Rejected',
+      ),
+      DocumentStatus.revisionRequired => (
+        colour: AppColors.statusPending,
+        background: AppColors.statusPendingBg,
+        label: 'Revision required',
+      ),
+      DocumentStatus.underReview => (
+        colour: AppColors.statusInfo,
+        background: AppColors.surfaceMuted,
+        label: 'Under review',
+      ),
+      DocumentStatus.submitted => (
+        colour: AppColors.textSecondary,
+        background: AppColors.surfaceMuted,
+        label: 'Submitted',
+      ),
+      DocumentStatus.uploaded => (
+        colour: AppColors.textSecondary,
+        background: AppColors.surfaceMuted,
+        label: 'Uploaded',
+      ),
+      DocumentStatus.missing => (
+        colour: AppColors.statusPending,
+        background: AppColors.statusPendingBg,
+        label: 'Missing',
+      ),
+      DocumentStatus.expired || null => (
+        colour: AppColors.textSecondary,
+        background: AppColors.surfaceMuted,
+        label: 'Not yet reviewed',
+      ),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _statusStyle;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              document.needsApplicantAction
+                  ? Icons.error_outline
+                  : Icons.description_outlined,
+              size: 20,
+              color: document.needsApplicantAction
+                  ? AppColors.statusRejected
+                  : AppColors.textSecondary,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(document.label, style: AppTypography.body),
+                  Text(document.fileName, style: AppTypography.helper),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Flexible(
+              child: StatusBadge(
+                label: style.label,
+                color: style.colour,
+                backgroundColor: style.background,
+              ),
+            ),
+          ],
+        ),
+        // The evaluator's own words, in full. A status without the reason
+        // tells the applicant to guess at what to change.
+        if (document.remarks != null && document.remarks!.trim().isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(left: 36, top: AppSpacing.xs),
+            child: Text(document.remarks!, style: AppTypography.bodyMuted),
+          ),
+        if (document.issuingOffice != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 36, top: 2),
+            child: Text(
+              'Issued by ${document.issuingOffice}',
+              style: AppTypography.helper,
+            ),
+          ),
+        if (document.history.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(left: 36, top: 2),
+            child: Text(
+              document.history.length == 1
+                  ? '1 earlier submission'
+                  : '${document.history.length} earlier submissions',
+              style: AppTypography.helper,
             ),
           ),
       ],
