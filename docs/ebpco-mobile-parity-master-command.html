@@ -95,7 +95,7 @@ tr:nth-child(even) td { background: #FAFAFA; }
       <div><span>Mobile line</span>eBPCO-Mobile-App · <code>f603f53</code></div>
       <div><span>Admin line swept</span>Upupapp/eBPCO-Web · <code>e3cd7c3</code></div>
       <div><span>TABs</span>16</div>
-      <div><span>Gaps</span>21</div>
+      <div><span>Gaps</span>20 (of 21 raised)</div>
     </div>
   </div>
 </div>
@@ -247,7 +247,7 @@ either codebase can currently tell you which.</p>
 <!-- ============================ §3 ============================ -->
 <div class="section">
 <h2>3 · Gap register</h2>
-<p class="lead">Twenty-one gaps, each traced to the admin file that defines it
+<p class="lead">Twenty gaps that stand, plus one withdrawn on inspection, each traced to the admin file that defines it
 and the mobile file that would carry it. Severity is the applicant’s exposure,
 not the size of the work.</p>
 
@@ -262,8 +262,8 @@ not the size of the work.</p>
 <tr><td>G-07</td><td>FSEC cannot be filed</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p0">P0</span></td><td>04</td></tr>
 <tr><td>G-08</td><td>FSIC cannot be filed</td><td><code>ALL_PERMIT_TYPES</code></td><td><span class="tag tag-p0">P0</span></td><td>05</td></tr>
 <tr><td>G-09</td><td>No requirements catalog — 16 hardcoded lists that can drift</td><td><code>requirements-catalog.ts</code> (894 lines)</td><td><span class="tag tag-p1">P1</span></td><td>01</td></tr>
-<tr><td>G-10</td><td>Permit validity / expiry not shown to the applicant</td><td><code>validityMonths</code>, <code>GeneratedPermit.expiryDate</code></td><td><span class="tag tag-p1">P1</span></td><td>09</td></tr>
-<tr><td>G-11</td><td>Release method &amp; claimant not modelled — admin’s own comment confirms</td><td><code>PermitReleaseRecord</code></td><td><span class="tag tag-p1">P1</span></td><td>09</td></tr>
+<tr><td>G-10</td><td>Permit validity / expiry absent — mobile models PD 1096 commencement only, and assumes 12 months for every type</td><td><code>validityMonths</code> (6 / 12 / null)</td><td><span class="tag tag-p1">P1</span></td><td>09</td></tr>
+<tr><td>G-11</td><td><s>Release method &amp; claimant not modelled</s> — <strong>WITHDRAWN, see §3.1</strong>. Mobile models release more fully than the admin does on the applicant’s side.</td><td>—</td><td><span class="tag tag-ops">n/a</span></td><td>—</td></tr>
 <tr><td>G-12</td><td>Collecting agency (OBO/LGU vs BFP) not distinguished</td><td><code>CollectingAgency</code></td><td><span class="tag tag-p1">P1</span></td><td>07</td></tr>
 <tr><td>G-13</td><td>Assessment supersession invisible — a revised assessment looks like the first</td><td><code>AssessmentStatus</code> ‘Superseded’</td><td><span class="tag tag-p1">P1</span></td><td>08</td></tr>
 <tr><td>G-14</td><td>Fee line items not itemised from a versioned assessment</td><td><code>AssessmentLineItem</code></td><td><span class="tag tag-p1">P1</span></td><td>08</td></tr>
@@ -285,6 +285,36 @@ RA 11032 the processing clock does not stop because the applicant was never
 informed.
 </div>
 </div>
+
+<h3 style="margin-top:20px">3.1 · One gap withdrawn, and why it matters</h3>
+<p><strong>G-11 was wrong and is withdrawn.</strong> It claimed mobile does not
+model permit release, citing a comment in the admin’s own
+<code>permit.model.ts</code>: “the mobile app itself has not implemented a
+releasing-officer/claimant/release-method model yet (its ApplicationModel only
+stamps permitNumber + issuedDate on release)”.</p>
+
+<p>That comment is true of the <em>vendor’s</em> mobile copy. It is not true of
+this line. <code>ReleaseRecord</code> in <code>application_detail.dart</code>
+carries status, method, claimant, released-at, <em>and</em> claim location,
+office hours and what to bring — the last three having no counterpart in the
+admin at all. On the applicant’s side this app is ahead, not behind.</p>
+
+<div class="callout stop">
+<strong>The lesson, which this document nearly published as a work item.</strong>
+The two lines diverged on 19 August. A comment in one describing “the mobile
+app” describes <em>its</em> mobile app. Every claim about what this line lacks
+must be checked against this line’s source, not against the other line’s
+commentary about it — including claims found in a file otherwise being used as
+the authority.
+</div>
+
+<p>What survives, sharpened: mobile computes <code>commenceByDate</code> as
+issue + 1 year, which is <strong>PD 1096’s commencement deadline</strong> — the
+year in which work must start — and is correct. It is <em>not</em> permit
+validity. The catalog gives validity per type as 6 months, 12 months, or none
+at all for the Certificate of Occupancy. Mobile has no expiry field and no
+per-type validity, and the two concepts must not be merged when TAB 09 adds
+one.</p>
 
 <!-- ============================ PHASE A ============================ -->
 <div class="section">
@@ -637,42 +667,47 @@ superseded version for comparison rather than discarding it.</li>
   that should have been available before they started.</div>
 </div>
 
-<div class="tabhead"><span class="n">09</span><span class="t">Release, claim &amp; validity</span></div>
-<div class="tabmeta"><b>Closes</b> G-10, G-11 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
+<div class="tabhead"><span class="n">09</span><span class="t">Permit validity &amp; expiry</span></div>
+<div class="tabmeta"><b>Closes</b> G-10 · <b>G-11 withdrawn</b> · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
 
 <h4>Why</h4>
-<p>The admin records a full release: releasing officer, claimant name, release
-method (<strong>Physical Claim</strong> or <strong>Authorized
-Representative</strong>), and timestamp — and its source comment states
-outright that “the mobile app itself has not implemented a
-releasing-officer/claimant/release-method model yet (its ApplicationModel only
-stamps permitNumber + issuedDate on release)”. It also computes an
-<code>expiryDate</code> from the catalog’s validity rule.</p>
-<p>So the app can tell an applicant a permit was issued, but not when it
-expires, who may collect it, or what to bring.</p>
+<p>Every permit type except the Certificate of Occupancy expires — six months
+or twelve, per the catalog’s <code>validityMonths</code>. Mobile has no expiry
+at all. What it does have is <code>GeneratedPermit.commenceByDate</code>,
+computed as issue date plus one year, which is a different thing: PD 1096’s
+requirement that authorised work <em>commence</em> within a year or the permit
+is void.</p>
+
+<div class="callout law">
+<strong>Two deadlines, not one.</strong> Commencement (PD 1096, one year, already
+built and correct) and validity (per permit type, 6 or 12 months or none) are
+separate obligations with separate consequences. A Fencing Permit is valid six
+months but must be commenced within twelve — so its validity expires
+<em>first</em>. Merging them would tell the applicant the wrong date.
+</div>
 
 <h4>Build</h4>
 <ul>
-<li>Show the permit’s validity period and expiry date, with a warning as expiry
-approaches — the app already has this shape for the PD 1096 commencement
-deadline and should reuse it rather than invent a second one.</li>
-<li>Show release requirements and the release method, and let the applicant
-nominate an authorized representative from the representatives they already
-manage in the app.</li>
-<li>Record nothing the office has not confirmed: a claim the applicant intends
-is not a release that happened.</li>
+<li>Carry <code>validityMonths</code> from the TAB 01 catalog onto the issued
+permit and derive an expiry date from it. Null for Certificate of Occupancy —
+render “no fixed expiry”, not a blank.</li>
+<li>Show both dates where both apply, each labelled for what it is, and warn as
+each approaches. Reuse the existing warning-threshold constant rather than
+adding a second.</li>
+<li>Leave <code>ReleaseRecord</code> alone. It already carries more of what an
+applicant needs than the admin does; the only admin field it lacks is the
+releasing officer, which is staff-facing.</li>
 </ul>
 
 <h4>Acceptance</h4>
 <ul class="ac">
-<li>An issued permit shows issue date, expiry date and remaining validity.</li>
-<li>A Certificate of Occupancy shows no expiry, because its catalog validity is null.</li>
-<li>Nominating a representative reuses the existing representatives list.</li>
-<li>The expiry warning threshold is defined once and shared with the commencement warning.</li>
+<li>An issued permit shows its validity period and expiry date, derived from the catalog.</li>
+<li>A Certificate of Occupancy shows no expiry, because its validity is null.</li>
+<li>Commencement and expiry are separately labelled and never conflated.</li>
+<li>A test asserts a 6-month permit expires before its commencement deadline.</li>
 </ul>
 </div>
 
-<div class="section">
 <div class="tabhead"><span class="n">10</span><span class="t">Official forms &amp; checklists</span></div>
 <div class="tabmeta"><b>Closes</b> G-15 · <span class="tag tag-mob">Mobile FE</span> <span class="tag tag-p1">P1</span></div>
 
