@@ -1,99 +1,85 @@
 # Wizard upload slots vs the requirements catalog — 27 August 2026
 
-> **CORRECTION, same day. The per-wizard slot counts below are wrong and are
-> retained only as a record of how.** Counting upload slots by grepping for
-> `DocumentUploadTile(` undercounts every wizard that wraps the widget in a
-> local helper and calls that — the widget appears once in the source while
-> the slots number a dozen. Building Permit was reported as 5 slots; rendering
-> the step shows 12 in that step alone. A second attempt, following helper call
-> sites, over-counted just as badly (87 slots for Mechanical) by picking up
-> unrelated `label:` arguments.
->
-> **Three static counts, three wrong answers.** The reliable method is the one
-> used for the catalog itself: render the widgets and count them.
-> `test/features/applications/building_permit/required_documents_reconciliation_test.dart`
-> does that for Building Permit. The rest of this table needs the same
-> treatment before any of its numbers are acted on.
->
-> What survives the correction is the *shape* of the finding — the app and the
-> checklist disagree, in both directions, per permit type — and the conclusion
-> that reconciling is a per-document decision rather than a merge. Building
-> Permit has now been reconciled properly; see below.
+**Re-measured by rendering, 27 August.** Every earlier table in this file was
+wrong; see "How this was got wrong three times" at the end.
 
-Produced during TAB 01, by comparing every `DocumentUploadTile` in each wizard
-against the admin's `REQUIREMENTS_CATALOG` for that permit type.
+Slot counts come from `test/features/applications/upload_slot_census_test.dart`,
+which mounts every document-bearing step of every wizard and counts the
+`DocumentUploadTile`s in the tree. Catalog counts come from executing the
+admin's own `requirements-catalog.ts`. Both are now asserted by tests, so a
+slot that disappears is a failure rather than a later discovery.
 
-The catalog figures come from **executing** the admin's own
-`requirements-catalog.ts` (bundled with esbuild, run under node), not from
-reading it. Two earlier attempts to parse that file with regular expressions
-mis-assigned documents across spec boundaries and undercounted six permit
-types.
+| Wizard | Upload slots | Catalog docs | of which required | Slots − required | Catalog from a real LGU form |
+|---|---|---|---|---|---|
+| `excavation_permit` | 3 | 8 | 6 | -3 | — |
+| `fencing_permit` | 3 | 6 | 5 | -2 | — |
+| `certificate_of_occupancy` | 8 | 9 | 8 | +0 | — |
+| `building_permit` | 22 | 22 | 14 | +8 | yes |
+| `sign_permit` | 12 | 7 | 5 | +7 | — |
+| `electronics_permit` | 15 | 7 | 6 | +9 | — |
+| `interior_design_permit` | 27 | 7 | 6 | +21 | — |
+| `renovation_permit` | 30 | 9 | 7 | +23 | — |
+| `architectural_permit` | 29 | 7 | 6 | +23 | — |
+| `demolition_permit` | 33 | 9 | 7 | +26 | — |
+| `addition_extension_permit` | 36 | 9 | 8 | +28 | — |
+| `electrical_permit` | 51 | 7 | 6 | +45 | — |
+| `civil_structural_permit` | 61 | 8 | 7 | +54 | — |
+| `plumbing_permit` | 61 | 7 | 6 | +55 | — |
+| `sanitary_plumbing_permit` | 62 | 7 | 6 | +56 | — |
+| `mechanical_permit` | 78 | 7 | 6 | +72 | — |
 
-| Wizard | Upload slots | Catalog documents | of which required | Gap |
-|---|---|---|---|---|
-| `building_permit` | 5 | 22 | 14 | +17 |
-| `certificate_of_occupancy` | 2 | 9 | 8 | +7 |
-| `excavation_permit` | 4 | 8 | 6 | +4 |
-| `interior_design_permit` | 4 | 7 | 6 | +3 |
-| `sign_permit` | 4 | 7 | 5 | +3 |
-| `fencing_permit` | 4 | 6 | 5 | +2 |
-| `addition_extension_permit` | 8 | 9 | 8 | +1 |
-| `renovation_permit` | 8 | 9 | 7 | +1 |
-| `demolition_permit` | 13 | 9 | 7 | -4 |
-| `architectural_permit` | 12 | 7 | 6 | -5 |
-| `civil_structural_permit` | 13 | 8 | 7 | -5 |
-| `electronics_permit` | 13 | 7 | 6 | -6 |
-| `mechanical_permit` | 13 | 7 | 6 | -6 |
-| `plumbing_permit` | 13 | 7 | 6 | -6 |
-| `sanitary_plumbing_permit` | 13 | 7 | 6 | -6 |
-| `electrical_permit` | 16 | 7 | 6 | -9 |
-| **Total** | **145** | **136** | | |
+## What the measurement says
 
-## The totals agree and the details do not
+**Three wizards ask for less than the office requires.**
 
-145 slots against 136 catalog documents looks like near-parity. Per
-permit type it is nothing of the sort, and **the drift runs in both
-directions**.
+- `excavation_permit` — 3 slots against 6 required documents
+- `fencing_permit` — 3 against 5
+- `certificate_of_occupancy` — 8 against 8 required, but 9 in the catalog
 
-**The app asks for far less than the checklist.** Building Permit – New
-Construction has 5 upload slots against a 22-document official Castilla
-checklist, 14 of them required. Certificate of Occupancy has 2 against 9. An
-applicant who supplies everything the app asks for has not supplied everything
-the office needs, and will learn that after filing.
+These are the real under-collections, and the same failure Building Permit had
+before it was reconciled: an applicant supplies everything the app asks for and
+still has not supplied everything the office needs.
 
-**The app asks for more than the catalog lists.** Electrical has 16 slots
-against a 7-document entry; Mechanical, Plumbing, Sanitary, Electronics and
-Civil / Structural each have 13 against 7 or 8. Several of those wizards were
-built from the real trade-permit forms, which are more specific than the
-catalog's generic per-discipline entry.
+**Building Permit now matches exactly** — 22 slots against a 22-document
+checklist — following the reconciliation recorded below.
 
-## Why this was not fixed mechanically
+**The other twelve ask for far more than the catalog lists**, and mostly that
+is the catalog being thin rather than the app being wrong. Mechanical offers 78
+slots against a 7-document entry; Sanitary 62, Civil / Structural and Plumbing
+61, Electrical 51. Those wizards were built from the actual Castilla trade
+forms, which itemise per equipment type and per installation. The catalog's
+entries for them are the generic template — and the rightmost column shows it:
+only the entries built from a real LGU form are marked, and none of the trade
+permits are.
 
-TAB 01 says the wizards should derive their upload slots from the catalog. The
-catalog is now mirrored, tested and driving pre-flight — but rewiring the
-sixteen upload steps to it would, on these numbers, **delete real upload slots
-from nine wizards** and add unexplained ones to the rest.
+## What to do about it
 
-Neither side is simply right:
+**Reconcile the three under-collectors first.** Those are cases where the app
+is demonstrably short of a checklist that came from the LGU.
 
-- Where the app asks for less (Building Permit, Certificate of Occupancy,
-  Excavation, Fencing, Sign, Interior Design), the catalog is transcribed from
-  the LGU's own checklist and the app is under-collecting.
-- Where the app asks for more (the six trade permits), the app was built from
-  the actual trade-permit forms and the catalog's entry is the generic
-  template — `verified: false` on most of them says so.
+**Do not trim the over-collectors to match.** Where the catalog is unverified
+and the wizard came from a real form, the wizard is the better record. What
+those twelve need is the reverse flow: the catalog entry brought up to the
+wizard's specificity, which is a change to the admin portal and belongs to that
+lane.
 
-Reconciling a permit type means deciding, per document, which source is right.
-That is a question for the office, not a merge. Doing it silently would either
-drop documents an applicant must supply or demand ones they do not owe.
+## How this was got wrong three times
 
-## What to do with this
+Worth keeping, because the pattern was the same each time and the cost was
+real.
 
-One TAB per permit type, starting with the two where the app under-collects
-most — Building Permit (+17) and Certificate of Occupancy (+7) — each
-reconciling its slots against the catalog entry and recording the decision per
-document. The catalog's `verified` flag says which entries were built from a
-real Castilla form and can be trusted as-is.
+1. **Grepping `DocumentUploadTile(`** — undercounted every wizard that wraps
+   the widget in a helper. Building Permit read as 5 slots; it had 15.
+2. **Following helper call sites** — over-counted by picking up unrelated
+   `label:` arguments from text fields nearby. Mechanical read as 87.
+3. **Mounting the wizard and counting the tree** — returned 0 for everything,
+   because a `PageView` builds only its visible page.
+
+The method that worked was mounting each step individually and counting the
+rendered widgets. The same lesson the requirements catalog itself taught two
+hours earlier, when parsing its TypeScript twice gave two wrong answers and
+executing it gave the right one: **when a number matters, run the thing that
+produces it.**
 
 ---
 
