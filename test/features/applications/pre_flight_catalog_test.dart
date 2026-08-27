@@ -90,4 +90,22 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Official form'), findsNothing);
   });
+
+  testWidgets('the catalog facts appear for what the app actually passes', (
+    tester,
+  ) async {
+    // The regression that made this worth asserting: the catalog screen
+    // navigated with its own short display title ('New Construction'), while
+    // the catalog is keyed on the office's name. Every lookup missed, so these
+    // facts were invisible in the running app while this suite passed — it had
+    // been fed canonical strings the app never produced.
+    //
+    // _PermitOption.lookupKey now supplies the canonical name. This asserts the
+    // pairing at the value the navigation actually carries.
+    await _open(tester, CanonicalPermitType.buildingPermitNewConstruction.wire);
+
+    expect(find.text('Official form'), findsOneWidget);
+    expect(find.textContaining('Unified Building Permit Form'), findsOneWidget);
+    expect(find.textContaining('14 required'), findsOneWidget);
+  });
 }

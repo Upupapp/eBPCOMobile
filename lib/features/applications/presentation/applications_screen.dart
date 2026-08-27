@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/contract/admin_vocabulary.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/layout/responsive_card_grid.dart';
@@ -14,16 +15,35 @@ import 'widgets/before_you_start_card.dart';
 /// placeholder for a workflow that hasn't been built yet.
 class _PermitOption {
   final IconData icon;
+
+  /// The short name shown on the card.
   final String title;
+
   final String description;
   final String? routePath;
+
+  /// What the office calls this permit.
+  ///
+  /// The card says "New Construction"; the admin, the requirements catalog and
+  /// the Citizen's Charter all say "Building Permit – New Construction". Until
+  /// this existed the app navigated on the display title, so every lookup by
+  /// permit type missed and fell through to a generic answer — including the
+  /// catalog facts on the pre-flight screen, which never appeared at all.
+  ///
+  /// Null for the legacy Business Permit flow, which predates the construction
+  /// catalog and has no entry in it.
+  final CanonicalPermitType? canonical;
 
   const _PermitOption({
     required this.icon,
     required this.title,
     required this.description,
     this.routePath,
+    this.canonical,
   });
+
+  /// What to pass to anything that looks a permit up.
+  String get lookupKey => canonical?.wire ?? title;
 }
 
 /// Landing page for the "Applications" tab: a catalog of every permit type
@@ -53,6 +73,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.add_home_work_outlined,
       title: 'New Construction',
+      canonical: CanonicalPermitType.buildingPermitNewConstruction,
       description:
           'For building a completely new structure or property from the ground up, such as houses, commercial buildings, or facilities.',
       routePath: '/applications/new/building-permit',
@@ -60,6 +81,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.handyman_outlined,
       title: 'Renovation',
+      canonical: CanonicalPermitType.buildingPermitRenovationAlteration,
       description:
           'For improving, remodeling, or upgrading an existing structure without significantly increasing its size or floor area.',
       routePath: '/applications/new/renovation-permit',
@@ -67,6 +89,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.open_in_full_rounded,
       title: 'Addition / Extension',
+      canonical: CanonicalPermitType.buildingPermitAdditionExtension,
       description:
           'For adding new spaces or expanding parts of an existing building, such as additional rooms, floors, or attached structures.',
       routePath: '/applications/new/addition-extension-permit',
@@ -74,6 +97,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.domain_disabled_outlined,
       title: 'Demolition',
+      canonical: CanonicalPermitType.demolitionPermit,
       description:
           'For safely removing or tearing down an existing structure, building, or portion of a property.',
       routePath: '/applications/new/demolition-permit',
@@ -84,12 +108,14 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.architecture_outlined,
       title: 'Architectural',
+      canonical: CanonicalPermitType.architecturalPermit,
       description: 'For the architectural design and layout of the structure.',
       routePath: '/applications/new/architectural-permit',
     ),
     _PermitOption(
       icon: Icons.engineering_outlined,
       title: 'Civil / Structural',
+      canonical: CanonicalPermitType.civilStructuralPermit,
       description:
           'For the structural framework, foundation, and load-bearing design.',
       routePath: '/applications/new/civil-structural-permit',
@@ -97,12 +123,14 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.electrical_services_outlined,
       title: 'Electrical',
+      canonical: CanonicalPermitType.electricalPermit,
       description: 'For electrical wiring, distribution, and installation.',
       routePath: '/applications/new/electrical-permit',
     ),
     _PermitOption(
       icon: Icons.precision_manufacturing_outlined,
       title: 'Mechanical',
+      canonical: CanonicalPermitType.mechanicalPermit,
       description:
           'For mechanical systems such as HVAC and other equipment installations.',
       routePath: '/applications/new/mechanical-permit',
@@ -110,6 +138,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.plumbing_outlined,
       title: 'Sanitary / Plumbing',
+      canonical: CanonicalPermitType.sanitaryPermit,
       description:
           'For water supply, drainage, plumbing fixtures, and sanitary sewage disposal system installations.',
       routePath: '/applications/new/sanitary-plumbing-permit',
@@ -117,6 +146,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.water_damage_outlined,
       title: 'Plumbing',
+      canonical: CanonicalPermitType.plumbingPermit,
       description:
           'For plumbing fixtures, water distribution, sewage, septic tank, and storm drainage installations.',
       routePath: '/applications/new/plumbing-permit',
@@ -124,6 +154,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.memory_outlined,
       title: 'Electronics',
+      canonical: CanonicalPermitType.electronicsPermit,
       description:
           'For electronic systems such as fire alarms, CCTV, and communication wiring.',
       routePath: '/applications/new/electronics-permit',
@@ -131,6 +162,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.chair_outlined,
       title: 'Interior',
+      canonical: CanonicalPermitType.interiorDesignPermit,
       description: 'For interior design and fit-out of enclosed spaces.',
       routePath: '/applications/new/interior-design-permit',
     ),
@@ -140,6 +172,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.border_all_outlined,
       title: 'Fencing',
+      canonical: CanonicalPermitType.fencingPermit,
       description:
           'For construction of perimeter fences and walls around a property.',
       routePath: '/applications/new/fencing-permit',
@@ -147,6 +180,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.campaign_outlined,
       title: 'Sign Permit',
+      canonical: CanonicalPermitType.signPermit,
       description:
           'For installation of business signages, billboards, and similar structures.',
       routePath: '/applications/new/sign-permit',
@@ -154,6 +188,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.terrain_outlined,
       title: 'Excavation',
+      canonical: CanonicalPermitType.excavationPermit,
       description:
           'For ground excavation, earthworks, and site preparation activities.',
       routePath: '/applications/new/excavation-permit',
@@ -164,6 +199,7 @@ class ApplicationsScreen extends StatelessWidget {
     _PermitOption(
       icon: Icons.verified_outlined,
       title: 'Certificate of Occupancy',
+      canonical: CanonicalPermitType.certificateOfOccupancy,
       description:
           'Apply for a certificate of occupancy after building completion.',
       routePath: '/applications/new/certificate-of-occupancy',
@@ -189,7 +225,7 @@ class ApplicationsScreen extends StatelessWidget {
     // application, and asking them first costs a minute instead of an evening.
     context.push(
       '/applications/pre-flight'
-      '?permitType=${Uri.encodeQueryComponent(option.title)}'
+      '?permitType=${Uri.encodeQueryComponent(option.lookupKey)}'
       '&next=${Uri.encodeQueryComponent(routePath)}',
     );
   }

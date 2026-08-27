@@ -8,22 +8,29 @@ import 'package:ebpco_user_app/features/profile/presentation/citizens_charter_sc
 /// from the catalog widget so a permit added to one and not the other shows up
 /// as a failure here.
 const _catalogPermits = <String>[
-  'New Construction',
-  'Renovation',
-  'Addition / Extension',
-  'Demolition',
-  'Architectural',
-  'Civil / Structural',
-  'Electrical',
-  'Mechanical',
-  'Sanitary / Plumbing',
-  'Plumbing',
-  'Electronics',
-  'Interior',
-  'Fencing',
+  // The office's own names, not the app's short display titles. The charter is
+  // keyed on these because the requirements catalog and the admin portal both
+  // are; keying it on 'New Construction' meant every lookup by the office's
+  // name fell through to the generic ancillary entry.
+  'Building Permit – New Construction',
+  'Building Permit – Renovation / Alteration',
+  'Building Permit – Addition / Extension',
+  'Demolition Permit',
+  'Zoning / Locational Clearance',
+  'Architectural Permit',
+  'Civil / Structural Permit',
+  'Electrical Permit',
+  'Mechanical Permit',
+  'Sanitary Permit',
+  'Plumbing Permit',
+  'Electronics Permit',
+  'Interior Design Permit',
+  'Fencing Permit',
   'Sign Permit',
-  'Excavation',
+  'Excavation Permit',
+  'FSEC for Building Permit (BFP)',
   'Certificate of Occupancy',
+  'FSIC for Occupancy Permit (BFP)',
 ];
 
 void main() {
@@ -69,8 +76,17 @@ void main() {
       for (final permit in _catalogPermits) {
         final basis = charterFor(permit).feeBasis;
         expect(basis, isNot(contains('PHP')), reason: permit);
+
+        // Statute citations are not amounts. "Assessed under RA 9514" is the
+        // legal basis for the fee and is exactly the kind of thing an
+        // applicant should be told; a bare 9514 in a sentence about pesos is
+        // not. Strip the citations, then look for a figure.
+        final withoutCitations = basis.replaceAll(
+          RegExp(r'\b(RA|PD|BP|EO|JMC)\s*(No\.?\s*)?[\d-]+', caseSensitive: true),
+          '',
+        );
         expect(
-          RegExp(r'\d{3,}').hasMatch(basis),
+          RegExp(r'\d{3,}').hasMatch(withoutCitations),
           isFalse,
           reason: '$permit fee basis appears to quote an amount',
         );
@@ -81,7 +97,7 @@ void main() {
       'notarised requirements are flagged as needing a wet-signed original',
       () {
         final application = charterFor(
-          'New Construction',
+          'Building Permit – New Construction',
         ).requirements.firstWhere((r) => r.item.contains('Unified Building'));
         expect(application.requiresNotarisation, isTrue);
       },
@@ -119,12 +135,14 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: CitizensCharterScreen(permitType: 'New Construction'),
+          home: CitizensCharterScreen(
+            permitType: 'Building Permit – New Construction',
+          ),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('New Construction'), findsOneWidget);
+      expect(find.text('Building Permit – New Construction'), findsOneWidget);
       expect(find.text('Highly Technical · 20 working days'), findsOneWidget);
       expect(find.textContaining('schedule of fees'), findsWidgets);
       expect(find.textContaining('Land Registration Authority'), findsWidgets);
@@ -143,7 +161,9 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: CitizensCharterScreen(permitType: 'New Construction'),
+          home: CitizensCharterScreen(
+            permitType: 'Building Permit – New Construction',
+          ),
         ),
       );
       await tester.pumpAndSettle();

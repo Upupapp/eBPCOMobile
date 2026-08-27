@@ -64,12 +64,14 @@ const _commonRequirements = <CharterRequirement>[
     requiresNotarisation: true,
   ),
   CharterRequirement(
-    item: 'Proof of ownership — Certified True Copy of the Transfer '
+    item:
+        'Proof of ownership — Certified True Copy of the Transfer '
         'Certificate of Title',
     whereToSecure: 'Land Registration Authority / Registry of Deeds',
   ),
   CharterRequirement(
-    item: 'Additional legal document showing right to build, if you are not '
+    item:
+        'Additional legal document showing right to build, if you are not '
         'the registered owner',
     whereToSecure: 'Deed of sale, lease, or consent from the owner',
     requiresNotarisation: true,
@@ -87,7 +89,8 @@ const _commonRequirements = <CharterRequirement>[
     whereToSecure: 'City Assessor and City Treasurer',
   ),
   CharterRequirement(
-    item: 'Plans and technical documents, signed and dry-sealed by the '
+    item:
+        'Plans and technical documents, signed and dry-sealed by the '
         'licensed professional in charge',
     whereToSecure: 'Your architect or engineer',
   ),
@@ -110,8 +113,8 @@ const _fireSafety = CharterRequirement(
 /// pledge would have the app accuse the office of lateness it never promised
 /// against. The authoritative per-LGU values are M-08 in docs/MANUAL-TASKS.md.
 const citizensCharter = <String, CharterEntry>{
-  'New Construction': CharterEntry(
-    permitType: 'New Construction',
+  'Building Permit – New Construction': CharterEntry(
+    permitType: 'Building Permit – New Construction',
     classification: PermitClassification.highlyTechnical,
     offices: [
       'Office of the Building Official',
@@ -125,8 +128,8 @@ const citizensCharter = <String, CharterEntry>{
         'of fees of the National Building Code, based on floor area, '
         'occupancy, and the works covered.',
   ),
-  'Renovation': CharterEntry(
-    permitType: 'Renovation',
+  'Building Permit – Renovation / Alteration': CharterEntry(
+    permitType: 'Building Permit – Renovation / Alteration',
     classification: PermitClassification.complex,
     offices: [
       'Office of the Building Official',
@@ -145,8 +148,8 @@ const citizensCharter = <String, CharterEntry>{
         'Assessed under the National Building Code schedule of fees on the '
         'value and extent of the renovation works.',
   ),
-  'Addition / Extension': CharterEntry(
-    permitType: 'Addition / Extension',
+  'Building Permit – Addition / Extension': CharterEntry(
+    permitType: 'Building Permit – Addition / Extension',
     classification: PermitClassification.highlyTechnical,
     offices: [
       'Office of the Building Official',
@@ -158,7 +161,8 @@ const citizensCharter = <String, CharterEntry>{
       ..._commonRequirements,
       _fireSafety,
       CharterRequirement(
-        item: 'Previous Building Permit, Certificate of Occupancy, and '
+        item:
+            'Previous Building Permit, Certificate of Occupancy, and '
             'approved plans of the existing structure',
         whereToSecure: 'Your records, or the OBO Administrative Division',
       ),
@@ -167,8 +171,8 @@ const citizensCharter = <String, CharterEntry>{
         'Assessed on the added floor area and works under the National '
         'Building Code schedule of fees.',
   ),
-  'Demolition': CharterEntry(
-    permitType: 'Demolition',
+  'Demolition Permit': CharterEntry(
+    permitType: 'Demolition Permit',
     classification: PermitClassification.complex,
     offices: ['Office of the Building Official', 'City Treasurer'],
     requirements: [
@@ -197,25 +201,30 @@ const citizensCharter = <String, CharterEntry>{
     ],
     requirements: [
       CharterRequirement(
-        item: 'Duly accomplished Unified Application Form for Certificate of '
+        item:
+            'Duly accomplished Unified Application Form for Certificate of '
             'Occupancy',
         whereToSecure: 'Office of the Building Official, or this app',
         requiresNotarisation: true,
       ),
       CharterRequirement(
-        item: 'Certificate of Completion signed and sealed by the architect '
+        item:
+            'Certificate of Completion signed and sealed by the architect '
             'or civil engineer in charge of construction',
-        whereToSecure: 'Your professional, or the contractor’s Authorised '
+        whereToSecure:
+            'Your professional, or the contractor’s Authorised '
             'Managing Officer where the work was contracted',
         requiresNotarisation: true,
       ),
       CharterRequirement(
-        item: 'As-built plans where the finished work departs from the '
+        item:
+            'As-built plans where the finished work departs from the '
             'approved plans',
         whereToSecure: 'Your architect or engineer',
       ),
       CharterRequirement(
-        item: 'Completion forms for electrical, mechanical, and electronics '
+        item:
+            'Completion forms for electrical, mechanical, and electronics '
             'works, each signed and sealed',
         whereToSecure: 'The respective professional engineers',
       ),
@@ -228,7 +237,8 @@ const citizensCharter = <String, CharterEntry>{
         whereToSecure: 'Kept on site during construction',
       ),
       CharterRequirement(
-        item: 'Photographs of the completed structure — inside, front, sides, '
+        item:
+            'Photographs of the completed structure — inside, front, sides, '
             'and rear',
         whereToSecure: 'Taken by the applicant',
       ),
@@ -245,6 +255,64 @@ const citizensCharter = <String, CharterEntry>{
         'Assessed under the National Building Code schedule of fees on the '
         'floor area and occupancy of the completed building.',
   ),
+  // Not the Office of the Building Official. Routing an applicant to the OBO
+  // for any of these three sends them to the wrong counter — the requirements
+  // catalog puts Zoning with the MPDO and both fire clearances with the BFP,
+  // while the generic ancillary entry named the OBO for all of them.
+  'Zoning / Locational Clearance': CharterEntry(
+    permitType: 'Zoning / Locational Clearance',
+    classification: PermitClassification.complex,
+    offices: ['Municipal Planning and Development Office', 'City Treasurer'],
+    requirements: [
+      ..._commonRequirements,
+      CharterRequirement(
+        item: 'Notarized Letter Request addressed to the Zoning Administrator',
+        whereToSecure: 'Prepared by the applicant, notarised',
+        requiresNotarisation: true,
+      ),
+      CharterRequirement(
+        item: 'Site Development Plan, Vicinity Map and Sketch Plan',
+        whereToSecure: 'Your design professional',
+      ),
+      CharterRequirement(
+        item: 'Land Tax Receipt for the current year',
+        whereToSecure: 'Municipal Treasurer',
+      ),
+    ],
+    feeBasis:
+        'Assessed by the MPDO under the zoning ordinance on the area and use '
+        'applied for.',
+  ),
+  'FSEC for Building Permit (BFP)': CharterEntry(
+    permitType: 'FSEC for Building Permit (BFP)',
+    classification: PermitClassification.complex,
+    offices: ['Bureau of Fire Protection – Castilla Fire Station'],
+    requirements: [
+      ..._commonRequirements,
+      CharterRequirement(
+        item: 'Fire safety plans, signed and sealed',
+        whereToSecure: 'Your design professional',
+      ),
+    ],
+    feeBasis:
+        'Assessed by the Bureau of Fire Protection under the Fire Code and '
+        'collected by the Bureau, not by the LGU.',
+  ),
+  'FSIC for Occupancy Permit (BFP)': CharterEntry(
+    permitType: 'FSIC for Occupancy Permit (BFP)',
+    classification: PermitClassification.complex,
+    offices: ['Bureau of Fire Protection – Castilla Fire Station'],
+    requirements: [
+      ..._commonRequirements,
+      CharterRequirement(
+        item: 'Certificate of Completion and as-built fire safety plans',
+        whereToSecure: 'Your design professional',
+      ),
+    ],
+    feeBasis:
+        'Assessed by the Bureau of Fire Protection under the Fire Code and '
+        'collected by the Bureau, not by the LGU.',
+  ),
 };
 
 /// Ancillary and accessory permits share a shape, so their entries are
@@ -256,7 +324,8 @@ CharterEntry ancillaryCharterEntry(String permitType) => CharterEntry(
   requirements: [
     ..._commonRequirements,
     const CharterRequirement(
-      item: 'Parent Building Permit, where this is filed against an existing '
+      item:
+          'Parent Building Permit, where this is filed against an existing '
           'application',
       whereToSecure: 'Your records, or the OBO Administrative Division',
     ),
