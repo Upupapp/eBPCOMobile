@@ -20,13 +20,16 @@ void main() {
   test('no feature grid pins its cell height', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib/features')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.dart'))) {
+    for (final file
+        in Directory('lib/features')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))) {
       final lines = file.readAsStringSync().split('\n');
       for (var i = 0; i < lines.length; i++) {
-        if (RegExp(r'\b(mainAxisExtent|childAspectRatio):').hasMatch(lines[i])) {
+        if (RegExp(
+          r'\b(mainAxisExtent|childAspectRatio):',
+        ).hasMatch(lines[i])) {
           offenders.add('${file.path}:${i + 1}  ${lines[i].trim()}');
         }
       }

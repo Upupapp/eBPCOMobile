@@ -15,10 +15,12 @@ abstract class ApplicationsRepository {
     required String businessName,
     required ApplicationType type,
     required List<DocumentModel> documents,
+
     /// The permit's own name, e.g. "Fencing Permit". [ApplicationType] only
     /// distinguishes new/renewal/amendment, which is enough for a business
     /// permit and says nothing useful about a construction permit.
     String? permitTypeLabel,
+
     /// The reference the applicant was already shown on the confirmation
     /// screen. Passed in rather than generated so the number on that screen
     /// and the number in the list are the same number.
@@ -29,6 +31,17 @@ abstract class ApplicationsRepository {
     String applicationId, {
     required PaymentMethod method,
     DocumentModel? proof,
+  });
+
+  /// Replaces one document on a filed application with a newly supplied file.
+  ///
+  /// The office keeps every earlier submission, so this appends rather than
+  /// overwrites — an applicant who resubmits a rejected land title should not
+  /// lose the record of what was rejected, or why.
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
   });
 
   /// Moves the application to the next status in [applicationStatusSequence].
@@ -59,8 +72,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
     final sequence = (_applications.length + 1).toString().padLeft(6, '0');
     final application = ApplicationModel(
       id: 'app-${now.microsecondsSinceEpoch}',
-      applicationNumber:
-          applicationNumber ?? 'E-BPCO-${now.year}-$sequence',
+      applicationNumber: applicationNumber ?? 'E-BPCO-${now.year}-$sequence',
       businessId: businessId,
       businessName: businessName,
       permitTypeLabel: permitTypeLabel,
@@ -94,22 +106,52 @@ class MockApplicationsRepository implements ApplicationsRepository {
     final existing = application.payment;
     final updated = application.copyWith(
       status: ApplicationStatus.paymentVerification,
-      payment: (existing ??
-              const PaymentAssessmentModel(
-                status: PaymentAssessmentStatus.notYetAvailable,
-              ))
-          .copyWith(
-            status: PaymentAssessmentStatus.pending,
-            method: method,
-            proof: proof,
-            submittedAt: DateTime.now(),
-          ),
+      payment:
+          (existing ??
+                  const PaymentAssessmentModel(
+                    status: PaymentAssessmentStatus.notYetAvailable,
+                  ))
+              .copyWith(
+                status: PaymentAssessmentStatus.pending,
+                method: method,
+                proof: proof,
+                submittedAt: DateTime.now(),
+              ),
       statusHistory: [
         ...application.statusHistory,
         StatusHistoryEntry(
           status: ApplicationStatus.paymentVerification,
           timestamp: DateTime.now(),
         ),
+      ],
+    );
+    _applications[index] = updated;
+    return updated;
+  }
+
+  @override
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async {
+    await Future.delayed(AppConstants.mockNetworkDelay);
+    final index = _applications.indexWhere((a) => a.id == applicationId);
+    if (index < 0) {
+      throw StateError('No application $applicationId');
+    }
+    final application = _applications[index];
+    final updated = application.copyWith(
+      documents: [
+        for (final document in application.documents)
+          if (document.id == documentId)
+            document.resubmittedWith(
+              fileName: replacement.fileName,
+              submittedAt: replacement.uploadedAt,
+            )
+          else
+            document,
       ],
     );
     _applications[index] = updated;

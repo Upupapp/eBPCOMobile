@@ -48,24 +48,41 @@ void main() {
       expect(application.type, ApplicationType.newPermit);
     });
 
-    test('derives the applicant status from the lifecycle, never separately', () {
-      // Two fields that could disagree are two fields that eventually will.
-      final application = ApplicationDto.parse(
-        _payload(lifecycleStatus: 'Revision Required'),
-      );
+    test(
+      'derives the applicant status from the lifecycle, never separately',
+      () {
+        // Two fields that could disagree are two fields that eventually will.
+        final application = ApplicationDto.parse(
+          _payload(lifecycleStatus: 'Revision Required'),
+        );
 
-      expect(application.status, ApplicationStatus.underReview);
-      expect(application.applicantStatus, ApplicationStatus.underReview);
-      expect(application.requiresApplicantAction, isTrue);
-    });
+        expect(application.status, ApplicationStatus.underReview);
+        expect(application.applicantStatus, ApplicationStatus.underReview);
+        expect(application.requiresApplicantAction, isTrue);
+      },
+    );
 
     test('every one of the 19 admin labels round-trips', () {
       const labels = [
-        'Draft', 'Submitted', 'Received', 'Document Verification',
-        'Under Evaluation', 'Revision Required', 'Assessed',
-        'Payment Submitted', 'Payment Under Verification', 'Payment Verified',
-        'For Approval', 'Approved', 'Permit Generated', 'Ready for Release',
-        'Released', 'Completed', 'Rejected', 'Cancelled', 'Expired',
+        'Draft',
+        'Submitted',
+        'Received',
+        'Document Verification',
+        'Under Evaluation',
+        'Revision Required',
+        'Assessed',
+        'Payment Submitted',
+        'Payment Under Verification',
+        'Payment Verified',
+        'For Approval',
+        'Approved',
+        'Permit Generated',
+        'Ready for Release',
+        'Released',
+        'Completed',
+        'Rejected',
+        'Cancelled',
+        'Expired',
       ];
       expect(labels, hasLength(ApplicationLifecycleStatus.values.length));
 
@@ -76,9 +93,7 @@ void main() {
     });
 
     test('a classification the LGU has not set stays null', () {
-      final application = ApplicationDto.parse(
-        _payload(classification: null),
-      );
+      final application = ApplicationDto.parse(_payload(classification: null));
       // Which is what makes Home render "Awaiting classification" instead of
       // inventing a countdown.
       expect(application.classification, isNull);
@@ -197,74 +212,74 @@ void main() {
       );
     });
 
-    test('open instruction items are counted when the server omits the total', () {
-      final application = ApplicationDto.parse(
-        _payload(
-          instructions: [
-            {
-              'id': 'loi-1',
-              'issuedAt': '2026-08-05T00:00:00+08:00',
-              'issuedBy': 'Legal Evaluator',
-              'items': [
-                {
-                  'id': 'i1',
-                  'subject': 'Transfer Certificate of Title',
-                  'remark': 'Submit a Certified True Copy.',
-                },
-                {
-                  'id': 'i2',
-                  'subject': 'Structural plan',
-                  'remark': 'Must carry the dry seal.',
-                  'resolvedAt': '2026-08-06T00:00:00+08:00',
-                },
-              ],
-            },
-          ],
-        ),
-      );
+    test(
+      'open instruction items are counted when the server omits the total',
+      () {
+        final application = ApplicationDto.parse(
+          _payload(
+            instructions: [
+              {
+                'id': 'loi-1',
+                'issuedAt': '2026-08-05T00:00:00+08:00',
+                'issuedBy': 'Legal Evaluator',
+                'items': [
+                  {
+                    'id': 'i1',
+                    'subject': 'Transfer Certificate of Title',
+                    'remark': 'Submit a Certified True Copy.',
+                  },
+                  {
+                    'id': 'i2',
+                    'subject': 'Structural plan',
+                    'remark': 'Must carry the dry seal.',
+                    'resolvedAt': '2026-08-06T00:00:00+08:00',
+                  },
+                ],
+              },
+            ],
+          ),
+        );
 
-      expect(application.openInstructionCount, 1);
-      expect(application.openInstruction!.items, hasLength(2));
-      expect(application.openInstruction!.resolvedCount, 1);
-      expect(application.requiresApplicantAction, isTrue);
-      // Verbatim, as the evaluator wrote it.
-      expect(
-        application.openInstruction!.items.first.remark,
-        'Submit a Certified True Copy.',
-      );
-    });
+        expect(application.openInstructionCount, 1);
+        expect(application.openInstruction!.items, hasLength(2));
+        expect(application.openInstruction!.resolvedCount, 1);
+        expect(application.requiresApplicantAction, isTrue);
+        // Verbatim, as the evaluator wrote it.
+        expect(
+          application.openInstruction!.items.first.remark,
+          'Submit a Certified True Copy.',
+        );
+      },
+    );
 
-    test('the timeline is sorted oldest-first whatever order it arrives in', () {
-      final application = ApplicationDto.parse(
-        _payload(
-          timeline: [
-            {
-              'status': 'Under Evaluation',
-              'occurredAt': '2026-08-06T00:00:00+08:00',
-            },
-            {
-              'status': 'Submitted',
-              'occurredAt': '2026-08-03T00:00:00+08:00',
-            },
-            {
-              'status': 'Received',
-              'occurredAt': '2026-08-04T00:00:00+08:00',
-            },
-          ],
-        ),
-      );
+    test(
+      'the timeline is sorted oldest-first whatever order it arrives in',
+      () {
+        final application = ApplicationDto.parse(
+          _payload(
+            timeline: [
+              {
+                'status': 'Under Evaluation',
+                'occurredAt': '2026-08-06T00:00:00+08:00',
+              },
+              {
+                'status': 'Submitted',
+                'occurredAt': '2026-08-03T00:00:00+08:00',
+              },
+              {'status': 'Received', 'occurredAt': '2026-08-04T00:00:00+08:00'},
+            ],
+          ),
+        );
 
-      // The revision-loop rendering depends on chronology, so order is not
-      // left to the server's discretion.
-      expect(
-        application.timeline.map((e) => e.status).toList(),
-        [
+        // The revision-loop rendering depends on chronology, so order is not
+        // left to the server's discretion.
+        expect(application.timeline.map((e) => e.status).toList(), [
           ApplicationLifecycleStatus.submitted,
           ApplicationLifecycleStatus.received,
           ApplicationLifecycleStatus.underEvaluation,
-        ],
-      );
-    });
+        ]);
+      },
+    );
 
     test('evaluations sort into stage order', () {
       final application = ApplicationDto.parse(
@@ -276,14 +291,11 @@ void main() {
           ],
       );
 
-      expect(
-        application.evaluations.map((e) => e.stage).toList(),
-        [
-          EvaluationStage.initial,
-          EvaluationStage.fireSafety,
-          EvaluationStage.obo,
-        ],
-      );
+      expect(application.evaluations.map((e) => e.stage).toList(), [
+        EvaluationStage.initial,
+        EvaluationStage.fireSafety,
+        EvaluationStage.obo,
+      ]);
     });
 
     test('a permit carries its PD 1096 commencement deadline', () {

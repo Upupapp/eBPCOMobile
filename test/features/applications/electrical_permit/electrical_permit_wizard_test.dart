@@ -175,7 +175,10 @@ Future<void> _completeStep3(WidgetTester tester) async {
     'New Residential Electrical Installation',
   );
   await tester.enterText(
-    find.widgetWithText(TextFormField, 'General Description of Electrical Work *'),
+    find.widgetWithText(
+      TextFormField,
+      'General Description of Electrical Work *',
+    ),
     'Complete new electrical installation for a residential unit.',
   );
   await tester.enterText(
@@ -348,18 +351,17 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Type fixed to Electrical Permit',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Type fixed to Electrical Permit', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.text('Applicant Information'), findsOneWidget);
-      expect(find.text('Electrical Permit'), findsWidgets);
-    },
-  );
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.text('Applicant Information'), findsOneWidget);
+    expect(find.text('Electrical Permit'), findsWidgets);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 9, and Submit Application opens the confirmation screen with the pending Building Permit warning',
@@ -414,10 +416,7 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(
-        find.text('Electrical Application Submitted!'),
-        findsOneWidget,
-      );
+      expect(find.text('Electrical Application Submitted!'), findsOneWidget);
       expect(find.textContaining('ELE-'), findsOneWidget);
       expect(find.text('Not Required'), findsOneWidget);
     },

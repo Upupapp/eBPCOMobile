@@ -115,9 +115,7 @@ Future<void> _selectDropdown(
   int dropdownIndex,
   String optionLabel,
 ) async {
-  final dropdowns = find.byWidgetPredicate(
-    (w) => w is DropdownButtonFormField,
-  );
+  final dropdowns = find.byWidgetPredicate((w) => w is DropdownButtonFormField);
   await tester.ensureVisible(dropdowns.at(dropdownIndex));
   await tester.pumpAndSettle();
   await tester.tap(dropdowns.at(dropdownIndex));
@@ -394,17 +392,14 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Information heading',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Information heading', (tester) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 10'), findsOneWidget);
-      expect(find.text('Permit Information'), findsWidgets);
-    },
-  );
+    expect(find.text('Step 1 of 10'), findsOneWidget);
+    expect(find.text('Permit Information'), findsWidgets);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 10, and Submit Application opens the confirmation screen with the pending Building Permit warning',
@@ -623,26 +618,25 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Property owner "No" requires the Contract of Lease upload',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      await _completeStep5(tester);
+  testWidgets('Property owner "No" requires the Contract of Lease upload', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    await _completeStep5(tester);
 
-      final noButton = find.text('No');
-      await tester.ensureVisible(noButton);
-      await tester.pumpAndSettle();
-      await tester.tap(noButton);
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      expect(find.text('Contract of Lease'), findsOneWidget);
-    },
-  );
+    final noButton = find.text('No');
+    await tester.ensureVisible(noButton);
+    await tester.pumpAndSettle();
+    await tester.tap(noButton);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Contract of Lease'), findsOneWidget);
+  });
 
   testWidgets('Save as Draft works and preserves values', (tester) async {
     await _useTallSurface(tester);

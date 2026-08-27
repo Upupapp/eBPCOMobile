@@ -65,23 +65,26 @@ void main() {
     }
   });
 
-  test('no deep link points at a bare tab root when an application is known', () {
-    const tabRoots = {
-      '/app/home',
-      '/app/applications',
-      '/app/payments',
-      '/app/notifications',
-      '/app/profile',
-    };
-    for (final type in _catalog) {
-      final link = _event(type).deepLink;
-      expect(
-        tabRoots.contains(link),
-        isFalse,
-        reason: '${type.code} deep-links to the tab root $link',
-      );
-    }
-  });
+  test(
+    'no deep link points at a bare tab root when an application is known',
+    () {
+      const tabRoots = {
+        '/app/home',
+        '/app/applications',
+        '/app/payments',
+        '/app/notifications',
+        '/app/profile',
+      };
+      for (final type in _catalog) {
+        final link = _event(type).deepLink;
+        expect(
+          tabRoots.contains(link),
+          isFalse,
+          reason: '${type.code} deep-links to the tab root $link',
+        );
+      }
+    },
+  );
 
   test('the nine action-priority events are the ones demanding a response', () {
     final action = _catalog

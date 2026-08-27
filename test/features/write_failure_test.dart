@@ -50,6 +50,13 @@ class _ThrowingApplications implements ApplicationsRepository {
     DocumentModel? proof,
   }) async => throw _Offline();
   @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
+
+  @override
   Future<ApplicationModel> advanceStatus(String id) async => throw _Offline();
 }
 
@@ -123,8 +130,10 @@ void main() {
     );
     expect(tester.takeException(), isNull, reason: 'and not by throwing');
     expect(find.textContaining('Could not submit'), findsOneWidget);
-    expect(find.textContaining('nothing you entered has been lost'),
-        findsOneWidget);
+    expect(
+      find.textContaining('nothing you entered has been lost'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a failed business registration releases the button', (

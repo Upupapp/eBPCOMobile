@@ -6,17 +6,14 @@ import 'package:ebpco_user_app/core/models/draft_summary.dart';
 
 void main() {
   group('DraftSummary', () {
-    DraftSummary summary({
-      DateTime? saved,
-      int completed = 3,
-      int total = 9,
-    }) => DraftSummary(
-      permitTypeLabel: 'New Construction',
-      lastSavedAt: saved,
-      completedSteps: completed,
-      totalSteps: total,
-      route: '/applications/new/building-permit',
-    );
+    DraftSummary summary({DateTime? saved, int completed = 3, int total = 9}) =>
+        DraftSummary(
+          permitTypeLabel: 'New Construction',
+          lastSavedAt: saved,
+          completedSteps: completed,
+          totalSteps: total,
+          route: '/applications/new/building-permit',
+        );
 
     final asOf = DateTime(2026, 8, 19);
 

@@ -53,26 +53,30 @@ import 'support/clipping.dart';
 /// through a shared `ChangeNotifier` supertype does not work — the wizard
 /// looks up its concrete provider type and would not find it.
 final Map<String, Widget Function()> _wizards = {
-  'AdditionExtensionPermit': () => ChangeNotifierProvider<AdditionExtensionPermitProvider>(
-    create: (_) => AdditionExtensionPermitProvider(),
-    child: const AdditionExtensionPermitWizardScreen(),
-  ),
-  'ArchitecturalPermit': () => ChangeNotifierProvider<ArchitecturalPermitProvider>(
-    create: (_) => ArchitecturalPermitProvider(),
-    child: const ArchitecturalPermitWizardScreen(),
-  ),
+  'AdditionExtensionPermit': () =>
+      ChangeNotifierProvider<AdditionExtensionPermitProvider>(
+        create: (_) => AdditionExtensionPermitProvider(),
+        child: const AdditionExtensionPermitWizardScreen(),
+      ),
+  'ArchitecturalPermit': () =>
+      ChangeNotifierProvider<ArchitecturalPermitProvider>(
+        create: (_) => ArchitecturalPermitProvider(),
+        child: const ArchitecturalPermitWizardScreen(),
+      ),
   'BuildingPermit': () => ChangeNotifierProvider<BuildingPermitProvider>(
     create: (_) => BuildingPermitProvider(),
     child: const BuildingPermitWizardScreen(),
   ),
-  'CertificateOfOccupancy': () => ChangeNotifierProvider<CertificateOfOccupancyProvider>(
-    create: (_) => CertificateOfOccupancyProvider(),
-    child: const CertificateOfOccupancyWizardScreen(),
-  ),
-  'CivilStructuralPermit': () => ChangeNotifierProvider<CivilStructuralPermitProvider>(
-    create: (_) => CivilStructuralPermitProvider(),
-    child: const CivilStructuralPermitWizardScreen(),
-  ),
+  'CertificateOfOccupancy': () =>
+      ChangeNotifierProvider<CertificateOfOccupancyProvider>(
+        create: (_) => CertificateOfOccupancyProvider(),
+        child: const CertificateOfOccupancyWizardScreen(),
+      ),
+  'CivilStructuralPermit': () =>
+      ChangeNotifierProvider<CivilStructuralPermitProvider>(
+        create: (_) => CivilStructuralPermitProvider(),
+        child: const CivilStructuralPermitWizardScreen(),
+      ),
   'DemolitionPermit': () => ChangeNotifierProvider<DemolitionPermitProvider>(
     create: (_) => DemolitionPermitProvider(),
     child: const DemolitionPermitWizardScreen(),
@@ -93,10 +97,11 @@ final Map<String, Widget Function()> _wizards = {
     create: (_) => FencingPermitProvider(),
     child: const FencingPermitWizardScreen(),
   ),
-  'InteriorDesignPermit': () => ChangeNotifierProvider<InteriorDesignPermitProvider>(
-    create: (_) => InteriorDesignPermitProvider(),
-    child: const InteriorDesignPermitWizardScreen(),
-  ),
+  'InteriorDesignPermit': () =>
+      ChangeNotifierProvider<InteriorDesignPermitProvider>(
+        create: (_) => InteriorDesignPermitProvider(),
+        child: const InteriorDesignPermitWizardScreen(),
+      ),
   'MechanicalPermit': () => ChangeNotifierProvider<MechanicalPermitProvider>(
     create: (_) => MechanicalPermitProvider(),
     child: const MechanicalPermitWizardScreen(),
@@ -109,10 +114,11 @@ final Map<String, Widget Function()> _wizards = {
     create: (_) => RenovationPermitProvider(),
     child: const RenovationPermitWizardScreen(),
   ),
-  'SanitaryPlumbingPermit': () => ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(
-    create: (_) => SanitaryPlumbingPermitProvider(),
-    child: const SanitaryPlumbingPermitWizardScreen(),
-  ),
+  'SanitaryPlumbingPermit': () =>
+      ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(
+        create: (_) => SanitaryPlumbingPermitProvider(),
+        child: const SanitaryPlumbingPermitWizardScreen(),
+      ),
   'SignPermit': () => ChangeNotifierProvider<SignPermitProvider>(
     create: (_) => SignPermitProvider(),
     child: const SignPermitWizardScreen(),
@@ -204,5 +210,4 @@ void main() {
       });
     }
   });
-
 }

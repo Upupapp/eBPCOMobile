@@ -40,14 +40,13 @@ DocumentModel _document() => DocumentModel(
   uploadedAt: DateTime(2026, 8, 1),
 );
 
-Widget _wrap(ProfessionalsProvider provider) =>
-    ChangeNotifierProvider.value(
-      value: provider,
-      child: MaterialApp(
-        theme: AppTheme.lightTheme,
-        home: const ProfessionalsScreen(),
-      ),
-    );
+Widget _wrap(ProfessionalsProvider provider) => ChangeNotifierProvider.value(
+  value: provider,
+  child: MaterialApp(
+    theme: AppTheme.lightTheme,
+    home: const ProfessionalsScreen(),
+  ),
+);
 
 ProfessionalsProvider _provider({
   List<ProfessionalModel>? professionals,
@@ -89,11 +88,11 @@ void main() {
       await tester.pumpWidget(_wrap(_provider()));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Add the architect or engineer'), findsOneWidget);
       expect(
-        find.textContaining('only if someone else will'),
+        find.textContaining('Add the architect or engineer'),
         findsOneWidget,
       );
+      expect(find.textContaining('only if someone else will'), findsOneWidget);
     });
   });
 
@@ -136,8 +135,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('PRC expires in 44 days. Renew before your next filing.'),
-          findsOneWidget);
+      expect(
+        find.text('PRC expires in 44 days. Renew before your next filing.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('an expired licence says what it costs the applicant', (
@@ -160,7 +161,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('Plans signed and sealed under it will be returned'),
+        find.textContaining(
+          'Plans signed and sealed under it will be returned',
+        ),
         findsOneWidget,
       );
     });
@@ -182,10 +185,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('from a previous year'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('from a previous year'), findsOneWidget);
     });
 
     testWidgets('missing credential images are noted without blocking', (
@@ -256,7 +256,10 @@ void main() {
       expect(find.textContaining('Ready to act'), findsOneWidget);
       // Electronic copies do not replace the notarised original at the
       // counter, and the screen says so.
-      expect(find.textContaining('bring the original notarised'), findsOneWidget);
+      expect(
+        find.textContaining('bring the original notarised'),
+        findsOneWidget,
+      );
     });
   });
 
@@ -332,7 +335,11 @@ void main() {
     test('surfaces whoever needs attention, soonest first', () {
       final provider = _provider(
         professionals: [
-          _professional(id: 'a', name: 'Fine', prcValidity: DateTime(2028, 1, 1)),
+          _professional(
+            id: 'a',
+            name: 'Fine',
+            prcValidity: DateTime(2028, 1, 1),
+          ),
           _professional(
             id: 'b',
             name: 'Expired',
@@ -379,10 +386,9 @@ void main() {
         ],
       );
 
-      expect(
-        provider.representativesBlocked.map((r) => r.fullName).toList(),
-        ['Incomplete'],
-      );
+      expect(provider.representativesBlocked.map((r) => r.fullName).toList(), [
+        'Incomplete',
+      ]);
     });
   });
 }

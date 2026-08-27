@@ -16,7 +16,9 @@ import '../../../../core/providers/applications_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/badges/status_badge.dart';
+import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/states/empty_state.dart';
+import '../../../documents/presentation/widgets/attach_document_sheet.dart';
 import 'widgets/detail_action_banner.dart';
 import 'widgets/evaluation_section.dart';
 import 'widgets/inspection_section.dart';
@@ -281,7 +283,10 @@ class _DocumentList extends StatelessWidget {
         for (final document in documents)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: _DocumentRow(document: document),
+            child: _DocumentRow(
+              document: document,
+              applicationId: application.id,
+            ),
           ),
       ],
     );
@@ -291,8 +296,42 @@ class _DocumentList extends StatelessWidget {
 /// One submitted document, and whatever the office has said about it.
 class _DocumentRow extends StatelessWidget {
   final DocumentModel document;
+  final String applicationId;
 
-  const _DocumentRow({required this.document});
+  const _DocumentRow({required this.document, required this.applicationId});
+
+  /// Replaces a document the office turned back.
+  ///
+  /// Kept on this row rather than in a shared handler because the applicant is
+  /// replacing *this* requirement — the chooser is labelled with it, and the
+  /// result goes to its id.
+  Future<void> _resubmit(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final applications = context.read<ApplicationsProvider>();
+
+    final picked = await showAttachDocumentOptions(
+      context,
+      label: document.label,
+    );
+    if (picked == null) return;
+
+    final updated = await applications.resubmitDocument(
+      applicationId,
+      documentId: document.id,
+      replacement: picked,
+    );
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          updated == null
+              ? 'Could not send your replacement. Check your connection and '
+                    'try again — nothing you uploaded has been lost.'
+              : '${document.label} resubmitted.',
+        ),
+      ),
+    );
+  }
 
   ({Color colour, Color background, String label}) get _statusStyle {
     if (document.isExpired) {
@@ -390,6 +429,17 @@ class _DocumentRow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 36, top: AppSpacing.xs),
             child: Text(document.remarks!, style: AppTypography.bodyMuted),
+          ),
+        // Offered only where the office has actually asked for something
+        // different. A "Replace" button on an accepted document invites an
+        // applicant to undo work that was already approved.
+        if (document.needsApplicantAction)
+          Padding(
+            padding: const EdgeInsets.only(left: 36, top: AppSpacing.sm),
+            child: SecondaryButton(
+              label: 'Replace this document',
+              onPressed: () => _resubmit(context),
+            ),
           ),
         if (document.issuingOffice != null)
           Padding(

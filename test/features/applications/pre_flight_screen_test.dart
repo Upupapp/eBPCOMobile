@@ -26,13 +26,14 @@ Widget _wrap() {
       ),
     ],
   );
-  return MaterialApp.router(
-    theme: AppTheme.lightTheme,
-    routerConfig: router,
-  );
+  return MaterialApp.router(theme: AppTheme.lightTheme, routerConfig: router);
 }
 
-Future<void> _answer(WidgetTester tester, String question, String choice) async {
+Future<void> _answer(
+  WidgetTester tester,
+  String question,
+  String choice,
+) async {
   final card = find.ancestor(
     of: find.text(question),
     matching: find.byType(Container),
@@ -72,9 +73,8 @@ void main() {
     await tester.pumpWidget(_wrap());
     await tester.pumpAndSettle();
 
-    ElevatedButton primary() => tester.widget<ElevatedButton>(
-      find.byType(ElevatedButton).first,
-    );
+    ElevatedButton primary() =>
+        tester.widget<ElevatedButton>(find.byType(ElevatedButton).first);
 
     // Unanswered is not the same as "no" — an untouched question must not be
     // read as a missing prerequisite.

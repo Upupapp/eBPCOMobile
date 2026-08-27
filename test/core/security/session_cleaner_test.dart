@@ -25,7 +25,8 @@ void main() {
     if (cache.existsSync()) cache.deleteSync(recursive: true);
   });
 
-  SessionCleaner cleaner() => SessionCleaner(store, cache, SharedPreferences.getInstance);
+  SessionCleaner cleaner() =>
+      SessionCleaner(store, cache, SharedPreferences.getInstance);
 
   Future<void> seedASession() async {
     await store.save(accessToken: 'access-1', refreshToken: 'refresh-1');
@@ -35,8 +36,12 @@ void main() {
     await prefs.setString('last_application_id', 'BP-2026-000418');
     await prefs.setBool('onboarding_completed', true);
     await prefs.setString('preferred_language', 'en');
-    File('${cache.path}/tct-142-rizal-ext.pdf').writeAsStringSync('%PDF-1.4 title deed');
-    File('${cache.path}/permit-BP-2026-000418.pdf').writeAsStringSync('%PDF-1.4 signed permit');
+    File(
+      '${cache.path}/tct-142-rizal-ext.pdf',
+    ).writeAsStringSync('%PDF-1.4 title deed');
+    File(
+      '${cache.path}/permit-BP-2026-000418.pdf',
+    ).writeAsStringSync('%PDF-1.4 signed permit');
   }
 
   group('what sign-out removes', () {
@@ -72,17 +77,25 @@ void main() {
       expect(prefs.getBool('is_logged_in'), isNull);
     });
 
-    test('a key nobody thought about, because the list is an allow-list', () async {
-      // A deny-list would leave every key added later behind by default, and
-      // the thing forgotten would be somebody's data.
-      await seedASession();
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('some_future_key_with_a_name', 'Maria Santos');
+    test(
+      'a key nobody thought about, because the list is an allow-list',
+      () async {
+        // A deny-list would leave every key added later behind by default, and
+        // the thing forgotten would be somebody's data.
+        await seedASession();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('some_future_key_with_a_name', 'Maria Santos');
 
-      await cleaner().signOut();
+        await cleaner().signOut();
 
-      expect((await SharedPreferences.getInstance()).getString('some_future_key_with_a_name'), isNull);
-    });
+        expect(
+          (await SharedPreferences.getInstance()).getString(
+            'some_future_key_with_a_name',
+          ),
+          isNull,
+        );
+      },
+    );
 
     test('leaves nothing identifying anywhere in preferences', () async {
       await seedASession();
@@ -90,7 +103,10 @@ void main() {
       await cleaner().signOut();
 
       final prefs = await SharedPreferences.getInstance();
-      final remaining = prefs.getKeys().map((key) => '$key=${prefs.get(key)}').join(' ');
+      final remaining = prefs
+          .getKeys()
+          .map((key) => '$key=${prefs.get(key)}')
+          .join(' ');
 
       expect(remaining, isNot(contains('maria.santos')));
       expect(remaining, isNot(contains('BP-2026-000418')));
@@ -105,7 +121,10 @@ void main() {
 
       await cleaner().signOut();
 
-      expect((await SharedPreferences.getInstance()).getBool('onboarding_completed'), isTrue);
+      expect(
+        (await SharedPreferences.getInstance()).getBool('onboarding_completed'),
+        isTrue,
+      );
     });
 
     test('the chosen language', () async {
@@ -113,7 +132,10 @@ void main() {
 
       await cleaner().signOut();
 
-      expect((await SharedPreferences.getInstance()).getString('preferred_language'), 'en');
+      expect(
+        (await SharedPreferences.getInstance()).getString('preferred_language'),
+        'en',
+      );
     });
   });
 
@@ -142,7 +164,9 @@ void main() {
     test('clears nested directories, not only top-level files', () async {
       await seedASession();
       Directory('${cache.path}/BP-2026-000418').createSync();
-      File('${cache.path}/BP-2026-000418/id.jpg').writeAsStringSync('government ID');
+      File(
+        '${cache.path}/BP-2026-000418/id.jpg',
+      ).writeAsStringSync('government ID');
 
       await cleaner().signOut();
 

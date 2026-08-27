@@ -45,25 +45,30 @@ void main() {
       expect(
         contract['contractVersion'],
         '0.1.0',
-        reason: 'the contract moved; re-run scripts/sync_contract_fixtures.sh '
+        reason:
+            'the contract moved; re-run scripts/sync_contract_fixtures.sh '
             'and review what changed before updating this expectation',
       );
     });
 
-    test('every status the contract defines exists in this app, and vice versa',
-        () {
-      final contractLabels = rows.keys.toSet();
-      final appLabels =
-          ApplicationLifecycleStatus.values.map((s) => s.adminLabel).toSet();
+    test(
+      'every status the contract defines exists in this app, and vice versa',
+      () {
+        final contractLabels = rows.keys.toSet();
+        final appLabels = ApplicationLifecycleStatus.values
+            .map((s) => s.adminLabel)
+            .toSet();
 
-      expect(contractLabels.length, 19);
-      expect(
-        appLabels,
-        contractLabels,
-        reason: 'a status in only one of the two is a status the server can '
-            'send and this app will reject at runtime',
-      );
-    });
+        expect(contractLabels.length, 19);
+        expect(
+          appLabels,
+          contractLabels,
+          reason:
+              'a status in only one of the two is a status the server can '
+              'send and this app will reject at runtime',
+        );
+      },
+    );
 
     test('applicantStatus matches the contract for all 19 statuses', () {
       for (final entry in rows.entries) {
@@ -76,41 +81,53 @@ void main() {
       }
     });
 
-    test('requiresApplicantAction matches the contract for all 19 statuses', () {
-      for (final entry in rows.entries) {
-        final row = entry.value as Map<String, dynamic>;
-        expect(
-          byLabel(entry.key).requiresApplicantAction,
-          row['requiresApplicantAction'],
-          reason: '${entry.key}: whether the applicant is the one holding this '
-              'up is not a judgement two tiers may make separately',
-        );
-      }
-    });
+    test(
+      'requiresApplicantAction matches the contract for all 19 statuses',
+      () {
+        for (final entry in rows.entries) {
+          final row = entry.value as Map<String, dynamic>;
+          expect(
+            byLabel(entry.key).requiresApplicantAction,
+            row['requiresApplicantAction'],
+            reason:
+                '${entry.key}: whether the applicant is the one holding this '
+                'up is not a judgement two tiers may make separately',
+          );
+        }
+      },
+    );
 
     test('terminal matches the contract for all 19 statuses', () {
       for (final entry in rows.entries) {
         final row = entry.value as Map<String, dynamic>;
-        expect(byLabel(entry.key).isTerminal, row['terminal'],
-            reason: '${entry.key} disagrees on whether processing has ended');
-      }
-    });
-
-    test('pledgeApplies matches this app\'s isInFlight for all 19 statuses', () {
-      for (final entry in rows.entries) {
-        final row = entry.value as Map<String, dynamic>;
         expect(
-          byLabel(entry.key).isInFlight,
-          row['pledgeApplies'],
-          reason: '${entry.key}: showing an RA 11032 countdown where the LGU no '
-              'longer owes an act would assert a pledge that does not exist',
+          byLabel(entry.key).isTerminal,
+          row['terminal'],
+          reason: '${entry.key} disagrees on whether processing has ended',
         );
       }
     });
 
+    test(
+      'pledgeApplies matches this app\'s isInFlight for all 19 statuses',
+      () {
+        for (final entry in rows.entries) {
+          final row = entry.value as Map<String, dynamic>;
+          expect(
+            byLabel(entry.key).isInFlight,
+            row['pledgeApplies'],
+            reason:
+                '${entry.key}: showing an RA 11032 countdown where the LGU no '
+                'longer owes an act would assert a pledge that does not exist',
+          );
+        }
+      },
+    );
+
     test('the seven applicant-visible statuses match the contract', () {
-      final fromContract =
-          (contract['applicantStatuses'] as List).cast<String>().toSet();
+      final fromContract = (contract['applicantStatuses'] as List)
+          .cast<String>()
+          .toSet();
       final fromApp = ApplicationStatus.values.map((s) => s.label).toSet();
 
       expect(fromApp.length, 7);
@@ -122,21 +139,25 @@ void main() {
       // purpose: it renders a timeline, and a revision is a loop rather than a
       // position in the sequence.
       for (final status in lifecycleSequence) {
-        expect(rows.containsKey(status.adminLabel), isTrue,
-            reason: '${status.adminLabel} is in the timeline sequence but has '
-                'no projection row');
+        expect(
+          rows.containsKey(status.adminLabel),
+          isTrue,
+          reason:
+              '${status.adminLabel} is in the timeline sequence but has '
+              'no projection row',
+        );
       }
       expect(
         lifecycleSequence.map((s) => s.adminLabel),
         isNot(contains('Revision Required')),
-        reason: 'a revision loops back into evaluation; putting it in the '
+        reason:
+            'a revision loops back into evaluation; putting it in the '
             'sequence would draw it as another step forward',
       );
     });
 
     test('every legal transition names statuses both tiers know', () {
-      final transitions =
-          contract['validTransitions'] as Map<String, dynamic>;
+      final transitions = contract['validTransitions'] as Map<String, dynamic>;
       expect(transitions.keys.toSet(), rows.keys.toSet());
 
       for (final entry in transitions.entries) {
@@ -148,15 +169,15 @@ void main() {
     });
 
     test('terminal statuses have no onward transition', () {
-      final transitions =
-          contract['validTransitions'] as Map<String, dynamic>;
+      final transitions = contract['validTransitions'] as Map<String, dynamic>;
       for (final entry in rows.entries) {
         final row = entry.value as Map<String, dynamic>;
         if (row['terminal'] == true) {
           expect(
             transitions[entry.key],
             isEmpty,
-            reason: '${entry.key} is terminal but the contract permits a move '
+            reason:
+                '${entry.key} is terminal but the contract permits a move '
                 'out of it',
           );
         }

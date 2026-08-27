@@ -20,10 +20,11 @@ void main() {
   test('every wizard records its submission', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib/features/applications/presentation')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('_wizard_screen.dart'))) {
+    for (final file
+        in Directory('lib/features/applications/presentation')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('_wizard_screen.dart'))) {
       final source = file.readAsStringSync();
       if (!source.contains('_handleSubmit')) continue;
       if (source.contains('submitPermitApplication(')) continue;

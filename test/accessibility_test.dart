@@ -46,6 +46,12 @@ class _Applications implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -97,7 +103,10 @@ Widget _app(Widget home, {double textScale = 1.0}) {
         ),
       ),
       ChangeNotifierProvider<BusinessProvider>(
-        create: (context) => BusinessProvider(notifications: context.read<NotificationsProvider>(), repository: MockBusinessRepository()),
+        create: (context) => BusinessProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockBusinessRepository(),
+        ),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(
@@ -163,9 +172,12 @@ void _expectTouchTargets(WidgetTester tester) {
     final owners = <String>[];
     element.visitAncestorElements((ancestor) {
       final name = ancestor.widget.runtimeType.toString();
-      if (name.startsWith('_') || name.startsWith('App') ||
-          name.contains('Card') || name.contains('Tile') ||
-          name.contains('Button') || name.contains('Header')) {
+      if (name.startsWith('_') ||
+          name.startsWith('App') ||
+          name.contains('Card') ||
+          name.contains('Tile') ||
+          name.contains('Button') ||
+          name.contains('Header')) {
         owners.add(name);
       }
       return owners.length < 3;
@@ -204,7 +216,9 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
 
-      await tester.pumpWidget(_app(const NotificationsScreen(), textScale: 2.0));
+      await tester.pumpWidget(
+        _app(const NotificationsScreen(), textScale: 2.0),
+      );
       await _settle(tester);
 
       expect(tester.takeException(), isNull);
@@ -255,33 +269,34 @@ void main() {
   });
 
   group('screen reader labels', () {
-    testWidgets('an action card announces what is needed and for which application', (
-      tester,
-    ) async {
-      // Disposed inline rather than in a tearDown: flutter_test verifies no
-      // handle is outstanding *before* tearDowns run.
-      final handle = tester.ensureSemantics();
+    testWidgets(
+      'an action card announces what is needed and for which application',
+      (tester) async {
+        // Disposed inline rather than in a tearDown: flutter_test verifies no
+        // handle is outstanding *before* tearDowns run.
+        final handle = tester.ensureSemantics();
 
-      await tester.pumpWidget(_app(const DashboardScreen()));
-      await _settle(tester);
+        await tester.pumpWidget(_app(const DashboardScreen()));
+        await _settle(tester);
 
-      // The card is one semantic node carrying the whole message, rather than
-      // a scatter of unlabelled fragments a screen reader walks separately.
-      expect(
-        find.bySemanticsLabel(
-          RegExp(
-            r'Action required: Letter of Instruction issued.*'
-            r'E-BPCO-2026-000145',
-            dotAll: true,
+        // The card is one semantic node carrying the whole message, rather than
+        // a scatter of unlabelled fragments a screen reader walks separately.
+        expect(
+          find.bySemanticsLabel(
+            RegExp(
+              r'Action required: Letter of Instruction issued.*'
+              r'E-BPCO-2026-000145',
+              dotAll: true,
+            ),
           ),
-        ),
-        // A merged node and its parent can both carry the label; what matters
-        // is that a screen reader reaches it at all.
-        findsAtLeastNWidgets(1),
-      );
+          // A merged node and its parent can both carry the label; what matters
+          // is that a screen reader reaches it at all.
+          findsAtLeastNWidgets(1),
+        );
 
-      handle.dispose();
-    });
+        handle.dispose();
+      },
+    );
 
     testWidgets('the pledge countdown is announced in words, not just colour', (
       tester,

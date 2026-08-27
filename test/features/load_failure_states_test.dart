@@ -52,6 +52,13 @@ class _ThrowingApplications implements ApplicationsRepository {
     DocumentModel? proof,
   }) async => throw _Offline();
   @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
+
+  @override
   Future<ApplicationModel> advanceStatus(String applicationId) async =>
       throw _Offline();
 }
@@ -103,13 +110,10 @@ Widget _host(Widget screen) {
           repository: _ThrowingBusinesses(),
         ),
       ),
-          // Everything DraftRegistry looks up, for the Drafts segment.
+      // Everything DraftRegistry looks up, for the Drafts segment.
       ...wizardProviders(),
     ],
-    child: MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
-    ),
+    child: MaterialApp.router(theme: AppTheme.lightTheme, routerConfig: router),
   );
 }
 
@@ -158,8 +162,9 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<NotificationsProvider>(
-            create: (_) =>
-                NotificationsProvider(repository: MockNotificationsRepository()),
+            create: (_) => NotificationsProvider(
+              repository: MockNotificationsRepository(),
+            ),
           ),
         ],
         child: MaterialApp(

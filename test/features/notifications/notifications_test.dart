@@ -111,10 +111,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         _wrap([
-          _event(
-            NotificationType.letterOfInstructionIssued,
-            resolvedAt: _now,
-          ),
+          _event(NotificationType.letterOfInstructionIssued, resolvedAt: _now),
         ]),
       );
       await _settle(tester);
@@ -186,9 +183,7 @@ void main() {
       final provider = NotificationsProvider(
         repository: _FakeRepository(const []),
         clock: () => _now,
-        preferences: const NotificationPreferences(
-          paymentNotifications: false,
-        ),
+        preferences: const NotificationPreferences(paymentNotifications: false),
       );
 
       final event = provider.record(
@@ -264,7 +259,11 @@ void main() {
     testWidgets('unread-only hides what has been read', (tester) async {
       await tester.pumpWidget(
         _wrap([
-          _event(NotificationType.evaluationStagePassed, id: 'read', readAt: _now),
+          _event(
+            NotificationType.evaluationStagePassed,
+            id: 'read',
+            readAt: _now,
+          ),
           _event(
             NotificationType.approved,
             id: 'unread',

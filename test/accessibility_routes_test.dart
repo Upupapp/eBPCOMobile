@@ -66,9 +66,11 @@ final _screens = <String, Widget Function()>{
   // Applications
   'Applications': () => ApplicationsScreen(),
   'NewApplication': () => NewApplicationScreen(),
-  'LetterOfInstruction': () => LetterOfInstructionScreen(applicationId: 'app-seed-1'),
+  'LetterOfInstruction': () =>
+      LetterOfInstructionScreen(applicationId: 'app-seed-1'),
   'DigitalPermit': () => DigitalPermitScreen(applicationId: 'app-seed-1'),
-  'ApplicationOutcome': () => ApplicationOutcomeScreen(applicationId: 'app-seed-1'),
+  'ApplicationOutcome': () =>
+      ApplicationOutcomeScreen(applicationId: 'app-seed-1'),
 
   // Business
   'BusinessList': () => BusinessListScreen(),
@@ -109,7 +111,9 @@ Widget _host(Widget Function() build, double textScale) {
       ChangeNotifierProvider<NavigationProvider>(
         create: (_) => NavigationProvider(),
       ),
-      ChangeNotifierProvider<SettingsProvider>(create: (_) => SettingsProvider()),
+      ChangeNotifierProvider<SettingsProvider>(
+        create: (_) => SettingsProvider(),
+      ),
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),
@@ -239,5 +243,4 @@ void main() {
       });
     }
   });
-
 }

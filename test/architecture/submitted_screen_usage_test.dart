@@ -16,17 +16,20 @@ void main() {
   test('every submitted screen uses ApplicationSubmittedView', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib/features/applications/presentation')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('submitted_screen.dart'))) {
+    for (final file
+        in Directory('lib/features/applications/presentation')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('submitted_screen.dart'))) {
       final source = file.readAsStringSync();
       if (source.contains('ApplicationSubmittedView')) continue;
 
       // The Building Permit screen is the deliberate exception: its summary is
       // a single centred tracking number rather than a card of labelled facts,
       // and folding it in would change how it looks.
-      if (file.path.endsWith('building_permit/application_submitted_screen.dart')) {
+      if (file.path.endsWith(
+        'building_permit/application_submitted_screen.dart',
+      )) {
         continue;
       }
       offenders.add(file.path);

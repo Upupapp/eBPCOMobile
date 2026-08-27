@@ -15,6 +15,7 @@ import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/theme/app_theme.dart';
+import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_document_sheet.dart';
 import 'package:ebpco_user_app/features/applications/presentation/detail/application_detail_screen.dart';
 
 /// The applicant's side of a document review.
@@ -46,7 +47,32 @@ class _Repo implements ApplicationsRepository {
     DocumentModel? proof,
   }) => throw UnimplementedError();
   @override
-  Future<ApplicationModel> advanceStatus(String id) => throw UnimplementedError();
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async {
+    final index = applications.indexWhere((a) => a.id == applicationId);
+    final application = applications[index];
+    final updated = application.copyWith(
+      documents: [
+        for (final document in application.documents)
+          if (document.id == documentId)
+            document.resubmittedWith(
+              fileName: replacement.fileName,
+              submittedAt: replacement.uploadedAt,
+            )
+          else
+            document,
+      ],
+    );
+    applications[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<ApplicationModel> advanceStatus(String id) =>
+      throw UnimplementedError();
 }
 
 class _Notifs implements NotificationsRepository {
@@ -110,7 +136,8 @@ Future<void> _open(WidgetTester tester) async {
     routes: [
       GoRoute(
         path: '/detail',
-        builder: (_, _) => const ApplicationDetailScreen(applicationId: 'app-1'),
+        builder: (_, _) =>
+            const ApplicationDetailScreen(applicationId: 'app-1'),
       ),
       GoRoute(path: '/:a', builder: (_, _) => const Scaffold()),
       GoRoute(path: '/:a/:b', builder: (_, _) => const Scaffold()),
@@ -173,7 +200,8 @@ void main() {
     expect(
       landTitle.top,
       lessThan(plans.top),
-      reason: 'a rejected document eleventh in the list is one the applicant '
+      reason:
+          'a rejected document eleventh in the list is one the applicant '
           'does not know about',
     );
   });
@@ -186,5 +214,53 @@ void main() {
   testWidgets('the issuing office is named where known', (tester) async {
     await _open(tester);
     expect(find.text('Issued by Registry of Deeds'), findsOneWidget);
+  });
+
+  testWidgets('a rejected document can be replaced, and the screen follows', (
+    tester,
+  ) async {
+    // The whole point of surfacing the status: the applicant can do something
+    // about it without leaving the screen that told them.
+    debugAttachDocumentOverride = (context, {required String label}) async =>
+        DocumentModel(
+          id: 'replacement',
+          label: label,
+          fileName: 'land-title-certified.pdf',
+          uploadedAt: DateTime(2026, 8, 25),
+        );
+    addTearDown(() => debugAttachDocumentOverride = null);
+
+    await _open(tester);
+
+    expect(find.text('Rejected'), findsOneWidget);
+    final replace = find.text('Replace this document');
+    expect(replace, findsOneWidget, reason: 'only the rejected one offers it');
+
+    await tester.ensureVisible(replace);
+    await tester.tap(replace);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    expect(find.text('land-title-certified.pdf'), findsOneWidget);
+    expect(
+      find.text('Rejected'),
+      findsNothing,
+      reason: 'the replacement is a new submission, not the rejected one',
+    );
+    expect(
+      find.text('2 earlier submissions'),
+      findsOneWidget,
+      reason: 'the rejected version is kept, not overwritten',
+    );
+  });
+
+  testWidgets('only documents needing action offer a replace action', (
+    tester,
+  ) async {
+    // An accepted document with a Replace button invites an applicant to undo
+    // work the office already signed off.
+    await _open(tester);
+    expect(find.text('Replace this document'), findsOneWidget);
   });
 }

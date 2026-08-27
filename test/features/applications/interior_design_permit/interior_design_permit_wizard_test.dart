@@ -556,7 +556,7 @@ void main() {
       final copyButton = find.widgetWithText(
         OutlinedButton,
         'Use the same professional information as the Licensed Design '
-            'Professional',
+        'Professional',
       );
       await tester.ensureVisible(copyButton);
       await tester.pumpAndSettle();
@@ -577,41 +577,37 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Lot Ownership "No" reveals a separate Lot Owner section',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      await _completeStep5(tester);
+  testWidgets('Lot Ownership "No" reveals a separate Lot Owner section', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    await _completeStep5(tester);
 
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNull,
-      );
+    expect(tester.widget<ElevatedButton>(_continueButton()).onPressed, isNull);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Building Owner Full Name *'),
-        'Juan Dela Cruz',
-      );
-      await tester.pump();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Building Owner Full Name *'),
+      'Juan Dela Cruz',
+    );
+    await tester.pump();
 
-      final noButton = find.text('No');
-      await tester.ensureVisible(noButton);
-      await tester.pumpAndSettle();
-      await tester.tap(noButton);
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      expect(
-        find.widgetWithText(TextFormField, 'Lot Owner Full Name *'),
-        findsOneWidget,
-      );
-      expect(find.text('Lot Owner Consent'), findsOneWidget);
-    },
-  );
+    final noButton = find.text('No');
+    await tester.ensureVisible(noButton);
+    await tester.pumpAndSettle();
+    await tester.tap(noButton);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      find.widgetWithText(TextFormField, 'Lot Owner Full Name *'),
+      findsOneWidget,
+    );
+    expect(find.text('Lot Owner Consent'), findsOneWidget);
+  });
 
   testWidgets('Save as Draft works and preserves values', (tester) async {
     await _useTallSurface(tester);

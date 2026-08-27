@@ -58,9 +58,8 @@ final _screens = <String, Widget Function()>{
     relatedBuildingPermitNumber: _relatedNumber,
     relatedBuildingPermitStatus: _relatedStatus,
   ),
-  'BuildingPermit': () => const ApplicationSubmittedScreen(
-    trackingId: _reference,
-  ),
+  'BuildingPermit': () =>
+      const ApplicationSubmittedScreen(trackingId: _reference),
   'CertificateOfOccupancy': () => CertificateOfOccupancySubmittedScreen(
     referenceNumber: _reference,
     submissionDate: _submissionDate,
@@ -139,7 +138,8 @@ final _screens = <String, Widget Function()>{
     relatedBuildingPermitStatus: _relatedStatus,
   ),
   'Splash': () => const SplashScreen(),
-  'DocumentPreview': () => const DocumentPreviewScreen(documentId: 'doc-seed-1'),
+  'DocumentPreview': () =>
+      const DocumentPreviewScreen(documentId: 'doc-seed-1'),
 };
 
 Widget _host(Widget Function() build, double textScale) {
@@ -262,5 +262,4 @@ void main() {
       });
     }
   });
-
 }

@@ -192,7 +192,10 @@ void main() {
         httpClient: _FakeClient(status: 204, body: ''),
       );
 
-      expect(await api.post('/applications/a/instructions/l/resubmit'), isEmpty);
+      expect(
+        await api.post('/applications/a/instructions/l/resubmit'),
+        isEmpty,
+      );
     });
   });
 
@@ -201,16 +204,21 @@ void main() {
       for (final failure in ApiFailure.values) {
         final message = failure.applicantMessage;
         expect(message, isNotEmpty, reason: failure.name);
-        expect(RegExp(r'\b[45]\d\d\b').hasMatch(message), isFalse,
-            reason: '${failure.name} leaks a status code');
-        expect(message.toLowerCase(), isNot(contains('exception')),
-            reason: failure.name);
+        expect(
+          RegExp(r'\b[45]\d\d\b').hasMatch(message),
+          isFalse,
+          reason: '${failure.name} leaks a status code',
+        );
+        expect(
+          message.toLowerCase(),
+          isNot(contains('exception')),
+          reason: failure.name,
+        );
       }
     });
 
     test('only network, timeout, and server are worth retrying', () {
-      final transient =
-          ApiFailure.values.where((f) => f.isTransient).toSet();
+      final transient = ApiFailure.values.where((f) => f.isTransient).toSet();
       expect(transient, {
         ApiFailure.network,
         ApiFailure.timeout,

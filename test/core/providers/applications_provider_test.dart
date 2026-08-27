@@ -14,8 +14,13 @@ void main() {
     test(
       'submit -> underReview -> pay -> paymentVerification -> approved -> released, posting a notification at each step',
       () async {
-        final notifications = NotificationsProvider(repository: MockNotificationsRepository());
-        final applications = ApplicationsProvider(notifications: notifications, repository: MockApplicationsRepository());
+        final notifications = NotificationsProvider(
+          repository: MockNotificationsRepository(),
+        );
+        final applications = ApplicationsProvider(
+          notifications: notifications,
+          repository: MockApplicationsRepository(),
+        );
         // Let both providers' initial mock-repository loads settle before
         // taking a baseline, so seeded notifications aren't mistaken for
         // ones posted by the actions below.
@@ -29,14 +34,8 @@ void main() {
           documents: const [],
         );
         expect(submitted.status, ApplicationStatus.submitted);
-        expect(
-          notifications.events.length,
-          baselineNotificationCount + 1,
-        );
-        expect(
-          notifications.events.first.title,
-          contains('filed'),
-        );
+        expect(notifications.events.length, baselineNotificationCount + 1);
+        expect(notifications.events.first.title, contains('filed'));
 
         final underReview = await applications.advanceStatus(submitted.id);
         expect(underReview.status, ApplicationStatus.underReview);

@@ -45,6 +45,12 @@ class _FakeRepository implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -94,7 +100,8 @@ Widget _wrap(ApplicationModel application, {String initial = '/detail'}) {
     routes: [
       GoRoute(
         path: '/detail',
-        builder: (_, _) => const ApplicationDetailScreen(applicationId: 'app-1'),
+        builder: (_, _) =>
+            const ApplicationDetailScreen(applicationId: 'app-1'),
       ),
       GoRoute(
         path: '/applications/:id/instructions',
@@ -110,7 +117,10 @@ Widget _wrap(ApplicationModel application, {String initial = '/detail'}) {
         builder: (_, _) =>
             const ApplicationOutcomeScreen(applicationId: 'app-1'),
       ),
-      GoRoute(path: '/applications/:id/pay', builder: (_, _) => const Scaffold()),
+      GoRoute(
+        path: '/applications/:id/pay',
+        builder: (_, _) => const Scaffold(),
+      ),
       GoRoute(path: '/applications/new', builder: (_, _) => const Scaffold()),
     ],
   );
@@ -118,7 +128,8 @@ Widget _wrap(ApplicationModel application, {String initial = '/detail'}) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(repository: MockNotificationsRepository()),
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(
@@ -168,7 +179,10 @@ void main() {
 
       expect(find.text('Under Review'), findsOneWidget);
       expect(find.text('Technical evaluation in progress.'), findsOneWidget);
-      expect(find.textContaining('Highly Technical application'), findsOneWidget);
+      expect(
+        find.textContaining('Highly Technical application'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders every evaluation stage, including unreached ones', (
@@ -317,9 +331,7 @@ void main() {
     testWidgets('an open letter is always reachable from the detail', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        _wrap(_application(instructions: [letter()])),
-      );
+      await tester.pumpWidget(_wrap(_application(instructions: [letter()])));
       await _settle(tester);
 
       expect(find.text('Letter of Instruction outstanding'), findsOneWidget);
@@ -364,7 +376,10 @@ void main() {
       await tester.tap(find.text('Structural plan'));
       await tester.pumpAndSettle();
       expect(resubmit().onPressed, isNotNull);
-      expect(find.text('All items addressed. You can resubmit.'), findsOneWidget);
+      expect(
+        find.text('All items addressed. You can resubmit.'),
+        findsOneWidget,
+      );
     });
   });
 

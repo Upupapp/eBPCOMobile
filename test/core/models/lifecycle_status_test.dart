@@ -22,45 +22,49 @@ void main() {
     }
   });
 
-  test('the projection matches the admin LIFECYCLE_TO_MOBILE_LABEL exactly', () {
-    const expected = <ApplicationLifecycleStatus, ApplicationStatus>{
-      ApplicationLifecycleStatus.draft: ApplicationStatus.draft,
-      ApplicationLifecycleStatus.submitted: ApplicationStatus.submitted,
-      ApplicationLifecycleStatus.received: ApplicationStatus.submitted,
-      ApplicationLifecycleStatus.documentVerification:
-          ApplicationStatus.underReview,
-      ApplicationLifecycleStatus.underEvaluation: ApplicationStatus.underReview,
-      ApplicationLifecycleStatus.revisionRequired:
-          ApplicationStatus.underReview,
-      ApplicationLifecycleStatus.assessed:
-          ApplicationStatus.paymentVerification,
-      ApplicationLifecycleStatus.paymentSubmitted:
-          ApplicationStatus.paymentVerification,
-      ApplicationLifecycleStatus.paymentUnderVerification:
-          ApplicationStatus.paymentVerification,
-      ApplicationLifecycleStatus.paymentVerified:
-          ApplicationStatus.paymentVerification,
-      ApplicationLifecycleStatus.forApproval:
-          ApplicationStatus.paymentVerification,
-      ApplicationLifecycleStatus.approved: ApplicationStatus.approved,
-      ApplicationLifecycleStatus.permitGenerated: ApplicationStatus.approved,
-      ApplicationLifecycleStatus.readyForRelease: ApplicationStatus.released,
-      ApplicationLifecycleStatus.released: ApplicationStatus.released,
-      ApplicationLifecycleStatus.completed: ApplicationStatus.released,
-      ApplicationLifecycleStatus.rejected: ApplicationStatus.rejected,
-      ApplicationLifecycleStatus.cancelled: ApplicationStatus.rejected,
-      ApplicationLifecycleStatus.expired: ApplicationStatus.rejected,
-    };
+  test(
+    'the projection matches the admin LIFECYCLE_TO_MOBILE_LABEL exactly',
+    () {
+      const expected = <ApplicationLifecycleStatus, ApplicationStatus>{
+        ApplicationLifecycleStatus.draft: ApplicationStatus.draft,
+        ApplicationLifecycleStatus.submitted: ApplicationStatus.submitted,
+        ApplicationLifecycleStatus.received: ApplicationStatus.submitted,
+        ApplicationLifecycleStatus.documentVerification:
+            ApplicationStatus.underReview,
+        ApplicationLifecycleStatus.underEvaluation:
+            ApplicationStatus.underReview,
+        ApplicationLifecycleStatus.revisionRequired:
+            ApplicationStatus.underReview,
+        ApplicationLifecycleStatus.assessed:
+            ApplicationStatus.paymentVerification,
+        ApplicationLifecycleStatus.paymentSubmitted:
+            ApplicationStatus.paymentVerification,
+        ApplicationLifecycleStatus.paymentUnderVerification:
+            ApplicationStatus.paymentVerification,
+        ApplicationLifecycleStatus.paymentVerified:
+            ApplicationStatus.paymentVerification,
+        ApplicationLifecycleStatus.forApproval:
+            ApplicationStatus.paymentVerification,
+        ApplicationLifecycleStatus.approved: ApplicationStatus.approved,
+        ApplicationLifecycleStatus.permitGenerated: ApplicationStatus.approved,
+        ApplicationLifecycleStatus.readyForRelease: ApplicationStatus.released,
+        ApplicationLifecycleStatus.released: ApplicationStatus.released,
+        ApplicationLifecycleStatus.completed: ApplicationStatus.released,
+        ApplicationLifecycleStatus.rejected: ApplicationStatus.rejected,
+        ApplicationLifecycleStatus.cancelled: ApplicationStatus.rejected,
+        ApplicationLifecycleStatus.expired: ApplicationStatus.rejected,
+      };
 
-    for (final entry in expected.entries) {
-      expect(
-        entry.key.applicantStatus,
-        entry.value,
-        reason: '${entry.key} must project onto ${entry.value}',
-      );
-    }
-    expect(expected.keys.toSet(), ApplicationLifecycleStatus.values.toSet());
-  });
+      for (final entry in expected.entries) {
+        expect(
+          entry.key.applicantStatus,
+          entry.value,
+          reason: '${entry.key} must project onto ${entry.value}',
+        );
+      }
+      expect(expected.keys.toSet(), ApplicationLifecycleStatus.values.toSet());
+    },
+  );
 
   test('exactly three states are waiting on the applicant', () {
     final waiting = ApplicationLifecycleStatus.values

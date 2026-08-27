@@ -36,8 +36,7 @@ Widget _wrap() {
       ),
       GoRoute(
         path: '/wizard',
-        builder: (context, state) =>
-            const SanitaryPlumbingPermitWizardScreen(),
+        builder: (context, state) => const SanitaryPlumbingPermitWizardScreen(),
       ),
       GoRoute(
         path: '/applications/new/sanitary-plumbing-permit/submitted',
@@ -201,10 +200,7 @@ Future<void> _completeStep3(WidgetTester tester) async {
 /// "Sanitary Sewer Connection" for disposal — the simplest conditional
 /// group in each category, keeping the happy path manageable.
 Future<void> _completeStep4(WidgetTester tester) async {
-  await tester.enterText(
-    find.widgetWithText(TextFormField, 'New').at(0),
-    '1',
-  );
+  await tester.enterText(find.widgetWithText(TextFormField, 'New').at(0), '1');
   await tester.pump();
 
   await tester.tap(find.text('City / Municipal Water System'));
@@ -222,10 +218,7 @@ Future<void> _completeStep4(WidgetTester tester) async {
   await tester.tap(find.text('Sanitary Sewer Connection'));
   await tester.pump();
   await tester.enterText(
-    find.widgetWithText(
-      TextFormField,
-      'Sewer Provider or Receiving System *',
-    ),
+    find.widgetWithText(TextFormField, 'Sewer Provider or Receiving System *'),
     'City Sewerage System',
   );
   await tester.enterText(

@@ -60,22 +60,25 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('shows the empty state and Import Document button when there are no documents', (
+  testWidgets(
+    'shows the empty state and Import Document button when there are no documents',
+    (tester) async {
+      await tester.pumpWidget(_wrap());
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      expect(find.text('No Documents Yet'), findsOneWidget);
+      expect(find.textContaining('making them easier to reuse'), findsWidgets);
+      expect(
+        find.widgetWithText(ElevatedButton, 'Import Document'),
+        findsWidgets,
+      );
+    },
+  );
+
+  testWidgets('renders a document card for each saved document', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap());
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-
-    expect(find.text('No Documents Yet'), findsOneWidget);
-    expect(
-      find.textContaining('making them easier to reuse'),
-      findsWidgets,
-    );
-    expect(find.widgetWithText(ElevatedButton, 'Import Document'), findsWidgets);
-  });
-
-  testWidgets('renders a document card for each saved document', (tester) async {
     await _seedDocuments([
       _document(
         id: 'doc-1',
@@ -166,9 +169,7 @@ void main() {
     expect(find.text('valid_id.jpg'), findsOneWidget);
   });
 
-  testWidgets('renaming a document updates its displayed name', (
-    tester,
-  ) async {
+  testWidgets('renaming a document updates its displayed name', (tester) async {
     await _seedDocuments([_document(id: 'doc-1')]);
     await tester.pumpWidget(_wrap());
     await tester.pumpAndSettle();
@@ -212,9 +213,8 @@ void main() {
                       poppedResult = await Navigator.of(context)
                           .push<SavedDocumentModel>(
                             MaterialPageRoute(
-                              builder: (_) => const MyDocumentsScreen(
-                                selectionMode: true,
-                              ),
+                              builder: (_) =>
+                                  const MyDocumentsScreen(selectionMode: true),
                             ),
                           );
                     },

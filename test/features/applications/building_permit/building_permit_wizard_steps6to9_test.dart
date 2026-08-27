@@ -403,10 +403,7 @@ void main() {
       // Property Documents starts expanded; its uploads are immediately
       // usable without needing to tap anything first.
       expect(find.text('Land Title'), findsOneWidget);
-      expect(
-        find.widgetWithText(OutlinedButton, 'Upload'),
-        findsWidgets,
-      );
+      expect(find.widgetWithText(OutlinedButton, 'Upload'), findsWidgets);
 
       // Toggling a collapsed section open and shut again shouldn't throw
       // (AnimatedCrossFade keeps both children mounted — fading/clipping

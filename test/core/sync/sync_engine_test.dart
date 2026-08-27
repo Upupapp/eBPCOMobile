@@ -7,7 +7,8 @@ import 'package:ebpco_user_app/core/sync/offline_queue.dart';
 import 'package:ebpco_user_app/core/sync/queued_operation.dart';
 import 'package:ebpco_user_app/core/sync/sync_engine.dart';
 
-QueuedOperation op(String id, {String? key, int attempts = 0}) => QueuedOperation(
+QueuedOperation op(String id, {String? key, int attempts = 0}) =>
+    QueuedOperation(
       id: id,
       kind: QueuedOperationKind.applicationSubmission,
       idempotencyKey: key ?? 'key-$id',
@@ -30,8 +31,13 @@ void main() {
   SyncEngine engineThat(
     Future<void> Function(QueuedOperation) send, {
     int maxAttempts = 8,
-  }) =>
-      SyncEngine(queue, send, clock: () => now, random: Random(1), maxAttempts: maxAttempts);
+  }) => SyncEngine(
+    queue,
+    send,
+    clock: () => now,
+    random: Random(1),
+    maxAttempts: maxAttempts,
+  );
 
   group('a successful send', () {
     test('removes the item from the queue', () async {
@@ -86,7 +92,9 @@ void main() {
     });
 
     test('backs off further on each attempt', () async {
-      final engine = engineThat((_) async => throw const ApiException(ApiFailure.network, 'offline'));
+      final engine = engineThat(
+        (_) async => throw const ApiException(ApiFailure.network, 'offline'),
+      );
 
       expect(engine.backoffFor(1) < engine.backoffFor(3), isTrue);
       expect(engine.backoffFor(3) < engine.backoffFor(5), isTrue);
@@ -99,30 +107,43 @@ void main() {
       expect(engine.backoffFor(20) >= const Duration(minutes: 30), isTrue);
     });
 
-    test('adds jitter, so every device on one cell tower does not retry together', () async {
-      // Without it the LGU's server meets a thundering herd exactly as it comes
-      // back up.
-      final engine = SyncEngine(queue, (_) async {}, clock: () => now, random: Random());
-      final delays = {for (var i = 0; i < 20; i += 1) engine.backoffFor(4).inMilliseconds};
+    test(
+      'adds jitter, so every device on one cell tower does not retry together',
+      () async {
+        // Without it the LGU's server meets a thundering herd exactly as it comes
+        // back up.
+        final engine = SyncEngine(
+          queue,
+          (_) async {},
+          clock: () => now,
+          random: Random(),
+        );
+        final delays = {
+          for (var i = 0; i < 20; i += 1) engine.backoffFor(4).inMilliseconds,
+        };
 
-      expect(delays.length, greaterThan(1));
-    });
+        expect(delays.length, greaterThan(1));
+      },
+    );
 
-    test('gives up after enough attempts, rather than retrying invisibly forever', () async {
-      // Not because it stopped being transient, but because an item retrying
-      // silently forever is indistinguishable from one that was lost.
-      await queue.enqueue(op('a', attempts: 2));
+    test(
+      'gives up after enough attempts, rather than retrying invisibly forever',
+      () async {
+        // Not because it stopped being transient, but because an item retrying
+        // silently forever is indistinguishable from one that was lost.
+        await queue.enqueue(op('a', attempts: 2));
 
-      final outcome = await engineThat(
-        (_) async => throw const ApiException(ApiFailure.network, 'offline'),
-        maxAttempts: 3,
-      ).flush();
+        final outcome = await engineThat(
+          (_) async => throw const ApiException(ApiFailure.network, 'offline'),
+          maxAttempts: 3,
+        ).flush();
 
-      expect(outcome.failed, 1);
-      final item = (await queue.all()).single;
-      expect(item.state, QueuedOperationState.failedPermanently);
-      expect(item.failureMessage, contains('try again'));
-    });
+        expect(outcome.failed, 1);
+        final item = (await queue.all()).single;
+        expect(item.state, QueuedOperationState.failedPermanently);
+        expect(item.failureMessage, contains('try again'));
+      },
+    );
   });
 
   group('a permanent failure', () {
@@ -149,50 +170,69 @@ void main() {
       await queue.enqueue(op('a'));
 
       await engineThat(
-        (_) async => throw const ApiException(ApiFailure.rejected, 'validation'),
+        (_) async =>
+            throw const ApiException(ApiFailure.rejected, 'validation'),
       ).flush();
 
       expect(await queue.all(), hasLength(1));
     });
 
-    test('carries the server’s own explanation, which knows the specifics', () async {
-      await queue.enqueue(op('a'));
+    test(
+      'carries the server’s own explanation, which knows the specifics',
+      () async {
+        await queue.enqueue(op('a'));
 
-      await engineThat((_) async => throw const ApiException(
+        await engineThat(
+          (_) async => throw const ApiException(
             ApiFailure.rejected,
             'engineering detail',
             problem: ProblemDetails(
               type: '/problems/precondition-unmet',
               title: 'A precondition is unmet',
-              detail: 'No Order of Payment has been issued for this application, so there is nothing to pay.',
+              detail:
+                  'No Order of Payment has been issued for this application, so there is nothing to pay.',
             ),
-          )).flush();
+          ),
+        ).flush();
 
-      expect((await queue.all()).single.failureMessage, contains('nothing to pay'));
-    });
+        expect(
+          (await queue.all()).single.failureMessage,
+          contains('nothing to pay'),
+        );
+      },
+    );
 
     test('shows the applicant it needs them, not a silent spinner', () async {
       await queue.enqueue(op('a'));
 
       await engineThat(
-        (_) async => throw const ApiException(ApiFailure.forbidden, 'not permitted'),
+        (_) async =>
+            throw const ApiException(ApiFailure.forbidden, 'not permitted'),
       ).flush();
 
-      expect((await queue.all()).single.applicantStatus, 'Needs your attention');
+      expect(
+        (await queue.all()).single.applicantStatus,
+        'Needs your attention',
+      );
     });
   });
 
   group('an unexpected error', () {
-    test('is treated as transient, because the other way discards work', () async {
-      // Being wrong this way costs a retry. Being wrong the other way throws
-      // away an applicant's filing over a bug.
-      await queue.enqueue(op('a'));
+    test(
+      'is treated as transient, because the other way discards work',
+      () async {
+        // Being wrong this way costs a retry. Being wrong the other way throws
+        // away an applicant's filing over a bug.
+        await queue.enqueue(op('a'));
 
-      final outcome = await engineThat((_) async => throw StateError('a bug')).flush();
+        final outcome = await engineThat(
+          (_) async => throw StateError('a bug'),
+        ).flush();
 
-      expect(outcome.deferred, 1);
-      expect((await queue.all()).single.state, QueuedOperationState.pending);
-    });
+        expect(outcome.deferred, 1);
+        expect((await queue.all()).single.state, QueuedOperationState.pending);
+      },
+    );
   });
 
   group('concurrent flushes', () {
@@ -216,7 +256,9 @@ void main() {
 
   group('nothing to do', () {
     test('reports having done nothing', () async {
-      final outcome = await engineThat((_) async => fail('nothing should be sent')).flush();
+      final outcome = await engineThat(
+        (_) async => fail('nothing should be sent'),
+      ).flush();
 
       expect(outcome.didAnything, isFalse);
     });

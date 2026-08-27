@@ -66,6 +66,22 @@ class HttpApplicationsRepository implements ApplicationsRepository {
   }
 
   @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async {
+    // The route this posts to does not exist on the backend yet. Recorded as a
+    // hand-off rather than faked: on a live build this should fail loudly, not
+    // quietly tell the applicant their document was resent.
+    final json = await _api.post(
+      '/applications/$applicationId/documents/$documentId/resubmit',
+      body: {'fileName': replacement.fileName, 'label': replacement.label},
+    );
+    return ApplicationDto.parse(json);
+  }
+
+  @override
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,

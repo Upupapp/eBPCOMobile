@@ -32,7 +32,10 @@ DocumentModel _doc({
 void main() {
   group('what needs the applicant', () {
     test('a rejected document does', () {
-      expect(_doc(status: DocumentStatus.rejected).needsApplicantAction, isTrue);
+      expect(
+        _doc(status: DocumentStatus.rejected).needsApplicantAction,
+        isTrue,
+      );
     });
 
     test('one sent back for revision does', () {
@@ -114,13 +117,14 @@ void main() {
     });
 
     test('the new submission carries no stale remarks', () {
-      final resubmitted = _doc(
-        status: DocumentStatus.rejected,
-        remarks: 'Not certified.',
-      ).resubmittedWith(
-        fileName: 'new.pdf',
-        submittedAt: DateTime(2026, 8, 20),
-      );
+      final resubmitted =
+          _doc(
+            status: DocumentStatus.rejected,
+            remarks: 'Not certified.',
+          ).resubmittedWith(
+            fileName: 'new.pdf',
+            submittedAt: DateTime(2026, 8, 20),
+          );
 
       expect(
         resubmitted.remarks,
@@ -143,7 +147,10 @@ void main() {
           );
 
       expect(doc.history, hasLength(2));
-      expect(doc.history.map((h) => h.fileName), ['land-title.pdf', 'second.pdf']);
+      expect(doc.history.map((h) => h.fileName), [
+        'land-title.pdf',
+        'second.pdf',
+      ]);
       expect(doc.fileName, 'third.pdf');
     });
   });

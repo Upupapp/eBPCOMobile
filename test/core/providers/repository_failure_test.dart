@@ -121,12 +121,17 @@ void main() {
       );
 
       expect(ok, isFalse);
-      expect(provider.isLoading, isFalse, reason: 'the button must stop spinning');
+      expect(
+        provider.isLoading,
+        isFalse,
+        reason: 'the button must stop spinning',
+      );
       expect(provider.errorMessage, isNotNull);
       expect(
         provider.errorMessage,
         isNot(contains('Incorrect')),
-        reason: 'a transport failure is not a wrong password — saying so sends '
+        reason:
+            'a transport failure is not a wrong password — saying so sends '
             'the applicant to reset a password that was fine',
       );
     });

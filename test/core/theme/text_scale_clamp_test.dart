@@ -17,9 +17,7 @@ Future<void> _pump(WidgetTester tester, double systemScale) async {
   await tester.pumpWidget(
     MediaQuery(
       data: MediaQueryData(textScaler: TextScaler.linear(systemScale)),
-      child: const TextScaleClamp(
-        child: SizedBox(key: Key('probe')),
-      ),
+      child: const TextScaleClamp(child: SizedBox(key: Key('probe'))),
     ),
   );
 }

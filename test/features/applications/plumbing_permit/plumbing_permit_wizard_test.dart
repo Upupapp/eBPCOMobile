@@ -177,7 +177,10 @@ Future<void> _completeStep3(WidgetTester tester) async {
     'New Plumbing Installation',
   );
   await tester.enterText(
-    find.widgetWithText(TextFormField, 'General Description of Plumbing Work *'),
+    find.widgetWithText(
+      TextFormField,
+      'General Description of Plumbing Work *',
+    ),
     'Installation of new plumbing fixtures.',
   );
   await tester.enterText(
@@ -202,18 +205,13 @@ Future<void> _completeStep3(WidgetTester tester) async {
 /// Water" — the simplest conditional group — keeping the happy path
 /// manageable.
 Future<void> _completeStep4(WidgetTester tester) async {
-  await tester.enterText(
-    find.widgetWithText(TextFormField, 'New').at(0),
-    '1',
-  );
+  await tester.enterText(find.widgetWithText(TextFormField, 'New').at(0), '1');
   await tester.pump();
 
   await tester.tap(find.text('Water Distribution System'));
   await tester.pump();
 
-  await tester.tap(
-    find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-  );
+  await tester.tap(find.byWidgetPredicate((w) => w is DropdownButtonFormField));
   await tester.pumpAndSettle();
   await tester.tap(find.text('City / Municipal Water').last);
   await tester.pumpAndSettle();
@@ -240,7 +238,10 @@ Future<void> _completeStep4(WidgetTester tester) async {
   );
   await tester.pump();
 
-  expect(find.text('Will be populated from the Design Professional'), findsOneWidget);
+  expect(
+    find.text('Will be populated from the Design Professional'),
+    findsOneWidget,
+  );
 
   await tester.tap(_continueButton());
   await tester.pumpAndSettle();
@@ -370,18 +371,17 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Type fixed to Plumbing Permit',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Type fixed to Plumbing Permit', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.text('Applicant Information'), findsOneWidget);
-      expect(find.text('Plumbing Permit'), findsWidgets);
-    },
-  );
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.text('Applicant Information'), findsOneWidget);
+    expect(find.text('Plumbing Permit'), findsWidgets);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 9, and Submit Application opens the confirmation screen with the pending Building Permit warning',

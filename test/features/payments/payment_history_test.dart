@@ -42,6 +42,12 @@ class _FakeRepository implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -85,7 +91,10 @@ Widget _wrap(List<ApplicationModel> applications) {
   final router = GoRouter(
     initialLocation: '/history',
     routes: [
-      GoRoute(path: '/history', builder: (_, _) => const PaymentHistoryScreen()),
+      GoRoute(
+        path: '/history',
+        builder: (_, _) => const PaymentHistoryScreen(),
+      ),
       GoRoute(
         path: '/applications/:id/pay',
         builder: (_, _) => const Scaffold(),
@@ -96,7 +105,8 @@ Widget _wrap(List<ApplicationModel> applications) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(repository: MockNotificationsRepository()),
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(
@@ -106,10 +116,7 @@ Widget _wrap(List<ApplicationModel> applications) {
         ),
       ),
     ],
-    child: MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
-    ),
+    child: MaterialApp.router(theme: AppTheme.lightTheme, routerConfig: router),
   );
 }
 

@@ -62,7 +62,10 @@ void main() {
       // on both platforms. The factory now takes a SessionStore, and the only
       // production implementation is keychain-backed.
       final session = InMemorySessionStore();
-      final factory = RepositoryFactory(apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'), session: session);
+      final factory = RepositoryFactory(
+        apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'),
+        session: session,
+      );
 
       expect(factory.isLive, isTrue);
       expect(await session.accessToken(), isNull);
@@ -74,15 +77,24 @@ void main() {
       expect(await InMemorySessionStore().accessToken(), isNull);
     });
 
-    test('is picked up per request, so a token issued after sign-in works', () async {
-      // The client asks for the token on every request rather than capturing it
-      // at construction, so signing in does not require rebuilding the graph.
-      final session = InMemorySessionStore();
-      RepositoryFactory(apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'), session: session);
+    test(
+      'is picked up per request, so a token issued after sign-in works',
+      () async {
+        // The client asks for the token on every request rather than capturing it
+        // at construction, so signing in does not require rebuilding the graph.
+        final session = InMemorySessionStore();
+        RepositoryFactory(
+          apiClient: ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api'),
+          session: session,
+        );
 
-      await session.save(accessToken: 'issued-after-construction', refreshToken: 'r');
+        await session.save(
+          accessToken: 'issued-after-construction',
+          refreshToken: 'r',
+        );
 
-      expect(await session.accessToken(), 'issued-after-construction');
-    });
+        expect(await session.accessToken(), 'issued-after-construction');
+      },
+    );
   });
 }

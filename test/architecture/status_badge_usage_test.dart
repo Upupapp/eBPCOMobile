@@ -22,10 +22,11 @@ void main() {
   test('no screen hand-rolls a status pill beside an Expanded', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib/features')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.dart'))) {
+    for (final file
+        in Directory('lib/features')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))) {
       final source = file.readAsStringSync();
 
       // Each `Row(` and the block that follows it, bounded so a match cannot
@@ -40,7 +41,8 @@ void main() {
         final usesSharedWidget = body.contains('StatusBadge');
 
         if (isPill && crowdsATitle && !usesSharedWidget) {
-          final line = '\n'.allMatches(source.substring(0, match.start)).length + 1;
+          final line =
+              '\n'.allMatches(source.substring(0, match.start)).length + 1;
           offenders.add('${file.path}:$line');
         }
       }

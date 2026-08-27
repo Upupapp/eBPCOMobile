@@ -44,6 +44,12 @@ class _FakeRepository implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -88,7 +94,8 @@ Widget _wrap(
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(repository: MockNotificationsRepository()),
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(

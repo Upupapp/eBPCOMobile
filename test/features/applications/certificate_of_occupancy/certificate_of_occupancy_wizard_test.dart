@@ -36,8 +36,7 @@ Widget _wrap() {
       ),
       GoRoute(
         path: '/wizard',
-        builder: (context, state) =>
-            const CertificateOfOccupancyWizardScreen(),
+        builder: (context, state) => const CertificateOfOccupancyWizardScreen(),
       ),
       GoRoute(
         path: '/applications/new/certificate-of-occupancy/submitted',
@@ -371,68 +370,65 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Number of Storeys rejects a non-positive value',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
+  testWidgets('Number of Storeys rejects a non-positive value', (tester) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Lot Number *'),
-        '12',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Street *'),
-        'Rizal St.',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Barangay *'),
-        'San Isidro',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'City / Municipality *'),
-        'Quezon City',
-      );
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Group A — Residential Dwelling').last);
-      await tester.pumpAndSettle();
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Number of Storeys *'),
-        '0',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Number of Units *'),
-        '12',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Total Floor Area (sq m) *'),
-        '450.5',
-      );
-      await tester.pump();
-      await _pickToday(tester, 'Date of Completion *');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Lot Number *'),
+      '12',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Street *'),
+      'Rizal St.',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Barangay *'),
+      'San Isidro',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'City / Municipality *'),
+      'Quezon City',
+    );
+    await tester.tap(
+      find.byWidgetPredicate((w) => w is DropdownButtonFormField),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Group A — Residential Dwelling').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Number of Storeys *'),
+      '0',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Number of Units *'),
+      '12',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Total Floor Area (sq m) *'),
+      '450.5',
+    );
+    await tester.pump();
+    await _pickToday(tester, 'Date of Completion *');
 
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNull,
-        reason: 'Number of Storeys must be greater than zero',
-      );
+    expect(
+      tester.widget<ElevatedButton>(_continueButton()).onPressed,
+      isNull,
+      reason: 'Number of Storeys must be greater than zero',
+    );
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Number of Storeys *'),
-        '3',
-      );
-      await tester.pump();
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNotNull,
-      );
-    },
-  );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Number of Storeys *'),
+      '3',
+    );
+    await tester.pump();
+    expect(
+      tester.widget<ElevatedButton>(_continueButton()).onPressed,
+      isNotNull,
+    );
+  });
 
   testWidgets(
     'Adding an Other Document requires a name and a file before continuing',

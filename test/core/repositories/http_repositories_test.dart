@@ -34,24 +34,29 @@ ApiClient clientFor(http.BaseClient canned) =>
 void main() {
   group('businesses', () {
     test('parses the contract shape', () async {
-      final canned = _Canned(200, jsonEncode({
-        'data': [
-          {
-            'id': '6b2f9c31-7a4d-4e88-b1c2-9d0e3f5a7b61',
-            'name': 'Santos Hardware and Construction Supply',
-            'category': 'Retail',
-            'street': '142 Rizal Extension',
-            'barangay': 'San Roque',
-            'city': 'Quezon City',
-            'province': 'Metro Manila',
-            'registrationNumber': 'BN-2026-0041',
-            'dateRegistered': '2026-01-15',
-            'status': 'Active',
-          },
-        ],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': '6b2f9c31-7a4d-4e88-b1c2-9d0e3f5a7b61',
+              'name': 'Santos Hardware and Construction Supply',
+              'category': 'Retail',
+              'street': '142 Rizal Extension',
+              'barangay': 'San Roque',
+              'city': 'Quezon City',
+              'province': 'Metro Manila',
+              'registrationNumber': 'BN-2026-0041',
+              'dateRegistered': '2026-01-15',
+              'status': 'Active',
+            },
+          ],
+        }),
+      );
 
-      final businesses = await HttpBusinessRepository(clientFor(canned)).fetchAll();
+      final businesses = await HttpBusinessRepository(
+        clientFor(canned),
+      ).fetchAll();
 
       expect(businesses, hasLength(1));
       expect(businesses.first.name, 'Santos Hardware and Construction Supply');
@@ -64,32 +69,54 @@ void main() {
       // reportable failure — never a silently wrong one. Defaulting to "Other"
       // would file a business under the wrong category because the LGU added
       // one the app has not shipped yet.
-      final canned = _Canned(200, jsonEncode({
-        'data': [
-          {
-            'id': 'x', 'name': 'n', 'category': 'Agricultural',
-            'street': 's', 'barangay': 'b', 'city': 'c', 'province': 'p',
-            'registrationNumber': 'r', 'dateRegistered': '2026-01-15', 'status': 'Active',
-          },
-        ],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': 'x',
+              'name': 'n',
+              'category': 'Agricultural',
+              'street': 's',
+              'barangay': 'b',
+              'city': 'c',
+              'province': 'p',
+              'registrationNumber': 'r',
+              'dateRegistered': '2026-01-15',
+              'status': 'Active',
+            },
+          ],
+        }),
+      );
 
       await expectLater(
         HttpBusinessRepository(clientFor(canned)).fetchAll(),
-        throwsA(isA<ApiException>()
-            .having((e) => e.failure, 'failure', ApiFailure.malformed)
-            .having((e) => e.detail, 'detail', contains('Agricultural'))),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.failure, 'failure', ApiFailure.malformed)
+              .having((e) => e.detail, 'detail', contains('Agricultural')),
+        ),
       );
     });
 
-    test('throws on a missing required field rather than substituting a blank', () async {
-      final canned = _Canned(200, jsonEncode({'data': [{'id': 'x'}]}));
+    test(
+      'throws on a missing required field rather than substituting a blank',
+      () async {
+        final canned = _Canned(
+          200,
+          jsonEncode({
+            'data': [
+              {'id': 'x'},
+            ],
+          }),
+        );
 
-      await expectLater(
-        HttpBusinessRepository(clientFor(canned)).fetchAll(),
-        throwsA(isA<ApiException>()),
-      );
-    });
+        await expectLater(
+          HttpBusinessRepository(clientFor(canned)).fetchAll(),
+          throwsA(isA<ApiException>()),
+        );
+      },
+    );
   });
 
   group('notifications', () {
@@ -97,20 +124,25 @@ void main() {
       // The server adopted this app's catalog in TAB 08, so the wire name is
       // the kebab-case of the enum constant and parsing is a mechanical
       // reversal of that derivation.
-      final canned = _Canned(200, jsonEncode({
-        'data': [
-          {
-            'id': 'f8a0c2e4-7091-4d3b-85f7-8a0c2e4f6b8d',
-            'type': 'order-of-payment-issued',
-            'applicationId': '0f8d6a1e-2b4c-4d7e-9a10-3c5b7e9f1a2b',
-            'createdAt': '2026-08-19T11:02:00+08:00',
-            'readAt': null,
-            'resolvedAt': null,
-          },
-        ],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': 'f8a0c2e4-7091-4d3b-85f7-8a0c2e4f6b8d',
+              'type': 'order-of-payment-issued',
+              'applicationId': '0f8d6a1e-2b4c-4d7e-9a10-3c5b7e9f1a2b',
+              'createdAt': '2026-08-19T11:02:00+08:00',
+              'readAt': null,
+              'resolvedAt': null,
+            },
+          ],
+        }),
+      );
 
-      final events = await HttpNotificationsRepository(clientFor(canned)).fetchAll();
+      final events = await HttpNotificationsRepository(
+        clientFor(canned),
+      ).fetchAll();
 
       expect(events.single.type, NotificationType.orderOfPaymentIssued);
       expect(events.single.readAt, isNull);
@@ -120,25 +152,53 @@ void main() {
     test('THROWS on a notification type the app cannot name', () async {
       // A notification the app cannot name has no icon, no category and no
       // destination. A blank card would be worse than failing.
-      final canned = _Canned(200, jsonEncode({
-        'data': [{'id': 'x', 'type': 'something-invented-server-side', 'createdAt': '2026-08-19T11:02:00+08:00'}],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': 'x',
+              'type': 'something-invented-server-side',
+              'createdAt': '2026-08-19T11:02:00+08:00',
+            },
+          ],
+        }),
+      );
 
       await expectLater(
         HttpNotificationsRepository(clientFor(canned)).fetchAll(),
-        throwsA(isA<ApiException>().having((e) => e.detail, 'detail', contains('drifted'))),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.detail,
+            'detail',
+            contains('drifted'),
+          ),
+        ),
       );
     });
 
     test('sorts newest first whatever order the server sent', () async {
-      final canned = _Canned(200, jsonEncode({
-        'data': [
-          {'id': 'a', 'type': 'approved', 'createdAt': '2026-08-01T10:00:00+08:00'},
-          {'id': 'b', 'type': 'released', 'createdAt': '2026-08-19T10:00:00+08:00'},
-        ],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': 'a',
+              'type': 'approved',
+              'createdAt': '2026-08-01T10:00:00+08:00',
+            },
+            {
+              'id': 'b',
+              'type': 'released',
+              'createdAt': '2026-08-19T10:00:00+08:00',
+            },
+          ],
+        }),
+      );
 
-      final events = await HttpNotificationsRepository(clientFor(canned)).fetchAll();
+      final events = await HttpNotificationsRepository(
+        clientFor(canned),
+      ).fetchAll();
 
       expect(events.map((e) => e.id), ['b', 'a']);
     });
@@ -146,18 +206,24 @@ void main() {
     test('keeps read and resolved as separate facts', () async {
       // Reading never resolves. A feed that collapsed them would clear an
       // applicant's outstanding obligations by being glanced at.
-      final canned = _Canned(200, jsonEncode({
-        'data': [
-          {
-            'id': 'a', 'type': 'revision-required',
-            'createdAt': '2026-08-19T10:00:00+08:00',
-            'readAt': '2026-08-19T11:00:00+08:00',
-            'resolvedAt': null,
-          },
-        ],
-      }));
+      final canned = _Canned(
+        200,
+        jsonEncode({
+          'data': [
+            {
+              'id': 'a',
+              'type': 'revision-required',
+              'createdAt': '2026-08-19T10:00:00+08:00',
+              'readAt': '2026-08-19T11:00:00+08:00',
+              'resolvedAt': null,
+            },
+          ],
+        }),
+      );
 
-      final event = (await HttpNotificationsRepository(clientFor(canned)).fetchAll()).single;
+      final event = (await HttpNotificationsRepository(
+        clientFor(canned),
+      ).fetchAll()).single;
 
       expect(event.readAt, isNotNull);
       expect(event.resolvedAt, isNull);
@@ -165,30 +231,45 @@ void main() {
   });
 
   group('failures reach the caller typed', () {
-    test('a 403 arrives as forbidden with the server’s own explanation', () async {
-      final canned = _Canned(403, jsonEncode({
-        'type': '/problems/forbidden',
-        'title': 'Not permitted',
-        'status': 403,
-        'detail': 'This account does not hold the permission this action requires.',
-      }));
+    test(
+      'a 403 arrives as forbidden with the server’s own explanation',
+      () async {
+        final canned = _Canned(
+          403,
+          jsonEncode({
+            'type': '/problems/forbidden',
+            'title': 'Not permitted',
+            'status': 403,
+            'detail':
+                'This account does not hold the permission this action requires.',
+          }),
+        );
 
-      await expectLater(
-        HttpBusinessRepository(clientFor(canned)).fetchAll(),
-        throwsA(isA<ApiException>()
-            .having((e) => e.failure, 'failure', ApiFailure.forbidden)
-            .having((e) => e.applicantMessage, 'message', contains('permission'))),
-      );
-    });
+        await expectLater(
+          HttpBusinessRepository(clientFor(canned)).fetchAll(),
+          throwsA(
+            isA<ApiException>()
+                .having((e) => e.failure, 'failure', ApiFailure.forbidden)
+                .having(
+                  (e) => e.applicantMessage,
+                  'message',
+                  contains('permission'),
+                ),
+          ),
+        );
+      },
+    );
 
     test('a 5xx arrives as server, and is retryable', () async {
       final canned = _Canned(503, '<html>502 Bad Gateway</html>');
 
       await expectLater(
         HttpBusinessRepository(clientFor(canned)).fetchAll(),
-        throwsA(isA<ApiException>()
-            .having((e) => e.failure, 'failure', ApiFailure.server)
-            .having((e) => e.isTransient, 'isTransient', isTrue)),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.failure, 'failure', ApiFailure.server)
+              .having((e) => e.isTransient, 'isTransient', isTrue),
+        ),
       );
     });
   });

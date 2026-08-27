@@ -23,15 +23,18 @@ void main() {
   test('providers are created only at the root, in app.dart', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.dart'))) {
+    for (final file
+        in Directory('lib')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))) {
       if (file.path.endsWith('lib/app.dart')) continue;
 
       final lines = file.readAsStringSync().split('\n');
       for (var i = 0; i < lines.length; i++) {
-        if (RegExp(r'\bChangeNotifierProvider(\.value)?\s*[(<]').hasMatch(lines[i])) {
+        if (RegExp(
+          r'\bChangeNotifierProvider(\.value)?\s*[(<]',
+        ).hasMatch(lines[i])) {
           offenders.add('${file.path}:${i + 1}');
         }
       }

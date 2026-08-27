@@ -71,6 +71,12 @@ class _Applications implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -116,7 +122,11 @@ ApplicationModel _application() => ApplicationModel(
           subject: 'Transfer Certificate of Title',
           remark: 'Submit a Certified True Copy issued within six months.',
         ),
-        InstructionItem(id: 'i2', subject: 'Structural plan', remark: _longRemark),
+        InstructionItem(
+          id: 'i2',
+          subject: 'Structural plan',
+          remark: _longRemark,
+        ),
       ],
     ),
   ],
@@ -164,13 +174,17 @@ Widget _host(String initial, double textScale) {
       GoRoute(path: '/list', builder: (_, _) => const ApplicationListScreen()),
       GoRoute(
         path: '/detail',
-        builder: (_, _) => const ApplicationDetailScreen(applicationId: 'app-1'),
+        builder: (_, _) =>
+            const ApplicationDetailScreen(applicationId: 'app-1'),
       ),
       GoRoute(
         path: '/pay',
         builder: (_, _) => const OrderOfPaymentScreen(applicationId: 'app-1'),
       ),
-      GoRoute(path: '/history', builder: (_, _) => const PaymentHistoryScreen()),
+      GoRoute(
+        path: '/history',
+        builder: (_, _) => const PaymentHistoryScreen(),
+      ),
       GoRoute(path: '/pros', builder: (_, _) => const ProfessionalsScreen()),
       GoRoute(path: '/privacy', builder: (_, _) => const PrivacyDataScreen()),
       GoRoute(
@@ -181,7 +195,10 @@ Widget _host(String initial, double textScale) {
         ),
       ),
       GoRoute(path: '/applications/:id', builder: (_, _) => const Scaffold()),
-      GoRoute(path: '/applications/:id/pay', builder: (_, _) => const Scaffold()),
+      GoRoute(
+        path: '/applications/:id/pay',
+        builder: (_, _) => const Scaffold(),
+      ),
       GoRoute(path: '/applications/new', builder: (_, _) => const Scaffold()),
       GoRoute(path: '/charter/:t', builder: (_, _) => const Scaffold()),
       GoRoute(path: '/profile/documents', builder: (_, _) => const Scaffold()),
@@ -216,8 +233,10 @@ Widget _host(String initial, double textScale) {
           clock: () => _now,
         ),
       ),
-      ChangeNotifierProvider<DocumentsProvider>(create: (_) => DocumentsProvider()),
-          // Everything DraftRegistry looks up, for the Drafts segment.
+      ChangeNotifierProvider<DocumentsProvider>(
+        create: (_) => DocumentsProvider(),
+      ),
+      // Everything DraftRegistry looks up, for the Drafts segment.
       ...wizardProviders(),
     ],
     child: MaterialApp.router(
@@ -332,5 +351,4 @@ void main() {
       });
     }
   });
-
 }

@@ -196,9 +196,7 @@ Future<void> _pickNextMonthFirst(WidgetTester tester, String label) async {
 }
 
 Future<void> _completeStep4(WidgetTester tester) async {
-  await tester.tap(
-    find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-  );
+  await tester.tap(find.byWidgetPredicate((w) => w is DropdownButtonFormField));
   await tester.pumpAndSettle();
   await tester.tap(find.text('Group A — Residential, Dwellings').last);
   await tester.pumpAndSettle();
@@ -236,10 +234,7 @@ Future<void> _completeStep4(WidgetTester tester) async {
     '200',
   );
   await tester.enterText(
-    find.widgetWithText(
-      TextFormField,
-      'Estimated Addition / Extension Cost *',
-    ),
+    find.widgetWithText(TextFormField, 'Estimated Addition / Extension Cost *'),
     '200000',
   );
   await tester.pump();
@@ -254,9 +249,7 @@ Future<void> _completeStep5(WidgetTester tester) async {
     find.widgetWithText(TextFormField, 'Full Name *'),
     'Arch. Maria Santos',
   );
-  await tester.tap(
-    find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-  );
+  await tester.tap(find.byWidgetPredicate((w) => w is DropdownButtonFormField));
   await tester.pumpAndSettle();
   await tester.tap(find.text('Architect').last);
   await tester.pumpAndSettle();
@@ -368,7 +361,10 @@ void main() {
       expect(find.text('Step 1 of 9'), findsOneWidget);
       expect(find.text('Applicant Information'), findsOneWidget);
       expect(find.text('Addition / Extension'), findsOneWidget);
-      expect(find.textContaining('Official Scope of Work: Addition'), findsOneWidget);
+      expect(
+        find.textContaining('Official Scope of Work: Addition'),
+        findsOneWidget,
+      );
     },
   );
 
@@ -454,7 +450,11 @@ void main() {
         '100',
       );
       await tester.pump();
-      expect(find.text('— sq m'), findsOneWidget, reason: 'still missing the added area');
+      expect(
+        find.text('— sq m'),
+        findsOneWidget,
+        reason: 'still missing the added area',
+      );
 
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Proposed Added Floor Area *'),
@@ -508,10 +508,7 @@ void main() {
         'Additional living space.',
       );
       await tester.enterText(
-        find.widgetWithText(
-          TextFormField,
-          'Connection to Existing Building *',
-        ),
+        find.widgetWithText(TextFormField, 'Connection to Existing Building *'),
         'Directly attached to the rear wall.',
       );
       await tester.tap(find.text('New Room'));
@@ -573,10 +570,7 @@ void main() {
         'Additional living space.',
       );
       await tester.enterText(
-        find.widgetWithText(
-          TextFormField,
-          'Connection to Existing Building *',
-        ),
+        find.widgetWithText(TextFormField, 'Connection to Existing Building *'),
         'Ties into an existing load-bearing wall.',
       );
       await tester.tap(find.text('New Room'));
@@ -610,10 +604,7 @@ void main() {
       expect(tester.takeException(), isNull);
 
       final noneChip = tester.widget<FilterChip>(
-        find.ancestor(
-          of: find.text('None'),
-          matching: find.byType(FilterChip),
-        ),
+        find.ancestor(of: find.text('None'), matching: find.byType(FilterChip)),
       );
       final doorsChip = tester.widget<FilterChip>(
         find.ancestor(
@@ -628,10 +619,7 @@ void main() {
       await tester.tap(find.text('Doors and Windows'));
       await tester.pump();
       final noneChipAfter = tester.widget<FilterChip>(
-        find.ancestor(
-          of: find.text('None'),
-          matching: find.byType(FilterChip),
-        ),
+        find.ancestor(of: find.text('None'), matching: find.byType(FilterChip)),
       );
       expect(noneChipAfter.selected, isFalse);
     },
@@ -684,27 +672,28 @@ void main() {
     },
   );
 
-  testWidgets('Step 8 Edit button jumps back to the correct step and preserves data', (
-    tester,
-  ) async {
-    await _useTallSurface(tester);
-    await _openWizard(tester);
-    await _completeStep1(tester);
-    await _completeStep2(tester);
-    await _completeStep3(tester);
-    await _completeStep4(tester);
-    await _completeStep5(tester);
-    await _completeStep6AsOwner(tester);
-    await _completeStep7(tester);
+  testWidgets(
+    'Step 8 Edit button jumps back to the correct step and preserves data',
+    (tester) async {
+      await _useTallSurface(tester);
+      await _openWizard(tester);
+      await _completeStep1(tester);
+      await _completeStep2(tester);
+      await _completeStep3(tester);
+      await _completeStep4(tester);
+      await _completeStep5(tester);
+      await _completeStep6AsOwner(tester);
+      await _completeStep7(tester);
 
-    expect(find.text('Step 8 of 9'), findsOneWidget);
-    expect(find.text('Juan Dela Cruz'), findsOneWidget);
+      expect(find.text('Step 8 of 9'), findsOneWidget);
+      expect(find.text('Juan Dela Cruz'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Edit').first);
-    await tester.pumpAndSettle();
-    expect(find.text('Step 1 of 9'), findsOneWidget);
-    expect(find.widgetWithText(TextFormField, 'Juan'), findsOneWidget);
-  });
+      await tester.tap(find.widgetWithText(TextButton, 'Edit').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Step 1 of 9'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Juan'), findsOneWidget);
+    },
+  );
 
   testWidgets('Back navigation preserves data across Steps 1-4', (
     tester,

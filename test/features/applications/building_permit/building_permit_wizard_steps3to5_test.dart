@@ -448,10 +448,7 @@ void main() {
         reason: 'the three required documents are still missing',
       );
 
-      expect(
-        find.widgetWithText(OutlinedButton, 'Upload'),
-        findsNWidgets(3),
-      );
+      expect(find.widgetWithText(OutlinedButton, 'Upload'), findsNWidgets(3));
       await tester.ensureVisible(
         find.widgetWithText(OutlinedButton, 'Upload').first,
       );

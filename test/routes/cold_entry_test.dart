@@ -120,10 +120,7 @@ Widget _app(AuthProvider auth, GoRouter router) {
       ),
       ...wizardProviders(),
     ],
-    child: MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
-    ),
+    child: MaterialApp.router(theme: AppTheme.lightTheme, routerConfig: router),
   );
 }
 

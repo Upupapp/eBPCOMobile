@@ -12,18 +12,17 @@ QueuedOperation op({
   DateTime? enqueuedAt,
   DateTime? nextAttemptAt,
   String? key,
-}) =>
-    QueuedOperation(
-      id: id,
-      kind: kind,
-      idempotencyKey: key ?? 'key-$id',
-      enqueuedAt: enqueuedAt ?? DateTime.utc(2026, 8, 19, 10),
-      payload: const {'permitType': 'Fencing'},
-      applicationId: applicationId,
-      dependsOn: dependsOn,
-      state: state,
-      nextAttemptAt: nextAttemptAt,
-    );
+}) => QueuedOperation(
+  id: id,
+  kind: kind,
+  idempotencyKey: key ?? 'key-$id',
+  enqueuedAt: enqueuedAt ?? DateTime.utc(2026, 8, 19, 10),
+  payload: const {'permitType': 'Fencing'},
+  applicationId: applicationId,
+  dependsOn: dependsOn,
+  state: state,
+  nextAttemptAt: nextAttemptAt,
+);
 
 void main() {
   late InMemoryQueueStore store;
@@ -40,7 +39,9 @@ void main() {
     test('an item survives a round trip through storage', () async {
       // The store re-encodes on every save, so a field that does not serialise
       // fails here rather than on a device restart.
-      await queue().enqueue(op(id: 'a', applicationId: 'app-1', dependsOn: const ['b']));
+      await queue().enqueue(
+        op(id: 'a', applicationId: 'app-1', dependsOn: const ['b']),
+      );
 
       final loaded = (await queue().all()).single;
 
@@ -76,8 +77,13 @@ void main() {
 
       await expectLater(
         bounded.enqueue(op(id: 'c')),
-        throwsA(isA<QueueFullException>().having(
-          (e) => e.applicantMessage, 'message', contains('Connect to the internet'))),
+        throwsA(
+          isA<QueueFullException>().having(
+            (e) => e.applicantMessage,
+            'message',
+            contains('Connect to the internet'),
+          ),
+        ),
       );
     });
   });
@@ -87,38 +93,76 @@ void main() {
       // The server would reject a filing that names documents which do not
       // exist yet.
       final q = queue();
-      await q.enqueue(op(id: 'upload', kind: QueuedOperationKind.documentUpload, applicationId: 'app-1'));
-      await q.enqueue(op(id: 'submit', applicationId: 'app-1', dependsOn: const ['upload']));
+      await q.enqueue(
+        op(
+          id: 'upload',
+          kind: QueuedOperationKind.documentUpload,
+          applicationId: 'app-1',
+        ),
+      );
+      await q.enqueue(
+        op(id: 'submit', applicationId: 'app-1', dependsOn: const ['upload']),
+      );
 
       expect((await q.due()).map((o) => o.id), ['upload']);
     });
 
     test('releases the submission once its uploads are done', () async {
       final q = queue();
-      await q.enqueue(op(id: 'upload', kind: QueuedOperationKind.documentUpload, applicationId: 'app-1'));
-      await q.enqueue(op(id: 'submit', applicationId: 'app-1', dependsOn: const ['upload']));
+      await q.enqueue(
+        op(
+          id: 'upload',
+          kind: QueuedOperationKind.documentUpload,
+          applicationId: 'app-1',
+        ),
+      );
+      await q.enqueue(
+        op(id: 'submit', applicationId: 'app-1', dependsOn: const ['upload']),
+      );
 
-      await q.update((await q.all()).firstWhere((o) => o.id == 'upload')
-          .copyWith(state: QueuedOperationState.completed));
+      await q.update(
+        (await q.all())
+            .firstWhere((o) => o.id == 'upload')
+            .copyWith(state: QueuedOperationState.completed),
+      );
 
       expect((await q.due()).map((o) => o.id), ['submit']);
     });
 
-    test('sends uploads before a submission for the same application', () async {
-      final q = queue();
-      await q.enqueue(op(id: 'submit', applicationId: 'app-1',
-          enqueuedAt: DateTime.utc(2026, 8, 19, 9)));
-      await q.enqueue(op(id: 'upload', kind: QueuedOperationKind.documentUpload,
-          applicationId: 'app-1', enqueuedAt: DateTime.utc(2026, 8, 19, 10)));
+    test(
+      'sends uploads before a submission for the same application',
+      () async {
+        final q = queue();
+        await q.enqueue(
+          op(
+            id: 'submit',
+            applicationId: 'app-1',
+            enqueuedAt: DateTime.utc(2026, 8, 19, 9),
+          ),
+        );
+        await q.enqueue(
+          op(
+            id: 'upload',
+            kind: QueuedOperationKind.documentUpload,
+            applicationId: 'app-1',
+            enqueuedAt: DateTime.utc(2026, 8, 19, 10),
+          ),
+        );
 
-      expect((await q.due()).map((o) => o.id), ['upload', 'submit']);
-    });
+        expect((await q.due()).map((o) => o.id), ['upload', 'submit']);
+      },
+    );
 
     test('does not hold one application behind another', () async {
       // One stuck filing must not stop an unrelated one.
       final q = queue();
-      await q.enqueue(op(id: 'a', applicationId: 'app-1',
-          nextAttemptAt: DateTime.utc(2026, 8, 19, 23)));
+      await q.enqueue(
+        op(
+          id: 'a',
+          applicationId: 'app-1',
+          nextAttemptAt: DateTime.utc(2026, 8, 19, 23),
+        ),
+      );
       await q.enqueue(op(id: 'b', applicationId: 'app-2'));
 
       expect((await q.due()).map((o) => o.id), ['b']);
@@ -126,7 +170,9 @@ void main() {
 
     test('respects a backoff that has not elapsed', () async {
       final q = queue();
-      await q.enqueue(op(id: 'a', nextAttemptAt: DateTime.utc(2026, 8, 19, 13)));
+      await q.enqueue(
+        op(id: 'a', nextAttemptAt: DateTime.utc(2026, 8, 19, 13)),
+      );
 
       expect(await q.due(), isEmpty);
 
@@ -136,7 +182,9 @@ void main() {
 
     test('never returns an item that already failed permanently', () async {
       final q = queue();
-      await q.enqueue(op(id: 'a', state: QueuedOperationState.failedPermanently));
+      await q.enqueue(
+        op(id: 'a', state: QueuedOperationState.failedPermanently),
+      );
 
       expect(await q.due(), isEmpty);
     });
@@ -170,17 +218,26 @@ void main() {
       // resending it, and finding out at the counter — possibly after a
       // deadline they thought they had met.
       expect(op(id: 'a').applicantStatus, 'Queued');
-      expect(op(id: 'a', state: QueuedOperationState.inFlight).applicantStatus, 'Sending');
+      expect(
+        op(id: 'a', state: QueuedOperationState.inFlight).applicantStatus,
+        'Sending',
+      );
       expect(op(id: 'a').isWaitingToReachTheLgu, isTrue);
     });
 
     test('only a completed item is called submitted', () {
-      expect(op(id: 'a', state: QueuedOperationState.completed).applicantStatus, 'Submitted');
+      expect(
+        op(id: 'a', state: QueuedOperationState.completed).applicantStatus,
+        'Submitted',
+      );
     });
 
     test('a permanently failed item asks for attention rather than hiding', () {
       expect(
-        op(id: 'a', state: QueuedOperationState.failedPermanently).applicantStatus,
+        op(
+          id: 'a',
+          state: QueuedOperationState.failedPermanently,
+        ).applicantStatus,
         'Needs your attention',
       );
     });

@@ -114,9 +114,7 @@ Future<void> _selectDropdown(
   int dropdownIndex,
   String optionLabel,
 ) async {
-  final dropdowns = find.byWidgetPredicate(
-    (w) => w is DropdownButtonFormField,
-  );
+  final dropdowns = find.byWidgetPredicate((w) => w is DropdownButtonFormField);
   await tester.ensureVisible(dropdowns.at(dropdownIndex));
   await tester.pumpAndSettle();
   await tester.tap(dropdowns.at(dropdownIndex));
@@ -224,10 +222,7 @@ Future<void> _completeStep6(WidgetTester tester) async {
   await tester.tap(find.text('Excavation and Fills'));
   await tester.pump();
   await tester.enterText(
-    find.widgetWithText(
-      TextFormField,
-      'Estimated Excavation Depth (meters) *',
-    ),
+    find.widgetWithText(TextFormField, 'Estimated Excavation Depth (meters) *'),
     '1.5',
   );
   await tester.enterText(
@@ -386,17 +381,14 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Information heading',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Information heading', (tester) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.text('Permit Information'), findsWidgets);
-    },
-  );
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.text('Permit Information'), findsWidgets);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 9, and Submit Application opens the confirmation screen with the pending Building Permit warning',
@@ -613,45 +605,41 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Lot Ownership "No" reveals a separate Lot Owner section',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      await _completeStep5(tester);
-      await _completeStep6(tester);
-      await _completeStep7(tester);
-      await _completeStep8(tester);
+  testWidgets('Lot Ownership "No" reveals a separate Lot Owner section', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    await _completeStep5(tester);
+    await _completeStep6(tester);
+    await _completeStep7(tester);
+    await _completeStep8(tester);
 
-      expect(
-        tester.widget<ElevatedButton>(_submitButton()).onPressed,
-        isNull,
-      );
+    expect(tester.widget<ElevatedButton>(_submitButton()).onPressed, isNull);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Printed Name *'),
-        'Juan Dela Cruz',
-      );
-      await tester.pump();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Printed Name *'),
+      'Juan Dela Cruz',
+    );
+    await tester.pump();
 
-      final noButton = find.text('No');
-      await tester.ensureVisible(noButton);
-      await tester.pumpAndSettle();
-      await tester.tap(noButton);
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      expect(
-        find.widgetWithText(TextFormField, 'Printed Name *'),
-        findsNWidgets(2),
-        reason: 'the Lot Owner now has its own Printed Name field',
-      );
-      expect(find.text('Lot Owner Information'), findsWidgets);
-    },
-  );
+    final noButton = find.text('No');
+    await tester.ensureVisible(noButton);
+    await tester.pumpAndSettle();
+    await tester.tap(noButton);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      find.widgetWithText(TextFormField, 'Printed Name *'),
+      findsNWidgets(2),
+      reason: 'the Lot Owner now has its own Printed Name field',
+    );
+    expect(find.text('Lot Owner Information'), findsWidgets);
+  });
 
   testWidgets('Save as Draft works and preserves values', (tester) async {
     await _useTallSurface(tester);

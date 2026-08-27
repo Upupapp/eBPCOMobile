@@ -46,6 +46,12 @@ class _FakeApplicationsRepository implements ApplicationsRepository {
     required PaymentMethod method,
     DocumentModel? proof,
   }) => throw UnimplementedError();
+  @override
+  Future<ApplicationModel> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async => throw UnimplementedError();
 
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
@@ -151,9 +157,8 @@ Widget _wrap({
     providers: [
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(
-          repository: _EmptyNotificationsRepository(),
-        ),
+        create: (_) =>
+            NotificationsProvider(repository: _EmptyNotificationsRepository()),
       ),
       ChangeNotifierProvider<BusinessProvider>(
         create: (context) => BusinessProvider(
@@ -216,7 +221,10 @@ void main() {
 
       expect(find.text('Before you apply'), findsOneWidget);
       expect(find.text('Register a Business'), findsNothing);
-      expect(find.textContaining('locational or zoning clearance'), findsWidgets);
+      expect(
+        find.textContaining('locational or zoning clearance'),
+        findsWidgets,
+      );
     });
   });
 
@@ -263,7 +271,10 @@ void main() {
 
       expect(find.text('Needs your action'), findsOneWidget);
       expect(find.text('Letter of Instruction issued'), findsOneWidget);
-      expect(find.text('2 items must be corrected or supplied.'), findsOneWidget);
+      expect(
+        find.text('2 items must be corrected or supplied.'),
+        findsOneWidget,
+      );
       expect(find.text('View instructions'), findsOneWidget);
     });
 
@@ -361,20 +372,21 @@ void main() {
       );
     });
 
-    testWidgets('a failing repository degrades the tab instead of blanking it', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrap(applicationsRepository: _FailingApplicationsRepository()),
-      );
-      await _settle(tester);
+    testWidgets(
+      'a failing repository degrades the tab instead of blanking it',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrap(applicationsRepository: _FailingApplicationsRepository()),
+        );
+        await _settle(tester);
 
-      // The tab still renders its own furniture rather than hanging on a
-      // spinner or throwing.
-      expect(find.text('Apply for Permit'), findsWidgets);
-      expect(find.text('Application Summary'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        // The tab still renders its own furniture rather than hanging on a
+        // spinner or throwing.
+        expect(find.text('Apply for Permit'), findsWidgets);
+        expect(find.text('Application Summary'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('a failed refresh keeps the data and labels it as stale', (
       tester,

@@ -69,10 +69,7 @@ Widget _wrapWithRouter(AuthProvider authProvider) {
   final router = GoRouter(
     initialLocation: '/profile',
     routes: [
-      GoRoute(
-        path: '/profile',
-        builder: (context, state) => ProfileScreen(),
-      ),
+      GoRoute(path: '/profile', builder: (context, state) => ProfileScreen()),
       GoRoute(
         path: '/profile/edit',
         builder: (context, state) => const EditProfileScreen(),
@@ -112,9 +109,8 @@ Widget _wrapWithRouter(AuthProvider authProvider) {
     providers: [
       ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(
-          repository: _EmptyNotificationsRepository(),
-        ),
+        create: (_) =>
+            NotificationsProvider(repository: _EmptyNotificationsRepository()),
       ),
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),

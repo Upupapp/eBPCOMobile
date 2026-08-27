@@ -174,9 +174,7 @@ Future<void> _pickNextMonthFirst(WidgetTester tester, String label) async {
 }
 
 Future<void> _completeStep4(WidgetTester tester) async {
-  await tester.tap(
-    find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-  );
+  await tester.tap(find.byWidgetPredicate((w) => w is DropdownButtonFormField));
   await tester.pumpAndSettle();
   await tester.tap(find.text('Group A — Residential, Dwellings').last);
   await tester.pumpAndSettle();
@@ -217,9 +215,7 @@ Future<void> _completeStep5(WidgetTester tester) async {
     find.widgetWithText(TextFormField, 'Full Name *'),
     'Arch. Maria Santos',
   );
-  await tester.tap(
-    find.byWidgetPredicate((w) => w is DropdownButtonFormField),
-  );
+  await tester.tap(find.byWidgetPredicate((w) => w is DropdownButtonFormField));
   await tester.pumpAndSettle();
   await tester.tap(find.text('Architect').last);
   await tester.pumpAndSettle();
@@ -386,7 +382,10 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Renovation Application Submitted!'), findsOneWidget);
       expect(find.textContaining('REN-'), findsOneWidget);
-      expect(find.text('Building Permit – Renovation / Alteration'), findsOneWidget);
+      expect(
+        find.text('Building Permit – Renovation / Alteration'),
+        findsOneWidget,
+      );
     },
   );
 
@@ -418,9 +417,7 @@ void main() {
       await _completeStep6AsOwner(tester);
 
       expect(find.text('Step 7 of 9'), findsOneWidget);
-      await tester.ensureVisible(
-        find.text('Renovation Technical Documents'),
-      );
+      await tester.ensureVisible(find.text('Renovation Technical Documents'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Renovation Technical Documents'));
       await tester.pumpAndSettle();
@@ -511,41 +508,40 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Back navigation preserves data across Steps 1-4',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      expect(find.text('Step 5 of 9'), findsOneWidget);
+  testWidgets('Back navigation preserves data across Steps 1-4', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    expect(find.text('Step 5 of 9'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
-      await tester.pumpAndSettle();
-      expect(find.text('Step 4 of 9'), findsOneWidget);
-      expect(
-        find.widgetWithText(TextFormField, 'Single Detached Residential Building'),
-        findsOneWidget,
-      );
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Step 4 of 9'), findsOneWidget);
+    expect(
+      find.widgetWithText(
+        TextFormField,
+        'Single Detached Residential Building',
+      ),
+      findsOneWidget,
+    );
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
-      await tester.pumpAndSettle();
-      expect(find.text('Step 2 of 9'), findsOneWidget);
-      expect(
-        find.widgetWithText(TextFormField, 'Rizal St.'),
-        findsWidgets,
-      );
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Step 2 of 9'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Rizal St.'), findsWidgets);
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
-      await tester.pumpAndSettle();
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Juan'), findsOneWidget);
-    },
-  );
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Juan'), findsOneWidget);
+  });
 
   testWidgets('Step 8 Edit button jumps back to the correct step and returns', (
     tester,

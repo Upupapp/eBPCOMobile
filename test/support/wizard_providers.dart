@@ -27,20 +27,52 @@ import 'package:ebpco_user_app/core/providers/sign_permit_provider.dart';
 /// out in each harness meant sixteen lines of noise per test file and one more
 /// place to forget when a seventeenth permit arrives.
 List<SingleChildWidget> wizardProviders() => [
-  ChangeNotifierProvider<BuildingPermitProvider>(create: (_) => BuildingPermitProvider()),
-  ChangeNotifierProvider<RenovationPermitProvider>(create: (_) => RenovationPermitProvider()),
-  ChangeNotifierProvider<AdditionExtensionPermitProvider>(create: (_) => AdditionExtensionPermitProvider()),
-  ChangeNotifierProvider<DemolitionPermitProvider>(create: (_) => DemolitionPermitProvider()),
-  ChangeNotifierProvider<ArchitecturalPermitProvider>(create: (_) => ArchitecturalPermitProvider()),
-  ChangeNotifierProvider<CivilStructuralPermitProvider>(create: (_) => CivilStructuralPermitProvider()),
-  ChangeNotifierProvider<ElectricalPermitProvider>(create: (_) => ElectricalPermitProvider()),
-  ChangeNotifierProvider<MechanicalPermitProvider>(create: (_) => MechanicalPermitProvider()),
-  ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(create: (_) => SanitaryPlumbingPermitProvider()),
-  ChangeNotifierProvider<PlumbingPermitProvider>(create: (_) => PlumbingPermitProvider()),
-  ChangeNotifierProvider<ElectronicsPermitProvider>(create: (_) => ElectronicsPermitProvider()),
-  ChangeNotifierProvider<InteriorDesignPermitProvider>(create: (_) => InteriorDesignPermitProvider()),
-  ChangeNotifierProvider<FencingPermitProvider>(create: (_) => FencingPermitProvider()),
-  ChangeNotifierProvider<SignPermitProvider>(create: (_) => SignPermitProvider()),
-  ChangeNotifierProvider<ExcavationPermitProvider>(create: (_) => ExcavationPermitProvider()),
-  ChangeNotifierProvider<CertificateOfOccupancyProvider>(create: (_) => CertificateOfOccupancyProvider()),
+  ChangeNotifierProvider<BuildingPermitProvider>(
+    create: (_) => BuildingPermitProvider(),
+  ),
+  ChangeNotifierProvider<RenovationPermitProvider>(
+    create: (_) => RenovationPermitProvider(),
+  ),
+  ChangeNotifierProvider<AdditionExtensionPermitProvider>(
+    create: (_) => AdditionExtensionPermitProvider(),
+  ),
+  ChangeNotifierProvider<DemolitionPermitProvider>(
+    create: (_) => DemolitionPermitProvider(),
+  ),
+  ChangeNotifierProvider<ArchitecturalPermitProvider>(
+    create: (_) => ArchitecturalPermitProvider(),
+  ),
+  ChangeNotifierProvider<CivilStructuralPermitProvider>(
+    create: (_) => CivilStructuralPermitProvider(),
+  ),
+  ChangeNotifierProvider<ElectricalPermitProvider>(
+    create: (_) => ElectricalPermitProvider(),
+  ),
+  ChangeNotifierProvider<MechanicalPermitProvider>(
+    create: (_) => MechanicalPermitProvider(),
+  ),
+  ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(
+    create: (_) => SanitaryPlumbingPermitProvider(),
+  ),
+  ChangeNotifierProvider<PlumbingPermitProvider>(
+    create: (_) => PlumbingPermitProvider(),
+  ),
+  ChangeNotifierProvider<ElectronicsPermitProvider>(
+    create: (_) => ElectronicsPermitProvider(),
+  ),
+  ChangeNotifierProvider<InteriorDesignPermitProvider>(
+    create: (_) => InteriorDesignPermitProvider(),
+  ),
+  ChangeNotifierProvider<FencingPermitProvider>(
+    create: (_) => FencingPermitProvider(),
+  ),
+  ChangeNotifierProvider<SignPermitProvider>(
+    create: (_) => SignPermitProvider(),
+  ),
+  ChangeNotifierProvider<ExcavationPermitProvider>(
+    create: (_) => ExcavationPermitProvider(),
+  ),
+  ChangeNotifierProvider<CertificateOfOccupancyProvider>(
+    create: (_) => CertificateOfOccupancyProvider(),
+  ),
 ];

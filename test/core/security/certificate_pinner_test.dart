@@ -26,7 +26,8 @@ class _FakeCertificate implements X509Certificate {
   @override
   Uint8List get sha1 => Uint8List(20);
   @override
-  String get pem => '-----BEGIN CERTIFICATE-----\n${base64.encode(der)}\n-----END CERTIFICATE-----';
+  String get pem =>
+      '-----BEGIN CERTIFICATE-----\n${base64.encode(der)}\n-----END CERTIFICATE-----';
 }
 
 X509Certificate certificateFrom(String seed) =>
@@ -41,10 +42,12 @@ void main() {
   final attacker = certificateFrom('a-certificate-from-an-installed-root');
 
   group('a pinned connection', () {
-    final pinner = CertificatePinner(pins: {
-      pinFor('the-lgu-certificate-in-force'),
-      pinFor('the-certificate-that-replaces-it'),
-    });
+    final pinner = CertificatePinner(
+      pins: {
+        pinFor('the-lgu-certificate-in-force'),
+        pinFor('the-certificate-that-replaces-it'),
+      },
+    );
 
     test('accepts the certificate in force', () {
       expect(pinner.accepts(current), isTrue);
@@ -70,7 +73,10 @@ void main() {
     });
 
     test('computes the fingerprint over the DER encoding', () {
-      expect(CertificatePinner.fingerprintOf(current), pinFor('the-lgu-certificate-in-force'));
+      expect(
+        CertificatePinner.fingerprintOf(current),
+        pinFor('the-lgu-certificate-in-force'),
+      );
     });
   });
 
@@ -94,13 +100,16 @@ void main() {
   });
 
   group('misconfiguration', () {
-    test('refuses to run enabled with no pins, rather than bricking silently', () {
-      // Enabled with an empty set would accept nothing. Failing loudly at the
-      // first request beats every applicant seeing a connection error.
-      const misconfigured = CertificatePinner(pins: {});
+    test(
+      'refuses to run enabled with no pins, rather than bricking silently',
+      () {
+        // Enabled with an empty set would accept nothing. Failing loudly at the
+        // first request beats every applicant seeing a connection error.
+        const misconfigured = CertificatePinner(pins: {});
 
-      expect(() => misconfigured.accepts(current), throwsStateError);
-    });
+        expect(() => misconfigured.accepts(current), throwsStateError);
+      },
+    );
   });
 
   group('the HTTP client it builds', () {
@@ -111,8 +120,14 @@ void main() {
       // a named method and asserted directly.
       final pinner = CertificatePinner(pins: {pinFor('x')});
 
-      expect(pinner.rejectBadCertificate(current, 'ebpco.example.gov.ph', 443), isFalse);
-      expect(pinner.rejectBadCertificate(attacker, 'ebpco.example.gov.ph', 443), isFalse);
+      expect(
+        pinner.rejectBadCertificate(current, 'ebpco.example.gov.ph', 443),
+        isFalse,
+      );
+      expect(
+        pinner.rejectBadCertificate(attacker, 'ebpco.example.gov.ph', 443),
+        isFalse,
+      );
 
       pinner.buildClient().close();
     });

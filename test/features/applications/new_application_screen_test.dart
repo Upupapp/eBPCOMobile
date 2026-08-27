@@ -20,14 +20,20 @@ Widget _wrapWithProviders(Widget child) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<NotificationsProvider>(
-        create: (_) => NotificationsProvider(repository: MockNotificationsRepository()),
+        create: (_) =>
+            NotificationsProvider(repository: MockNotificationsRepository()),
       ),
       ChangeNotifierProvider<BusinessProvider>(
-        create: (context) =>
-            BusinessProvider(notifications: context.read<NotificationsProvider>(), repository: MockBusinessRepository()),
+        create: (context) => BusinessProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockBusinessRepository(),
+        ),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
-        create: (context) => ApplicationsProvider(notifications: context.read<NotificationsProvider>(), repository: MockApplicationsRepository()),
+        create: (context) => ApplicationsProvider(
+          notifications: context.read<NotificationsProvider>(),
+          repository: MockApplicationsRepository(),
+        ),
       ),
     ],
     child: MaterialApp(home: child),

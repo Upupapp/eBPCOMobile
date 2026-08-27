@@ -44,7 +44,8 @@ void main() {
         expect(
           const [3, 7, 20].contains(entry.pledgedWorkingDays),
           isTrue,
-          reason: '$permit pledges ${entry.pledgedWorkingDays} days, which is '
+          reason:
+              '$permit pledges ${entry.pledgedWorkingDays} days, which is '
               'not one of the RA 11032 periods',
         );
       }
@@ -76,12 +77,15 @@ void main() {
       }
     });
 
-    test('notarised requirements are flagged as needing a wet-signed original', () {
-      final application = charterFor(
-        'New Construction',
-      ).requirements.firstWhere((r) => r.item.contains('Unified Building'));
-      expect(application.requiresNotarisation, isTrue);
-    });
+    test(
+      'notarised requirements are flagged as needing a wet-signed original',
+      () {
+        final application = charterFor(
+          'New Construction',
+        ).requirements.firstWhere((r) => r.item.contains('Unified Building'));
+        expect(application.requiresNotarisation, isTrue);
+      },
+    );
 
     test('the occupancy entry reflects what an LGU actually asks for', () {
       final items = charterFor(
@@ -96,11 +100,14 @@ void main() {
       expect(items, contains('Photographs'));
     });
 
-    test('an unlisted permit falls back to an ancillary entry, not an error', () {
-      final entry = charterFor('Some Future Permit');
-      expect(entry.permitType, 'Some Future Permit');
-      expect(entry.requirements, isNotEmpty);
-    });
+    test(
+      'an unlisted permit falls back to an ancillary entry, not an error',
+      () {
+        final entry = charterFor('Some Future Permit');
+        expect(entry.permitType, 'Some Future Permit');
+        expect(entry.requirements, isNotEmpty);
+      },
+    );
   });
 
   group('charter screen', () {
@@ -118,10 +125,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('New Construction'), findsOneWidget);
-      expect(
-        find.text('Highly Technical · 20 working days'),
-        findsOneWidget,
-      );
+      expect(find.text('Highly Technical · 20 working days'), findsOneWidget);
       expect(find.textContaining('schedule of fees'), findsWidgets);
       expect(find.textContaining('Land Registration Authority'), findsWidgets);
       expect(
@@ -144,10 +148,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Wet-signed notarised original required'),
-        findsWidgets,
-      );
+      expect(find.text('Wet-signed notarised original required'), findsWidgets);
     });
   });
 }

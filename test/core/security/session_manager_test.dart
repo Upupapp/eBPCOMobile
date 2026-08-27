@@ -16,8 +16,7 @@ void main() {
 
   SessionManager managerThat(
     Future<RefreshedTokens?> Function(String) refresh,
-  ) =>
-      SessionManager(store, refresh, () async => signedOutCount += 1);
+  ) => SessionManager(store, refresh, () async => signedOutCount += 1);
 
   group('one refresh at a time', () {
     test('ten simultaneous 401s produce exactly one refresh call', () async {
@@ -32,7 +31,10 @@ void main() {
 
       final manager = managerThat((_) async {
         await gate.future;
-        return const RefreshedTokens(accessToken: 'new', refreshToken: 'refresh-2');
+        return const RefreshedTokens(
+          accessToken: 'new',
+          refreshToken: 'refresh-2',
+        );
       });
 
       final attempts = List.generate(10, (_) => manager.refreshAccessToken());
@@ -50,7 +52,10 @@ void main() {
       var issued = 0;
       final manager = managerThat((_) async {
         issued += 1;
-        return RefreshedTokens(accessToken: 'new-$issued', refreshToken: 'refresh-$issued');
+        return RefreshedTokens(
+          accessToken: 'new-$issued',
+          refreshToken: 'refresh-$issued',
+        );
       });
 
       expect(await manager.refreshAccessToken(), 'new-1');
@@ -64,7 +69,10 @@ void main() {
       final manager = managerThat((_) async {
         call += 1;
         if (call == 1) throw StateError('network down');
-        return const RefreshedTokens(accessToken: 'new', refreshToken: 'refresh-2');
+        return const RefreshedTokens(
+          accessToken: 'new',
+          refreshToken: 'refresh-2',
+        );
       });
 
       expect(await manager.refreshAccessToken(), isNull);
@@ -80,7 +88,10 @@ void main() {
     test('a successful refresh stores both', () async {
       await store.save(accessToken: 'old', refreshToken: 'refresh-1');
       final manager = managerThat(
-        (_) async => const RefreshedTokens(accessToken: 'new', refreshToken: 'refresh-2'),
+        (_) async => const RefreshedTokens(
+          accessToken: 'new',
+          refreshToken: 'refresh-2',
+        ),
       );
 
       await manager.refreshAccessToken();
@@ -94,7 +105,10 @@ void main() {
       // as a replay and answers by revoking every session.
       await store.save(accessToken: 'old', refreshToken: 'refresh-1');
       final manager = managerThat(
-        (_) async => const RefreshedTokens(accessToken: 'new', refreshToken: 'refresh-2'),
+        (_) async => const RefreshedTokens(
+          accessToken: 'new',
+          refreshToken: 'refresh-2',
+        ),
       );
 
       await manager.refreshAccessToken();
@@ -124,13 +138,18 @@ void main() {
       expect(signedOutCount, 1);
     });
 
-    test('refreshing with no stored token signs out without calling out', () async {
-      final manager = managerThat((_) async => fail('should not have been called'));
+    test(
+      'refreshing with no stored token signs out without calling out',
+      () async {
+        final manager = managerThat(
+          (_) async => fail('should not have been called'),
+        );
 
-      expect(await manager.refreshAccessToken(), isNull);
-      expect(manager.refreshCallCount, 0);
-      expect(signedOutCount, 1);
-    });
+        expect(await manager.refreshAccessToken(), isNull);
+        expect(manager.refreshCallCount, 0);
+        expect(signedOutCount, 1);
+      },
+    );
 
     test('signing out clears the store and notifies once', () async {
       await store.save(accessToken: 'a', refreshToken: 'r');

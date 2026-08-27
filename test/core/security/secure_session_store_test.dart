@@ -18,7 +18,10 @@ void main() {
   group('nothing sensitive reaches SharedPreferences', () {
     test('saving a session writes nothing to preferences at all', () async {
       final store = InMemorySessionStore();
-      await store.save(accessToken: 'header.payload.signature', refreshToken: 'refresh-secret-abc');
+      await store.save(
+        accessToken: 'header.payload.signature',
+        refreshToken: 'refresh-secret-abc',
+      );
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -32,7 +35,10 @@ void main() {
       await prefs.setBool(AppConstants.prefIsLoggedIn, true);
 
       final store = InMemorySessionStore();
-      await store.save(accessToken: 'header.payload.signature', refreshToken: 'refresh-secret-abc');
+      await store.save(
+        accessToken: 'header.payload.signature',
+        refreshToken: 'refresh-secret-abc',
+      );
 
       final written = prefs
           .getKeys()

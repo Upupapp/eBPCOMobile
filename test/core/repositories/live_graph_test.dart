@@ -22,36 +22,43 @@ import 'package:ebpco_user_app/core/services/secure_session_store.dart';
 /// implementation fails here rather than in production, where it looks like the
 /// office losing an applicant's data.
 void main() {
-  ApiClient liveClient() => ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api');
+  ApiClient liveClient() =>
+      ApiClient(baseUrl: 'https://ebpco.example.gov.ph/api');
 
   /// Every repository the factory produces, by name, so the assertions below
   /// are over the whole set rather than the ones anyone remembered.
   Map<String, Object> allDomainsOf(RepositoryFactory factory) => {
-        'applications': factory.applications(),
-        'auth': factory.auth(),
-        'businesses': factory.businesses(),
-        'notifications': factory.notifications(),
-      };
+    'applications': factory.applications(),
+    'auth': factory.auth(),
+    'businesses': factory.businesses(),
+    'notifications': factory.notifications(),
+  };
 
   group('a live build is fully live', () {
     late RepositoryFactory factory;
 
     setUp(() {
-      factory = RepositoryFactory(apiClient: liveClient(), session: InMemorySessionStore());
+      factory = RepositoryFactory(
+        apiClient: liveClient(),
+        session: InMemorySessionStore(),
+      );
     });
 
     tearDown(() => factory.dispose());
 
     test('no Mock repository is instantiated anywhere in the graph', () {
       final mocks = allDomainsOf(factory).entries
-          .where((entry) => entry.value.runtimeType.toString().startsWith('Mock'))
+          .where(
+            (entry) => entry.value.runtimeType.toString().startsWith('Mock'),
+          )
           .map((entry) => '${entry.key} -> ${entry.value.runtimeType}')
           .toList();
 
       expect(
         mocks,
         isEmpty,
-        reason: 'a live build serving seed data from any domain is the half-live '
+        reason:
+            'a live build serving seed data from any domain is the half-live '
             'state this factory exists to prevent',
       );
     });
@@ -111,7 +118,9 @@ void main() {
       // The inverse of the live check. A mock build that quietly makes one live
       // call is a build that fails on an aeroplane and works on a desk.
       final live = allDomainsOf(factory).entries
-          .where((entry) => entry.value.runtimeType.toString().startsWith('Http'))
+          .where(
+            (entry) => entry.value.runtimeType.toString().startsWith('Http'),
+          )
           .map((entry) => entry.key)
           .toList();
 
@@ -123,7 +132,10 @@ void main() {
     test('the same instance is reused across domains', () {
       // The underlying http.Client pools connections; a fresh one per
       // repository would throw that away and open a socket per domain.
-      final factory = RepositoryFactory(apiClient: liveClient(), session: InMemorySessionStore());
+      final factory = RepositoryFactory(
+        apiClient: liveClient(),
+        session: InMemorySessionStore(),
+      );
 
       expect(identical(factory.client, factory.client), isTrue);
 

@@ -23,8 +23,8 @@ class ApplicationsProvider extends ChangeNotifier {
     ServicePledgeService? pledgeService,
     this.actionItemBuilder = const ActionItemBuilder(),
     DateTime Function()? clock,
-  })  : _pledgeService = pledgeService ?? const ServicePledgeService(),
-        _clock = clock ?? DateTime.now {
+  }) : _pledgeService = pledgeService ?? const ServicePledgeService(),
+       _clock = clock ?? DateTime.now {
     _load();
   }
 
@@ -224,6 +224,36 @@ class ApplicationsProvider extends ChangeNotifier {
     return application;
   }
 
+  /// Sends a replacement for a document the office turned back.
+  ///
+  /// Returns null when it could not be sent, having left the application
+  /// untouched. The caller tells the applicant — an unguarded throw here would
+  /// leave them looking at a document that still says "Rejected" with no idea
+  /// whether their replacement went anywhere.
+  Future<ApplicationModel?> resubmitDocument(
+    String applicationId, {
+    required String documentId,
+    required DocumentModel replacement,
+  }) async {
+    try {
+      final updated = await _repository.resubmitDocument(
+        applicationId,
+        documentId: documentId,
+        replacement: replacement,
+      );
+      _applications = [
+        for (final application in _applications)
+          if (application.id == updated.id) updated else application,
+      ];
+      notifyListeners();
+      return updated;
+    } catch (error) {
+      _loadError = error;
+      notifyListeners();
+      return null;
+    }
+  }
+
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
@@ -309,10 +339,7 @@ class ApplicationsProvider extends ChangeNotifier {
     }
 
     _replace(
-      application.copyWith(
-        instructions: letters,
-        openInstructionCount: open,
-      ),
+      application.copyWith(instructions: letters, openInstructionCount: open),
     );
   }
 
@@ -415,10 +442,7 @@ class ApplicationsProvider extends ChangeNotifier {
       application.id,
       NotificationType.orderOfPaymentIssued,
     );
-    _notifications.resolveFor(
-      application.id,
-      NotificationType.paymentOverdue,
-    );
+    _notifications.resolveFor(application.id, NotificationType.paymentOverdue);
   }
 
   void _replace(ApplicationModel updated) {

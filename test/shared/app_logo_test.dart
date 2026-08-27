@@ -28,7 +28,10 @@ void main() {
       AppStrings.appFullName,
       'Electronic Building Permit and Certificate of Occupancy',
     );
-    expect(AppStrings.appTagline, 'Building Permit and Certificate of Occupancy');
+    expect(
+      AppStrings.appTagline,
+      'Building Permit and Certificate of Occupancy',
+    );
   });
 
   testWidgets('the tagline fits a 360dp phone without overflowing', (

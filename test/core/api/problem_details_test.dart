@@ -35,13 +35,16 @@ void main() {
       expect(problem.fieldErrors['/password'], 'too short');
     });
 
-    test('returns null rather than throwing on a body that is not problem+json', () {
-      // A 503 from a load balancer is HTML. Turning that into a parse error
-      // would report a contract bug where the truth is an outage.
-      expect(ProblemDetails.tryParse('<html>502 Bad Gateway</html>'), isNull);
-      expect(ProblemDetails.tryParse(''), isNull);
-      expect(ProblemDetails.tryParse('{"unexpected":"shape"}'), isNull);
-    });
+    test(
+      'returns null rather than throwing on a body that is not problem+json',
+      () {
+        // A 503 from a load balancer is HTML. Turning that into a parse error
+        // would report a contract bug where the truth is an outage.
+        expect(ProblemDetails.tryParse('<html>502 Bad Gateway</html>'), isNull);
+        expect(ProblemDetails.tryParse(''), isNull);
+        expect(ProblemDetails.tryParse('{"unexpected":"shape"}'), isNull);
+      },
+    );
   });
 
   group('what the applicant is shown', () {
@@ -53,7 +56,8 @@ void main() {
         problem: ProblemDetails(
           type: '/problems/precondition-unmet',
           title: 'A precondition is unmet',
-          detail: 'No Order of Payment has been issued for this application, so there is nothing to pay.',
+          detail:
+              'No Order of Payment has been issued for this application, so there is nothing to pay.',
         ),
       );
 
@@ -66,14 +70,20 @@ void main() {
       expect(exception.applicantMessage, contains('did not respond in time'));
     });
 
-    test('never puts a status code or a stack trace in front of an applicant', () {
-      // They cannot act on "HTTP 502", and being shown one suggests they did
-      // something wrong.
-      for (final failure in ApiFailure.values) {
-        expect(failure.applicantMessage, isNot(matches(RegExp(r'\b[45]\d\d\b'))));
-        expect(failure.applicantMessage, isNot(contains('Exception')));
-      }
-    });
+    test(
+      'never puts a status code or a stack trace in front of an applicant',
+      () {
+        // They cannot act on "HTTP 502", and being shown one suggests they did
+        // something wrong.
+        for (final failure in ApiFailure.values) {
+          expect(
+            failure.applicantMessage,
+            isNot(matches(RegExp(r'\b[45]\d\d\b'))),
+          );
+          expect(failure.applicantMessage, isNot(contains('Exception')));
+        }
+      },
+    );
 
     test('every failure class says something, and something different', () {
       final messages = ApiFailure.values.map((f) => f.applicantMessage).toSet();
@@ -100,19 +110,29 @@ void main() {
       expect(ApiFailure.malformed.isTransient, isFalse);
     });
 
-    test('exposes the problem type, so a screen can branch on a specific case', () {
-      // "No Order of Payment" is a different screen from "not permitted", and
-      // the status code alone only says 4xx.
-      const exception = ApiException(
-        ApiFailure.rejected, 'x',
-        problem: ProblemDetails(type: '/problems/order-of-payment-required', title: 'Not assessed'),
-      );
+    test(
+      'exposes the problem type, so a screen can branch on a specific case',
+      () {
+        // "No Order of Payment" is a different screen from "not permitted", and
+        // the status code alone only says 4xx.
+        const exception = ApiException(
+          ApiFailure.rejected,
+          'x',
+          problem: ProblemDetails(
+            type: '/problems/order-of-payment-required',
+            title: 'Not assessed',
+          ),
+        );
 
-      expect(exception.problemType, '/problems/order-of-payment-required');
-    });
+        expect(exception.problemType, '/problems/order-of-payment-required');
+      },
+    );
 
     test('reports no problem type when the server sent none', () {
-      expect(const ApiException(ApiFailure.network, 'offline').problemType, isNull);
+      expect(
+        const ApiException(ApiFailure.network, 'offline').problemType,
+        isNull,
+      );
     });
   });
 

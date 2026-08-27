@@ -409,18 +409,17 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Type fixed to Demolition',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Type fixed to Demolition', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.text('Applicant Information'), findsOneWidget);
-      expect(find.text('Demolition'), findsOneWidget);
-    },
-  );
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.text('Applicant Information'), findsOneWidget);
+    expect(find.text('Demolition'), findsOneWidget);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 9, and Submit Application opens the confirmation screen',
@@ -475,10 +474,7 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(
-        find.text('Demolition Application Submitted!'),
-        findsOneWidget,
-      );
+      expect(find.text('Demolition Application Submitted!'), findsOneWidget);
       expect(find.textContaining('DEM-'), findsOneWidget);
       expect(find.text('Demolition Permit'), findsWidgets);
     },
@@ -518,17 +514,11 @@ void main() {
         '1',
       );
       await tester.enterText(
-        find.widgetWithText(
-          TextFormField,
-          'Approximate Floor Area (sq. m.) *',
-        ),
+        find.widgetWithText(TextFormField, 'Approximate Floor Area (sq. m.) *'),
         '100',
       );
       await tester.enterText(
-        find.widgetWithText(
-          TextFormField,
-          'Approximate Building Height (m) *',
-        ),
+        find.widgetWithText(TextFormField, 'Approximate Building Height (m) *'),
         '6',
       );
       await tester.pump();
@@ -551,10 +541,7 @@ void main() {
         'Partial teardown of the rear wing.',
       );
       await tester.enterText(
-        find.widgetWithText(
-          TextFormField,
-          'Estimated Demolition Cost (₱) *',
-        ),
+        find.widgetWithText(TextFormField, 'Estimated Demolition Cost (₱) *'),
         '150000',
       );
       await tester.pump();

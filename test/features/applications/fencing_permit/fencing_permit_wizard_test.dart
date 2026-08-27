@@ -93,7 +93,7 @@ Widget _wrap() {
       ChangeNotifierProvider<FencingPermitProvider>(
         create: (_) => FencingPermitProvider(),
       ),
-          // Everything DraftRegistry looks up, for the Drafts segment.
+      // Everything DraftRegistry looks up, for the Drafts segment.
       ...wizardProviders(),
     ],
     child: MaterialApp.router(routerConfig: router),
@@ -379,17 +379,14 @@ void main() {
   });
 
   tearDown(() => debugAttachDocumentOverride = null);
-  testWidgets(
-    'Step 1 renders with Permit Information heading',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      expect(tester.takeException(), isNull);
+  testWidgets('Step 1 renders with Permit Information heading', (tester) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    expect(tester.takeException(), isNull);
 
-      expect(find.text('Step 1 of 9'), findsOneWidget);
-      expect(find.text('Permit Information'), findsWidgets);
-    },
-  );
+    expect(find.text('Step 1 of 9'), findsOneWidget);
+    expect(find.text('Permit Information'), findsWidgets);
+  });
 
   testWidgets(
     'Continue navigates Step 1 through Step 9, and Submit Application opens the confirmation screen with the pending Building Permit warning',
@@ -468,9 +465,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final reference = (tester
-              .widgetList<Text>(find.byType(Text))
-              .map((t) => t.data)
-              .firstWhere((d) => d != null && d.startsWith('FNC-')))!;
+          .widgetList<Text>(find.byType(Text))
+          .map((t) => t.data)
+          .firstWhere((d) => d != null && d.startsWith('FNC-')))!;
 
       // The submission is now a record, and the notification that announces
       // it was posted — both come from ApplicationsProvider.submitApplication,
@@ -609,86 +606,81 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Lot Ownership "No" reveals a separate Lot Owner section',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      await _completeStep5(tester);
-      await _completeStep6(tester);
+  testWidgets('Lot Ownership "No" reveals a separate Lot Owner section', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    await _completeStep5(tester);
+    await _completeStep6(tester);
 
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNull,
-      );
+    expect(tester.widget<ElevatedButton>(_continueButton()).onPressed, isNull);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Printed Name *'),
-        'Juan Dela Cruz',
-      );
-      await tester.pump();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Printed Name *'),
+      'Juan Dela Cruz',
+    );
+    await tester.pump();
 
-      final noButton = find.text('No');
-      await tester.ensureVisible(noButton);
-      await tester.pumpAndSettle();
-      await tester.tap(noButton);
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      expect(
-        find.widgetWithText(TextFormField, 'Printed Name *'),
-        findsNWidgets(2),
-        reason: 'the Lot Owner now has its own Printed Name field',
-      );
-      expect(find.text('Lot Owner Consent'), findsOneWidget);
-    },
-  );
+    final noButton = find.text('No');
+    await tester.ensureVisible(noButton);
+    await tester.pumpAndSettle();
+    await tester.tap(noButton);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      find.widgetWithText(TextFormField, 'Printed Name *'),
+      findsNWidgets(2),
+      reason: 'the Lot Owner now has its own Printed Name field',
+    );
+    expect(find.text('Lot Owner Consent'), findsOneWidget);
+  });
 
-  testWidgets(
-    'Fence length and height reject non-positive values',
-    (tester) async {
-      await _useTallSurface(tester);
-      await _openWizard(tester);
-      await _completeStep1(tester);
-      await _completeStep2(tester);
-      await _completeStep3(tester);
-      await _completeStep4(tester);
-      await _completeStep5(tester);
-      await _completeStep6(tester);
-      await _completeStep7(tester);
+  testWidgets('Fence length and height reject non-positive values', (
+    tester,
+  ) async {
+    await _useTallSurface(tester);
+    await _openWizard(tester);
+    await _completeStep1(tester);
+    await _completeStep2(tester);
+    await _completeStep3(tester);
+    await _completeStep4(tester);
+    await _completeStep5(tester);
+    await _completeStep6(tester);
+    await _completeStep7(tester);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Fence Length (meters) *'),
-        '0',
-      );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Fence Height (meters) *'),
-        '2',
-      );
-      await tester.pump();
-      await tester.tap(find.text('Reinforced Concrete (R.C.)'));
-      await tester.pump();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Fence Length (meters) *'),
+      '0',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Fence Height (meters) *'),
+      '2',
+    );
+    await tester.pump();
+    await tester.tap(find.text('Reinforced Concrete (R.C.)'));
+    await tester.pump();
 
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNull,
-        reason: 'fence length must be greater than zero',
-      );
+    expect(
+      tester.widget<ElevatedButton>(_continueButton()).onPressed,
+      isNull,
+      reason: 'fence length must be greater than zero',
+    );
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Fence Length (meters) *'),
-        '45.5',
-      );
-      await tester.pump();
-      expect(
-        tester.widget<ElevatedButton>(_continueButton()).onPressed,
-        isNotNull,
-      );
-    },
-  );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Fence Length (meters) *'),
+      '45.5',
+    );
+    await tester.pump();
+    expect(
+      tester.widget<ElevatedButton>(_continueButton()).onPressed,
+      isNotNull,
+    );
+  });
 
   testWidgets('Save as Draft works and preserves values', (tester) async {
     await _useTallSurface(tester);

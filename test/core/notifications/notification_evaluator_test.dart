@@ -258,14 +258,16 @@ void main() {
   });
 
   group('idle drafts', () {
-    DraftSummary draft({required DateTime? saved, String route = '/w/building'}) =>
-        DraftSummary(
-          permitTypeLabel: 'New Construction',
-          lastSavedAt: saved,
-          completedSteps: 3,
-          totalSteps: 9,
-          route: route,
-        );
+    DraftSummary draft({
+      required DateTime? saved,
+      String route = '/w/building',
+    }) => DraftSummary(
+      permitTypeLabel: 'New Construction',
+      lastSavedAt: saved,
+      completedSteps: 3,
+      totalSteps: 9,
+      route: route,
+    );
 
     test('an untouched draft is nudged with its progress', () {
       final derived = _evaluator.evaluate(
@@ -344,8 +346,9 @@ void main() {
       expect(notifications.recordDerived(run()), 0);
 
       expect(
-        notifications.events
-            .where((e) => e.type == NotificationType.pledgeLapsed),
+        notifications.events.where(
+          (e) => e.type == NotificationType.pledgeLapsed,
+        ),
         hasLength(1),
       );
     });

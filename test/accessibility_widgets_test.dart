@@ -202,7 +202,11 @@ void main() {
             const SizedBox(height: 8),
             SecondaryButton(label: 'Back', onPressed: () {}),
             const SizedBox(height: 8),
-            SectionHeader(title: 'X', actionLabel: 'See All', onActionTap: () {}),
+            SectionHeader(
+              title: 'X',
+              actionLabel: 'See All',
+              onActionTap: () {},
+            ),
             const SizedBox(height: 8),
             DocumentUploadTile(label: 'PRC ID', onUpload: () {}),
           ],

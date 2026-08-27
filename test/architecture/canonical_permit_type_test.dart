@@ -19,10 +19,11 @@ void main() {
   test('every wizard files a canonical permit type', () {
     final offenders = <String>[];
 
-    for (final file in Directory('lib/features/applications/presentation')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('_wizard_screen.dart'))) {
+    for (final file
+        in Directory('lib/features/applications/presentation')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('_wizard_screen.dart'))) {
       final source = file.readAsStringSync();
       final match = RegExp(r"permitTypeLabel:\s*([^,\n]+)").firstMatch(source);
       if (match == null) continue;

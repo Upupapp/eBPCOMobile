@@ -37,10 +37,7 @@ class _FakeDocumentStorageService extends DocumentStorageService {
   _FakeDocumentStorageService(this.tempDir);
 
   @override
-  Future<File> saveCopy(
-    File source, {
-    required String originalFileName,
-  }) async {
+  Future<File> saveCopy(File source, {required String originalFileName}) async {
     final uniqueName =
         'doc_${DateTime.now().microsecondsSinceEpoch}_$originalFileName';
     final destination = p.join(tempDir.path, uniqueName);
@@ -48,7 +45,11 @@ class _FakeDocumentStorageService extends DocumentStorageService {
   }
 }
 
-PickedDocumentFile _pickedFile(File file, String name, SavedDocumentFileType type) {
+PickedDocumentFile _pickedFile(
+  File file,
+  String name,
+  SavedDocumentFileType type,
+) {
   return PickedDocumentFile(file: file, originalFileName: name, fileType: type);
 }
 
@@ -261,32 +262,39 @@ void main() {
 
     setUp(() async {
       await importNamed('alpha_id.jpg', SavedDocumentFileType.jpg, [1, 2, 3]);
-      await importNamed(
-        'beta_clearance.pdf',
-        SavedDocumentFileType.pdf,
-        [1, 2, 3, 4, 5],
-      );
-      await importNamed(
-        'gamma_receipt.png',
-        SavedDocumentFileType.png,
-        [1],
-      );
+      await importNamed('beta_clearance.pdf', SavedDocumentFileType.pdf, [
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]);
+      await importNamed('gamma_receipt.png', SavedDocumentFileType.png, [1]);
     });
 
     test('search matches by file name (case-insensitive)', () {
       provider.setSearchQuery('BETA');
       expect(provider.visibleDocuments, hasLength(1));
-      expect(provider.visibleDocuments.single.originalFileName, 'beta_clearance.pdf');
+      expect(
+        provider.visibleDocuments.single.originalFileName,
+        'beta_clearance.pdf',
+      );
     });
 
     test('type filter narrows to images or PDFs only', () {
       provider.setTypeFilter(DocumentTypeFilter.pdf);
       expect(provider.visibleDocuments, hasLength(1));
-      expect(provider.visibleDocuments.single.fileType, SavedDocumentFileType.pdf);
+      expect(
+        provider.visibleDocuments.single.fileType,
+        SavedDocumentFileType.pdf,
+      );
 
       provider.setTypeFilter(DocumentTypeFilter.images);
       expect(provider.visibleDocuments, hasLength(2));
-      expect(provider.visibleDocuments.every((d) => d.fileType.isImage), isTrue);
+      expect(
+        provider.visibleDocuments.every((d) => d.fileType.isImage),
+        isTrue,
+      );
     });
 
     test('sortOrder nameAToZ / nameZToA order results by name', () {
@@ -328,22 +336,25 @@ void main() {
     });
   });
 
-  test('persists across a fresh provider instance backed by the same repository', () async {
-    final file = await writeSourceFile('persisted.pdf', [1, 2, 3]);
-    pickerService.filesResult = DocumentPickResult(
-      DocumentPickOutcome.success,
-      picked: _pickedFile(file, 'persisted.pdf', SavedDocumentFileType.pdf),
-    );
-    await provider.importFromFiles();
+  test(
+    'persists across a fresh provider instance backed by the same repository',
+    () async {
+      final file = await writeSourceFile('persisted.pdf', [1, 2, 3]);
+      pickerService.filesResult = DocumentPickResult(
+        DocumentPickOutcome.success,
+        picked: _pickedFile(file, 'persisted.pdf', SavedDocumentFileType.pdf),
+      );
+      await provider.importFromFiles();
 
-    final reloaded = DocumentsProvider(
-      repository: DocumentRepository(),
-      pickerService: _FakeDocumentPickerService(),
-      storageService: _FakeDocumentStorageService(storageDir),
-    );
-    await Future<void>.delayed(Duration.zero);
+      final reloaded = DocumentsProvider(
+        repository: DocumentRepository(),
+        pickerService: _FakeDocumentPickerService(),
+        storageService: _FakeDocumentStorageService(storageDir),
+      );
+      await Future<void>.delayed(Duration.zero);
 
-    expect(reloaded.allDocuments, hasLength(1));
-    expect(reloaded.allDocuments.single.originalFileName, 'persisted.pdf');
-  });
+      expect(reloaded.allDocuments, hasLength(1));
+      expect(reloaded.allDocuments.single.originalFileName, 'persisted.pdf');
+    },
+  );
 }

@@ -110,9 +110,7 @@ List<_Clipper> _clippers(WidgetTester tester) {
   collect(find.byType(ClipPath), (_) => 'ClipPath');
   collect(find.byType(ClipOval), (_) => 'ClipOval');
   collect(
-    find.byWidgetPredicate(
-      (w) => w is Stack && w.clipBehavior != Clip.none,
-    ),
+    find.byWidgetPredicate((w) => w is Stack && w.clipBehavior != Clip.none),
     (w) => 'Stack(clipBehavior: ${(w as Stack).clipBehavior})',
   );
 

@@ -32,7 +32,12 @@ Widget _host(double textScale, {double width = 360}) {
         builder: (context, state, navigationShell) =>
             MainShell(navigationShell: navigationShell),
         branches: [
-          for (final path in ['/home', '/applications', '/payments', '/profile'])
+          for (final path in [
+            '/home',
+            '/applications',
+            '/payments',
+            '/profile',
+          ])
             StatefulShellBranch(
               routes: [
                 GoRoute(
@@ -144,5 +149,4 @@ void main() {
       }
     }
   });
-
 }
