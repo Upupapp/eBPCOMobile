@@ -546,6 +546,17 @@ class _PermitSummary extends StatelessWidget {
                       '${format.format(permit.commenceByDate)}',
                       style: AppTypography.helper,
                     ),
+                    // The permit's own validity, which for a six-month type
+                    // falls due before the line above it. Both are shown
+                    // because they are different obligations; neither stands
+                    // in for the other.
+                    Text(
+                      application.expiryDate == null
+                          ? 'No fixed expiry'
+                          : 'Valid until '
+                                '${format.format(application.expiryDate!)}',
+                      style: AppTypography.helper,
+                    ),
                   ],
                 ),
               ),

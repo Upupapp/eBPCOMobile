@@ -37,6 +37,16 @@ class PermitSummaryTile extends StatelessWidget {
           ).difference(DateTime(asOf.year, asOf.month, asOf.day)).inDays;
     final urgent = daysLeft != null && daysLeft <= 60;
 
+    // The permit's own validity, shown only where it tells the applicant
+    // something the commencement line does not. For a twelve-month type the
+    // two dates coincide and a second identical line would just be noise; for
+    // a six-month one the validity runs out first, and that is the date this
+    // tile exists to surface.
+    final expiry = application.expiryDate;
+    final showExpiry =
+        expiry != null && (commenceBy == null || expiry.isBefore(commenceBy));
+    final expiryUrgent = application.expiryApproaching(asOf);
+
     return Material(
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
@@ -75,6 +85,20 @@ class PermitSummaryTile extends StatelessWidget {
                       application.permitTypeLabel ?? application.type.label,
                       style: AppTypography.bodyMuted,
                     ),
+                    if (showExpiry) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        application.expiredAsOf(asOf)
+                            ? 'Expired (${format.format(expiry)})'
+                            : 'Valid until ${format.format(expiry)}',
+                        style: AppTypography.helper.copyWith(
+                          color: expiryUrgent
+                              ? AppColors.statusRejected
+                              : AppColors.textSecondary,
+                          fontWeight: expiryUrgent ? FontWeight.w600 : null,
+                        ),
+                      ),
+                    ],
                     if (commenceBy != null) ...[
                       const SizedBox(height: AppSpacing.xs),
                       Text(

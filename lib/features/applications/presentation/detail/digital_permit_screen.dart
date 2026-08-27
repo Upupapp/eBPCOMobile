@@ -171,9 +171,58 @@ class _PermitFace extends StatelessWidget {
           Text(permit.permitNumber, style: AppTypography.pageTitle),
           const SizedBox(height: AppSpacing.md),
           _Row(label: 'Issued', value: format.format(permit.issuedDate)),
+          // Validity, not commencement — a different rule with a different
+          // date. The catalog gives it per permit type: six months, twelve, or
+          // none at all for a Certificate of Occupancy.
+          _Row(
+            label: 'Valid until',
+            value: application.expiryDate == null
+                ? 'No fixed expiry'
+                : format.format(application.expiryDate!),
+          ),
           _Row(label: 'Owner', value: application.businessName),
           if (permit.scope != null) _Row(label: 'Scope', value: permit.scope!),
           const Divider(height: AppSpacing.xl),
+
+          // Expiry first when it is the nearer of the two. A Fencing Permit
+          // is valid six months and must be commenced within twelve, so its
+          // validity runs out first and putting commencement above it would
+          // bury the date that actually matters.
+          if (application.expiryApproaching(DateTime.now()))
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.statusRejectedBg,
+                borderRadius: BorderRadius.circular(
+                  AppConstants.borderRadiusSmall,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    application.expiredAsOf(DateTime.now())
+                        ? 'This permit expired '
+                              '${format.format(application.expiryDate!)}'
+                        : 'This permit expires '
+                              '${format.format(application.expiryDate!)}',
+                    style: AppTypography.body.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.statusRejected,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Validity is separate from the commencement deadline '
+                    'below. Renew before this date if the work is not yet '
+                    'complete.',
+                    style: AppTypography.helper,
+                  ),
+                ],
+              ),
+            ),
 
           // PD 1096 voids a permit whose authorised work is not commenced
           // within one year, so this belongs on the face of the record and

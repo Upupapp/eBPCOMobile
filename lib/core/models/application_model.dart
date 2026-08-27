@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 import 'application_detail.dart';
+import '../contract/requirements_catalog.dart';
 import 'document_model.dart';
 import 'lifecycle_status.dart';
 import 'payment_assessment_model.dart';
@@ -261,6 +262,69 @@ class ApplicationModel {
     final issued = issuedDate;
     if (issued == null || permitNumber == null) return null;
     return DateTime(issued.year + 1, issued.month, issued.day);
+  }
+
+  /// The date this permit stops being valid, or null where the type carries
+  /// no fixed expiry.
+  ///
+  /// **Not the same thing as [commenceByDate], and the two must never be
+  /// merged.** Commencement is PD 1096's rule that authorised work must start
+  /// within a year or the permit is void — one year, every type. Validity is
+  /// how long the permit itself lasts, which the requirements catalog gives
+  /// per type as six months, twelve, or none at all for a Certificate of
+  /// Occupancy.
+  ///
+  /// A Fencing Permit is valid six months and must be commenced within twelve,
+  /// so its validity expires **first**. Showing the commencement date as an
+  /// expiry would tell that applicant they had twice as long as they do.
+  DateTime? get expiryDate {
+    // Same source of truth as [commenceByDate]: the generated permit's own
+    // issue date where there is one. Reading only the top-level field would
+    // give a permit a commencement deadline and no expiry, which would look
+    // like the type has none.
+    final issued = permit?.issuedDate ?? issuedDate;
+    if (issued == null || permitNumber == null) return null;
+    final months = validityMonths;
+    if (months == null) return null;
+    return DateTime(issued.year, issued.month + months, issued.day);
+  }
+
+  /// Whole months this permit type stays valid, from the requirements
+  /// catalog — or null where it has no fixed expiry.
+  int? get validityMonths {
+    final label = permitTypeLabel;
+    if (label == null) return null;
+    return requirementsForLabel(label)?.validityMonths;
+  }
+
+  /// Days until the permit expires, or null when it never does.
+  int? daysUntilExpiry(DateTime asOf) {
+    final expiry = expiryDate;
+    if (expiry == null) return null;
+    return DateTime(
+      expiry.year,
+      expiry.month,
+      expiry.day,
+    ).difference(DateTime(asOf.year, asOf.month, asOf.day)).inDays;
+  }
+
+  /// Already past its validity period.
+  ///
+  /// Separate from [expiryApproaching] because the two need different words:
+  /// a permit that lapsed last month is not "expiring soon", and telling the
+  /// applicant it is would understate what they have to do about it.
+  bool expiredAsOf(DateTime asOf) => (daysUntilExpiry(asOf) ?? 1) < 0;
+
+  /// Whether the applicant should be warned that validity is running out.
+  ///
+  /// Uses the same threshold as the commencement warning rather than a second
+  /// one: two deadlines on the same permit warned at different distances would
+  /// read as arbitrary, and the reason for 60 days is the same in both cases —
+  /// long enough to act, short enough to be about this permit.
+  bool expiryApproaching(DateTime asOf) {
+    final days = daysUntilExpiry(asOf);
+    if (days == null) return false;
+    return days <= commencementWarningDays;
   }
 
   /// Fraction of the happy-path sequence completed, for progress bars.

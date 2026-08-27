@@ -33,6 +33,13 @@ enum ActionItemKind {
   /// A released building permit is approaching its PD 1096 one-year
   /// commencement deadline.
   commencementWarning,
+
+  /// The permit's own validity period is running out.
+  ///
+  /// A different obligation from [commencementWarning] with a different date:
+  /// commencement is about work starting, validity about the permit lasting.
+  /// A six-month permit reaches this one first.
+  expiryWarning,
 }
 
 /// One thing the applicant must do, rendered as a card at the top of Home.
@@ -84,6 +91,8 @@ class ActionItem {
         return Icons.event_available_outlined;
       case ActionItemKind.commencementWarning:
         return Icons.timelapse_outlined;
+      case ActionItemKind.expiryWarning:
+        return Icons.event_busy_outlined;
     }
   }
 
@@ -93,7 +102,8 @@ class ActionItem {
       kind == ActionItemKind.overduePayment ||
       kind == ActionItemKind.letterOfInstruction ||
       kind == ActionItemKind.revisionRequired ||
-      kind == ActionItemKind.commencementWarning;
+      kind == ActionItemKind.commencementWarning ||
+      kind == ActionItemKind.expiryWarning;
 }
 
 /// Derives the applicant's outstanding obligations from their applications.
@@ -162,9 +172,7 @@ class ActionItemBuilder {
               kind: overdue
                   ? ActionItemKind.overduePayment
                   : ActionItemKind.paymentDue,
-              title: overdue
-                  ? 'Payment overdue'
-                  : 'Order of Payment ready',
+              title: overdue ? 'Payment overdue' : 'Order of Payment ready',
               detail: overdue
                   ? 'Unpaid applications may lapse.'
                   : 'Fees have been assessed and are now due.',
@@ -211,6 +219,34 @@ class ActionItemBuilder {
               detail: daysLeft < 0
                   ? 'Work was not recorded as started within one year of issue.'
                   : '$daysLeft day(s) left to commence work under PD 1096.',
+              actionLabel: 'View permit',
+              route: '/applications/${application.id}',
+            ),
+          );
+        }
+      }
+
+      // The permit's own validity, which is a separate obligation from the
+      // commencement deadline above and can fall due first — a Fencing Permit
+      // is valid six months and commencable for twelve. Raised as its own item
+      // rather than folded into the commencement one, because the applicant's
+      // remedy differs: renew the permit, versus start the work.
+      final expiry = application.expiryDate;
+      if (expiry != null) {
+        final daysLeft = _daysBetween(asOf, expiry);
+        if (daysLeft <= ApplicationModel.commencementWarningDays) {
+          items.add(
+            ActionItem(
+              id: '${application.id}-expiry',
+              applicationId: application.id,
+              applicationNumber: application.applicationNumber,
+              permitTypeLabel: permitLabel,
+              kind: ActionItemKind.expiryWarning,
+              title: daysLeft < 0 ? 'Permit has expired' : 'Permit expiring',
+              detail: daysLeft < 0
+                  ? 'Its validity period ended. Renewal is required before '
+                        'work continues.'
+                  : '$daysLeft day(s) of validity left on this permit.',
               actionLabel: 'View permit',
               route: '/applications/${application.id}',
             ),
