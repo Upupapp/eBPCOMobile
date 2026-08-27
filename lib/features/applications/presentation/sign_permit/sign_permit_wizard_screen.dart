@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/sign_permit_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/sign_permit_provider.dart';
@@ -212,7 +213,7 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Sign Permit',
+      permitTypeLabel: CanonicalPermitType.signPermit.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,

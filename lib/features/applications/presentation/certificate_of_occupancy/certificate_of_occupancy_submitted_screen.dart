@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/certificate_of_occupancy_model.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -43,7 +44,10 @@ class CertificateOfOccupancySubmittedScreen extends StatelessWidget {
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [
-        (label: 'Application Type', value: 'Certificate of Occupancy'),
+        (
+          label: 'Application Type',
+          value: CanonicalPermitType.certificateOfOccupancy.wire,
+        ),
         (label: 'Related Building Permit', value: buildingPermitNumber.trim().isEmpty
               ? 'Not set'
               : buildingPermitNumber),

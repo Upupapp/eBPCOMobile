@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/certificate_of_occupancy_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/certificate_of_occupancy_provider.dart';
@@ -177,7 +178,7 @@ class _CertificateOfOccupancyWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Certificate of Occupancy',
+      permitTypeLabel: CanonicalPermitType.certificateOfOccupancy.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.owner.projectName,
         firstName: _draft.owner.firstName,

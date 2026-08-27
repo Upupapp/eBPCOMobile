@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/addition_extension_permit_model.dart';
 import '../../../../core/providers/addition_extension_permit_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -212,7 +213,7 @@ class _AdditionExtensionPermitWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Building Permit — Addition / Extension',
+      permitTypeLabel: CanonicalPermitType.buildingPermitAdditionExtension.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/electrical_permit_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/electrical_permit_provider.dart';
@@ -207,7 +208,7 @@ class _ElectricalPermitWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Electrical Permit',
+      permitTypeLabel: CanonicalPermitType.electricalPermit.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,

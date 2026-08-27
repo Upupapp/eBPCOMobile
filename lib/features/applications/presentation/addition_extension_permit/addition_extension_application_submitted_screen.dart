@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../widgets/application_submitted_view.dart';
 
 /// Terminal confirmation screen shown once the application is submitted.
@@ -33,7 +34,10 @@ class AdditionExtensionApplicationSubmittedScreen extends StatelessWidget {
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [
-        (label: 'Application Type', value: 'Building Permit — Addition / Extension'),
+        (
+          label: 'Application Type',
+          value: CanonicalPermitType.buildingPermitAdditionExtension.wire,
+        ),
         (label: 'Official Scope of Work', value: 'Addition'),
         (label: 'Status', value: 'Submitted for Initial Review'),
       ],

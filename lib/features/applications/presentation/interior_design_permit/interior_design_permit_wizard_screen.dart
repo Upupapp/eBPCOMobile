@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/interior_design_permit_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/interior_design_permit_provider.dart';
@@ -212,7 +213,7 @@ class _InteriorDesignPermitWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Interior Design Permit',
+      permitTypeLabel: CanonicalPermitType.interiorDesignPermit.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../widgets/application_submitted_view.dart';
 
 /// Terminal confirmation screen shown once the application is submitted.
@@ -43,7 +44,10 @@ class FencingApplicationSubmittedScreen extends StatelessWidget {
       referenceNumber: referenceNumber,
       submissionDate: submissionDate,
       facts: [
-        (label: 'Application Type', value: 'Fencing Permit'),
+        (
+          label: 'Application Type',
+          value: CanonicalPermitType.fencingPermit.wire,
+        ),
         (label: 'Related Building Permit', value: relatedBuildingPermitNumber.trim().isEmpty
               ? 'Not yet assigned'
               : relatedBuildingPermitNumber),

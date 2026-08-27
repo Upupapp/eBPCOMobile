@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/architectural_permit_model.dart';
 import '../../../../core/providers/architectural_permit_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -206,7 +207,7 @@ class _ArchitecturalPermitWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: 'Architectural Permit',
+      permitTypeLabel: CanonicalPermitType.architecturalPermit.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,
