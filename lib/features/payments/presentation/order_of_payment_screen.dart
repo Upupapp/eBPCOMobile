@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/contract/admin_vocabulary.dart';
 import '../../../core/models/application_model.dart';
 import '../../../core/models/order_of_payment.dart';
 import '../../../core/models/payment_assessment_model.dart';
@@ -68,7 +70,15 @@ class OrderOfPaymentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             _FeeBreakdown(order: order, payment: payment),
             const SizedBox(height: AppSpacing.lg),
-            if (payment!.rejectedTransactions.isNotEmpty) ...[
+            if (payment!.receipts.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _Receipts(payments: payment.receipts),
+            ],
+            if (payment.adjustments.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _Adjustments(adjustments: payment.adjustments),
+            ],
+            if (payment.rejectedTransactions.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               _RejectedPayments(payments: payment.rejectedTransactions),
             ],
@@ -475,6 +485,126 @@ class _RejectedPayments extends StatelessWidget {
             'This amount has not been credited to your assessment.',
             style: AppTypography.helper,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The Official Receipts issued against this assessment.
+///
+/// An OR is the applicant's proof that a government office took their money.
+/// Before this the app referenced an OR number in four wizard steps and one
+/// notification payload while having no field to hold one, so the number an
+/// applicant would actually be asked to quote lived nowhere.
+class _Receipts extends StatelessWidget {
+  final List<PaymentTransactionRecord> payments;
+
+  const _Receipts({required this.payments});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = DateFormat('MMM d, yyyy');
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.statusApprovedBg,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            payments.length == 1 ? 'Official Receipt' : 'Official Receipts',
+            style: AppTypography.cardTitle.copyWith(
+              color: AppColors.statusApproved,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          for (final payment in payments) ...[
+            Semantics(
+              label: 'Official receipt number ${payment.orNumber}',
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      payment.orNumber!,
+                      style: AppTypography.sectionTitle,
+                    ),
+                  ),
+                  // The applicant is asked to quote this at a counter, so it
+                  // has to leave the phone without being retyped.
+                  IconButton(
+                    icon: const Icon(Icons.copy_outlined, size: 20),
+                    tooltip: 'Copy receipt number',
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: payment.orNumber!));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Receipt number copied.')),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              [
+                payment.amount.formatted,
+                if (payment.orDate != null) format.format(payment.orDate!),
+                payment.agency.wire,
+              ].join(' · '),
+              style: AppTypography.helper,
+            ),
+            if (payment.orIssuedBy != null)
+              Text(
+                'Issued by ${payment.orIssuedBy}',
+                style: AppTypography.helper,
+              ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Corrections the office applied to what was recorded.
+class _Adjustments extends StatelessWidget {
+  final List<PaymentAdjustmentRecord> adjustments;
+
+  const _Adjustments({required this.adjustments});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = DateFormat('MMM d, yyyy');
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Adjustments', style: AppTypography.cardTitle),
+          const SizedBox(height: AppSpacing.sm),
+          for (final adjustment in adjustments) ...[
+            AmountRow(
+              label: Text(
+                '${adjustment.type.wire} · '
+                '${format.format(adjustment.appliedAt)}',
+                style: AppTypography.body,
+              ),
+              amount: Text(
+                adjustment.amount.formatted,
+                style: AppTypography.bodyStrong,
+              ),
+            ),
+            if (adjustment.reason != null)
+              Text(adjustment.reason!, style: AppTypography.helper),
+            const SizedBox(height: AppSpacing.xs),
+          ],
         ],
       ),
     );

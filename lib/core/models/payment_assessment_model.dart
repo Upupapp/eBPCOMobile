@@ -105,6 +105,23 @@ class PaymentTransactionRecord {
   /// admin does.
   final bool isVoid;
 
+  /// Who took the money.
+  ///
+  /// Not decoration: FSEC and FSIC fees are collected by the Bureau of Fire
+  /// Protection, not the LGU. An applicant sent to the OBO cashier to settle a
+  /// BFP fee has been sent to the wrong counter.
+  final CollectingAgency agency;
+
+  /// The Official Receipt, once the Treasurer's Office has issued one.
+  ///
+  /// **Never fabricated.** The admin marks this field "never auto-filled" and
+  /// the same applies here: an OR number is a government instrument, and a
+  /// plausible-looking one invented by a mock is worse than an empty field,
+  /// because the applicant would quote it.
+  final String? orNumber;
+  final DateTime? orDate;
+  final String? orIssuedBy;
+
   const PaymentTransactionRecord({
     required this.id,
     required this.amount,
@@ -115,7 +132,15 @@ class PaymentTransactionRecord {
     this.verifiedAt,
     this.rejectionReason,
     this.isVoid = false,
+    this.agency = CollectingAgency.oboLgu,
+    this.orNumber,
+    this.orDate,
+    this.orIssuedBy,
   });
+
+  /// Whether a receipt has actually been issued for this payment.
+  bool get hasOfficialReceipt =>
+      orNumber != null && orNumber!.trim().isNotEmpty;
 
   /// Whether this payment counts toward what has been settled.
   ///
@@ -127,6 +152,28 @@ class PaymentTransactionRecord {
 
   bool get needsApplicantAction =>
       !isVoid && status == PaymentTransactionStatus.rejected;
+}
+
+/// A correction the office applied to a recorded payment.
+///
+/// Shown rather than silently folded into the balance: an applicant whose total
+/// changes without explanation has no way to tell a refund from an error.
+class PaymentAdjustmentRecord {
+  final String id;
+  final PaymentAdjustmentType type;
+  final PesoAmount amount;
+  final DateTime appliedAt;
+
+  /// Why the office made it.
+  final String? reason;
+
+  const PaymentAdjustmentRecord({
+    required this.id,
+    required this.type,
+    required this.amount,
+    required this.appliedAt,
+    this.reason,
+  });
 }
 
 /// An application's payment position.
@@ -158,6 +205,9 @@ class PaymentAssessmentModel {
   /// applicant's most recent submission and are what most of the app reads.
   final List<PaymentTransactionRecord> transactions;
 
+  /// Voids, reversals, refunds and corrections the office applied.
+  final List<PaymentAdjustmentRecord> adjustments;
+
   const PaymentAssessmentModel({
     required this.status,
     this.orderOfPayment,
@@ -168,6 +218,7 @@ class PaymentAssessmentModel {
     this.officialReceiptNumber,
     this.verifiedAt,
     this.transactions = const [],
+    this.adjustments = const [],
   });
 
   /// The amount due, or null when nothing has been assessed.
@@ -200,6 +251,17 @@ class PaymentAssessmentModel {
   List<PaymentTransactionRecord> get rejectedTransactions =>
       transactions.where((t) => t.needsApplicantAction).toList();
 
+  /// Receipts the applicant can actually quote.
+  List<PaymentTransactionRecord> get receipts =>
+      transactions.where((t) => !t.isVoid && t.hasOfficialReceipt).toList();
+
+  /// Every agency that has collected against this assessment.
+  ///
+  /// More than one means the applicant has paid at more than one counter,
+  /// which is normal once a fire clearance is involved and worth saying.
+  Set<CollectingAgency> get collectingAgencies =>
+      transactions.where((t) => !t.isVoid).map((t) => t.agency).toSet();
+
   bool get isAssessed => orderOfPayment != null;
 
   /// True once the applicant has supplied everything needed for verification.
@@ -215,6 +277,7 @@ class PaymentAssessmentModel {
     String? officialReceiptNumber,
     DateTime? verifiedAt,
     List<PaymentTransactionRecord>? transactions,
+    List<PaymentAdjustmentRecord>? adjustments,
   }) {
     return PaymentAssessmentModel(
       orderOfPayment: orderOfPayment ?? this.orderOfPayment,
@@ -227,6 +290,7 @@ class PaymentAssessmentModel {
           officialReceiptNumber ?? this.officialReceiptNumber,
       verifiedAt: verifiedAt ?? this.verifiedAt,
       transactions: transactions ?? this.transactions,
+      adjustments: adjustments ?? this.adjustments,
     );
   }
 }
