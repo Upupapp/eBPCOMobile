@@ -46,6 +46,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       onUpload: () async {
         final result = await showAttachDocumentOptions(context, label: label);
         if (result == null) return;
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
         setState(() => setDocument(result));
         widget.onChanged();
       },

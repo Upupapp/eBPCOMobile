@@ -296,7 +296,8 @@ class _NewApplicationScreenState extends State<NewApplicationScreen> {
           ),
           _ReviewRow(
             label: 'Documents attached',
-            value: '${_documents.values.whereType<DocumentModel>().length} of ${_documents.length}',
+            value:
+                '${_documents.values.whereType<DocumentModel>().length} of ${_documents.length}',
           ),
           const SizedBox(height: 24),
           Row(
@@ -339,7 +340,10 @@ class _WizardProgressHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Step ${currentStep + 1} of $totalSteps', style: AppTypography.label),
+          Text(
+            'Step ${currentStep + 1} of $totalSteps',
+            style: AppTypography.label,
+          ),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppConstants.borderRadiusXs),

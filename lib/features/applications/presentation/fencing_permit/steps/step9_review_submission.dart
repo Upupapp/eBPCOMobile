@@ -61,19 +61,16 @@ class _Step9ReviewSubmissionState extends State<Step9ReviewSubmission> {
     ].where((s) => s.trim().isNotEmpty).join(' ');
 
     final scopeSummary = scope.selectedScopes.map((s) => s.label).join(', ');
-    final fenceTypeSummary = specs.selectedTypes
-        .map((t) => t.label)
-        .join(', ');
+    final fenceTypeSummary = specs.selectedTypes.map((t) => t.label).join(', ');
 
     final needsSeparateLotOwner = consent.needsSeparateLotOwner;
     final totalApplicableDocs = needsSeparateLotOwner ? 4 : 3;
-    final documentsUploaded =
-        [
-          professionals.designSignedDocumentUpload,
-          professionals.supervisorSignedDocumentUpload,
-          consent.applicantSignedDocumentUpload,
-          if (needsSeparateLotOwner) consent.lotOwnerSignedDocumentUpload,
-        ].where((d) => d != null).length;
+    final documentsUploaded = [
+      professionals.designSignedDocumentUpload,
+      professionals.supervisorSignedDocumentUpload,
+      consent.applicantSignedDocumentUpload,
+      if (needsSeparateLotOwner) consent.lotOwnerSignedDocumentUpload,
+    ].where((d) => d != null).length;
 
     return Form(
       key: widget.formKey,
@@ -86,7 +83,10 @@ class _Step9ReviewSubmissionState extends State<Step9ReviewSubmission> {
               title: 'Permit Information',
               onEdit: () => widget.onEditStep(0),
               rows: [
-                _SummaryRow('Related Building Permit Status', relatedPermit.status.label),
+                _SummaryRow(
+                  'Related Building Permit Status',
+                  relatedPermit.status.label,
+                ),
                 _SummaryRow(
                   'Building Permit Number',
                   relatedPermit.buildingPermitNumber,
@@ -238,8 +238,8 @@ class _Step9ReviewSubmissionState extends State<Step9ReviewSubmission> {
                         'I understand that fence construction must follow '
                         'the approved plans and applicable regulations.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndRegulations =
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndRegulations =
                               val,
                       v,
                     ),
@@ -251,20 +251,21 @@ class _Step9ReviewSubmissionState extends State<Step9ReviewSubmission> {
                         'void unless accompanied by a valid related '
                         'Building Permit, when applicable.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsDependsOnRelatedBuildingPermit = val,
+                      (val) =>
+                          _review.understandsDependsOnRelatedBuildingPermit =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review
-                        .understandsProfessionalDocumentsMustBeAuthentic,
+                    value:
+                        _review.understandsProfessionalDocumentsMustBeAuthentic,
                     label:
                         'I understand that all required signed and sealed '
                         'professional documents must be authentic.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsProfessionalDocumentsMustBeAuthentic =
+                      (val) =>
+                          _review.understandsProfessionalDocumentsMustBeAuthentic =
                               val,
                       v,
                     ),

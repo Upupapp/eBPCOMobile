@@ -164,6 +164,8 @@ class _RepresentativeFormState extends State<_RepresentativeForm> {
                     lastDate: DateTime(now.year + 10),
                   );
                   if (picked != null) {
+                    // The picker can outlive this step; setState on a defunct State throws.
+                    if (!mounted) return;
                     setState(() => _authorizedUntil = picked);
                   }
                 },

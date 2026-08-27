@@ -136,12 +136,12 @@ class Step9EvaluationStatus extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  for (final stage in InteriorProcessingInfo.progressStages)
-                    ...[
-                      _StatusRow(label: stage, status: 'Pending'),
-                      if (stage != InteriorProcessingInfo.progressStages.last)
-                        const SizedBox(height: AppSpacing.sm),
-                    ],
+                  for (final stage
+                      in InteriorProcessingInfo.progressStages) ...[
+                    _StatusRow(label: stage, status: 'Pending'),
+                    if (stage != InteriorProcessingInfo.progressStages.last)
+                      const SizedBox(height: AppSpacing.sm),
+                  ],
                 ],
               ),
             ),
@@ -229,7 +229,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (condition != InteriorProcessingInfo.permitConditions.last)
+                    if (condition !=
+                        InteriorProcessingInfo.permitConditions.last)
                       const SizedBox(height: AppSpacing.sm),
                   ],
                 ],

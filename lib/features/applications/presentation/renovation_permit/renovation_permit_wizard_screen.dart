@@ -211,7 +211,8 @@ class _RenovationPermitWizardScreenState
     final application = await submitPermitApplication(
       context,
       referenceNumber: referenceNumber,
-      permitTypeLabel: CanonicalPermitType.buildingPermitRenovationAlteration.wire,
+      permitTypeLabel:
+          CanonicalPermitType.buildingPermitRenovationAlteration.wire,
       applicantName: applicantDisplayName(
         enterpriseName: _draft.applicant.enterpriseName,
         firstName: _draft.applicant.firstName,
@@ -280,7 +281,8 @@ class _RenovationPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Renovation Permit application step by step.',
+                intro:
+                    'Complete your Renovation Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

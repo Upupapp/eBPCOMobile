@@ -34,8 +34,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -75,26 +74,22 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
         .length;
 
     final designDocsUploaded = [
-          professionals.designPrcIdUpload,
-          professionals.designPtrDocumentUpload,
-          professionals.signedSealedPlansUpload,
-          professionals.signedSealedSpecificationsUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professionals.designPrcIdUpload,
+      professionals.designPtrDocumentUpload,
+      professionals.signedSealedPlansUpload,
+      professionals.signedSealedSpecificationsUpload,
+    ].where((d) => d != null).length;
 
     final propertyDocsUploaded = [
-          documents.vicinityMapUpload,
-          documents.siteDevelopmentPlanUpload,
-          documents.perspectiveUpload,
-          documents.floorPlansUpload,
-          documents.elevationsUpload,
-          documents.sectionsUpload,
-          documents.ceilingPlansUpload,
-          documents.costEstimateUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.vicinityMapUpload,
+      documents.siteDevelopmentPlanUpload,
+      documents.perspectiveUpload,
+      documents.floorPlansUpload,
+      documents.elevationsUpload,
+      documents.sectionsUpload,
+      documents.ceilingPlansUpload,
+      documents.costEstimateUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRepresentative;
     final needsSeparateLotOwner = consent.needsSeparateLotOwner;
@@ -185,8 +180,14 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
               title: 'Design Architect',
               onEdit: () => widget.onEditStep(4),
               rows: [
-                _SummaryRow('Full Name', professionals.designArchitect.fullName),
-                _SummaryRow('PRC Number', professionals.designArchitect.prcNumber),
+                _SummaryRow(
+                  'Full Name',
+                  professionals.designArchitect.fullName,
+                ),
+                _SummaryRow(
+                  'PRC Number',
+                  professionals.designArchitect.prcNumber,
+                ),
                 _SummaryRow(
                   'PRC Validity',
                   _formatDate(professionals.designArchitect.prcValidityDate),
@@ -200,7 +201,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
               rows: [
                 _SummaryRow(
                   'Same as Design Architect',
-                  professionals.isSupervisorSameAsDesignArchitect ? 'Yes' : 'No',
+                  professionals.isSupervisorSameAsDesignArchitect
+                      ? 'Yes'
+                      : 'No',
                 ),
                 if (!professionals.isSupervisorSameAsDesignArchitect)
                   _SummaryRow('Full Name', professionals.supervisor.fullName),
@@ -218,7 +221,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                       : (consent.isApplicantBuildingOwner! ? 'Yes' : 'No'),
                 ),
                 if (isRepresentative)
-                  _SummaryRow('Building Owner Name', consent.buildingOwner.fullName),
+                  _SummaryRow(
+                    'Building Owner Name',
+                    consent.buildingOwner.fullName,
+                  ),
                 _SummaryRow(
                   'Building Owner is Lot Owner',
                   consent.isBuildingOwnerAlsoLotOwner == null
@@ -266,7 +272,8 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                         'I confirm that the architectural plans and specifications were prepared by a licensed Architect.',
                     onChanged: (v) => _toggle(
                       (val) =>
-                          _review.confirmsPlansPreparedByLicensedArchitect = val,
+                          _review.confirmsPlansPreparedByLicensedArchitect =
+                              val,
                       v,
                     ),
                   ),
@@ -275,8 +282,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that accessibility features are subject to technical evaluation.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsAccessibilitySubjectToEvaluation = val,
+                      (val) =>
+                          _review.understandsAccessibilitySubjectToEvaluation =
+                              val,
                       v,
                     ),
                   ),
@@ -286,7 +294,8 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                         'I understand that fire-safety features are subject to evaluation.',
                     onChanged: (v) => _toggle(
                       (val) =>
-                          _review.understandsFireSafetySubjectToEvaluation = val,
+                          _review.understandsFireSafetySubjectToEvaluation =
+                              val,
                       v,
                     ),
                   ),

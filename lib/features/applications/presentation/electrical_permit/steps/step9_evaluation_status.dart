@@ -134,7 +134,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Official Receipt Number',
-                    value: ElectricalEvaluationPermitStatus.officialReceiptNumber,
+                    value:
+                        ElectricalEvaluationPermitStatus.officialReceiptNumber,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
@@ -165,7 +166,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   child: _PaymentMethodOption(
                     icon: Icons.storefront_outlined,
                     label: 'Pay Onsite',
-                    selected: _evaluation.selectedPaymentMethod ==
+                    selected:
+                        _evaluation.selectedPaymentMethod ==
                         ElectricalPaymentMethod.payOnsite,
                     onTap: () =>
                         _selectPaymentMethod(ElectricalPaymentMethod.payOnsite),
@@ -176,7 +178,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   child: _PaymentMethodOption(
                     icon: Icons.account_balance_outlined,
                     label: 'Bank Transfer',
-                    selected: _evaluation.selectedPaymentMethod ==
+                    selected:
+                        _evaluation.selectedPaymentMethod ==
                         ElectricalPaymentMethod.bankTransfer,
                     onTap: () => _selectPaymentMethod(
                       ElectricalPaymentMethod.bankTransfer,
@@ -200,7 +203,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Recommending Approval',
-                    value: ElectricalEvaluationPermitStatus.recommendingApproval,
+                    value:
+                        ElectricalEvaluationPermitStatus.recommendingApproval,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(

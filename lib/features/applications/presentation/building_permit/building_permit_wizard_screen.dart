@@ -58,8 +58,7 @@ class _BuildingPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Project Information',
-      subtitle:
-          'Tell us what kind of construction work you are applying for.',
+      subtitle: 'Tell us what kind of construction work you are applying for.',
     ),
     _StepMeta(
       title: 'Building Details',
@@ -85,8 +84,7 @@ class _BuildingPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Assessment & Payment',
-      subtitle:
-          'Submit for assessment — payment becomes available afterward.',
+      subtitle: 'Submit for assessment — payment becomes available afterward.',
     ),
   ];
 
@@ -254,7 +252,8 @@ class _BuildingPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Building Permit application step by step.',
+                intro:
+                    'Complete your Building Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

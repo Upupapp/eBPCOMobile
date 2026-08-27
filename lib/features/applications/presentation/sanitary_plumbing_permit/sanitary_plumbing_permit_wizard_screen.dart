@@ -64,7 +64,8 @@ class _SanitaryPlumbingPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Scope of Work',
-      subtitle: 'Select the project scope and the use of the building or property.',
+      subtitle:
+          'Select the project scope and the use of the building or property.',
     ),
     _StepMeta(
       title: 'Sanitary / Plumbing Installation Details',
@@ -287,7 +288,8 @@ class _SanitaryPlumbingPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Sanitary / Plumbing Permit application step by step.',
+                intro:
+                    'Complete your Sanitary / Plumbing Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

@@ -76,10 +76,8 @@ class _Step5OccupancyClassificationState
                     label: 'Occupancy Classification *',
                     items: ExcavationOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>

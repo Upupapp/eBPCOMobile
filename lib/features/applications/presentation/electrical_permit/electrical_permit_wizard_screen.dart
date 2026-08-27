@@ -54,11 +54,13 @@ class _ElectricalPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Provide the details of the person applying for the Electrical Permit.',
+      subtitle:
+          'Provide the details of the person applying for the Electrical Permit.',
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle: 'Provide the applicant address and location of the electrical work.',
+      subtitle:
+          'Provide the applicant address and location of the electrical work.',
     ),
     _StepMeta(
       title: 'Scope of Work',
@@ -66,11 +68,13 @@ class _ElectricalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Electrical Installation Details',
-      subtitle: 'Provide the occupancy, outlet quantities, and electrical capacity information.',
+      subtitle:
+          'Provide the occupancy, outlet quantities, and electrical capacity information.',
     ),
     _StepMeta(
       title: 'Electrical Professionals',
-      subtitle: 'Provide the licensed professionals responsible for the electrical plans and installation.',
+      subtitle:
+          'Provide the licensed professionals responsible for the electrical plans and installation.',
     ),
     _StepMeta(
       title: 'Ownership & Consent',
@@ -226,7 +230,8 @@ class _ElectricalPermitWizardScreenState
         'submissionDate': now,
         'relatedBuildingPermitNumber':
             _draft.relatedBuildingPermit.buildingPermitNumber,
-        'relatedBuildingPermitStatus': _draft.relatedBuildingPermit.status.label,
+        'relatedBuildingPermitStatus':
+            _draft.relatedBuildingPermit.status.label,
         'electricalContractorRequired':
             _draft.installationDetails.requiresElectricalContractor,
       },
@@ -282,7 +287,8 @@ class _ElectricalPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Electrical Permit application step by step.',
+                intro:
+                    'Complete your Electrical Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

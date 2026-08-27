@@ -273,7 +273,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Master Plumber PRC ID',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPrcIdUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPrcIdUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -292,7 +296,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Master Plumber PTR',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPtrDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPtrDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -311,7 +319,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Plumbing Plans',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.signedSealedPlansUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.signedSealedPlansUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -330,9 +342,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Plumbing Specifications',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedSealedSpecificationsUpload =
-                      picked;
+                  _professionals.signedSealedSpecificationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -356,9 +369,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed Plumbing Calculations',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedPlumbingCalculationsUpload =
-                      picked;
+                  _professionals.signedPlumbingCalculationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -386,8 +400,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 value: _professionals.isSupervisorSameAsDesignMasterPlumber,
                 onChanged: (v) {
                   setState(
-                    () => _professionals
-                        .isSupervisorSameAsDesignMasterPlumber = v,
+                    () => _professionals.isSupervisorSameAsDesignMasterPlumber =
+                        v,
                   );
                   widget.onChanged();
                 },
@@ -555,7 +569,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PRC ID',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPrcIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -574,7 +592,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PTR',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPtrUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPtrUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -593,18 +615,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Signed Supervisor Confirmation',
                   );
                   if (picked == null) return;
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
                   setState(() {
-                    _professionals.signedSupervisorConfirmationUpload =
-                        picked;
+                    _professionals.signedSupervisorConfirmationUpload = picked;
                   });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
                   setState(
-                    () =>
-                        _professionals.signedSupervisorConfirmationUpload =
-                            null,
+                    () => _professionals.signedSupervisorConfirmationUpload =
+                        null,
                   );
                   widget.onChanged();
                 },

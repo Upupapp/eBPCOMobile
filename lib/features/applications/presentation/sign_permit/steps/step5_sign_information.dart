@@ -222,10 +222,7 @@ class _Step5SignInformationState extends State<Step5SignInformation> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Total Display Area',
-                        style: AppTypography.caption,
-                      ),
+                      Text('Total Display Area', style: AppTypography.caption),
                       const SizedBox(height: 2),
                       Text(
                         area != null

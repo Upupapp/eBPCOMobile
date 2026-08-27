@@ -102,7 +102,9 @@ class _Step3ScopeOfWorkState extends State<Step3ScopeOfWork> {
                   ),
               ],
             ),
-            if (_scope.selectedScopes.contains(ArchitecturalScopeType.others)) ...[
+            if (_scope.selectedScopes.contains(
+              ArchitecturalScopeType.others,
+            )) ...[
               const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: _otherScope,

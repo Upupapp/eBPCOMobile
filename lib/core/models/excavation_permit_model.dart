@@ -137,6 +137,20 @@ class ExcavationApplicantInfo {
 /// Step 3 — Construction Location. No province field, matching the
 /// official form's field list for this permit.
 class ExcavationConstructionLocation {
+  /// Added 27 Aug 2026, reconciling this wizard against the requirements
+  /// catalog. Four required documents had no upload slot anywhere in the
+  /// wizard, so an applicant could reach submission having supplied a plan and
+  /// two signatures and nothing establishing that they own the site or may
+  /// build on it.
+  ///
+  /// They live with the construction location because that is what they are
+  /// about — the site, not the applicant's identity or the professional's
+  /// credentials.
+  DocumentModel? landTitleOrTaxDeclarationUpload;
+  DocumentModel? barangayClearanceUpload;
+  DocumentModel? locationalClearanceUpload;
+  DocumentModel? validGovernmentIdUpload;
+
   String lotNumber = '';
   String blockNumber = '';
   String tctNumber = '';
@@ -149,7 +163,11 @@ class ExcavationConstructionLocation {
       Validators.required(lotNumber) == null &&
       Validators.required(street) == null &&
       Validators.required(barangay) == null &&
-      Validators.required(city) == null;
+      Validators.required(city) == null &&
+      landTitleOrTaxDeclarationUpload != null &&
+      barangayClearanceUpload != null &&
+      locationalClearanceUpload != null &&
+      validGovernmentIdUpload != null;
 }
 
 /// A handful of sample Building Permit numbers presented as quick-pick
@@ -384,6 +402,11 @@ class ExcavationProfessionals {
   final ExcavationProfessionalInfo designProfessional =
       ExcavationProfessionalInfo();
   DocumentModel? designSignedDocumentUpload;
+
+  /// The engineer's licence itself. The step already collects the PRC and PTR
+  /// numbers as text; the requirements catalog asks for the document, and no
+  /// slot existed for it.
+  DocumentModel? designPrcAndPtrUpload;
 
   final ExcavationProfessionalInfo supervisor = ExcavationProfessionalInfo();
   DocumentModel? supervisorSignedDocumentUpload;

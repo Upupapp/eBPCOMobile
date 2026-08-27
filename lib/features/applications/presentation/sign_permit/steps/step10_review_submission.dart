@@ -31,8 +31,7 @@ class Step10ReviewSubmission extends StatefulWidget {
   });
 
   @override
-  State<Step10ReviewSubmission> createState() =>
-      _Step10ReviewSubmissionState();
+  State<Step10ReviewSubmission> createState() => _Step10ReviewSubmissionState();
 }
 
 class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
@@ -67,19 +66,18 @@ class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
     final needsSeparateOwner = consent.needsSeparateBuildingOwner;
 
     final requiredDocsTotal = documents.needsContractOfLease ? 10 : 9;
-    final requiredDocsUploaded =
-        [
-          documents.tctOrOctCopyUpload,
-          documents.taxDeclarationUpload,
-          documents.realtyTaxReceiptUpload,
-          if (documents.needsContractOfLease) documents.contractOfLeaseUpload,
-          documents.lotPlanUpload,
-          documents.siteDevelopmentPlanUpload,
-          documents.signStructurePlansUpload,
-          documents.structuralDesignAndComputationsUpload,
-          documents.specificationsUpload,
-          documents.costEstimatesUpload,
-        ].where((d) => d != null).length;
+    final requiredDocsUploaded = [
+      documents.tctOrOctCopyUpload,
+      documents.taxDeclarationUpload,
+      documents.realtyTaxReceiptUpload,
+      if (documents.needsContractOfLease) documents.contractOfLeaseUpload,
+      documents.lotPlanUpload,
+      documents.siteDevelopmentPlanUpload,
+      documents.signStructurePlansUpload,
+      documents.structuralDesignAndComputationsUpload,
+      documents.specificationsUpload,
+      documents.costEstimatesUpload,
+    ].where((d) => d != null).length;
 
     return Form(
       key: widget.formKey,
@@ -227,7 +225,10 @@ class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
               title: 'Owner Consent',
               onEdit: () => widget.onEditStep(8),
               rows: [
-                _SummaryRow('Applicant Printed Name', consent.applicant.printedName),
+                _SummaryRow(
+                  'Applicant Printed Name',
+                  consent.applicant.printedName,
+                ),
                 _SummaryRow(
                   'Applicant is Building Owner',
                   consent.isApplicantAlsoBuildingOwner == null
@@ -267,8 +268,8 @@ class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
                         'follow the approved plans and applicable '
                         'regulations.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndRegulations =
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndRegulations =
                               val,
                       v,
                     ),
@@ -280,20 +281,21 @@ class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
                         'void unless accompanied by a valid related '
                         'Building Permit, when applicable.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsDependsOnRelatedBuildingPermit = val,
+                      (val) =>
+                          _review.understandsDependsOnRelatedBuildingPermit =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review
-                        .understandsProfessionalDocumentsMustBeAuthentic,
+                    value:
+                        _review.understandsProfessionalDocumentsMustBeAuthentic,
                     label:
                         'I understand that all required signed and sealed '
                         'professional documents must be authentic.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsProfessionalDocumentsMustBeAuthentic =
+                      (val) =>
+                          _review.understandsProfessionalDocumentsMustBeAuthentic =
                               val,
                       v,
                     ),

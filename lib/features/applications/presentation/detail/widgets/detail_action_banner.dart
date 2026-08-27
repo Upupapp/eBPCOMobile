@@ -50,7 +50,8 @@ class DetailActionBanner extends StatelessWidget {
         title: 'Returned for revision',
         // Verbatim remark. Paraphrasing an evaluator would leave the applicant
         // guessing at what was actually asked of them.
-        body: evaluation?.remarks ??
+        body:
+            evaluation?.remarks ??
             'An evaluator returned this application for correction.',
         actionLabel: 'See the evaluation',
         onTap: null,
@@ -91,7 +92,8 @@ class DetailActionBanner extends StatelessWidget {
         title: status == ApplicationLifecycleStatus.rejected
             ? 'Application not approved'
             : status!.adminLabel,
-        body: application.returningEvaluation?.remarks ??
+        body:
+            application.returningEvaluation?.remarks ??
             status!.applicantSubLine,
         actionLabel: 'What you can do',
         onTap: () => context.push('/applications/${application.id}/outcome'),

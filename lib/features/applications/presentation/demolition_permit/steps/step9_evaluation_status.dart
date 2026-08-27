@@ -67,9 +67,7 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                       in DemolitionEvaluationPermitStatus.evaluationStages) ...[
                     _StageRow(label: stage),
                     if (stage !=
-                        DemolitionEvaluationPermitStatus
-                            .evaluationStages
-                            .last)
+                        DemolitionEvaluationPermitStatus.evaluationStages.last)
                       const SizedBox(height: AppSpacing.sm),
                   ],
                 ],
@@ -117,7 +115,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   child: _PaymentMethodOption(
                     icon: Icons.storefront_outlined,
                     label: 'Pay Onsite',
-                    selected: _evaluation.selectedPaymentMethod ==
+                    selected:
+                        _evaluation.selectedPaymentMethod ==
                         DemolitionPaymentMethod.payOnsite,
                     onTap: () =>
                         _selectPaymentMethod(DemolitionPaymentMethod.payOnsite),
@@ -128,7 +127,8 @@ class _Step9EvaluationStatusState extends State<Step9EvaluationStatus> {
                   child: _PaymentMethodOption(
                     icon: Icons.account_balance_outlined,
                     label: 'Bank Transfer',
-                    selected: _evaluation.selectedPaymentMethod ==
+                    selected:
+                        _evaluation.selectedPaymentMethod ==
                         DemolitionPaymentMethod.bankTransfer,
                     onTap: () => _selectPaymentMethod(
                       DemolitionPaymentMethod.bankTransfer,

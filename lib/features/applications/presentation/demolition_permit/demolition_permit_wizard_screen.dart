@@ -279,7 +279,8 @@ class _DemolitionPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Demolition Permit application step by step.',
+                intro:
+                    'Complete your Demolition Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

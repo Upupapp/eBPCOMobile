@@ -74,9 +74,7 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
     _siteSecurityMethod = TextEditingController(
       text: _safety.siteSecurityMethod,
     );
-    _dustControlMethod = TextEditingController(
-      text: _safety.dustControlMethod,
-    );
+    _dustControlMethod = TextEditingController(text: _safety.dustControlMethod);
     _noiseControlMethod = TextEditingController(
       text: _safety.noiseControlMethod,
     );
@@ -130,7 +128,9 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _safety.utilities[type]!.supportingDocument = picked; });
+    setState(() {
+      _safety.utilities[type]!.supportingDocument = picked;
+    });
     widget.onChanged();
   }
 
@@ -190,7 +190,8 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
                         if (v == null) {
                           return 'Please select a planned vacation date.';
                         }
-                        final start = widget.draft.structureDetails.proposedStartDate;
+                        final start =
+                            widget.draft.structureDetails.proposedStartDate;
                         if (start != null && start.isBefore(v)) {
                           return 'The proposed start date cannot be before this date.';
                         }
@@ -257,7 +258,9 @@ class _Step4SafetySitePrepState extends State<Step4SafetySitePrep> {
                   widget.onChanged();
                 },
                 onDateChanged: (v) {
-                  setState(() => _safety.utilities[type]!.disconnectionDate = v);
+                  setState(
+                    () => _safety.utilities[type]!.disconnectionDate = v,
+                  );
                   widget.onChanged();
                 },
                 onReferenceNumberChanged: (v) {

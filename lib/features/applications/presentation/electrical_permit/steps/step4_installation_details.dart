@@ -84,7 +84,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
   late final TextEditingController _frequency;
   late final TextEditingController _powerFactor;
 
-  ElectricalInstallationDetails get _details => widget.draft.installationDetails;
+  ElectricalInstallationDetails get _details =>
+      widget.draft.installationDetails;
 
   @override
   void initState() {
@@ -187,10 +188,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     label: 'Use or Character of Occupancy *',
                     items: ElectricalOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -246,10 +245,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     controller: _convenienceOutlets,
                     label: 'Convenience / Receptacle Outlets',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(
-                      v,
-                      'Convenience outlets',
-                    ),
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(v, 'Convenience outlets'),
                     onChanged: (v) {
                       _details.convenienceOutlets = v;
                       widget.onChanged();
@@ -260,8 +257,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     controller: _acOutlets,
                     label: 'Special-Purpose Air-Conditioning Outlets',
                     keyboardType: TextInputType.number,
-                    validator: (v) =>
-                        _nonNegativeWholeNumberError(v, 'Air-conditioning outlets'),
+                    validator: (v) => _nonNegativeWholeNumberError(
+                      v,
+                      'Air-conditioning outlets',
+                    ),
                     onChanged: (v) {
                       _details.specialPurposeAirConditioningOutlets = v;
                       widget.onChanged();
@@ -320,7 +319,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     controller: _bellBuzzers,
                     label: 'Bell / Buzzers',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(v, 'Bell / buzzers'),
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(v, 'Bell / buzzers'),
                     onChanged: (v) {
                       _details.bellBuzzers = v;
                       widget.onChanged();
@@ -331,7 +331,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     controller: _pushButtons,
                     label: 'Push Buttons',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(v, 'Push buttons'),
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(v, 'Push buttons'),
                     onChanged: (v) {
                       _details.pushButtons = v;
                       widget.onChanged();
@@ -354,7 +355,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     controller: _otherOutlets,
                     label: 'Other Outlets',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(v, 'Other outlets'),
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(v, 'Other outlets'),
                     onChanged: (v) {
                       setState(() => _details.otherOutlets = v);
                       widget.onChanged();
@@ -395,8 +397,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) =>
-                        _requiredPositiveDecimalError(v, 'Total Connected Load'),
+                    validator: (v) => _requiredPositiveDecimalError(
+                      v,
+                      'Total Connected Load',
+                    ),
                     onChanged: (v) {
                       _details.totalConnectedLoadKva = v;
                       widget.onChanged();
@@ -442,7 +446,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => _nonNegativeDecimalError(v, 'UPS Capacity'),
+                    validator: (v) =>
+                        _nonNegativeDecimalError(v, 'UPS Capacity'),
                     onChanged: (v) {
                       setState(() => _details.upsCapacityKva = v);
                       widget.onChanged();
@@ -455,8 +460,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) =>
-                        _requiredPositiveDecimalError(v, 'Main Service Voltage'),
+                    validator: (v) => _requiredPositiveDecimalError(
+                      v,
+                      'Main Service Voltage',
+                    ),
                     onChanged: (v) {
                       setState(() => _details.mainServiceVoltage = v);
                       widget.onChanged();
@@ -469,8 +476,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) =>
-                        _requiredPositiveDecimalError(v, 'Main Service Current'),
+                    validator: (v) => _requiredPositiveDecimalError(
+                      v,
+                      'Main Service Current',
+                    ),
                     onChanged: (v) {
                       setState(() => _details.mainServiceCurrentAmperes = v);
                       widget.onChanged();
@@ -510,7 +519,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => _nonNegativeDecimalError(v, 'Power Factor'),
+                    validator: (v) =>
+                        _nonNegativeDecimalError(v, 'Power Factor'),
                     onChanged: (v) {
                       _details.powerFactor = v;
                       widget.onChanged();

@@ -173,10 +173,8 @@ class _Step2ApplicantInfoState extends State<Step2ApplicantInfo> {
                     label: 'Use or Character of Occupancy *',
                     items: SignOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>

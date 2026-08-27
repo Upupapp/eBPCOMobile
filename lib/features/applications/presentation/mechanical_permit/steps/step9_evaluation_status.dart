@@ -90,7 +90,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                   for (final stage
                       in MechanicalEvaluationPermitStatus.progressStages) ...[
                     _StatusRow(label: stage, status: 'Pending'),
-                    if (stage != MechanicalEvaluationPermitStatus.progressStages.last)
+                    if (stage !=
+                        MechanicalEvaluationPermitStatus.progressStages.last)
                       const SizedBox(height: AppSpacing.sm),
                   ],
                 ],
@@ -111,7 +112,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Recommending Approval',
-                    value: MechanicalEvaluationPermitStatus.recommendingApproval,
+                    value:
+                        MechanicalEvaluationPermitStatus.recommendingApproval,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
@@ -126,8 +128,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Certificate of Operation Status',
-                    value:
-                        MechanicalEvaluationPermitStatus.certificateOfOperationStatus,
+                    value: MechanicalEvaluationPermitStatus
+                        .certificateOfOperationStatus,
                   ),
                 ],
               ),

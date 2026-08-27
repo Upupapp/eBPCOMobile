@@ -184,10 +184,8 @@ class _Step3ScopeOccupancyState extends State<Step3ScopeOccupancy> {
                     label: 'Proposed Changes *',
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'Proposed changes',
-                    ),
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'Proposed changes'),
                     onChanged: (v) {
                       _scope.proposedChanges = v;
                       widget.onChanged();

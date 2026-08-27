@@ -34,8 +34,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -68,13 +67,11 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     final resultingTotal = building.resultingTotalFloorArea;
 
     final propertyDocsUploaded = [
-          documents.landTitleUpload,
-          documents.taxDeclarationUpload,
-          documents.realPropertyTaxReceiptUpload,
-          documents.proofOfOwnershipOrAuthorityUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.landTitleUpload,
+      documents.taxDeclarationUpload,
+      documents.realPropertyTaxReceiptUpload,
+      documents.proofOfOwnershipOrAuthorityUpload,
+    ].where((d) => d != null).length;
 
     final existingDocsSatisfied = [
       documents.existingBuildingPermit,
@@ -84,24 +81,20 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     ].where((d) => d.isSatisfied).length;
 
     final professionalDocsUploaded = [
-          professional.prcIdUpload,
-          professional.ptrDocumentUpload,
-          professional.signedSealedFormUpload,
-          professional.signedSealedPlansUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professional.prcIdUpload,
+      professional.ptrDocumentUpload,
+      professional.signedSealedFormUpload,
+      professional.signedSealedPlansUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRegisteredOwner == false;
     final consentDocsUploaded = isRepresentative
         ? [
-                consent.authorizationLetterUpload,
-                consent.ownerValidIdUpload,
-                consent.representativeValidIdUpload,
-                consent.proofOfOwnershipUpload,
-              ]
-              .where((d) => d != null)
-              .length
+            consent.authorizationLetterUpload,
+            consent.ownerValidIdUpload,
+            consent.representativeValidIdUpload,
+            consent.proofOfOwnershipUpload,
+          ].where((d) => d != null).length
         : 0;
 
     return Form(
@@ -225,10 +218,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                       : 'Not set',
                 ),
                 _SummaryRow('Lot Area', '${building.lotArea} sq m'),
-                _SummaryRow(
-                  'Estimated Cost',
-                  '₱${building.estimatedCost}',
-                ),
+                _SummaryRow('Estimated Cost', '₱${building.estimatedCost}'),
                 _SummaryRow(
                   'Proposed Start Date',
                   _formatDate(building.proposedStartDate),
@@ -332,12 +322,14 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review.confirmsAdditionOrExtensionOfExistingBuilding,
+                    value:
+                        _review.confirmsAdditionOrExtensionOfExistingBuilding,
                     label:
                         'I confirm that this application is for an addition to or extension of an existing building.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .confirmsAdditionOrExtensionOfExistingBuilding = val,
+                      (val) =>
+                          _review.confirmsAdditionOrExtensionOfExistingBuilding =
+                              val,
                       v,
                     ),
                   ),
@@ -347,7 +339,8 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                         'I understand that the proposed work may require applicable ancillary permits.',
                     onChanged: (v) => _toggle(
                       (val) =>
-                          _review.understandsAncillaryPermitsMayBeRequired = val,
+                          _review.understandsAncillaryPermitsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),

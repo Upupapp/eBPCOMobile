@@ -187,9 +187,10 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                   label: 'Signed Building Owner Consent',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _consent.buildingOwnerSignedDocumentUpload =
-                      picked;
+                  _consent.buildingOwnerSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -332,7 +333,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                     label: 'Lot Owner Consent',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.lotOwnerConsentUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.lotOwnerConsentUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,

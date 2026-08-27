@@ -144,10 +144,8 @@ class _Step6SupervisorState extends State<Step6Supervisor> {
                     label: 'Profession *',
                     items: FencingProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -242,10 +240,8 @@ class _Step6SupervisorState extends State<Step6Supervisor> {
                     controller: _ptrPlaceIssued,
                     label: 'PTR Place Issued *',
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'PTR place issued',
-                    ),
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'PTR place issued'),
                     onChanged: (v) {
                       _supervisor.ptrPlaceIssued = v;
                       widget.onChanged();
@@ -285,9 +281,10 @@ class _Step6SupervisorState extends State<Step6Supervisor> {
                   label: 'Signed Supervisor Confirmation',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.supervisorSignedDocumentUpload =
-                      picked;
+                  _professionals.supervisorSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },

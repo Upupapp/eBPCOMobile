@@ -86,7 +86,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final stage
-                      in ArchitecturalEvaluationPermitStatus.progressStages) ...[
+                      in ArchitecturalEvaluationPermitStatus
+                          .progressStages) ...[
                     _StatusRow(label: stage, status: 'Pending'),
                     if (stage !=
                         ArchitecturalEvaluationPermitStatus.progressStages.last)
@@ -110,8 +111,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Recommending Approval',
-                    value:
-                        ArchitecturalEvaluationPermitStatus.recommendingApproval,
+                    value: ArchitecturalEvaluationPermitStatus
+                        .recommendingApproval,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
@@ -170,7 +171,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final condition
-                      in ArchitecturalEvaluationPermitStatus.permitConditions) ...[
+                      in ArchitecturalEvaluationPermitStatus
+                          .permitConditions) ...[
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

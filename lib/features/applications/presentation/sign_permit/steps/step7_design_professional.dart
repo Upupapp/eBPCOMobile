@@ -107,10 +107,8 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                     label: 'Profession *',
                     items: SignProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -246,9 +244,10 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                   label: 'Design Professional Signed Documents',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.designSignedDocumentUpload =
-                      picked;
+                  _professionals.designSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },

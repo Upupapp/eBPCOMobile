@@ -31,12 +31,12 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
-  final Map<DemolitionDocumentSlot, TextEditingController> _explanationControllers = {};
+  final Map<DemolitionDocumentSlot, TextEditingController>
+  _explanationControllers = {};
 
   DemolitionRequiredDocuments get _documents => widget.draft.requiredDocuments;
   DemolitionProfessionalInCharge get _professional => widget.draft.professional;
@@ -72,14 +72,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -103,9 +100,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 const Icon(Icons.info_outline, color: AppColors.textMuted),
                 const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(label, style: AppTypography.bodyStrong),
-                ),
+                Expanded(child: Text(label, style: AppTypography.bodyStrong)),
                 TextButton(
                   onPressed: () {
                     setState(() => slot.markedNotAvailable = false);
@@ -120,10 +115,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               controller: controller,
               label: 'Explain why this document is not available *',
               maxLines: 2,
-              validator: (v) => Validators.required(
-                v,
-                fieldLabel: 'An explanation',
-              ),
+              validator: (v) =>
+                  Validators.required(v, fieldLabel: 'An explanation'),
               onChanged: (v) {
                 slot.notAvailableExplanation = v;
                 widget.onChanged();
@@ -148,9 +141,9 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               label: label,
             );
             if (picked == null) return;
-            setState(
-              () => slot.upload = picked,
-            );
+            // The picker can outlive this step; setState on a defunct State throws.
+            if (!mounted) return;
+            setState(() => slot.upload = picked);
             widget.onChanged();
           },
           onRemove: () {
@@ -274,8 +267,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Demolition Methodology',
-                  getDocument: () =>
-                      _professional.demolitionMethodologyUpload,
+                  getDocument: () => _professional.demolitionMethodologyUpload,
                   setDocument: (d) =>
                       _professional.demolitionMethodologyUpload = d,
                 ),
@@ -287,22 +279,19 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 if (_structure.requiresStructuralAssessment)
                   _uploadTile(
                     label: 'Structural Assessment',
-                    getDocument: () =>
-                        _professional.structuralAssessmentUpload,
+                    getDocument: () => _professional.structuralAssessmentUpload,
                     setDocument: (d) =>
                         _professional.structuralAssessmentUpload = d,
                   ),
                 _uploadTile(
                   label: 'Debris Management Plan',
                   getDocument: () => _documents.debrisManagementPlanUpload,
-                  setDocument: (d) =>
-                      _documents.debrisManagementPlanUpload = d,
+                  setDocument: (d) => _documents.debrisManagementPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Dust and Noise Control Plan',
                   getDocument: () => _documents.dustNoiseControlPlanUpload,
-                  setDocument: (d) =>
-                      _documents.dustNoiseControlPlanUpload = d,
+                  setDocument: (d) => _documents.dustNoiseControlPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Project Schedule',
@@ -366,8 +355,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Signed and Sealed Professional Form',
                   getDocument: () => _professional.signedSealedFormUpload,
-                  setDocument: (d) =>
-                      _professional.signedSealedFormUpload = d,
+                  setDocument: (d) => _professional.signedSealedFormUpload = d,
                 ),
               ],
             ),
@@ -400,8 +388,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: requiresTrafficOrPedestrianManagementPlan
                       ? 'Conditionally required — public sidewalk or road affected'
                       : 'Not required — no public sidewalk or road affected',
-                  getDocument: () =>
-                      _documents.roadSidewalkUseClearanceUpload,
+                  getDocument: () => _documents.roadSidewalkUseClearanceUpload,
                   setDocument: (d) =>
                       _documents.roadSidewalkUseClearanceUpload = d,
                 ),

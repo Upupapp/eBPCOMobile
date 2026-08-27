@@ -131,3 +131,47 @@ The first count said 5 slots. The second said 17. Rendering said 15, of which
 step 7 held 12. The reconciliation only became possible once the measurement
 was taken from the running widget rather than from the source text — the same
 lesson the requirements catalog itself taught two hours earlier, learned again.
+
+---
+
+## The three under-collectors — RECONCILED, 27 August 2026
+
+All three were missing the same baseline: the four documents every permit type
+needs. Excavation was additionally missing the engineer's licence, and
+Certificate of Occupancy the final Fire Safety Inspection Certificate.
+
+| Wizard | Was | Now | Added |
+|---|---|---|---|
+| `certificate_of_occupancy` | 8 | 13 | Land Title / Tax Declaration, Barangay Clearance, Locational Clearance, Valid Government ID, **FSIC (final)** |
+| `excavation_permit` | 3 | 8 | the four baseline documents, plus PRC Licence and PTR of the Engineer of Record |
+| `fencing_permit` | 3 | 7 | the four baseline documents |
+
+All are required and gate their step. In fencing and excavation they sit with
+the construction location, because that is what they are about — the site, not
+the applicant's identity or the professional's credentials. Neither wizard has
+a required-documents step, and adding one would have renumbered nine steps and
+every "Step N of 9" assertion in their tests for no gain.
+
+### A caveat worth stating
+
+These three catalog entries are marked `verified: false` — built from a
+national-law baseline, not from a Castilla form. By the reasoning applied to
+the over-collectors, that would argue for trusting the wizard over the catalog.
+
+It does not here, for a specific reason: the four baseline documents appear in
+the entries that *are* Castilla-verified — the Building Permit and Zoning
+checklists both list proof of ownership, barangay clearance, locational
+clearance and a valid ID. They are not an artefact of the generic template.
+The FSIC is required by RA 9514 regardless of any catalog.
+
+### What it cost
+
+Adding required uploads broke twelve wizard tests, all of them fencing and
+excavation failing to advance past step 3 — the correct consequence of gating
+new documents. The test helpers now supply them.
+
+One subtler break: excavation's test taps the *first* Upload button on the
+professional step, and the new PRC/PTR tile had taken that position, leaving
+the plans upload empty and blocking step 7. The tile was moved below the plans
+rather than the test rewritten, since "the plans are the primary document on
+this step" is the more durable statement.

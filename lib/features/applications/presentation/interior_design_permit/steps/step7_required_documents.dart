@@ -28,8 +28,7 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
@@ -50,14 +49,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -133,8 +129,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Interior Perspective From Main Entrances',
                   getDocument: () =>
                       _documents.interiorPerspectiveFromMainEntrancesUpload,
-                  setDocument: (d) => _documents
-                      .interiorPerspectiveFromMainEntrancesUpload = d,
+                  setDocument: (d) =>
+                      _documents.interiorPerspectiveFromMainEntrancesUpload = d,
                 ),
               ],
             ),
@@ -178,8 +174,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Reflected Ceiling Plan',
                   getDocument: () => _documents.reflectedCeilingPlanUpload,
-                  setDocument: (d) =>
-                      _documents.reflectedCeilingPlanUpload = d,
+                  setDocument: (d) => _documents.reflectedCeilingPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Lighting Fixture Specifications',
@@ -199,15 +194,15 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Air Conditioning, Exhaust, and Return Grilles',
                   getDocument: () =>
                       _documents.airConditioningExhaustAndReturnGrillesUpload,
-                  setDocument: (d) => _documents
-                      .airConditioningExhaustAndReturnGrillesUpload = d,
+                  setDocument: (d) =>
+                      _documents.airConditioningExhaustAndReturnGrillesUpload =
+                          d,
                 ),
                 _uploadTile(
                   label: 'Sprinkler / Nozzle Locations',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
-                  getDocument: () =>
-                      _documents.sprinklerNozzleLocationsUpload,
+                  getDocument: () => _documents.sprinklerNozzleLocationsUpload,
                   setDocument: (d) =>
                       _documents.sprinklerNozzleLocationsUpload = d,
                 ),
@@ -250,8 +245,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'Design Professional Signed Documents',
-                  getDocument: () =>
-                      _professionals.designSignedDocumentUpload,
+                  getDocument: () => _professionals.designSignedDocumentUpload,
                   setDocument: (d) =>
                       _professionals.designSignedDocumentUpload = d,
                 ),
@@ -279,8 +273,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Other Supporting Documents',
                   isRequired: false,
                   statusLabel: 'Optional',
-                  getDocument: () =>
-                      _documents.otherSupportingDocumentsUpload,
+                  getDocument: () => _documents.otherSupportingDocumentsUpload,
                   setDocument: (d) =>
                       _documents.otherSupportingDocumentsUpload = d,
                 ),

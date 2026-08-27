@@ -87,9 +87,7 @@ class InspectionSection extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             Text(
               'Have ready on site',
-              style: AppTypography.helper.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: AppSpacing.xs),
             for (final item in inspection.preparationChecklist)
@@ -104,9 +102,7 @@ class InspectionSection extends StatelessWidget {
                       color: AppColors.textMuted,
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(item, style: AppTypography.body),
-                    ),
+                    Expanded(child: Text(item, style: AppTypography.body)),
                   ],
                 ),
               ),

@@ -54,19 +54,23 @@ class _CivilStructuralPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Provide the details of the person applying for the Civil / Structural Permit.',
+      subtitle:
+          'Provide the details of the person applying for the Civil / Structural Permit.',
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle: 'Provide the applicant address and location of the civil or structural work.',
+      subtitle:
+          'Provide the applicant address and location of the civil or structural work.',
     ),
     _StepMeta(
       title: 'Scope of Work',
-      subtitle: 'Select the project scope covered by the Civil / Structural Permit.',
+      subtitle:
+          'Select the project scope covered by the Civil / Structural Permit.',
     ),
     _StepMeta(
       title: 'Civil / Structural Work Details',
-      subtitle: 'Select and describe the civil or structural work included in the project.',
+      subtitle:
+          'Select and describe the civil or structural work included in the project.',
     ),
     _StepMeta(
       title: 'Civil / Structural Professionals',
@@ -78,11 +82,13 @@ class _CivilStructuralPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Required Documents',
-      subtitle: 'Upload the civil and structural documents required for evaluation.',
+      subtitle:
+          'Upload the civil and structural documents required for evaluation.',
     ),
     _StepMeta(
       title: 'Review & Declaration',
-      subtitle: 'Review the Civil / Structural Permit application before submission.',
+      subtitle:
+          'Review the Civil / Structural Permit application before submission.',
     ),
     _StepMeta(
       title: 'Evaluation & Permit Status',
@@ -226,7 +232,8 @@ class _CivilStructuralPermitWizardScreenState
         'submissionDate': now,
         'relatedBuildingPermitNumber':
             _draft.relatedBuildingPermit.buildingPermitNumber,
-        'relatedBuildingPermitStatus': _draft.relatedBuildingPermit.status.label,
+        'relatedBuildingPermitStatus':
+            _draft.relatedBuildingPermit.status.label,
       },
     );
   }
@@ -280,7 +287,8 @@ class _CivilStructuralPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Civil / Structural Permit application step by step.',
+                intro:
+                    'Complete your Civil / Structural Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

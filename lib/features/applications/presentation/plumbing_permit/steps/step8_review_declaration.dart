@@ -28,8 +28,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -196,7 +195,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                   'Disposal Method',
                   details.hasSewage
                       ? (details.sewageSystem.disposalMethod?.label ??
-                          'Not set')
+                            'Not set')
                       : 'Not applicable',
                 ),
               ],
@@ -208,10 +207,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                 onEdit: () => widget.onEditStep(3),
                 rows: [
                   _SummaryRow('Tank Type', details.septicTank.tankType),
-                  _SummaryRow(
-                    'Tank Capacity',
-                    details.septicTank.tankCapacity,
-                  ),
+                  _SummaryRow('Tank Capacity', details.septicTank.tankCapacity),
                 ],
               ),
             ],
@@ -327,8 +323,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I confirm that the plumbing plans and specifications were prepared by a licensed Master Plumber.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .confirmsPlansPreparedByLicensedMasterPlumber = val,
+                      (val) =>
+                          _review.confirmsPlansPreparedByLicensedMasterPlumber =
+                              val,
                       v,
                     ),
                   ),
@@ -337,20 +334,21 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that plumbing work must follow the approved plans and applicable plumbing and building codes.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndCodes = val,
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndCodes =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value:
-                        _review.understandsRequiresLicensedMasterPlumberSupervisor,
+                    value: _review
+                        .understandsRequiresLicensedMasterPlumberSupervisor,
                     label:
                         'I understand that a licensed Master Plumber must supervise or take charge of the work.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                              .understandsRequiresLicensedMasterPlumberSupervisor =
-                          val,
+                      (val) =>
+                          _review.understandsRequiresLicensedMasterPlumberSupervisor =
+                              val,
                       v,
                     ),
                   ),
@@ -359,8 +357,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that a Notice of Construction may be required before plumbing work begins.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsNoticeOfConstructionMayBeRequired = val,
+                      (val) =>
+                          _review.understandsNoticeOfConstructionMayBeRequired =
+                              val,
                       v,
                     ),
                   ),
@@ -369,8 +368,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that logbook entries, as-built plans, and a Certificate of Completion may be required after completion.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsCompletionDocumentsMayBeRequired = val,
+                      (val) =>
+                          _review.understandsCompletionDocumentsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),

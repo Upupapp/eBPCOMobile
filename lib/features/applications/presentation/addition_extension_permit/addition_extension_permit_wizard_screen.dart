@@ -54,8 +54,7 @@ class _AdditionExtensionPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle:
-          'Tell us who is applying for the Addition / Extension permit.',
+      subtitle: 'Tell us who is applying for the Addition / Extension permit.',
     ),
     _StepMeta(
       title: 'Address & Project Location',
@@ -87,7 +86,8 @@ class _AdditionExtensionPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Review & Declaration',
-      subtitle: 'Review the Addition / Extension application before submission.',
+      subtitle:
+          'Review the Addition / Extension application before submission.',
     ),
     _StepMeta(
       title: 'Assessment & Payment',
@@ -282,7 +282,8 @@ class _AdditionExtensionPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Addition / Extension Permit application step by step.',
+                intro:
+                    'Complete your Addition / Extension Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

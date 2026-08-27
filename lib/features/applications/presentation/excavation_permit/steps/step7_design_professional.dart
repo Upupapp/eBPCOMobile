@@ -107,10 +107,8 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                     label: 'Profession *',
                     items: ExcavationProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -246,9 +244,10 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                   label: 'Design Professional Signed Documents',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.designSignedDocumentUpload =
-                      picked;
+                  _professionals.designSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -257,6 +256,25 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                 setState(
                   () => _professionals.designSignedDocumentUpload = null,
                 );
+                widget.onChanged();
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            DocumentUploadTile(
+              label: 'PRC Licence and PTR of the Engineer of Record',
+              document: _professionals.designPrcAndPtrUpload,
+              onUpload: () async {
+                final picked = await showAttachDocumentOptions(
+                  context,
+                  label: 'PRC Licence and PTR',
+                );
+                if (picked == null || !mounted) return;
+                setState(() => _professionals.designPrcAndPtrUpload = picked);
+                widget.onChanged();
+              },
+              allowReplace: true,
+              onRemove: () {
+                setState(() => _professionals.designPrcAndPtrUpload = null);
                 widget.onChanged();
               },
             ),

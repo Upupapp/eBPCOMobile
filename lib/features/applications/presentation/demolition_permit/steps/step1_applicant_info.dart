@@ -180,10 +180,8 @@ class _Step1ApplicantInfoState extends State<Step1ApplicantInfo> {
                     label: 'Use or Character of Occupancy *',
                     items: DemolitionOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>

@@ -28,8 +28,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -252,8 +251,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I confirm that the electronics plans and specifications were prepared by a licensed Professional Electronics Engineer.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .confirmsPlansPreparedByLicensedProfessional = val,
+                      (val) =>
+                          _review.confirmsPlansPreparedByLicensedProfessional =
+                              val,
                       v,
                     ),
                   ),
@@ -262,8 +262,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that electronics work must comply with the approved plans and applicable electronics and building regulations.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndCodes = val,
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndCodes =
+                              val,
                       v,
                     ),
                   ),
@@ -282,8 +283,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that a Notice of Construction may be required before electronics work begins.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsNoticeOfConstructionMayBeRequired = val,
+                      (val) =>
+                          _review.understandsNoticeOfConstructionMayBeRequired =
+                              val,
                       v,
                     ),
                   ),
@@ -292,8 +294,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that logbook entries, as-built plans, and completion documents may be required after completion.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsCompletionDocumentsMayBeRequired = val,
+                      (val) =>
+                          _review.understandsCompletionDocumentsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),

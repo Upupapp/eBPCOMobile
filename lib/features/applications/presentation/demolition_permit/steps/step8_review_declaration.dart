@@ -37,8 +37,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -72,13 +71,11 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
         .length;
 
     final propertyDocsUploaded = [
-          documents.landTitleUpload,
-          documents.taxDeclarationUpload,
-          documents.realPropertyTaxReceiptUpload,
-          documents.proofOfOwnershipOrAuthorityUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.landTitleUpload,
+      documents.taxDeclarationUpload,
+      documents.realPropertyTaxReceiptUpload,
+      documents.proofOfOwnershipOrAuthorityUpload,
+    ].where((d) => d != null).length;
 
     final existingDocsSatisfied = [
       documents.existingBuildingPermit,
@@ -87,27 +84,23 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     ].where((d) => d.isSatisfied).length;
 
     final professionalDocsUploaded = [
-          professional.prcIdUpload,
-          professional.ptrDocumentUpload,
-          professional.signedSealedFormUpload,
-          professional.demolitionPlanUpload,
-          professional.demolitionMethodologyUpload,
-          professional.safetyProgramUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professional.prcIdUpload,
+      professional.ptrDocumentUpload,
+      professional.signedSealedFormUpload,
+      professional.demolitionPlanUpload,
+      professional.demolitionMethodologyUpload,
+      professional.safetyProgramUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRegisteredOwner == false;
     final consentDocsUploaded = isRepresentative
         ? [
-                consent.lotOwnerConsentUpload,
-                consent.authorizationLetterUpload,
-                consent.ownerValidIdUpload,
-                consent.representativeValidIdUpload,
-                consent.proofOfOwnershipUpload,
-              ]
-              .where((d) => d != null)
-              .length
+            consent.lotOwnerConsentUpload,
+            consent.authorizationLetterUpload,
+            consent.ownerValidIdUpload,
+            consent.representativeValidIdUpload,
+            consent.proofOfOwnershipUpload,
+          ].where((d) => d != null).length
         : 0;
 
     return Form(
@@ -301,12 +294,14 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review.confirmsUtilitiesWillBeDisconnectedOrControlled,
+                    value:
+                        _review.confirmsUtilitiesWillBeDisconnectedOrControlled,
                     label:
                         'I confirm that all utilities will be disconnected or safely controlled before demolition begins.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .confirmsUtilitiesWillBeDisconnectedOrControlled = val,
+                      (val) =>
+                          _review.confirmsUtilitiesWillBeDisconnectedOrControlled =
+                              val,
                       v,
                     ),
                   ),

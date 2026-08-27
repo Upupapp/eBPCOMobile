@@ -76,17 +76,13 @@ class ApplicationDetailScreen extends StatelessWidget {
             if (application.evaluations.isNotEmpty)
               _Section(
                 title: 'Evaluations',
-                child: EvaluationSection(
-                  evaluations: application.evaluations,
-                ),
+                child: EvaluationSection(evaluations: application.evaluations),
               ),
 
             if (application.inspection != null)
               _Section(
                 title: 'Inspection',
-                child: InspectionSection(
-                  inspection: application.inspection!,
-                ),
+                child: InspectionSection(inspection: application.inspection!),
               ),
 
             _Section(
@@ -228,10 +224,7 @@ class _Fact extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 108,
-            child: Text(label, style: AppTypography.helper),
-          ),
+          SizedBox(width: 108, child: Text(label, style: AppTypography.helper)),
           Expanded(child: Text(value, style: AppTypography.body)),
         ],
       ),

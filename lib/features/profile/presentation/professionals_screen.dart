@@ -35,10 +35,7 @@ class ProfessionalsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppConstants.screenPaddingHorizontal),
           children: [
-            Text(
-              'Design professionals',
-              style: AppTypography.sectionTitle,
-            ),
+            Text('Design professionals', style: AppTypography.sectionTitle),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'The architect or engineer who signs and seals your plans. Their '
@@ -205,12 +202,14 @@ class _ProfessionalTile extends StatelessWidget {
       children: [
         _Fact(
           label: 'PRC',
-          value: '${professional.prcNumber} · valid to '
+          value:
+              '${professional.prcNumber} · valid to '
               '${format.format(professional.prcValidityDate)}',
         ),
         _Fact(
           label: 'PTR',
-          value: '${professional.ptrNumber} · '
+          value:
+              '${professional.ptrNumber} · '
               '${format.format(professional.ptrDateIssued)}, '
               '${professional.ptrPlaceIssued}',
         ),
@@ -392,10 +391,7 @@ class _Flag extends StatelessWidget {
         color: tone.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(AppConstants.borderRadiusSmall),
       ),
-      child: Text(
-        message,
-        style: AppTypography.helper.copyWith(color: tone),
-      ),
+      child: Text(message, style: AppTypography.helper.copyWith(color: tone)),
     );
   }
 }

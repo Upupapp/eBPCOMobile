@@ -34,8 +34,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -69,13 +68,11 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
         .join(', ');
 
     final propertyDocsUploaded = [
-          documents.landTitleUpload,
-          documents.taxDeclarationUpload,
-          documents.realPropertyTaxReceiptUpload,
-          documents.proofOfOwnershipOrAuthorityUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.landTitleUpload,
+      documents.taxDeclarationUpload,
+      documents.realPropertyTaxReceiptUpload,
+      documents.proofOfOwnershipOrAuthorityUpload,
+    ].where((d) => d != null).length;
 
     final existingDocsSatisfied = [
       documents.existingBuildingPermit,
@@ -85,24 +82,20 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     ].where((d) => d.isSatisfied).length;
 
     final professionalDocsUploaded = [
-          professional.prcIdUpload,
-          professional.ptrDocumentUpload,
-          professional.signedSealedFormUpload,
-          professional.signedSealedPlansUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professional.prcIdUpload,
+      professional.ptrDocumentUpload,
+      professional.signedSealedFormUpload,
+      professional.signedSealedPlansUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRegisteredOwner == false;
     final consentDocsUploaded = isRepresentative
         ? [
-                consent.authorizationLetterUpload,
-                consent.ownerValidIdUpload,
-                consent.representativeValidIdUpload,
-                consent.proofOfOwnershipUpload,
-              ]
-              .where((d) => d != null)
-              .length
+            consent.authorizationLetterUpload,
+            consent.ownerValidIdUpload,
+            consent.representativeValidIdUpload,
+            consent.proofOfOwnershipUpload,
+          ].where((d) => d != null).length
         : 0;
 
     return Form(
@@ -117,7 +110,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
               onEdit: () => widget.onEditStep(0),
               rows: [
                 _SummaryRow('Name', fullName.isEmpty ? 'Not set' : fullName),
-                _SummaryRow('Application Type', applicant.applicationType.label),
+                _SummaryRow(
+                  'Application Type',
+                  applicant.applicationType.label,
+                ),
                 _SummaryRow(
                   'Telephone / Mobile Number',
                   applicant.contactNumber,
@@ -216,7 +212,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                   'Profession',
                   professional.profession?.label ?? 'Not set',
                 ),
-                _SummaryRow('Professional Address', professional.professionalAddress),
+                _SummaryRow(
+                  'Professional Address',
+                  professional.professionalAddress,
+                ),
                 _SummaryRow('PRC Number', professional.prcNumber),
                 _SummaryRow(
                   'PRC Validity',
@@ -310,8 +309,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that additional permits may be required depending on the renovation work.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsAdditionalPermitsMayBeRequired = val,
+                      (val) =>
+                          _review.understandsAdditionalPermitsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),

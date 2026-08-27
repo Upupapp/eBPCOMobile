@@ -92,7 +92,10 @@ class LifecycleTimeline extends StatelessWidget {
       );
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: steps);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: steps,
+    );
   }
 
   /// A revision belongs to the last non-revision step recorded before it.
@@ -147,14 +150,16 @@ class _TimelineStep extends StatelessWidget {
         ? AppColors.statusApproved
         : AppColors.border;
 
-    final labelColor = isReached
-        ? AppColors.textPrimary
-        : AppColors.textMuted;
+    final labelColor = isReached ? AppColors.textPrimary : AppColors.textMuted;
 
     return Semantics(
       label:
           '${status.adminLabel}. '
-          '${isCurrent ? 'Current step. ' : isReached ? 'Completed. ' : 'Not yet reached. '}'
+          '${isCurrent
+              ? 'Current step. '
+              : isReached
+              ? 'Completed. '
+              : 'Not yet reached. '}'
           '${entry?.office ?? ''}',
       excludeSemantics: true,
       child: IntrinsicHeight(

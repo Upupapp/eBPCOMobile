@@ -49,8 +49,7 @@ class Step4ComplianceDetails extends StatefulWidget {
   });
 
   @override
-  State<Step4ComplianceDetails> createState() =>
-      _Step4ComplianceDetailsState();
+  State<Step4ComplianceDetails> createState() => _Step4ComplianceDetailsState();
 }
 
 class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
@@ -69,7 +68,8 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
   late final TextEditingController _fireWallDescription;
   late final TextEditingController _fireSafetyFacilityDescription;
 
-  ArchitecturalComplianceDetails get _compliance => widget.draft.complianceDetails;
+  ArchitecturalComplianceDetails get _compliance =>
+      widget.draft.complianceDetails;
 
   @override
   void initState() {
@@ -186,8 +186,10 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     AppTextField(
                       controller: _otherAccessibility,
                       label: 'Specify Other Accessibility Facility *',
-                      validator: (v) =>
-                          Validators.required(v, fieldLabel: 'Accessibility facility'),
+                      validator: (v) => Validators.required(
+                        v,
+                        fieldLabel: 'Accessibility facility',
+                      ),
                       onChanged: (v) {
                         _compliance.otherAccessibilityDescription = v;
                         widget.onChanged();
@@ -214,7 +216,9 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     validator: (v) =>
                         _percentageError(v, 'Building Footprint Percentage'),
                     onChanged: (v) {
-                      setState(() => _compliance.buildingFootprintPercentage = v);
+                      setState(
+                        () => _compliance.buildingFootprintPercentage = v,
+                      );
                       widget.onChanged();
                     },
                   ),
@@ -246,7 +250,9 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     validator: (v) =>
                         _percentageError(v, 'Unpaved Surface Area Percentage'),
                     onChanged: (v) {
-                      setState(() => _compliance.unpavedSurfaceAreaPercentage = v);
+                      setState(
+                        () => _compliance.unpavedSurfaceAreaPercentage = v,
+                      );
                       widget.onChanged();
                     },
                   ),
@@ -281,8 +287,10 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     AppTextField(
                       controller: _otherSiteDescription,
                       label: 'Other Site Description *',
-                      validator: (v) =>
-                          Validators.required(v, fieldLabel: 'Other site description'),
+                      validator: (v) => Validators.required(
+                        v,
+                        fieldLabel: 'Other site description',
+                      ),
                       onChanged: (v) {
                         _compliance.otherSiteDescription = v;
                         widget.onChanged();
@@ -327,8 +335,10 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     AppTextField(
                       controller: _otherFireFeature,
                       label: 'Specify Other Fire Code Feature *',
-                      validator: (v) =>
-                          Validators.required(v, fieldLabel: 'Fire code feature'),
+                      validator: (v) => Validators.required(
+                        v,
+                        fieldLabel: 'Fire code feature',
+                      ),
                       onChanged: (v) {
                         _compliance.otherFireFeatureDescription = v;
                         widget.onChanged();
@@ -366,7 +376,8 @@ class _Step4ComplianceDetailsState extends State<Step4ComplianceDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => _nonNegativeDecimalError(v, 'Total Exit Width'),
+                    validator: (v) =>
+                        _nonNegativeDecimalError(v, 'Total Exit Width'),
                     onChanged: (v) {
                       _compliance.totalExitWidth = v;
                       widget.onChanged();

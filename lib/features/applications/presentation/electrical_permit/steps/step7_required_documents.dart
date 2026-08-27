@@ -27,13 +27,13 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
   ElectricalRequiredDocuments get _documents => widget.draft.requiredDocuments;
-  ElectricalInstallationDetails get _details => widget.draft.installationDetails;
+  ElectricalInstallationDetails get _details =>
+      widget.draft.installationDetails;
   ElectricalScopeOfWork get _scope => widget.draft.scopeOfWork;
   ElectricalProfessionals get _professionals => widget.draft.professionals;
 
@@ -51,14 +51,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -100,7 +97,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Electrical Plans',
                   getDocument: () => _professionals.signedSealedPlansUpload,
-                  setDocument: (d) => _professionals.signedSealedPlansUpload = d,
+                  setDocument: (d) =>
+                      _professionals.signedSealedPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Electrical Specifications',
@@ -127,7 +125,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Service-Entrance Details',
                   getDocument: () => _documents.serviceEntranceDetailsUpload,
-                  setDocument: (d) => _documents.serviceEntranceDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.serviceEntranceDetailsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Grounding Details',
@@ -137,7 +136,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Electrical Layout Plans',
                   getDocument: () => _documents.electricalLayoutPlansUpload,
-                  setDocument: (d) => _documents.electricalLayoutPlansUpload = d,
+                  setDocument: (d) =>
+                      _documents.electricalLayoutPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Lighting Layout',
@@ -167,7 +167,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'Signed Load Calculations',
-                  getDocument: () => _professionals.signedLoadCalculationsUpload,
+                  getDocument: () =>
+                      _professionals.signedLoadCalculationsUpload,
                   setDocument: (d) =>
                       _professionals.signedLoadCalculationsUpload = d,
                 ),
@@ -175,7 +176,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Transformer Capacity Details',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
-                  getDocument: () => _documents.transformerCapacityDetailsUpload,
+                  getDocument: () =>
+                      _documents.transformerCapacityDetailsUpload,
                   setDocument: (d) =>
                       _documents.transformerCapacityDetailsUpload = d,
                 ),
@@ -202,14 +204,16 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.shortCircuitCalculationUpload,
-                  setDocument: (d) => _documents.shortCircuitCalculationUpload = d,
+                  setDocument: (d) =>
+                      _documents.shortCircuitCalculationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Voltage-Drop Calculation',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.voltageDropCalculationUpload,
-                  setDocument: (d) => _documents.voltageDropCalculationUpload = d,
+                  setDocument: (d) =>
+                      _documents.voltageDropCalculationUpload = d,
                 ),
               ],
             ),
@@ -217,17 +221,20 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
 
             ExpandableSection(
               title: 'Special Fixtures and Equipment',
-              subtitle: 'Required based on the outlet and capacity information in Step 4.',
+              subtitle:
+                  'Required based on the outlet and capacity information in Step 4.',
               children: [
                 _uploadTile(
                   label: 'Special Fixtures Schedule',
                   getDocument: () => _documents.specialFixturesScheduleUpload,
-                  setDocument: (d) => _documents.specialFixturesScheduleUpload = d,
+                  setDocument: (d) =>
+                      _documents.specialFixturesScheduleUpload = d,
                 ),
                 _uploadTile(
                   label: 'Equipment Specifications',
                   getDocument: () => _documents.equipmentSpecificationsUpload,
-                  setDocument: (d) => _documents.equipmentSpecificationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.equipmentSpecificationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Air-Conditioning Equipment Schedule',
@@ -243,7 +250,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.cookingEquipmentScheduleUpload,
-                  setDocument: (d) => _documents.cookingEquipmentScheduleUpload = d,
+                  setDocument: (d) =>
+                      _documents.cookingEquipmentScheduleUpload = d,
                 ),
                 _uploadTile(
                   label: 'Water Heater Schedule',
@@ -274,7 +282,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   isRequired: false,
                   statusLabel: 'Optional',
                   getDocument: () => _documents.otherEquipmentDocumentsUpload,
-                  setDocument: (d) => _documents.otherEquipmentDocumentsUpload = d,
+                  setDocument: (d) =>
+                      _documents.otherEquipmentDocumentsUpload = d,
                 ),
               ],
             ),
@@ -291,7 +300,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Reconnection selected'
                       : 'Not required — Reconnection not selected',
                   getDocument: () => _documents.existingServiceRecordUpload,
-                  setDocument: (d) => _documents.existingServiceRecordUpload = d,
+                  setDocument: (d) =>
+                      _documents.existingServiceRecordUpload = d,
                 ),
                 _uploadTile(
                   label: 'Utility Provider Coordination',
@@ -309,7 +319,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Separation selected'
                       : 'Not required — Separation not selected',
                   getDocument: () => _documents.separateServiceDiagramUpload,
-                  setDocument: (d) => _documents.separateServiceDiagramUpload = d,
+                  setDocument: (d) =>
+                      _documents.separateServiceDiagramUpload = d,
                 ),
                 _uploadTile(
                   label: 'Existing Load Calculation',
@@ -318,7 +329,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Upgrading selected'
                       : 'Not required — Upgrading not selected',
                   getDocument: () => _documents.existingLoadCalculationUpload,
-                  setDocument: (d) => _documents.existingLoadCalculationUpload = d,
+                  setDocument: (d) =>
+                      _documents.existingLoadCalculationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Proposed Load Calculation',
@@ -327,7 +339,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Upgrading selected'
                       : 'Not required — Upgrading not selected',
                   getDocument: () => _documents.proposedLoadCalculationUpload,
-                  setDocument: (d) => _documents.proposedLoadCalculationUpload = d,
+                  setDocument: (d) =>
+                      _documents.proposedLoadCalculationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Existing Service-Entrance Plan',
@@ -335,7 +348,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _scope.hasRelocation
                       ? 'Conditionally required — Relocation selected'
                       : 'Not required — Relocation not selected',
-                  getDocument: () => _documents.existingServiceEntrancePlanUpload,
+                  getDocument: () =>
+                      _documents.existingServiceEntrancePlanUpload,
                   setDocument: (d) =>
                       _documents.existingServiceEntrancePlanUpload = d,
                 ),
@@ -345,7 +359,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _scope.hasRelocation
                       ? 'Conditionally required — Relocation selected'
                       : 'Not required — Relocation not selected',
-                  getDocument: () => _documents.proposedServiceEntrancePlanUpload,
+                  getDocument: () =>
+                      _documents.proposedServiceEntrancePlanUpload,
                   setDocument: (d) =>
                       _documents.proposedServiceEntrancePlanUpload = d,
                 ),
@@ -415,7 +430,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Signed Load Calculations',
-                  getDocument: () => _professionals.signedLoadCalculationsUpload,
+                  getDocument: () =>
+                      _professionals.signedLoadCalculationsUpload,
                   setDocument: (d) =>
                       _professionals.signedLoadCalculationsUpload = d,
                 ),
@@ -442,15 +458,21 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                     label: 'Contractor Accreditation Document',
                     getDocument: () =>
                         _professionals.contractor.contractorAccreditationUpload,
-                    setDocument: (d) => _professionals
-                        .contractor.contractorAccreditationUpload = d,
+                    setDocument: (d) =>
+                        _professionals
+                                .contractor
+                                .contractorAccreditationUpload =
+                            d,
                   ),
                   _uploadTile(
                     label: 'Contractor Authorization or Contract',
                     getDocument: () =>
                         _professionals.contractor.contractorAuthorizationUpload,
-                    setDocument: (d) => _professionals
-                        .contractor.contractorAuthorizationUpload = d,
+                    setDocument: (d) =>
+                        _professionals
+                                .contractor
+                                .contractorAuthorizationUpload =
+                            d,
                   ),
                 ],
               ),
@@ -477,7 +499,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Related Building Permit',
                   getDocument: () => _documents.relatedBuildingPermitUpload,
-                  setDocument: (d) => _documents.relatedBuildingPermitUpload = d,
+                  setDocument: (d) =>
+                      _documents.relatedBuildingPermitUpload = d,
                 ),
                 _uploadTile(
                   label: 'Previous Electrical Permit',
@@ -492,14 +515,16 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.existingServiceRecordsUpload,
-                  setDocument: (d) => _documents.existingServiceRecordsUpload = d,
+                  setDocument: (d) =>
+                      _documents.existingServiceRecordsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Utility Provider Coordination or Approval',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.utilityProviderApprovalUpload,
-                  setDocument: (d) => _documents.utilityProviderApprovalUpload = d,
+                  setDocument: (d) =>
+                      _documents.utilityProviderApprovalUpload = d,
                 ),
                 _uploadTile(
                   label: 'Other Electrical Documents',

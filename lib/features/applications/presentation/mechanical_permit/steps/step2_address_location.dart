@@ -326,10 +326,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                     label: 'Related Building Permit Status *',
                     items: RelatedBuildingPermitStatus.values
                         .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(s.label),
-                          ),
+                          (s) =>
+                              DropdownMenuItem(value: s, child: Text(s.label)),
                         )
                         .toList(),
                     onChanged: (v) {
@@ -341,11 +339,13 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(
                     controller: _buildingPermitNumber,
-                    label: _relatedPermit.status ==
+                    label:
+                        _relatedPermit.status ==
                             RelatedBuildingPermitStatus.approved
                         ? 'Building Permit Number *'
                         : 'Building Permit Number',
-                    hint: _relatedPermit.status ==
+                    hint:
+                        _relatedPermit.status ==
                             RelatedBuildingPermitStatus.approved
                         ? 'Enter the approved Building Permit number.'
                         : 'Optional while pending approval.',
@@ -373,7 +373,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                       spacing: AppSpacing.sm,
                       runSpacing: AppSpacing.sm,
                       children: [
-                        for (final number in mechanicalMockBuildingPermitNumbers)
+                        for (final number
+                            in mechanicalMockBuildingPermitNumbers)
                           ActionChip(
                             label: Text(number),
                             onPressed: () {

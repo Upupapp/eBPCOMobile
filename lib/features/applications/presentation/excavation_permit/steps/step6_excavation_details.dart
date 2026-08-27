@@ -29,8 +29,7 @@ class Step6ExcavationDetails extends StatefulWidget {
   });
 
   @override
-  State<Step6ExcavationDetails> createState() =>
-      _Step6ExcavationDetailsState();
+  State<Step6ExcavationDetails> createState() => _Step6ExcavationDetailsState();
 }
 
 class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
@@ -47,9 +46,7 @@ class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
       text: _details.otherWorkTypeDescription,
     );
     _depth = TextEditingController(text: _details.excavationDepthMeters);
-    _volume = TextEditingController(
-      text: _details.excavationVolumeCubicMeters,
-    );
+    _volume = TextEditingController(text: _details.excavationVolumeCubicMeters);
   }
 
   @override
@@ -99,8 +96,7 @@ class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
                   AppChip(
                     label: type.label,
                     selected: _details.selectedWorkTypes.contains(type),
-                    onSelected: (selected) =>
-                        _toggleWorkType(type, selected),
+                    onSelected: (selected) => _toggleWorkType(type, selected),
                   ),
               ],
             ),
@@ -111,10 +107,8 @@ class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
               AppTextField(
                 controller: _otherWorkType,
                 label: 'Specify Other Excavation Work *',
-                validator: (v) => Validators.required(
-                  v,
-                  fieldLabel: 'Excavation work',
-                ),
+                validator: (v) =>
+                    Validators.required(v, fieldLabel: 'Excavation work'),
                 onChanged: (v) {
                   _details.otherWorkTypeDescription = v;
                   widget.onChanged();
@@ -160,9 +154,7 @@ class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
                       fieldLabel: 'Excavation volume',
                     ),
                     onChanged: (v) {
-                      setState(
-                        () => _details.excavationVolumeCubicMeters = v,
-                      );
+                      setState(() => _details.excavationVolumeCubicMeters = v);
                       widget.onChanged();
                     },
                   ),
@@ -174,20 +166,21 @@ class _Step6ExcavationDetailsState extends State<Step6ExcavationDetails> {
               const SizedBox(height: AppSpacing.md),
               AppAlert(
                 variant: AppAlertVariant.warning,
-                message: _details.exceedsDepthThreshold &&
+                message:
+                    _details.exceedsDepthThreshold &&
                         _details.exceedsVolumeThreshold
                     ? 'This excavation exceeds both the 2-meter depth and '
-                        '50-cubic-meter volume thresholds. Larger '
-                        'excavations may require a cash bond per the '
-                        'permit conditions.'
+                          '50-cubic-meter volume thresholds. Larger '
+                          'excavations may require a cash bond per the '
+                          'permit conditions.'
                     : _details.exceedsDepthThreshold
-                        ? 'This excavation exceeds the 2-meter depth '
-                            'threshold. Larger excavations may require a '
-                            'cash bond per the permit conditions.'
-                        : 'This excavation exceeds the 50-cubic-meter '
-                            'volume threshold. Larger excavations may '
-                            'require a cash bond per the permit '
-                            'conditions.',
+                    ? 'This excavation exceeds the 2-meter depth '
+                          'threshold. Larger excavations may require a '
+                          'cash bond per the permit conditions.'
+                    : 'This excavation exceeds the 50-cubic-meter '
+                          'volume threshold. Larger excavations may '
+                          'require a cash bond per the permit '
+                          'conditions.',
               ),
             ],
           ],

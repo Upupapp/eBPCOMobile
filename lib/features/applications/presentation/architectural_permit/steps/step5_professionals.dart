@@ -122,7 +122,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
-                    child: Text('Profession: Architect', style: AppTypography.bodyStrong),
+                    child: Text(
+                      'Profession: Architect',
+                      style: AppTypography.bodyStrong,
+                    ),
                   ),
                 ],
               ),
@@ -267,7 +270,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Architect PRC ID',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPrcIdUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPrcIdUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -286,7 +293,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Architect PTR',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPtrDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPtrDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -305,7 +316,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Architectural Plans',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.signedSealedPlansUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.signedSealedPlansUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -324,9 +339,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Specifications',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedSealedSpecificationsUpload =
-                      picked;
+                  _professionals.signedSealedSpecificationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -353,7 +369,9 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 ),
                 value: _professionals.isSupervisorSameAsDesignArchitect,
                 onChanged: (v) {
-                  setState(() => _professionals.isSupervisorSameAsDesignArchitect = v);
+                  setState(
+                    () => _professionals.isSupervisorSameAsDesignArchitect = v,
+                  );
                   widget.onChanged();
                 },
               ),
@@ -364,7 +382,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Same as Design Architect', style: AppTypography.bodyStrong),
+                    Text(
+                      'Same as Design Architect',
+                      style: AppTypography.bodyStrong,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     _SummaryRow('Full Name', design.fullName),
                     const SizedBox(height: AppSpacing.sm),
@@ -497,7 +518,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PRC ID',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPrcIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -516,7 +541,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PTR',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPtrUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPtrUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -535,17 +564,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Signed Supervisor Confirmation',
                   );
                   if (picked == null) return;
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
                   setState(() {
-                    _professionals.signedSupervisorConfirmationUpload =
-                        picked;
+                    _professionals.signedSupervisorConfirmationUpload = picked;
                   });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
                   setState(
-                    () =>
-                        _professionals.signedSupervisorConfirmationUpload = null,
+                    () => _professionals.signedSupervisorConfirmationUpload =
+                        null,
                   );
                   widget.onChanged();
                 },

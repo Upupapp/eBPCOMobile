@@ -46,8 +46,7 @@ class FencingPermitWizardScreen extends StatefulWidget {
       _FencingPermitWizardScreenState();
 }
 
-class _FencingPermitWizardScreenState
-    extends State<FencingPermitWizardScreen> {
+class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
   static const totalSteps = 9;
   static const implementedStepCount = 9;
 

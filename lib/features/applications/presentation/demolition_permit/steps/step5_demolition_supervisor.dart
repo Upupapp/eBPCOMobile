@@ -34,8 +34,7 @@ class Step5DemolitionSupervisor extends StatefulWidget {
       _Step5DemolitionSupervisorState();
 }
 
-class _Step5DemolitionSupervisorState
-    extends State<Step5DemolitionSupervisor> {
+class _Step5DemolitionSupervisorState extends State<Step5DemolitionSupervisor> {
   late final TextEditingController _fullName;
   late final TextEditingController _professionalAddress;
   late final TextEditingController _contactNumber;
@@ -56,9 +55,7 @@ class _Step5DemolitionSupervisorState
     _contactNumber = TextEditingController(text: _professional.contactNumber);
     _prcNumber = TextEditingController(text: _professional.prcNumber);
     _ptrNumber = TextEditingController(text: _professional.ptrNumber);
-    _ptrPlaceIssued = TextEditingController(
-      text: _professional.ptrPlaceIssued,
-    );
+    _ptrPlaceIssued = TextEditingController(text: _professional.ptrPlaceIssued);
     _tin = TextEditingController(text: _professional.tin);
   }
 
@@ -75,14 +72,13 @@ class _Step5DemolitionSupervisorState
   }
 
   Future<void> _uploadPrcId() async {
-    final picked = await showAttachDocumentOptions(
-      context,
-      label: 'PRC ID',
-    );
+    final picked = await showAttachDocumentOptions(context, label: 'PRC ID');
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.prcIdUpload = picked; });
+    setState(() {
+      _professional.prcIdUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -94,7 +90,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.ptrDocumentUpload = picked; });
+    setState(() {
+      _professional.ptrDocumentUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -106,7 +104,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.signedSealedFormUpload = picked; });
+    setState(() {
+      _professional.signedSealedFormUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -118,7 +118,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.demolitionPlanUpload = picked; });
+    setState(() {
+      _professional.demolitionPlanUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -130,7 +132,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.demolitionMethodologyUpload = picked; });
+    setState(() {
+      _professional.demolitionMethodologyUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -142,7 +146,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.safetyProgramUpload = picked; });
+    setState(() {
+      _professional.safetyProgramUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -154,7 +160,9 @@ class _Step5DemolitionSupervisorState
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _professional.structuralAssessmentUpload = picked; });
+    setState(() {
+      _professional.structuralAssessmentUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -201,10 +209,8 @@ class _Step5DemolitionSupervisorState
                     label: 'Profession *',
                     items: DemolitionProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -398,7 +404,10 @@ class _Step5DemolitionSupervisorState
             ),
 
             const SizedBox(height: AppSpacing.xl),
-            Text('Demolition Technical Documents', style: AppTypography.cardTitle),
+            Text(
+              'Demolition Technical Documents',
+              style: AppTypography.cardTitle,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'These uploads are reused in the Required Documents step — '

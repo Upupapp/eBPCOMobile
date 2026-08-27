@@ -112,10 +112,8 @@ class _Step4BuildingRenovationDetailsState
                     label: 'Building Use *',
                     items: RenovationOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>

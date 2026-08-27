@@ -195,6 +195,12 @@ Future<void> _completeStep4(WidgetTester tester) async {
     'Construction Logbook (Signed and Sealed)',
     'Certificate of Completion — Civil Works',
     'Electrical Certificate of Completion',
+    // Added when step 4 was reconciled against the requirements catalog.
+    'Land Title or Tax Declaration',
+    'Barangay Clearance',
+    'Locational Clearance / Zoning Certification',
+    'Valid Government-Issued ID',
+    'Fire Safety Inspection Certificate (final)',
   ]) {
     final tile = find.widgetWithText(DocumentUploadTile, label);
     await tester.ensureVisible(tile);

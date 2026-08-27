@@ -17,6 +17,7 @@ import 'package:ebpco_user_app/features/applications/presentation/application_li
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 
 import '../../../support/wizard_providers.dart';
+import 'package:ebpco_user_app/shared/widgets/uploads/document_upload_tile.dart';
 
 /// End-to-end coverage of the Fencing Permit wizard — fully separate from
 /// every other permit wizard in this app, driven the same way those
@@ -181,6 +182,28 @@ Future<void> _completeStep3(WidgetTester tester) async {
     'Quezon City',
   );
   await tester.pump();
+  // Site and ownership documents, added when this wizard was reconciled
+  // against the requirements catalog. They gate step 3, so the flow cannot
+  // advance without them.
+  for (final label in const [
+    'Land Title or Tax Declaration',
+    'Barangay Clearance',
+    'Locational Clearance / Zoning Certification',
+    'Valid Government-Issued ID',
+  ]) {
+    final tile = find.widgetWithText(DocumentUploadTile, label);
+    await tester.ensureVisible(tile);
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: tile,
+        matching: find.widgetWithText(OutlinedButton, 'Upload'),
+      ),
+    );
+    await tester.pump();
+  }
+  await tester.pump();
+
   await tester.tap(_continueButton());
   await tester.pumpAndSettle();
 }

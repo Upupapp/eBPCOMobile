@@ -26,12 +26,12 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
-  CivilStructuralRequiredDocuments get _documents => widget.draft.requiredDocuments;
+  CivilStructuralRequiredDocuments get _documents =>
+      widget.draft.requiredDocuments;
   CivilStructuralWorkDetails get _work => widget.draft.workDetails;
   CivilStructuralProfessionals get _professionals => widget.draft.professionals;
 
@@ -49,14 +49,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -68,7 +65,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
 
   @override
   Widget build(BuildContext context) {
-    final supervisorHasOwnDocuments = !_professionals.isSupervisorSameAsDesignEngineer;
+    final supervisorHasOwnDocuments =
+        !_professionals.isSupervisorSameAsDesignEngineer;
 
     return Form(
       key: widget.formKey,
@@ -86,17 +84,20 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
 
             ExpandableSection(
               title: 'Civil / Structural Design Documents',
-              subtitle: 'Plans, computations, and specifications are already provided in Step 5.',
+              subtitle:
+                  'Plans, computations, and specifications are already provided in Step 5.',
               initiallyExpanded: true,
               children: [
                 _uploadTile(
                   label: 'Civil / Structural Plans',
                   getDocument: () => _professionals.signedSealedPlansUpload,
-                  setDocument: (d) => _professionals.signedSealedPlansUpload = d,
+                  setDocument: (d) =>
+                      _professionals.signedSealedPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Civil / Structural Design Computations',
-                  getDocument: () => _professionals.signedSealedComputationsUpload,
+                  getDocument: () =>
+                      _professionals.signedSealedComputationsUpload,
                   setDocument: (d) =>
                       _professionals.signedSealedComputationsUpload = d,
                 ),
@@ -144,7 +145,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Material Specifications',
                   getDocument: () => _documents.materialSpecificationsUpload,
-                  setDocument: (d) => _documents.materialSpecificationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.materialSpecificationsUpload = d,
                 ),
               ],
             ),
@@ -197,7 +199,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Soil Stabilization selected'
                       : 'Not required — Soil Stabilization not selected',
                   getDocument: () => _documents.soilStabilizationPlanUpload,
-                  setDocument: (d) => _documents.soilStabilizationPlanUpload = d,
+                  setDocument: (d) =>
+                      _documents.soilStabilizationPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Geotechnical Recommendation',
@@ -205,7 +208,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _work.hasSoilStabilization
                       ? 'Conditionally required — Soil Stabilization selected'
                       : 'Not required — Soil Stabilization not selected',
-                  getDocument: () => _documents.geotechnicalRecommendationUpload,
+                  getDocument: () =>
+                      _documents.geotechnicalRecommendationUpload,
                   setDocument: (d) =>
                       _documents.geotechnicalRecommendationUpload = d,
                 ),
@@ -225,7 +229,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Piling Works selected'
                       : 'Not required — Piling Works not selected',
                   getDocument: () => _documents.pileDesignCalculationsUpload,
-                  setDocument: (d) => _documents.pileDesignCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.pileDesignCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Pile Testing Program',
@@ -251,7 +256,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _work.hasFoundation
                       ? 'Conditionally required — Foundation selected'
                       : 'Not required — Foundation not selected',
-                  getDocument: () => _documents.foundationDesignCalculationsUpload,
+                  getDocument: () =>
+                      _documents.foundationDesignCalculationsUpload,
                   setDocument: (d) =>
                       _documents.foundationDesignCalculationsUpload = d,
                 ),
@@ -297,7 +303,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _work.hasConcreteFraming
                       ? 'Conditionally required — Concrete Framing selected'
                       : 'Not required — Concrete Framing not selected',
-                  getDocument: () => _documents.concreteDesignCalculationsUpload,
+                  getDocument: () =>
+                      _documents.concreteDesignCalculationsUpload,
                   setDocument: (d) =>
                       _documents.concreteDesignCalculationsUpload = d,
                 ),
@@ -307,7 +314,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _work.hasConcreteFraming
                       ? 'Conditionally required — Concrete Framing selected'
                       : 'Not required — Concrete Framing not selected',
-                  getDocument: () => _documents.concreteMaterialSpecificationsUpload,
+                  getDocument: () =>
+                      _documents.concreteMaterialSpecificationsUpload,
                   setDocument: (d) =>
                       _documents.concreteMaterialSpecificationsUpload = d,
                 ),
@@ -336,7 +344,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Structural Steel Framing selected'
                       : 'Not required — Structural Steel Framing not selected',
                   getDocument: () => _documents.steelDesignCalculationsUpload,
-                  setDocument: (d) => _documents.steelDesignCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.steelDesignCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Slab Plans',
@@ -354,7 +363,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Slabs selected'
                       : 'Not required — Slabs not selected',
                   getDocument: () => _documents.slabReinforcementDetailsUpload,
-                  setDocument: (d) => _documents.slabReinforcementDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.slabReinforcementDetailsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Structural Wall Plans',
@@ -372,7 +382,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Walls selected'
                       : 'Not required — Walls not selected',
                   getDocument: () => _documents.wallReinforcementDetailsUpload,
-                  setDocument: (d) => _documents.wallReinforcementDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.wallReinforcementDetailsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Prestressing Design',
@@ -390,7 +401,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Prestress Works selected'
                       : 'Not required — Prestress Works not selected',
                   getDocument: () => _documents.prestressingProcedureUpload,
-                  setDocument: (d) => _documents.prestressingProcedureUpload = d,
+                  setDocument: (d) =>
+                      _documents.prestressingProcedureUpload = d,
                 ),
                 _uploadTile(
                   label: 'Tendon Layout',
@@ -408,7 +420,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Material Testing selected'
                       : 'Not required — Material Testing not selected',
                   getDocument: () => _documents.materialTestingProgramUpload,
-                  setDocument: (d) => _documents.materialTestingProgramUpload = d,
+                  setDocument: (d) =>
+                      _documents.materialTestingProgramUpload = d,
                 ),
                 _uploadTile(
                   label: 'Testing Laboratory Credentials',
@@ -416,7 +429,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: _work.hasMaterialTesting
                       ? 'Conditionally required — Material Testing selected'
                       : 'Not required — Material Testing not selected',
-                  getDocument: () => _documents.testingLaboratoryCredentialsUpload,
+                  getDocument: () =>
+                      _documents.testingLaboratoryCredentialsUpload,
                   setDocument: (d) =>
                       _documents.testingLaboratoryCredentialsUpload = d,
                 ),
@@ -443,7 +457,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Steel Towers selected'
                       : 'Not required — Steel Towers not selected',
                   getDocument: () => _documents.towerDesignCalculationsUpload,
-                  setDocument: (d) => _documents.towerDesignCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.towerDesignCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Tower Foundation Details',
@@ -452,7 +467,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Steel Towers selected'
                       : 'Not required — Steel Towers not selected',
                   getDocument: () => _documents.towerFoundationDetailsUpload,
-                  setDocument: (d) => _documents.towerFoundationDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.towerFoundationDetailsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Tank Structural Plans',
@@ -470,7 +486,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Tanks selected'
                       : 'Not required — Tanks not selected',
                   getDocument: () => _documents.tankDesignCalculationsUpload,
-                  setDocument: (d) => _documents.tankDesignCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.tankDesignCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Tank Foundation Details',
@@ -479,7 +496,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Tanks selected'
                       : 'Not required — Tanks not selected',
                   getDocument: () => _documents.tankFoundationDetailsUpload,
-                  setDocument: (d) => _documents.tankFoundationDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.tankFoundationDetailsUpload = d,
                 ),
               ],
             ),
@@ -543,7 +561,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Related Building Permit',
                   getDocument: () => _documents.relatedBuildingPermitUpload,
-                  setDocument: (d) => _documents.relatedBuildingPermitUpload = d,
+                  setDocument: (d) =>
+                      _documents.relatedBuildingPermitUpload = d,
                 ),
                 _uploadTile(
                   label: 'Geotechnical or Soil Investigation Report',

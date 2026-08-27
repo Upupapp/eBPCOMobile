@@ -203,9 +203,8 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
                           return ApplicationListTile(
                             application: application,
                             pledge: provider.pledgeFor(application),
-                            onTap: () => context.push(
-                              '/applications/${application.id}',
-                            ),
+                            onTap: () =>
+                                context.push('/applications/${application.id}'),
                           );
                         },
                       ),

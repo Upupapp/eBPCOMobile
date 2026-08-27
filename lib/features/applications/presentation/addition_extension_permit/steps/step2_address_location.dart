@@ -194,7 +194,10 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
             ),
 
             const SizedBox(height: AppSpacing.xl),
-            Text('Addition / Extension Location', style: AppTypography.cardTitle),
+            Text(
+              'Addition / Extension Location',
+              style: AppTypography.cardTitle,
+            ),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Column(

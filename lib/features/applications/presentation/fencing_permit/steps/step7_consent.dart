@@ -178,7 +178,11 @@ class _Step7ConsentState extends State<Step7Consent> {
                   label: 'Applicant Signed Document',
                 );
                 if (picked == null) return;
-                setState(() { _consent.applicantSignedDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _consent.applicantSignedDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -203,9 +207,7 @@ class _Step7ConsentState extends State<Step7Consent> {
                     label: 'Yes',
                     selected: _consent.isApplicantAlsoLotOwner == true,
                     onTap: () {
-                      setState(
-                        () => _consent.isApplicantAlsoLotOwner = true,
-                      );
+                      setState(() => _consent.isApplicantAlsoLotOwner = true);
                       widget.onChanged();
                     },
                   ),
@@ -216,9 +218,7 @@ class _Step7ConsentState extends State<Step7Consent> {
                     label: 'No',
                     selected: _consent.needsSeparateLotOwner,
                     onTap: () {
-                      setState(
-                        () => _consent.isApplicantAlsoLotOwner = false,
-                      );
+                      setState(() => _consent.isApplicantAlsoLotOwner = false);
                       widget.onChanged();
                     },
                   ),
@@ -314,7 +314,11 @@ class _Step7ConsentState extends State<Step7Consent> {
                     label: 'Lot Owner Signed Document',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.lotOwnerSignedDocumentUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.lotOwnerSignedDocumentUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,

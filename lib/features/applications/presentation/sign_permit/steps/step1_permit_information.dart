@@ -28,8 +28,7 @@ class Step1PermitInformation extends StatefulWidget {
   });
 
   @override
-  State<Step1PermitInformation> createState() =>
-      _Step1PermitInformationState();
+  State<Step1PermitInformation> createState() => _Step1PermitInformationState();
 }
 
 class _Step1PermitInformationState extends State<Step1PermitInformation> {
@@ -100,10 +99,8 @@ class _Step1PermitInformationState extends State<Step1PermitInformation> {
                     label: 'Related Building Permit Status *',
                     items: RelatedBuildingPermitStatus.values
                         .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(s.label),
-                          ),
+                          (s) =>
+                              DropdownMenuItem(value: s, child: Text(s.label)),
                         )
                         .toList(),
                     onChanged: (v) {

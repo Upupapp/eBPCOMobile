@@ -182,10 +182,8 @@ class _Step1ApplicantInfoState extends State<Step1ApplicantInfo> {
                     label: 'Use or Character of Occupancy *',
                     items: MechanicalOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -222,9 +220,7 @@ class _Step1ApplicantInfoState extends State<Step1ApplicantInfo> {
                 children: [
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Is the project owned by an enterprise?',
-                    ),
+                    title: const Text('Is the project owned by an enterprise?'),
                     value: _applicant.isOwnedByEnterprise,
                     onChanged: (v) {
                       setState(() => _applicant.isOwnedByEnterprise = v);

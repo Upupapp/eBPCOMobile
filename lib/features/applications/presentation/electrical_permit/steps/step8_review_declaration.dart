@@ -34,8 +34,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -68,28 +67,24 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     final scopeSummary = scope.selectedScopes.map((s) => s.label).join(', ');
 
     final designDocsUploaded = [
-          professionals.designPrcIdUpload,
-          professionals.designPtrDocumentUpload,
-          professionals.signedSealedPlansUpload,
-          professionals.signedSealedSpecificationsUpload,
-          professionals.signedLoadCalculationsUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professionals.designPrcIdUpload,
+      professionals.designPtrDocumentUpload,
+      professionals.signedSealedPlansUpload,
+      professionals.signedSealedSpecificationsUpload,
+      professionals.signedLoadCalculationsUpload,
+    ].where((d) => d != null).length;
 
     final baseDocsUploaded = [
-          documents.singleLineDiagramUpload,
-          documents.loadScheduleUpload,
-          documents.panelboardScheduleUpload,
-          documents.serviceEntranceDetailsUpload,
-          documents.groundingDetailsUpload,
-          documents.electricalLayoutPlansUpload,
-          documents.lightingLayoutUpload,
-          documents.powerLayoutUpload,
-          documents.relatedBuildingPermitUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.singleLineDiagramUpload,
+      documents.loadScheduleUpload,
+      documents.panelboardScheduleUpload,
+      documents.serviceEntranceDetailsUpload,
+      documents.groundingDetailsUpload,
+      documents.electricalLayoutPlansUpload,
+      documents.lightingLayoutUpload,
+      documents.powerLayoutUpload,
+      documents.relatedBuildingPermitUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRepresentative;
     final needsSeparateLotOwner = consent.needsSeparateLotOwner;
@@ -178,10 +173,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
               title: 'Outlet Quantities',
               onEdit: () => widget.onEditStep(3),
               rows: [
-                _SummaryRow(
-                  'Total Outlets',
-                  '${details.totalOutletsCount}',
-                ),
+                _SummaryRow('Total Outlets', '${details.totalOutletsCount}'),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -209,8 +201,14 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
               title: 'Design Professional',
               onEdit: () => widget.onEditStep(4),
               rows: [
-                _SummaryRow('Full Name', professionals.designProfessional.fullName),
-                _SummaryRow('PRC Number', professionals.designProfessional.prcNumber),
+                _SummaryRow(
+                  'Full Name',
+                  professionals.designProfessional.fullName,
+                ),
+                _SummaryRow(
+                  'PRC Number',
+                  professionals.designProfessional.prcNumber,
+                ),
                 _SummaryRow(
                   'PRC Validity',
                   _formatDate(professionals.designProfessional.prcValidityDate),
@@ -261,7 +259,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                       : (consent.isApplicantBuildingOwner! ? 'Yes' : 'No'),
                 ),
                 if (isRepresentative)
-                  _SummaryRow('Building Owner Name', consent.buildingOwner.fullName),
+                  _SummaryRow(
+                    'Building Owner Name',
+                    consent.buildingOwner.fullName,
+                  ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -315,8 +316,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I confirm that the electrical plans and specifications were prepared by a properly licensed electrical professional.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .confirmsPlansPreparedByLicensedProfessional = val,
+                      (val) =>
+                          _review.confirmsPlansPreparedByLicensedProfessional =
+                              val,
                       v,
                     ),
                   ),
@@ -325,8 +327,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that the electrical installation must follow the approved plans and applicable electrical codes.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndCodes = val,
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndCodes =
+                              val,
                       v,
                     ),
                   ),
@@ -345,8 +348,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that a PCAB-licensed specialty electrical contractor is required when the applicable capacity threshold is reached.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsContractorRequiredAtThreshold = val,
+                      (val) =>
+                          _review.understandsContractorRequiredAtThreshold =
+                              val,
                       v,
                     ),
                   ),
@@ -355,8 +359,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that a Notice of Construction may be required before electrical installation begins.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsNoticeOfConstructionMayBeRequired = val,
+                      (val) =>
+                          _review.understandsNoticeOfConstructionMayBeRequired =
+                              val,
                       v,
                     ),
                   ),
@@ -365,19 +370,20 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that as-built plans, logbook entries, and a Certificate of Completion may be required after completion.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsCompletionDocumentsMayBeRequired = val,
+                      (val) =>
+                          _review.understandsCompletionDocumentsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value:
-                        _review.understandsFinalInspectionRequiredBeforeOccupancy,
+                    value: _review
+                        .understandsFinalInspectionRequiredBeforeOccupancy,
                     label:
                         'I understand that a Certificate of Final Electrical Inspection must be secured before actual occupancy.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsFinalInspectionRequiredBeforeOccupancy =
+                      (val) =>
+                          _review.understandsFinalInspectionRequiredBeforeOccupancy =
                               val,
                       v,
                     ),

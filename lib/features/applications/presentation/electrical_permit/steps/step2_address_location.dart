@@ -330,7 +330,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                     onChanged: (v) {
                       setState(
                         () =>
-                            _relatedPermit.isPurelyElectricalOnExistingBuilding =
+                            _relatedPermit
+                                    .isPurelyElectricalOnExistingBuilding =
                                 v,
                       );
                       widget.onChanged();
@@ -359,7 +360,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                   ],
                   AppTextField(
                     controller: _buildingPermitNumber,
-                    label: _relatedPermit.isPurelyElectricalOnExistingBuilding ||
+                    label:
+                        _relatedPermit.isPurelyElectricalOnExistingBuilding ||
                             _relatedPermit.status ==
                                 RelatedBuildingPermitStatus.approved
                         ? 'Building Permit Number *'
@@ -395,7 +397,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                       spacing: AppSpacing.sm,
                       runSpacing: AppSpacing.sm,
                       children: [
-                        for (final number in electricalMockBuildingPermitNumbers)
+                        for (final number
+                            in electricalMockBuildingPermitNumbers)
                           ActionChip(
                             label: Text(number),
                             onPressed: () {

@@ -48,9 +48,12 @@ class CertificateOfOccupancySubmittedScreen extends StatelessWidget {
           label: 'Application Type',
           value: CanonicalPermitType.certificateOfOccupancy.wire,
         ),
-        (label: 'Related Building Permit', value: buildingPermitNumber.trim().isEmpty
+        (
+          label: 'Related Building Permit',
+          value: buildingPermitNumber.trim().isEmpty
               ? 'Not set'
-              : buildingPermitNumber),
+              : buildingPermitNumber,
+        ),
         (label: 'Certificate Type', value: certificateType),
         (label: 'Status', value: 'Submitted for Initial Review'),
       ],
@@ -59,10 +62,7 @@ class CertificateOfOccupancySubmittedScreen extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              'Application Status',
-              style: AppTypography.cardTitle,
-            ),
+            child: Text('Application Status', style: AppTypography.cardTitle),
           ),
           const SizedBox(height: AppSpacing.sm),
           AppCard(
@@ -72,8 +72,7 @@ class CertificateOfOccupancySubmittedScreen extends StatelessWidget {
                 for (final stage in certificateStatusSequence) ...[
                   _StatusRow(
                     label: stage.label,
-                    isCurrent:
-                        stage == CertificateApplicationStatus.submitted,
+                    isCurrent: stage == CertificateApplicationStatus.submitted,
                   ),
                   if (stage != certificateStatusSequence.last)
                     const SizedBox(height: AppSpacing.sm),

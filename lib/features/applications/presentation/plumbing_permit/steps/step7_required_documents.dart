@@ -26,8 +26,7 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
@@ -49,14 +48,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -144,8 +140,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Plumbing Riser Diagram',
                   getDocument: () => _documents.plumbingRiserDiagramUpload,
-                  setDocument: (d) =>
-                      _documents.plumbingRiserDiagramUpload = d,
+                  setDocument: (d) => _documents.plumbingRiserDiagramUpload = d,
                 ),
                 _uploadTile(
                   label: 'Isometric Diagram',
@@ -383,7 +378,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasSepticTank
                       ? 'Optional — when applicable'
                       : 'Not required — Septic Tank not selected',
-                  getDocument: () => _documents.septicEffluentDisposalPlanUpload,
+                  getDocument: () =>
+                      _documents.septicEffluentDisposalPlanUpload,
                   setDocument: (d) =>
                       _documents.septicEffluentDisposalPlanUpload = d,
                 ),
@@ -431,8 +427,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasStormDrainage
                       ? 'Optional — when applicable'
                       : 'Not required — Storm Drainage System not selected',
-                  getDocument: () =>
-                      _documents.roofDrainDownspoutLayoutUpload,
+                  getDocument: () => _documents.roofDrainDownspoutLayoutUpload,
                   setDocument: (d) =>
                       _documents.roofDrainDownspoutLayoutUpload = d,
                 ),
@@ -500,8 +495,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasWaterTank
                       ? 'Conditionally required — Water Tank / Reservoir quantity greater than zero'
                       : 'Not required — no Water Tank / Reservoir quantity entered',
-                  getDocument: () =>
-                      _documents.waterTankReservoirDetailsUpload,
+                  getDocument: () => _documents.waterTankReservoirDetailsUpload,
                   setDocument: (d) =>
                       _documents.waterTankReservoirDetailsUpload = d,
                 ),

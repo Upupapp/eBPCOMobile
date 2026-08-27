@@ -119,9 +119,7 @@ class DigitalPermitScreen extends StatelessWidget {
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Sharing opens your device’s share sheet.',
-                      ),
+                      content: Text('Sharing opens your device’s share sheet.'),
                     ),
                   );
                 },
@@ -212,9 +210,10 @@ class _PermitFace extends StatelessWidget {
 
           if (permit.conditions.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
-            Text('Conditions', style: AppTypography.helper.copyWith(
-              fontWeight: FontWeight.w600,
-            )),
+            Text(
+              'Conditions',
+              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: AppSpacing.xs),
             for (final condition in permit.conditions)
               Padding(
@@ -313,9 +312,7 @@ class _ClaimInstructions extends StatelessWidget {
           if (release.claimLocation != null) ...[
             Text(
               'Where to claim',
-              style: AppTypography.helper.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
             ),
             Text(release.claimLocation!, style: AppTypography.body),
             const SizedBox(height: AppSpacing.md),
@@ -323,9 +320,7 @@ class _ClaimInstructions extends StatelessWidget {
           if (release.officeHours != null) ...[
             Text(
               'Office hours',
-              style: AppTypography.helper.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
             ),
             Text(release.officeHours!, style: AppTypography.body),
             const SizedBox(height: AppSpacing.md),
@@ -333,9 +328,7 @@ class _ClaimInstructions extends StatelessWidget {
           if (release.bringWithYou.isNotEmpty) ...[
             Text(
               'Bring with you',
-              style: AppTypography.helper.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: AppSpacing.xs),
             for (final item in release.bringWithYou)

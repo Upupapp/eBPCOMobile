@@ -136,10 +136,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Profession *',
                     items: SanitaryProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -275,7 +273,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Professional PRC ID',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPrcIdUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPrcIdUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -294,7 +296,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Professional PTR',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPtrDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPtrDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -313,7 +319,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Sanitary / Plumbing Plans',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.signedSealedPlansUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.signedSealedPlansUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -332,9 +342,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Specifications',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedSealedSpecificationsUpload =
-                      picked;
+                  _professionals.signedSealedSpecificationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -358,9 +369,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed Design Calculations',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedDesignCalculationsUpload =
-                      picked;
+                  _professionals.signedDesignCalculationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -389,8 +401,7 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 onChanged: (v) {
                   setState(
                     () =>
-                        _professionals.isSupervisorSameAsDesignProfessional =
-                            v,
+                        _professionals.isSupervisorSameAsDesignProfessional = v,
                   );
                   widget.onChanged();
                 },
@@ -559,7 +570,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PRC ID',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPrcIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -578,7 +593,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PTR',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPtrUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPtrUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -597,18 +616,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Signed Supervisor Confirmation',
                   );
                   if (picked == null) return;
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
                   setState(() {
-                    _professionals.signedSupervisorConfirmationUpload =
-                        picked;
+                    _professionals.signedSupervisorConfirmationUpload = picked;
                   });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
                   setState(
-                    () =>
-                        _professionals.signedSupervisorConfirmationUpload =
-                            null,
+                    () => _professionals.signedSupervisorConfirmationUpload =
+                        null,
                   );
                   widget.onChanged();
                 },

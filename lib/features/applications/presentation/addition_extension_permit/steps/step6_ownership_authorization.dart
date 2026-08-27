@@ -277,7 +277,7 @@ class _Step6OwnershipAuthorizationState
                 onPreview: _consent.authorizationLetterUpload == null
                     ? null
                     : () =>
-                        _previewDocument(_consent.authorizationLetterUpload!),
+                          _previewDocument(_consent.authorizationLetterUpload!),
                 onRemove: () {
                   setState(() => _consent.authorizationLetterUpload = null);
                   widget.onChanged();

@@ -123,6 +123,10 @@ import 'package:ebpco_user_app/features/applications/presentation/sign_permit/st
     as w15s2;
 import 'package:ebpco_user_app/features/applications/presentation/sign_permit/steps/step9_consent.dart'
     as w15s3;
+import 'package:ebpco_user_app/features/applications/presentation/fencing_permit/steps/step3_construction_location.dart'
+    as w9s9;
+import 'package:ebpco_user_app/features/applications/presentation/excavation_permit/steps/step3_construction_location.dart'
+    as w8s9;
 
 /// How many documents each wizard actually asks an applicant to upload.
 ///
@@ -148,13 +152,13 @@ const _expected = <String, int>{
   'addition_extension_permit': 36,
   'architectural_permit': 29,
   'building_permit': 22,
-  'certificate_of_occupancy': 8,
+  'certificate_of_occupancy': 13,
   'civil_structural_permit': 61,
   'demolition_permit': 33,
   'electrical_permit': 51,
   'electronics_permit': 15,
-  'excavation_permit': 3,
-  'fencing_permit': 3,
+  'excavation_permit': 8,
+  'fencing_permit': 7,
   'interior_design_permit': 27,
   'mechanical_permit': 78,
   'plumbing_permit': 61,
@@ -328,6 +332,11 @@ final _wizards = <String, List<Widget Function()> Function()>{
   'excavation_permit': () {
     final draft = m8.ExcavationPermitDraft();
     return <Widget Function()>[
+      () => w8s9.Step3ConstructionLocation(
+        formKey: GlobalKey<FormState>(),
+        draft: draft,
+        onChanged: () {},
+      ),
       () => w8s0.Step7DesignProfessional(
         formKey: GlobalKey<FormState>(),
         draft: draft,
@@ -349,6 +358,11 @@ final _wizards = <String, List<Widget Function()> Function()>{
   'fencing_permit': () {
     final draft = m9.FencingPermitDraft();
     return <Widget Function()>[
+      () => w9s9.Step3ConstructionLocation(
+        formKey: GlobalKey<FormState>(),
+        draft: draft,
+        onChanged: () {},
+      ),
       () => w9s0.Step5DesignProfessional(
         formKey: GlobalKey<FormState>(),
         draft: draft,

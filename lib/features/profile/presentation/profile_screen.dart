@@ -125,8 +125,7 @@ class ProfileScreen extends StatelessWidget {
     final confirmed = await ConfirmationDialog.show(
       context,
       title: 'Remove Profile Photo?',
-      message:
-          'Are you sure you want to remove your current profile photo?',
+      message: 'Are you sure you want to remove your current profile photo?',
       confirmLabel: 'Remove Photo',
       isDestructive: true,
     );

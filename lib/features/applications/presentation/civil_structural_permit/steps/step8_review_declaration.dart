@@ -34,13 +34,13 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
   CivilStructuralPermitDraft get _draft => widget.draft;
-  CivilStructuralReviewDeclaration get _review => widget.draft.reviewDeclaration;
+  CivilStructuralReviewDeclaration get _review =>
+      widget.draft.reviewDeclaration;
 
   void _toggle(void Function(bool) setter, bool value) {
     setState(() => setter(value));
@@ -69,26 +69,22 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     final workSummary = work.selectedWorks.map((s) => s.label).join(', ');
 
     final designDocsUploaded = [
-          professionals.designPrcIdUpload,
-          professionals.designPtrDocumentUpload,
-          professionals.signedSealedPlansUpload,
-          professionals.signedSealedComputationsUpload,
-          professionals.signedSealedSpecificationsUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professionals.designPrcIdUpload,
+      professionals.designPtrDocumentUpload,
+      professionals.signedSealedPlansUpload,
+      professionals.signedSealedComputationsUpload,
+      professionals.signedSealedSpecificationsUpload,
+    ].where((d) => d != null).length;
 
     final baseDocsUploaded = [
-          documents.structuralAnalysisUpload,
-          documents.generalNotesUpload,
-          documents.billOfMaterialsUpload,
-          documents.costEstimateUpload,
-          documents.materialSpecificationsUpload,
-          documents.relatedBuildingPermitUpload,
-          documents.siteSurveyUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.structuralAnalysisUpload,
+      documents.generalNotesUpload,
+      documents.billOfMaterialsUpload,
+      documents.costEstimateUpload,
+      documents.materialSpecificationsUpload,
+      documents.relatedBuildingPermitUpload,
+      documents.siteSurveyUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRepresentative;
     final needsSeparateLotOwner = consent.needsSeparateLotOwner;
@@ -200,7 +196,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                   'Profession',
                   professionals.designEngineer.profession?.label ?? 'Not set',
                 ),
-                _SummaryRow('PRC Number', professionals.designEngineer.prcNumber),
+                _SummaryRow(
+                  'PRC Number',
+                  professionals.designEngineer.prcNumber,
+                ),
                 _SummaryRow(
                   'PRC Validity',
                   _formatDate(professionals.designEngineer.prcValidityDate),
@@ -232,7 +231,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                       : (consent.isApplicantBuildingOwner! ? 'Yes' : 'No'),
                 ),
                 if (isRepresentative)
-                  _SummaryRow('Building Owner Name', consent.buildingOwner.fullName),
+                  _SummaryRow(
+                    'Building Owner Name',
+                    consent.buildingOwner.fullName,
+                  ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -315,8 +317,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that a Notice of Construction may be required before construction activity begins.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsNoticeOfConstructionMayBeRequired = val,
+                      (val) =>
+                          _review.understandsNoticeOfConstructionMayBeRequired =
+                              val,
                       v,
                     ),
                   ),
@@ -325,8 +328,9 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     label:
                         'I understand that completion documents, logbook entries, as-built plans, and a Certificate of Completion may be required.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsCompletionDocumentsMayBeRequired = val,
+                      (val) =>
+                          _review.understandsCompletionDocumentsMayBeRequired =
+                              val,
                       v,
                     ),
                   ),

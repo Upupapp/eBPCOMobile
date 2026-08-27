@@ -14,7 +14,8 @@ import '../../building_permit/widgets/date_picker_field.dart';
 import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 final DateFormat _dateFormat = DateFormat('MMM d, yyyy');
-String _formatDate(DateTime? date) => date != null ? _dateFormat.format(date) : 'Not set';
+String _formatDate(DateTime? date) =>
+    date != null ? _dateFormat.format(date) : 'Not set';
 
 /// Step 5 — Applicant Certification, Review & Submission. The applicant
 /// certification fields and the full read-only application review live
@@ -90,19 +91,17 @@ class _Step5CertificationReviewSubmissionState
       owner.lastName,
     ].where((s) => s.trim().isNotEmpty).join(' ');
 
-    final requiredDocsUploaded =
-        [
-          documents.asBuiltPlansUpload,
-          documents.constructionLogbookUpload,
-          documents.civilWorksCertificateUpload,
-          documents.electricalCertificateUpload,
-        ].where((d) => d != null).length;
-    final optionalDocsUploaded =
-        [
-          documents.otherDisciplineCertificatesUpload,
-          documents.notarizedDocumentsUpload,
-          documents.otherSupportingRequirementsUpload,
-        ].where((d) => d != null).length;
+    final requiredDocsUploaded = [
+      documents.asBuiltPlansUpload,
+      documents.constructionLogbookUpload,
+      documents.civilWorksCertificateUpload,
+      documents.electricalCertificateUpload,
+    ].where((d) => d != null).length;
+    final optionalDocsUploaded = [
+      documents.otherDisciplineCertificatesUpload,
+      documents.notarizedDocumentsUpload,
+      documents.otherSupportingRequirementsUpload,
+    ].where((d) => d != null).length;
 
     return Form(
       key: widget.formKey,
@@ -121,10 +120,8 @@ class _Step5CertificationReviewSubmissionState
                     controller: _submittedByName,
                     label: 'Submitted-By Name *',
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'Submitted-by name',
-                    ),
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'Submitted-by name'),
                     onChanged: (v) {
                       _certification.submittedByName = v;
                       widget.onChanged();
@@ -179,7 +176,11 @@ class _Step5CertificationReviewSubmissionState
                   label: 'Applicant Signed Document',
                 );
                 if (picked == null) return;
-                setState(() { _certification.signedDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _certification.signedDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -219,10 +220,7 @@ class _Step5CertificationReviewSubmissionState
               onEdit: () => widget.onEditStep(1),
               rows: [
                 _SummaryRow('Name', fullName.isEmpty ? 'Not set' : fullName),
-                _SummaryRow(
-                  'Telephone / Mobile Number',
-                  owner.contactNumber,
-                ),
+                _SummaryRow('Telephone / Mobile Number', owner.contactNumber),
                 _SummaryRow('Project Name', owner.projectName),
               ],
             ),
@@ -285,20 +283,22 @@ class _Step5CertificationReviewSubmissionState
                         'I certify that the information provided in this '
                         'application is complete and accurate.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _declaration.certifiesInformationIsAccurate =
-                          val,
+                      (val) =>
+                          _declaration.certifiesInformationIsAccurate = val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _declaration
-                        .certifiesConstructionMatchesApprovedPlans,
+                    value:
+                        _declaration.certifiesConstructionMatchesApprovedPlans,
                     label:
                         'I certify that construction has been completed '
                         'according to the approved plans.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _declaration
-                          .certifiesConstructionMatchesApprovedPlans = val,
+                      (val) =>
+                          _declaration
+                                  .certifiesConstructionMatchesApprovedPlans =
+                              val,
                       v,
                     ),
                   ),
@@ -320,8 +320,10 @@ class _Step5CertificationReviewSubmissionState
                         'I understand that this application is subject to '
                         'inspection and official evaluation.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _declaration
-                          .understandsSubjectToInspectionAndEvaluation = val,
+                      (val) =>
+                          _declaration
+                                  .understandsSubjectToInspectionAndEvaluation =
+                              val,
                       v,
                     ),
                   ),

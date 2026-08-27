@@ -27,8 +27,7 @@ class Step3ConstructionLocation extends StatefulWidget {
       _Step3ConstructionLocationState();
 }
 
-class _Step3ConstructionLocationState
-    extends State<Step3ConstructionLocation> {
+class _Step3ConstructionLocationState extends State<Step3ConstructionLocation> {
   late final TextEditingController _lotNumber;
   late final TextEditingController _blockNumber;
   late final TextEditingController _tctNumber;

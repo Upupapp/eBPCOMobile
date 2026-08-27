@@ -210,8 +210,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
             const SizedBox(height: AppSpacing.md),
             for (final child in children) ...[
               child,
-              if (child != children.last)
-                const SizedBox(height: AppSpacing.md),
+              if (child != children.last) const SizedBox(height: AppSpacing.md),
             ],
           ],
         ),
@@ -368,10 +367,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _estimatedDemandOrFlowRate,
                   'Estimated Demand or Flow Rate *',
                   keyboardType: TextInputType.number,
-                  validator: (v) => _positiveDecimalError(
-                    v,
-                    'Estimated demand or flow rate',
-                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Estimated demand or flow rate'),
                   onChanged: (v) => _water.estimatedDemandOrFlowRate = v,
                 ),
               ]),
@@ -397,10 +394,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _text(
                     _otherDisposalMethod,
                     'Specify Disposal Method *',
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'Disposal method',
-                    ),
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'Disposal method'),
                     onChanged: (v) =>
                         _sewage.otherDisposalMethodDescription = v,
                   ),
@@ -411,8 +406,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     v,
                     fieldLabel: 'Receiving sewer or disposal point',
                   ),
-                  onChanged: (v) =>
-                      _sewage.receivingSewerOrDisposalPoint = v,
+                  onChanged: (v) => _sewage.receivingSewerOrDisposalPoint = v,
                 ),
                 _text(
                   _mainSewerPipeMaterial,
@@ -525,8 +519,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     v,
                     fieldLabel: 'Access and maintenance description',
                   ),
-                  onChanged: (v) =>
-                      _septic.accessAndMaintenanceDescription = v,
+                  onChanged: (v) => _septic.accessAndMaintenanceDescription = v,
                 ),
               ]),
 
@@ -551,12 +544,9 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _text(
                     _otherDrainageType,
                     'Specify Drainage Type *',
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'Drainage type',
-                    ),
-                    onChanged: (v) =>
-                        _storm.otherDrainageTypeDescription = v,
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'Drainage type'),
+                    onChanged: (v) => _storm.otherDrainageTypeDescription = v,
                   ),
                 _text(
                   _dischargePoint,
@@ -648,4 +638,3 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
     );
   }
 }
-

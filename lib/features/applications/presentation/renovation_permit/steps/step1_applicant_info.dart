@@ -76,9 +76,7 @@ class _Step1ApplicantInfoState extends State<Step1ApplicantInfo> {
               value: _applicant.applicationType,
               label: 'Application Type *',
               items: RenovationApplicationType.values
-                  .map(
-                    (t) => DropdownMenuItem(value: t, child: Text(t.label)),
-                  )
+                  .map((t) => DropdownMenuItem(value: t, child: Text(t.label)))
                   .toList(),
               onChanged: (v) {
                 if (v == null) return;

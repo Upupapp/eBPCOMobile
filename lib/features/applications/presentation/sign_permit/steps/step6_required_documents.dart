@@ -28,8 +28,7 @@ class Step6RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step6RequiredDocuments> createState() =>
-      _Step6RequiredDocumentsState();
+  State<Step6RequiredDocuments> createState() => _Step6RequiredDocumentsState();
 }
 
 class _Step6RequiredDocumentsState extends State<Step6RequiredDocuments> {
@@ -49,11 +48,10 @@ class _Step6RequiredDocumentsState extends State<Step6RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
         setState(() => setDocument(picked));
         widget.onChanged();
       },
@@ -177,8 +175,8 @@ class _Step6RequiredDocumentsState extends State<Step6RequiredDocuments> {
                   label: 'Structural Design and Computations',
                   getDocument: () =>
                       _documents.structuralDesignAndComputationsUpload,
-                  setDocument: (d) => _documents
-                      .structuralDesignAndComputationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.structuralDesignAndComputationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Specifications',

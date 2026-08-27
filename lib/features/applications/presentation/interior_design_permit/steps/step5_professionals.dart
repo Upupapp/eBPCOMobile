@@ -130,7 +130,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             ),
 
             const SizedBox(height: AppSpacing.xl),
-            Text('Licensed Design Professional', style: AppTypography.cardTitle),
+            Text(
+              'Licensed Design Professional',
+              style: AppTypography.cardTitle,
+            ),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Column(
@@ -153,10 +156,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Profession *',
                     items: interiorDesignProfessionalOptions
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -292,9 +293,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Professional Signed Documents',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.designSignedDocumentUpload =
-                      picked;
+                  _professionals.designSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -343,10 +345,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Profession *',
                     items: interiorSupervisorOptions
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -441,10 +441,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     controller: _supervisorPtrPlaceIssued,
                     label: 'PTR Place Issued *',
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => Validators.required(
-                      v,
-                      fieldLabel: 'PTR place issued',
-                    ),
+                    validator: (v) =>
+                        Validators.required(v, fieldLabel: 'PTR place issued'),
                     onChanged: (v) {
                       supervisor.ptrPlaceIssued = v;
                       widget.onChanged();
@@ -484,9 +482,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed Supervisor Confirmation',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.supervisorSignedDocumentUpload =
-                      picked;
+                  _professionals.supervisorSignedDocumentUpload = picked;
                 });
                 widget.onChanged();
               },

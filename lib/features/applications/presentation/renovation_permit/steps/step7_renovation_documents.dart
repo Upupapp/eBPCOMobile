@@ -66,6 +66,8 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
       onUpload: () async {
         final result = await showAttachDocumentOptions(context, label: label);
         if (result == null) return;
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
         setState(() => setDocument(result));
         widget.onChanged();
       },
@@ -123,6 +125,8 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
               label: label,
             );
             if (result == null) return;
+            // The picker can outlive this step; setState on a defunct State throws.
+            if (!mounted) return;
             setState(() => slot.upload = result);
             widget.onChanged();
           },
@@ -260,8 +264,7 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
                       ? 'Conditionally required — Structural Components selected'
                       : 'Not required for the selected affected areas',
                   getDocument: () => _documents.civilStructuralPlansUpload,
-                  setDocument: (d) =>
-                      _documents.civilStructuralPlansUpload = d,
+                  setDocument: (d) => _documents.civilStructuralPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Electrical Plans',
@@ -351,8 +354,7 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
                 _uploadTile(
                   label: 'Signed and Sealed Plans',
                   getDocument: () => _professional.signedSealedPlansUpload,
-                  setDocument: (d) =>
-                      _professional.signedSealedPlansUpload = d,
+                  setDocument: (d) => _professional.signedSealedPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Signed and Sealed Forms',
@@ -379,8 +381,7 @@ class _Step7RenovationDocumentsState extends State<Step7RenovationDocuments> {
                 _uploadTile(
                   label: 'Fire Safety Evaluation',
                   getDocument: () => _documents.fireSafetyEvaluationUpload,
-                  setDocument: (d) =>
-                      _documents.fireSafetyEvaluationUpload = d,
+                  setDocument: (d) => _documents.fireSafetyEvaluationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Other LGU-Required Clearances',

@@ -53,11 +53,13 @@ class _ArchitecturalPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Provide the details of the person applying for the Architectural Permit.',
+      subtitle:
+          'Provide the details of the person applying for the Architectural Permit.',
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle: 'Provide the applicant address and location of the architectural work.',
+      subtitle:
+          'Provide the applicant address and location of the architectural work.',
     ),
     _StepMeta(
       title: 'Scope of Architectural Work',
@@ -65,11 +67,13 @@ class _ArchitecturalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Architectural Compliance Details',
-      subtitle: 'Provide accessibility, site-development, and fire-safety details.',
+      subtitle:
+          'Provide accessibility, site-development, and fire-safety details.',
     ),
     _StepMeta(
       title: 'Architectural Professionals',
-      subtitle: 'Provide the Architects responsible for design and supervision.',
+      subtitle:
+          'Provide the Architects responsible for design and supervision.',
     ),
     _StepMeta(
       title: 'Ownership & Consent',
@@ -81,7 +85,8 @@ class _ArchitecturalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Review & Declaration',
-      subtitle: 'Review the Architectural Permit application before submission.',
+      subtitle:
+          'Review the Architectural Permit application before submission.',
     ),
     _StepMeta(
       title: 'Evaluation & Permit Status',
@@ -225,7 +230,8 @@ class _ArchitecturalPermitWizardScreenState
         'submissionDate': now,
         'relatedBuildingPermitNumber':
             _draft.relatedBuildingPermit.buildingPermitNumber,
-        'relatedBuildingPermitStatus': _draft.relatedBuildingPermit.status.label,
+        'relatedBuildingPermitStatus':
+            _draft.relatedBuildingPermit.status.label,
       },
     );
   }
@@ -279,7 +285,8 @@ class _ArchitecturalPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Architectural Permit application step by step.',
+                intro:
+                    'Complete your Architectural Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

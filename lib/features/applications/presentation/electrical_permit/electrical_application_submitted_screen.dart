@@ -40,7 +40,7 @@ class ElectricalApplicationSubmittedScreen extends StatelessWidget {
           'application.',
       notice: isPending
           ? 'This permit cannot be valid or issued until '
-            'your Building Permit reference is satisfied.'
+                'your Building Permit reference is satisfied.'
           : null,
       applicationId: applicationId,
       referenceNumber: referenceNumber,
@@ -50,11 +50,20 @@ class ElectricalApplicationSubmittedScreen extends StatelessWidget {
           label: 'Application Type',
           value: CanonicalPermitType.electricalPermit.wire,
         ),
-        (label: 'Related Building Permit', value: relatedBuildingPermitNumber.trim().isEmpty
+        (
+          label: 'Related Building Permit',
+          value: relatedBuildingPermitNumber.trim().isEmpty
               ? 'Not yet assigned'
-              : relatedBuildingPermitNumber),
-        (label: 'Related Building Permit Status', value: relatedBuildingPermitStatus),
-        (label: 'Electrical Contractor Requirement', value: electricalContractorRequired ? 'Required' : 'Not Required'),
+              : relatedBuildingPermitNumber,
+        ),
+        (
+          label: 'Related Building Permit Status',
+          value: relatedBuildingPermitStatus,
+        ),
+        (
+          label: 'Electrical Contractor Requirement',
+          value: electricalContractorRequired ? 'Required' : 'Not Required',
+        ),
         (label: 'Status', value: 'Submitted for Initial Review'),
       ],
       secondaryLabel: 'View Application',

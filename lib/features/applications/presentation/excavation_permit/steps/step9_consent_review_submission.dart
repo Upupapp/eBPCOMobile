@@ -207,7 +207,11 @@ class _Step9ConsentReviewSubmissionState
                   label: 'Owner Signed Document',
                 );
                 if (picked == null) return;
-                setState(() { _consent.ownerSignedDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _consent.ownerSignedDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -339,14 +343,16 @@ class _Step9ConsentReviewSubmissionState
                     label: 'Lot Owner Signed Document',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.lotOwnerSignedDocumentUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.lotOwnerSignedDocumentUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
-                  setState(
-                    () => _consent.lotOwnerSignedDocumentUpload = null,
-                  );
+                  setState(() => _consent.lotOwnerSignedDocumentUpload = null);
                   widget.onChanged();
                 },
               ),
@@ -512,8 +518,8 @@ class _Step9ConsentReviewSubmissionState
                         'preparation work must follow the approved plans '
                         'and applicable regulations.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndRegulations =
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndRegulations =
                               val,
                       v,
                     ),
@@ -526,20 +532,21 @@ class _Step9ConsentReviewSubmissionState
                         'and does not guarantee the granting of, the '
                         'Building Permit.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _review
-                          .understandsDependsOnRelatedBuildingPermit = val,
+                      (val) =>
+                          _review.understandsDependsOnRelatedBuildingPermit =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review
-                        .understandsProfessionalDocumentsMustBeAuthentic,
+                    value:
+                        _review.understandsProfessionalDocumentsMustBeAuthentic,
                     label:
                         'I understand that all required signed and sealed '
                         'professional documents must be authentic.',
                     onChanged: (v) => _toggleDeclaration(
-                      (val) => _review
-                          .understandsProfessionalDocumentsMustBeAuthentic =
+                      (val) =>
+                          _review.understandsProfessionalDocumentsMustBeAuthentic =
                               val,
                       v,
                     ),

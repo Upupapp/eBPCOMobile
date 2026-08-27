@@ -42,7 +42,7 @@ class ExcavationApplicationSubmittedScreen extends StatelessWidget {
           'application.',
       notice: isPending
           ? 'This permit does not guarantee the granting of '
-            'your related Building Permit application.'
+                'your related Building Permit application.'
           : null,
       applicationId: applicationId,
       referenceNumber: referenceNumber,
@@ -52,10 +52,16 @@ class ExcavationApplicationSubmittedScreen extends StatelessWidget {
           label: 'Application Type',
           value: CanonicalPermitType.excavationPermit.wire,
         ),
-        (label: 'Related Building Permit', value: relatedBuildingPermitNumber.trim().isEmpty
+        (
+          label: 'Related Building Permit',
+          value: relatedBuildingPermitNumber.trim().isEmpty
               ? 'Not yet assigned'
-              : relatedBuildingPermitNumber),
-        (label: 'Related Building Permit Status', value: relatedBuildingPermitStatus),
+              : relatedBuildingPermitNumber,
+        ),
+        (
+          label: 'Related Building Permit Status',
+          value: relatedBuildingPermitStatus,
+        ),
         (label: 'Status', value: 'Submitted for Initial Review'),
       ],
       secondaryLabel: 'View Application',

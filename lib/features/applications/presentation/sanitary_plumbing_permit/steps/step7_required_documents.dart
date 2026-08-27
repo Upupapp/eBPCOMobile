@@ -26,8 +26,7 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
@@ -49,14 +48,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -155,8 +151,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Plumbing Riser Diagram',
                   getDocument: () => _documents.plumbingRiserDiagramUpload,
-                  setDocument: (d) =>
-                      _documents.plumbingRiserDiagramUpload = d,
+                  setDocument: (d) => _documents.plumbingRiserDiagramUpload = d,
                 ),
                 _uploadTile(
                   label: 'Fixture Schedule',
@@ -234,7 +229,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       _documents.shallowWellPumpDetailsUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Water-Quality or Treatment Information (Shallow Well)',
+                  label:
+                      'Water-Quality or Treatment Information (Shallow Well)',
                   isRequired: false,
                   statusLabel: hasShallowWell
                       ? 'Optional — when applicable'
@@ -279,8 +275,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Optional — when applicable'
                       : 'Not required — Deep Well and Pump Set not selected',
                   getDocument: () => _documents.deepWellWaterQualityUpload,
-                  setDocument: (d) =>
-                      _documents.deepWellWaterQualityUpload = d,
+                  setDocument: (d) => _documents.deepWellWaterQualityUpload = d,
                 ),
                 _uploadTile(
                   label: 'Water-Service Connection Plan',
@@ -396,8 +391,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Sanitary Sewer Connection selected'
                       : 'Not required — Sanitary Sewer Connection not selected',
                   getDocument: () => _documents.sewerConnectionPlanUpload,
-                  setDocument: (d) =>
-                      _documents.sewerConnectionPlanUpload = d,
+                  setDocument: (d) => _documents.sewerConnectionPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Receiving-System Coordination',
@@ -450,7 +444,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       _documents.sandFilterEffluentDisposalPlanUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Drainage Plan (Surface Drainage, Street Canal or Water Course)',
+                  label:
+                      'Drainage Plan (Surface Drainage, Street Canal or Water Course)',
                   isRequired: hasSurfaceDrainageGroup,
                   statusLabel: hasSurfaceDrainageGroup
                       ? 'Conditionally required — Surface Drainage, Street Canal, or Water Course selected'
@@ -464,13 +459,13 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasSurfaceDrainageGroup
                       ? 'Optional — when applicable'
                       : 'Not required — none of Surface Drainage, Street Canal, or Water Course selected',
-                  getDocument: () =>
-                      _documents.drainageDischargeDetailsUpload,
+                  getDocument: () => _documents.drainageDischargeDetailsUpload,
                   setDocument: (d) =>
                       _documents.drainageDischargeDetailsUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Applicable Clearance or Coordination (Surface Drainage)',
+                  label:
+                      'Applicable Clearance or Coordination (Surface Drainage)',
                   isRequired: false,
                   statusLabel: hasSurfaceDrainageGroup
                       ? 'Optional — when applicable'
@@ -514,8 +509,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasWaterTank
                       ? 'Conditionally required — Water Tank / Reservoir quantity greater than zero'
                       : 'Not required — no Water Tank / Reservoir quantity entered',
-                  getDocument: () =>
-                      _documents.waterTankReservoirDetailsUpload,
+                  getDocument: () => _documents.waterTankReservoirDetailsUpload,
                   setDocument: (d) =>
                       _documents.waterTankReservoirDetailsUpload = d,
                 ),

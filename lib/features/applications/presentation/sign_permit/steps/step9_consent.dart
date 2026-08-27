@@ -188,7 +188,11 @@ class _Step9ConsentState extends State<Step9Consent> {
                   label: 'Applicant Signed Document',
                 );
                 if (picked == null) return;
-                setState(() { _consent.applicantSignedDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _consent.applicantSignedDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -324,9 +328,10 @@ class _Step9ConsentState extends State<Step9Consent> {
                     label: 'Building Owner Signed Document',
                   );
                   if (picked == null) return;
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
                   setState(() {
-                    _consent.buildingOwnerSignedDocumentUpload =
-                        picked;
+                    _consent.buildingOwnerSignedDocumentUpload = picked;
                   });
                   widget.onChanged();
                 },

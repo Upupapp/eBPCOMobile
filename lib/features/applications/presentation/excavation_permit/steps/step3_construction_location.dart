@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/models/document_model.dart';
 import '../../../../../core/models/excavation_permit_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
@@ -7,6 +8,8 @@ import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
+import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Step 3 — Construction Location. No province field, matching the
 /// official form's field list for this permit.
@@ -27,8 +30,7 @@ class Step3ConstructionLocation extends StatefulWidget {
       _Step3ConstructionLocationState();
 }
 
-class _Step3ConstructionLocationState
-    extends State<Step3ConstructionLocation> {
+class _Step3ConstructionLocationState extends State<Step3ConstructionLocation> {
   late final TextEditingController _lotNumber;
   late final TextEditingController _blockNumber;
   late final TextEditingController _tctNumber;
@@ -76,6 +78,21 @@ class _Step3ConstructionLocationState
         _city.text = _location.city;
       }
     });
+    widget.onChanged();
+  }
+
+  /// Opens the document chooser and stores what comes back.
+  ///
+  /// The picker can outlive this step, so the mounted check is not optional —
+  /// see the same guard on every other upload handler in the app.
+  Future<void> _pickDocument(
+    String label,
+    void Function(DocumentModel?) assign,
+  ) async {
+    final picked = await showAttachDocumentOptions(context, label: label);
+    if (picked == null) return;
+    if (!mounted) return;
+    setState(() => assign(picked));
     widget.onChanged();
   }
 
@@ -181,6 +198,66 @@ class _Step3ConstructionLocationState
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            // Site and ownership documents. Reconciled against the
+            // requirements catalog on 27 Aug 2026 — none of these had a slot
+            // anywhere in this wizard.
+            Text(
+              'Site and Ownership Documents',
+              style: AppTypography.sectionTitle,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            DocumentUploadTile(
+              label: 'Land Title or Tax Declaration',
+              document: _location.landTitleOrTaxDeclarationUpload,
+              onUpload: () => _pickDocument(
+                'Land Title or Tax Declaration',
+                (d) => _location.landTitleOrTaxDeclarationUpload = d,
+              ),
+              onRemove: () => setState(() {
+                _location.landTitleOrTaxDeclarationUpload = null;
+                widget.onChanged();
+              }),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            DocumentUploadTile(
+              label: 'Barangay Clearance',
+              document: _location.barangayClearanceUpload,
+              onUpload: () => _pickDocument(
+                'Barangay Clearance',
+                (d) => _location.barangayClearanceUpload = d,
+              ),
+              onRemove: () => setState(() {
+                _location.barangayClearanceUpload = null;
+                widget.onChanged();
+              }),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            DocumentUploadTile(
+              label: 'Locational Clearance / Zoning Certification',
+              document: _location.locationalClearanceUpload,
+              onUpload: () => _pickDocument(
+                'Locational Clearance / Zoning Certification',
+                (d) => _location.locationalClearanceUpload = d,
+              ),
+              onRemove: () => setState(() {
+                _location.locationalClearanceUpload = null;
+                widget.onChanged();
+              }),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            DocumentUploadTile(
+              label: 'Valid Government-Issued ID',
+              document: _location.validGovernmentIdUpload,
+              onUpload: () => _pickDocument(
+                'Valid Government-Issued ID',
+                (d) => _location.validGovernmentIdUpload = d,
+              ),
+              onRemove: () => setState(() {
+                _location.validGovernmentIdUpload = null;
+                widget.onChanged();
+              }),
             ),
           ],
         ),

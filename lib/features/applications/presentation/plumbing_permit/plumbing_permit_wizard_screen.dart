@@ -287,7 +287,8 @@ class _PlumbingPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Plumbing Permit application step by step.',
+                intro:
+                    'Complete your Plumbing Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

@@ -174,7 +174,8 @@ class _Step3ProjectInformationState extends State<Step3ProjectInformation> {
                   AppTextField(
                     controller: _existingBuildingDescription,
                     label: 'Existing Building Description *',
-                    hint: 'What does the existing building currently look like?',
+                    hint:
+                        'What does the existing building currently look like?',
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
                     validator: (v) => Validators.required(

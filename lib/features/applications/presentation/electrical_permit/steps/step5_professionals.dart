@@ -80,12 +80,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
 
     final contractor = _professionals.contractor;
     _contractorName = TextEditingController(text: contractor.contractorName);
-    _contractorAddress = TextEditingController(text: contractor.contractorAddress);
-    _pcabLicenseNumber = TextEditingController(text: contractor.pcabLicenseNumber);
+    _contractorAddress = TextEditingController(
+      text: contractor.contractorAddress,
+    );
+    _pcabLicenseNumber = TextEditingController(
+      text: contractor.pcabLicenseNumber,
+    );
     _electricalWorksClassification = TextEditingController(
       text: contractor.electricalWorksClassification,
     );
-    _contractorContactNumber = TextEditingController(text: contractor.contactNumber);
+    _contractorContactNumber = TextEditingController(
+      text: contractor.contactNumber,
+    );
   }
 
   @override
@@ -176,8 +182,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     controller: _designAddress,
                     label: 'Professional Address *',
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) =>
-                        Validators.required(v, fieldLabel: 'Professional address'),
+                    validator: (v) => Validators.required(
+                      v,
+                      fieldLabel: 'Professional address',
+                    ),
                     onChanged: (v) {
                       design.address = v;
                       widget.onChanged();
@@ -295,7 +303,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Professional PRC ID',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPrcIdUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPrcIdUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -314,7 +326,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Design Professional PTR',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.designPtrDocumentUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.designPtrDocumentUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -333,7 +349,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Electrical Plans',
                 );
                 if (picked == null) return;
-                setState(() { _professionals.signedSealedPlansUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _professionals.signedSealedPlansUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,
@@ -352,9 +372,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed and Sealed Electrical Specifications',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedSealedSpecificationsUpload =
-                      picked;
+                  _professionals.signedSealedSpecificationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -376,9 +397,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   label: 'Signed Load Calculations',
                 );
                 if (picked == null) return;
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
                 setState(() {
-                  _professionals.signedLoadCalculationsUpload =
-                      picked;
+                  _professionals.signedLoadCalculationsUpload = picked;
                 });
                 widget.onChanged();
               },
@@ -406,7 +428,8 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 value: _professionals.isSupervisorSameAsDesignProfessional,
                 onChanged: (v) {
                   setState(
-                    () => _professionals.isSupervisorSameAsDesignProfessional = v,
+                    () =>
+                        _professionals.isSupervisorSameAsDesignProfessional = v,
                   );
                   widget.onChanged();
                 },
@@ -418,7 +441,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Same as Design Professional', style: AppTypography.bodyStrong),
+                    Text(
+                      'Same as Design Professional',
+                      style: AppTypography.bodyStrong,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     _SummaryRow('Full Name', design.fullName),
                     const SizedBox(height: AppSpacing.sm),
@@ -572,7 +598,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PRC ID',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPrcIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPrcIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -591,7 +621,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Supervisor PTR',
                   );
                   if (picked == null) return;
-                  setState(() { _professionals.supervisorPtrUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _professionals.supervisorPtrUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -610,17 +644,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Signed Supervisor Confirmation',
                   );
                   if (picked == null) return;
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
                   setState(() {
-                    _professionals.signedSupervisorConfirmationUpload =
-                        picked;
+                    _professionals.signedSupervisorConfirmationUpload = picked;
                   });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
                   setState(
-                    () =>
-                        _professionals.signedSupervisorConfirmationUpload = null,
+                    () => _professionals.signedSupervisorConfirmationUpload =
+                        null,
                   );
                   widget.onChanged();
                 },
@@ -633,10 +668,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
             Text(
               contractorRequired
                   ? 'Required — this installation reaches the 200A / 230V '
-                      'threshold that requires a PCAB-licensed specialty '
-                      'electrical contractor.'
+                        'threshold that requires a PCAB-licensed specialty '
+                        'electrical contractor.'
                   : 'Not required for this installation, but you may add '
-                      'contractor information if one has already been engaged.',
+                        'contractor information if one has already been engaged.',
               style: AppTypography.bodyMuted,
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -647,7 +682,9 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   title: const Text('Add Electrical Contractor Information'),
                   value: _professionals.contractorVoluntarilyIndicated,
                   onChanged: (v) {
-                    setState(() => _professionals.contractorVoluntarilyIndicated = v);
+                    setState(
+                      () => _professionals.contractorVoluntarilyIndicated = v,
+                    );
                     widget.onChanged();
                   },
                 ),
@@ -663,7 +700,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                       label: 'Contractor Name *',
                       textCapitalization: TextCapitalization.words,
                       validator: (v) => contractorRequired
-                          ? Validators.required(v, fieldLabel: 'Contractor name')
+                          ? Validators.required(
+                              v,
+                              fieldLabel: 'Contractor name',
+                            )
                           : null,
                       onChanged: (v) {
                         contractor.contractorName = v;
@@ -676,7 +716,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                       label: 'Contractor Address *',
                       textCapitalization: TextCapitalization.words,
                       validator: (v) => contractorRequired
-                          ? Validators.required(v, fieldLabel: 'Contractor address')
+                          ? Validators.required(
+                              v,
+                              fieldLabel: 'Contractor address',
+                            )
                           : null,
                       onChanged: (v) {
                         contractor.contractorAddress = v;
@@ -688,7 +731,10 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                       controller: _pcabLicenseNumber,
                       label: 'PCAB License Number *',
                       validator: (v) => contractorRequired
-                          ? Validators.required(v, fieldLabel: 'PCAB license number')
+                          ? Validators.required(
+                              v,
+                              fieldLabel: 'PCAB license number',
+                            )
                           : null,
                       onChanged: (v) {
                         contractor.pcabLicenseNumber = v;
@@ -699,12 +745,15 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     DatePickerField(
                       label: 'PCAB License Validity *',
                       value: contractor.pcabLicenseValidityDate,
-                      validator: (_) => contractorRequired &&
+                      validator: (_) =>
+                          contractorRequired &&
                               contractor.pcabLicenseValidityDate == null
                           ? 'Please select the PCAB license validity date.'
                           : null,
                       onChanged: (date) {
-                        setState(() => contractor.pcabLicenseValidityDate = date);
+                        setState(
+                          () => contractor.pcabLicenseValidityDate = date,
+                        );
                         widget.onChanged();
                       },
                     ),
@@ -750,7 +799,11 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'PCAB License',
                   );
                   if (picked == null) return;
-                  setState(() { contractor.pcabLicenseUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    contractor.pcabLicenseUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -770,12 +823,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Contractor Accreditation Document',
                   );
                   if (picked == null) return;
-                  setState(() { contractor.contractorAccreditationUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    contractor.contractorAccreditationUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
-                  setState(() => contractor.contractorAccreditationUpload = null);
+                  setState(
+                    () => contractor.contractorAccreditationUpload = null,
+                  );
                   widget.onChanged();
                 },
               ),
@@ -790,12 +849,18 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     label: 'Contractor Authorization or Contract',
                   );
                   if (picked == null) return;
-                  setState(() { contractor.contractorAuthorizationUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    contractor.contractorAuthorizationUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
                 onRemove: () {
-                  setState(() => contractor.contractorAuthorizationUpload = null);
+                  setState(
+                    () => contractor.contractorAuthorizationUpload = null,
+                  );
                   widget.onChanged();
                 },
               ),

@@ -36,8 +36,7 @@ class Step5ProfessionalInCharge extends StatefulWidget {
       _Step5ProfessionalInChargeState();
 }
 
-class _Step5ProfessionalInChargeState
-    extends State<Step5ProfessionalInCharge> {
+class _Step5ProfessionalInChargeState extends State<Step5ProfessionalInCharge> {
   late final TextEditingController _fullName;
   late final TextEditingController _professionalAddress;
   late final TextEditingController _prcNumber;
@@ -56,9 +55,7 @@ class _Step5ProfessionalInChargeState
     );
     _prcNumber = TextEditingController(text: _professional.prcNumber);
     _ptrNumber = TextEditingController(text: _professional.ptrNumber);
-    _ptrPlaceIssued = TextEditingController(
-      text: _professional.ptrPlaceIssued,
-    );
+    _ptrPlaceIssued = TextEditingController(text: _professional.ptrPlaceIssued);
     _tin = TextEditingController(text: _professional.tin);
   }
 
@@ -167,10 +164,8 @@ class _Step5ProfessionalInChargeState
                     label: 'Profession *',
                     items: RenovationProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -185,8 +180,10 @@ class _Step5ProfessionalInChargeState
                     controller: _professionalAddress,
                     label: 'Professional Address *',
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) =>
-                        Validators.required(v, fieldLabel: 'Professional address'),
+                    validator: (v) => Validators.required(
+                      v,
+                      fieldLabel: 'Professional address',
+                    ),
                     onChanged: (v) {
                       _professional.professionalAddress = v;
                       widget.onChanged();
@@ -350,7 +347,7 @@ class _Step5ProfessionalInChargeState
               onPreview: _professional.signedSealedFormUpload == null
                   ? null
                   : () =>
-                      _previewDocument(_professional.signedSealedFormUpload!),
+                        _previewDocument(_professional.signedSealedFormUpload!),
               onRemove: () {
                 setState(() => _professional.signedSealedFormUpload = null);
                 widget.onChanged();

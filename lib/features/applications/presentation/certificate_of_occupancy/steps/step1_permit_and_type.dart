@@ -155,8 +155,7 @@ class _Step1PermitAndTypeState extends State<Step1PermitAndType> {
                         _permit.certificateType == CertificateType.partial,
                     onTap: () {
                       setState(
-                        () =>
-                            _permit.certificateType = CertificateType.partial,
+                        () => _permit.certificateType = CertificateType.partial,
                       );
                       widget.onChanged();
                     },
@@ -170,10 +169,8 @@ class _Step1PermitAndTypeState extends State<Step1PermitAndType> {
                 controller: _partialDescription,
                 label: 'Portion, Floor, Unit, or Area Covered *',
                 hint: 'e.g. 2nd Floor, Units 201–210',
-                validator: (v) => Validators.required(
-                  v,
-                  fieldLabel: 'Portion covered',
-                ),
+                validator: (v) =>
+                    Validators.required(v, fieldLabel: 'Portion covered'),
                 onChanged: (v) {
                   _permit.partialDescription = v;
                   widget.onChanged();
@@ -230,13 +227,13 @@ class _CertificateTypeOption extends StatelessWidget {
           // centred Row on a 360dp phone even at normal text size.
           Flexible(
             child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: selected
-                ? AppTypography.bodyStrong.copyWith(
-                    color: AppColors.secondaryBlueDark,
-                  )
-                : AppTypography.body,
+              label,
+              textAlign: TextAlign.center,
+              style: selected
+                  ? AppTypography.bodyStrong.copyWith(
+                      color: AppColors.secondaryBlueDark,
+                    )
+                  : AppTypography.body,
             ),
           ),
         ],

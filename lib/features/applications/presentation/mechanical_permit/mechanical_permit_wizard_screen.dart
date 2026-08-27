@@ -54,11 +54,13 @@ class _MechanicalPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Provide the details of the person applying for the Mechanical Permit.',
+      subtitle:
+          'Provide the details of the person applying for the Mechanical Permit.',
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle: 'Provide the applicant address and location of the mechanical work.',
+      subtitle:
+          'Provide the applicant address and location of the mechanical work.',
     ),
     _StepMeta(
       title: 'Scope of Mechanical Work',
@@ -66,11 +68,13 @@ class _MechanicalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Mechanical Installation Details',
-      subtitle: 'Select and describe the mechanical systems included in the project.',
+      subtitle:
+          'Select and describe the mechanical systems included in the project.',
     ),
     _StepMeta(
       title: 'Mechanical Professionals',
-      subtitle: 'Provide the licensed professionals responsible for design and supervision.',
+      subtitle:
+          'Provide the licensed professionals responsible for design and supervision.',
     ),
     _StepMeta(
       title: 'Ownership & Consent',
@@ -226,7 +230,8 @@ class _MechanicalPermitWizardScreenState
         'submissionDate': now,
         'relatedBuildingPermitNumber':
             _draft.relatedBuildingPermit.buildingPermitNumber,
-        'relatedBuildingPermitStatus': _draft.relatedBuildingPermit.status.label,
+        'relatedBuildingPermitStatus':
+            _draft.relatedBuildingPermit.status.label,
       },
     );
   }
@@ -280,7 +285,8 @@ class _MechanicalPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Mechanical Permit application step by step.',
+                intro:
+                    'Complete your Mechanical Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

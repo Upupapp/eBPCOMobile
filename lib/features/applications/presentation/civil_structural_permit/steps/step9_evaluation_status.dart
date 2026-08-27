@@ -31,7 +31,8 @@ class Step9EvaluationStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     final derivedStatus = draft.derivedPermitStatus;
     final isInvalidWithoutBuildingPermit =
-        derivedStatus == CivilStructuralPermitStatus.invalidWithoutBuildingPermit;
+        derivedStatus ==
+        CivilStructuralPermitStatus.invalidWithoutBuildingPermit;
 
     return Form(
       key: formKey,
@@ -86,10 +87,13 @@ class Step9EvaluationStatus extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final stage
-                      in CivilStructuralEvaluationPermitStatus.progressStages) ...[
+                      in CivilStructuralEvaluationPermitStatus
+                          .progressStages) ...[
                     _StatusRow(label: stage, status: 'Pending'),
                     if (stage !=
-                        CivilStructuralEvaluationPermitStatus.progressStages.last)
+                        CivilStructuralEvaluationPermitStatus
+                            .progressStages
+                            .last)
                       const SizedBox(height: AppSpacing.sm),
                   ],
                 ],
@@ -110,8 +114,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
                     label: 'Recommending Approval',
-                    value:
-                        CivilStructuralEvaluationPermitStatus.recommendingApproval,
+                    value: CivilStructuralEvaluationPermitStatus
+                        .recommendingApproval,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _InfoRow(
@@ -170,7 +174,8 @@ class Step9EvaluationStatus extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final condition
-                      in CivilStructuralEvaluationPermitStatus.permitConditions) ...[
+                      in CivilStructuralEvaluationPermitStatus
+                          .permitConditions) ...[
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

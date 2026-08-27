@@ -81,7 +81,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _consent.lotOwnerConsentUpload = picked; });
+    setState(() {
+      _consent.lotOwnerConsentUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -93,7 +95,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _consent.authorizationLetterUpload = picked; });
+    setState(() {
+      _consent.authorizationLetterUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -105,7 +109,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _consent.ownerValidIdUpload = picked; });
+    setState(() {
+      _consent.ownerValidIdUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -117,7 +123,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _consent.representativeValidIdUpload = picked; });
+    setState(() {
+      _consent.representativeValidIdUpload = picked;
+    });
     widget.onChanged();
   }
 
@@ -129,7 +137,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     if (picked == null) return;
     // The picker can outlive this step; setState on a defunct State throws.
     if (!mounted) return;
-    setState(() { _consent.proofOfOwnershipUpload = picked; });
+    setState(() {
+      _consent.proofOfOwnershipUpload = picked;
+    });
     widget.onChanged();
   }
 

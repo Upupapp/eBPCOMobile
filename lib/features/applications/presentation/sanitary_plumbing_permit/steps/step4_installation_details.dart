@@ -240,8 +240,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
             const SizedBox(height: AppSpacing.md),
             for (final child in children) ...[
               child,
-              if (child != children.last)
-                const SizedBox(height: AppSpacing.md),
+              if (child != children.last) const SizedBox(height: AppSpacing.md),
             ],
           ],
         ),
@@ -330,8 +329,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _shallowWellEstimatedYield,
                   'Estimated Yield *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      _positiveDecimalError(v, 'Estimated yield'),
+                  validator: (v) => _positiveDecimalError(v, 'Estimated yield'),
                   onChanged: (v) => _water.shallowWellEstimatedYield = v,
                 ),
                 _text(
@@ -374,8 +372,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _deepWellEstimatedYield,
                   'Estimated Yield *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      _positiveDecimalError(v, 'Estimated yield'),
+                  validator: (v) => _positiveDecimalError(v, 'Estimated yield'),
                   onChanged: (v) => _water.deepWellEstimatedYield = v,
                 ),
                 _text(
@@ -403,16 +400,13 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _cityWaterServiceConnectionNumber,
                   'Service-Connection Number',
                   hint: 'Optional — when available',
-                  onChanged: (v) =>
-                      _water.cityWaterServiceConnectionNumber = v,
+                  onChanged: (v) => _water.cityWaterServiceConnectionNumber = v,
                 ),
                 _text(
                   _cityWaterMeterSize,
                   'Water Meter Size *',
-                  validator: (v) => Validators.required(
-                    v,
-                    fieldLabel: 'Water meter size',
-                  ),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Water meter size'),
                   onChanged: (v) => _water.cityWaterMeterSize = v,
                 ),
               ]),
@@ -484,8 +478,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     v,
                     fieldLabel: 'Operator or responsible party',
                   ),
-                  onChanged: (v) =>
-                      _disposal.wtpOperatorOrResponsibleParty = v,
+                  onChanged: (v) => _disposal.wtpOperatorOrResponsibleParty = v,
                 ),
               ]),
             if (_disposal.hasImhoffTank)
@@ -534,10 +527,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _sewerConnectionPoint,
                   'Connection Point *',
-                  validator: (v) => Validators.required(
-                    v,
-                    fieldLabel: 'Connection point',
-                  ),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Connection point'),
                   onChanged: (v) => _disposal.sewerConnectionPoint = v,
                 ),
               ]),
@@ -554,10 +545,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _sandFilterDescription,
                   'Filter Description *',
                   maxLines: 2,
-                  validator: (v) => Validators.required(
-                    v,
-                    fieldLabel: 'Filter description',
-                  ),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Filter description'),
                   onChanged: (v) => _disposal.sandFilterDescription = v,
                 ),
                 _text(
@@ -567,8 +556,7 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     v,
                     fieldLabel: 'Effluent destination',
                   ),
-                  onChanged: (v) =>
-                      _disposal.sandFilterEffluentDestination = v,
+                  onChanged: (v) => _disposal.sandFilterEffluentDestination = v,
                 ),
               ]),
             if (_disposal.hasSurfaceDrainageGroup)
@@ -576,10 +564,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _drainageDischargeLocation,
                   'Discharge Location *',
-                  validator: (v) => Validators.required(
-                    v,
-                    fieldLabel: 'Discharge location',
-                  ),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Discharge location'),
                   onChanged: (v) => _disposal.drainageDischargeLocation = v,
                 ),
                 _text(
@@ -643,7 +629,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     _totalBuildingArea,
                     'Total Building or Subdivision Area (sq. m.) *',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(
                           v,
                           'Total building area',
                         ) ??
@@ -690,7 +677,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     _totalCostOfInstallation,
                     'Total Cost of Installation (₱) *',
                     keyboardType: TextInputType.number,
-                    validator: (v) => _nonNegativeWholeNumberError(
+                    validator: (v) =>
+                        _nonNegativeWholeNumberError(
                           v,
                           'Total cost of installation',
                         ) ??
@@ -727,4 +715,3 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
     );
   }
 }
-

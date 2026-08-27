@@ -26,13 +26,13 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
   MechanicalRequiredDocuments get _documents => widget.draft.requiredDocuments;
-  MechanicalInstallationDetails get _details => widget.draft.installationDetails;
+  MechanicalInstallationDetails get _details =>
+      widget.draft.installationDetails;
   MechanicalProfessionals get _professionals => widget.draft.professionals;
 
   Widget _uploadTile({
@@ -49,14 +49,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -106,7 +103,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Mechanical Plans',
                   getDocument: () => _professionals.signedSealedPlansUpload,
-                  setDocument: (d) => _professionals.signedSealedPlansUpload = d,
+                  setDocument: (d) =>
+                      _professionals.signedSealedPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Mechanical Specifications',
@@ -117,7 +115,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Mechanical Design Calculations',
-                  getDocument: () => _professionals.signedDesignCalculationsUpload,
+                  getDocument: () =>
+                      _professionals.signedDesignCalculationsUpload,
                   setDocument: (d) =>
                       _professionals.signedDesignCalculationsUpload = d,
                 ),
@@ -173,12 +172,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Equipment Specifications',
                   getDocument: () => _documents.equipmentSpecificationsUpload,
-                  setDocument: (d) => _documents.equipmentSpecificationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.equipmentSpecificationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Manufacturer Data Sheets',
                   getDocument: () => _documents.manufacturerDataSheetsUpload,
-                  setDocument: (d) => _documents.manufacturerDataSheetsUpload = d,
+                  setDocument: (d) =>
+                      _documents.manufacturerDataSheetsUpload = d,
                 ),
               ],
             ),
@@ -204,7 +205,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Fire Sprinkler selected'
                       : 'Not required — Fire Sprinkler not selected',
                   getDocument: () => _documents.hydraulicCalculationsUpload,
-                  setDocument: (d) => _documents.hydraulicCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.hydraulicCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Pump Details',
@@ -248,7 +250,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasBoiler
                       ? 'Conditionally required — Boiler selected'
                       : 'Not required — Boiler not selected',
-                  getDocument: () => _documents.pressureCapacityCalculationsUpload,
+                  getDocument: () =>
+                      _documents.pressureCapacityCalculationsUpload,
                   setDocument: (d) =>
                       _documents.pressureCapacityCalculationsUpload = d,
                 ),
@@ -295,7 +298,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Pressure Vessel selected'
                       : 'Not required — Pressure Vessel not selected',
                   getDocument: () => _documents.manufacturerCertificationUpload,
-                  setDocument: (d) => _documents.manufacturerCertificationUpload = d,
+                  setDocument: (d) =>
+                      _documents.manufacturerCertificationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Refrigeration Layout',
@@ -313,7 +317,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Refrigeration / Cold Storage / Ice Plant selected'
                       : 'Not required — none of Refrigeration / Cold Storage / Ice Plant selected',
                   getDocument: () => _documents.refrigerantPipingDiagramUpload,
-                  setDocument: (d) => _documents.refrigerantPipingDiagramUpload = d,
+                  setDocument: (d) =>
+                      _documents.refrigerantPipingDiagramUpload = d,
                 ),
                 _uploadTile(
                   label: 'Cooling-Load Calculations',
@@ -322,7 +327,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Refrigeration / Cold Storage / Ice Plant selected'
                       : 'Not required — none of Refrigeration / Cold Storage / Ice Plant selected',
                   getDocument: () => _documents.coolingLoadCalculationsUpload,
-                  setDocument: (d) => _documents.coolingLoadCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.coolingLoadCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Refrigeration Equipment Specifications',
@@ -342,7 +348,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — an Air-Conditioning type selected'
                       : 'Not required — no Air-Conditioning type selected',
                   getDocument: () => _documents.airConditioningLayoutUpload,
-                  setDocument: (d) => _documents.airConditioningLayoutUpload = d,
+                  setDocument: (d) =>
+                      _documents.airConditioningLayoutUpload = d,
                 ),
                 _uploadTile(
                   label: 'Cooling-Load Calculations (Air-Conditioning)',
@@ -351,7 +358,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — an Air-Conditioning type selected'
                       : 'Not required — no Air-Conditioning type selected',
                   getDocument: () => _documents.acCoolingLoadCalculationsUpload,
-                  setDocument: (d) => _documents.acCoolingLoadCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.acCoolingLoadCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Duct Layout',
@@ -367,7 +375,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — an Air-Conditioning type selected'
                       : 'Not required — no Air-Conditioning type selected',
                   getDocument: () => _documents.acRefrigerantPipingLayoutUpload,
-                  setDocument: (d) => _documents.acRefrigerantPipingLayoutUpload = d,
+                  setDocument: (d) =>
+                      _documents.acRefrigerantPipingLayoutUpload = d,
                 ),
                 _uploadTile(
                   label: 'Equipment Schedule (Air-Conditioning)',
@@ -438,7 +447,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasPowerPiping
                       ? 'Conditionally required — Power Piping selected'
                       : 'Not required — Power Piping not selected',
-                  getDocument: () => _documents.pipingPressureCalculationsUpload,
+                  getDocument: () =>
+                      _documents.pipingPressureCalculationsUpload,
                   setDocument: (d) =>
                       _documents.pipingPressureCalculationsUpload = d,
                 ),
@@ -457,7 +467,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasPowerPiping
                       ? 'Conditionally required — Power Piping selected'
                       : 'Not required — Power Piping not selected',
-                  getDocument: () => _documents.pipingSafetyControlDetailsUpload,
+                  getDocument: () =>
+                      _documents.pipingSafetyControlDetailsUpload,
                   setDocument: (d) =>
                       _documents.pipingSafetyControlDetailsUpload = d,
                 ),
@@ -467,7 +478,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasElevatorGroup
                       ? 'Conditionally required — an elevator/escalator-type system selected'
                       : 'Not required — no elevator/escalator-type system selected',
-                  getDocument: () => _documents.verticalTransportEquipmentLayoutUpload,
+                  getDocument: () =>
+                      _documents.verticalTransportEquipmentLayoutUpload,
                   setDocument: (d) =>
                       _documents.verticalTransportEquipmentLayoutUpload = d,
                 ),
@@ -486,8 +498,10 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasElevatorGroup
                       ? 'Conditionally required — an elevator/escalator-type system selected'
                       : 'Not required — no elevator/escalator-type system selected',
-                  getDocument: () => _documents.manufacturerSpecificationsUpload,
-                  setDocument: (d) => _documents.manufacturerSpecificationsUpload = d,
+                  getDocument: () =>
+                      _documents.manufacturerSpecificationsUpload,
+                  setDocument: (d) =>
+                      _documents.manufacturerSpecificationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Structural Interface Details',
@@ -495,7 +509,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasElevatorGroup
                       ? 'Conditionally required — an elevator/escalator-type system selected'
                       : 'Not required — no elevator/escalator-type system selected',
-                  getDocument: () => _documents.structuralInterfaceDetailsUpload,
+                  getDocument: () =>
+                      _documents.structuralInterfaceDetailsUpload,
                   setDocument: (d) =>
                       _documents.structuralInterfaceDetailsUpload = d,
                 ),
@@ -535,7 +550,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — Pumps selected'
                       : 'Not required — Pumps not selected',
                   getDocument: () => _documents.capacityHeadCalculationsUpload,
-                  setDocument: (d) => _documents.capacityHeadCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.capacityHeadCalculationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Motor Specifications',
@@ -565,35 +581,42 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   setDocument: (d) => _documents.cavPipingDiagramUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Pressure Calculations (Compressed Air, Vacuum or Gas)',
+                  label:
+                      'Pressure Calculations (Compressed Air, Vacuum or Gas)',
                   isRequired: hasCompressedAirOrVacuumOrGas,
                   statusLabel: hasCompressedAirOrVacuumOrGas
                       ? 'Conditionally required — a compressed air, vacuum, or gas system selected'
                       : 'Not required — no compressed air, vacuum, or gas system selected',
                   getDocument: () => _documents.cavPressureCalculationsUpload,
-                  setDocument: (d) => _documents.cavPressureCalculationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.cavPressureCalculationsUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Storage or Equipment Details (Compressed Air, Vacuum or Gas)',
+                  label:
+                      'Storage or Equipment Details (Compressed Air, Vacuum or Gas)',
                   isRequired: hasCompressedAirOrVacuumOrGas,
                   statusLabel: hasCompressedAirOrVacuumOrGas
                       ? 'Conditionally required — a compressed air, vacuum, or gas system selected'
                       : 'Not required — no compressed air, vacuum, or gas system selected',
-                  getDocument: () => _documents.cavStorageEquipmentDetailsUpload,
+                  getDocument: () =>
+                      _documents.cavStorageEquipmentDetailsUpload,
                   setDocument: (d) =>
                       _documents.cavStorageEquipmentDetailsUpload = d,
                 ),
                 _uploadTile(
-                  label: 'Safety-Control Details (Compressed Air, Vacuum or Gas)',
+                  label:
+                      'Safety-Control Details (Compressed Air, Vacuum or Gas)',
                   isRequired: hasCompressedAirOrVacuumOrGas,
                   statusLabel: hasCompressedAirOrVacuumOrGas
                       ? 'Conditionally required — a compressed air, vacuum, or gas system selected'
                       : 'Not required — no compressed air, vacuum, or gas system selected',
                   getDocument: () => _documents.cavSafetyControlDetailsUpload,
-                  setDocument: (d) => _documents.cavSafetyControlDetailsUpload = d,
+                  setDocument: (d) =>
+                      _documents.cavSafetyControlDetailsUpload = d,
                 ),
                 _uploadTile(
-                  label: 'System Layout (Conveyors, Pneumatic Tubes or Monorails)',
+                  label:
+                      'System Layout (Conveyors, Pneumatic Tubes or Monorails)',
                   isRequired: hasConveyorGroup,
                   statusLabel: hasConveyorGroup
                       ? 'Conditionally required — a conveyor-type system selected'
@@ -607,7 +630,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasConveyorGroup
                       ? 'Conditionally required — a conveyor-type system selected'
                       : 'Not required — no conveyor-type system selected',
-                  getDocument: () => _documents.conveyorEquipmentSpecificationsUpload,
+                  getDocument: () =>
+                      _documents.conveyorEquipmentSpecificationsUpload,
                   setDocument: (d) =>
                       _documents.conveyorEquipmentSpecificationsUpload = d,
                 ),
@@ -617,7 +641,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasConveyorGroup
                       ? 'Conditionally required — a conveyor-type system selected'
                       : 'Not required — no conveyor-type system selected',
-                  getDocument: () => _documents.conveyorCapacityCalculationsUpload,
+                  getDocument: () =>
+                      _documents.conveyorCapacityCalculationsUpload,
                   setDocument: (d) =>
                       _documents.conveyorCapacityCalculationsUpload = d,
                 ),
@@ -627,7 +652,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   statusLabel: hasConveyorGroup
                       ? 'Conditionally required — a conveyor-type system selected'
                       : 'Not required — no conveyor-type system selected',
-                  getDocument: () => _documents.conveyorControlSafetyDetailsUpload,
+                  getDocument: () =>
+                      _documents.conveyorControlSafetyDetailsUpload,
                   setDocument: (d) =>
                       _documents.conveyorControlSafetyDetailsUpload = d,
                 ),
@@ -678,7 +704,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Signed Mechanical Calculations',
-                  getDocument: () => _professionals.signedDesignCalculationsUpload,
+                  getDocument: () =>
+                      _professionals.signedDesignCalculationsUpload,
                   setDocument: (d) =>
                       _professionals.signedDesignCalculationsUpload = d,
                 ),
@@ -692,27 +719,31 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Related Building Permit',
                   getDocument: () => _documents.relatedBuildingPermitUpload,
-                  setDocument: (d) => _documents.relatedBuildingPermitUpload = d,
+                  setDocument: (d) =>
+                      _documents.relatedBuildingPermitUpload = d,
                 ),
                 _uploadTile(
                   label: 'Equipment Certifications',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
                   getDocument: () => _documents.equipmentCertificationsUpload,
-                  setDocument: (d) => _documents.equipmentCertificationsUpload = d,
+                  setDocument: (d) =>
+                      _documents.equipmentCertificationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Manufacturer Certifications',
                   isRequired: false,
                   statusLabel: 'Optional — when applicable',
-                  getDocument: () => _documents.manufacturerCertificationsUpload,
+                  getDocument: () =>
+                      _documents.manufacturerCertificationsUpload,
                   setDocument: (d) =>
                       _documents.manufacturerCertificationsUpload = d,
                 ),
                 _uploadTile(
                   label: 'Testing and Commissioning Plan',
                   getDocument: () => _documents.testingCommissioningPlanUpload,
-                  setDocument: (d) => _documents.testingCommissioningPlanUpload = d,
+                  setDocument: (d) =>
+                      _documents.testingCommissioningPlanUpload = d,
                 ),
                 _uploadTile(
                   label: 'Installation Schedule',
@@ -726,7 +757,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   isRequired: false,
                   statusLabel: 'Optional',
                   getDocument: () => _documents.otherMechanicalDocumentsUpload,
-                  setDocument: (d) => _documents.otherMechanicalDocumentsUpload = d,
+                  setDocument: (d) =>
+                      _documents.otherMechanicalDocumentsUpload = d,
                 ),
               ],
             ),

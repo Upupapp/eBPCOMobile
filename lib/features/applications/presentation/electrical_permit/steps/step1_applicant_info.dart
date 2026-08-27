@@ -171,9 +171,7 @@ class _Step1ApplicantInfoState extends State<Step1ApplicantInfo> {
                 children: [
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Is the project owned by an enterprise?',
-                    ),
+                    title: const Text('Is the project owned by an enterprise?'),
                     value: _applicant.isOwnedByEnterprise,
                     onChanged: (v) {
                       setState(() => _applicant.isOwnedByEnterprise = v);

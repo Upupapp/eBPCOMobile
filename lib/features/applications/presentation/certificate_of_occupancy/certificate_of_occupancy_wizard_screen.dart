@@ -68,8 +68,7 @@ class _CertificateOfOccupancyWizardScreenState
     ),
     _StepMeta(
       title: 'Certification, Review & Submission',
-      subtitle:
-          'Certify your application and review it before submission.',
+      subtitle: 'Certify your application and review it before submission.',
     ),
   ];
 
@@ -249,7 +248,9 @@ class _CertificateOfOccupancyWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Certificate of Occupancy application step by ' 'step.',
+                intro:
+                    'Complete your Certificate of Occupancy application step by '
+                    'step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

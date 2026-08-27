@@ -164,10 +164,8 @@ class _Step3LocationAndBuildingState extends State<Step3LocationAndBuilding> {
                     label: 'Use or Character of Occupancy *',
                     items: OccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>

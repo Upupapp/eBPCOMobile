@@ -117,7 +117,10 @@ class _Step3ProjectInformationState extends State<Step3ProjectInformation> {
                             controlAffinity: ListTileControlAffinity.leading,
                             contentPadding: EdgeInsets.zero,
                             activeColor: AppColors.primary,
-                            title: Text(option.label, style: AppTypography.body),
+                            title: Text(
+                              option.label,
+                              style: AppTypography.body,
+                            ),
                             value: _project.scopeOfWork.contains(option),
                             onChanged: (checked) =>
                                 _toggleScope(option, checked),

@@ -49,7 +49,9 @@ class _Step3StructureDetailsState extends State<Step3StructureDetails> {
   @override
   void initState() {
     super.initState();
-    _otherExtent = TextEditingController(text: _structure.otherExtentDescription);
+    _otherExtent = TextEditingController(
+      text: _structure.otherExtentDescription,
+    );
     _structureName = TextEditingController(text: _structure.structureName);
     _descriptionOfExistingStructure = TextEditingController(
       text: _structure.descriptionOfExistingStructure,
@@ -297,16 +299,17 @@ class _Step3StructureDetailsState extends State<Step3StructureDetails> {
                     label: 'Primary Construction Material *',
                     items: ConstructionMaterial.values
                         .map(
-                          (m) => DropdownMenuItem(
-                            value: m,
-                            child: Text(m.label),
-                          ),
+                          (m) =>
+                              DropdownMenuItem(value: m, child: Text(m.label)),
                         )
                         .toList(),
-                    validator: (v) =>
-                        v == null ? 'Please select a construction material.' : null,
+                    validator: (v) => v == null
+                        ? 'Please select a construction material.'
+                        : null,
                     onChanged: (v) {
-                      setState(() => _structure.primaryConstructionMaterial = v);
+                      setState(
+                        () => _structure.primaryConstructionMaterial = v,
+                      );
                       widget.onChanged();
                     },
                   ),

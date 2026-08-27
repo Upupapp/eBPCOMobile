@@ -203,7 +203,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final designEngineerName = widget.draft.professionals.designEngineer.fullName;
+    final designEngineerName =
+        widget.draft.professionals.designEngineer.fullName;
 
     return Form(
       key: widget.formKey,
@@ -306,10 +307,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => _positiveDecimalError(
-                      v,
-                      'Total Structural Floor Area',
-                    ),
+                    validator: (v) =>
+                        _positiveDecimalError(v, 'Total Structural Floor Area'),
                     onChanged: (v) {
                       _work.totalStructuralFloorArea = v;
                       widget.onChanged();
@@ -446,7 +445,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) => _positiveDecimalError(v, 'Pile Capacity'),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Pile Capacity'),
                       onChanged: (v) {
                         _work.pileCapacity = v;
                         widget.onChanged();
@@ -468,10 +468,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                     AppTextField(
                       controller: _foundationType,
                       label: 'Foundation Type *',
-                      validator: (v) => Validators.required(
-                        v,
-                        fieldLabel: 'Foundation type',
-                      ),
+                      validator: (v) =>
+                          Validators.required(v, fieldLabel: 'Foundation type'),
                       onChanged: (v) {
                         _work.foundationType = v;
                         widget.onChanged();
@@ -615,10 +613,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) => _positiveDecimalError(
-                        v,
-                        'Typical Slab Thickness',
-                      ),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Typical Slab Thickness'),
                       onChanged: (v) {
                         _work.typicalSlabThickness = v;
                         widget.onChanged();
@@ -667,10 +663,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) => _positiveDecimalError(
-                        v,
-                        'Typical Wall Thickness',
-                      ),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Typical Wall Thickness'),
                       onChanged: (v) {
                         _work.typicalWallThickness = v;
                         widget.onChanged();
@@ -776,7 +770,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) => _positiveDecimalError(v, 'Tower Height'),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Tower Height'),
                       onChanged: (v) {
                         _work.towerHeight = v;
                         widget.onChanged();
@@ -823,7 +818,8 @@ class _Step4WorkDetailsState extends State<Step4WorkDetails> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) => _positiveDecimalError(v, 'Tank Capacity'),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Tank Capacity'),
                       onChanged: (v) {
                         _work.tankCapacity = v;
                         widget.onChanged();

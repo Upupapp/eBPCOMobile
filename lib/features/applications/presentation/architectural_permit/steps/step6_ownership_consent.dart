@@ -50,9 +50,13 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
   void initState() {
     super.initState();
     final buildingOwner = _consent.buildingOwner;
-    _buildingOwnerFullName = TextEditingController(text: buildingOwner.fullName);
+    _buildingOwnerFullName = TextEditingController(
+      text: buildingOwner.fullName,
+    );
     _buildingOwnerAddress = TextEditingController(text: buildingOwner.address);
-    _buildingOwnerCtcNumber = TextEditingController(text: buildingOwner.ctcNumber);
+    _buildingOwnerCtcNumber = TextEditingController(
+      text: buildingOwner.ctcNumber,
+    );
     _buildingOwnerCtcPlaceIssued = TextEditingController(
       text: buildingOwner.ctcPlaceIssued,
     );
@@ -61,7 +65,9 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
     _lotOwnerFullName = TextEditingController(text: lotOwner.fullName);
     _lotOwnerAddress = TextEditingController(text: lotOwner.address);
     _lotOwnerCtcNumber = TextEditingController(text: lotOwner.ctcNumber);
-    _lotOwnerCtcPlaceIssued = TextEditingController(text: lotOwner.ctcPlaceIssued);
+    _lotOwnerCtcPlaceIssued = TextEditingController(
+      text: lotOwner.ctcPlaceIssued,
+    );
   }
 
   @override
@@ -123,7 +129,10 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
             ),
             if (_consent.isRepresentative) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Building Owner Information', style: AppTypography.cardTitle),
+              Text(
+                'Building Owner Information',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               AppCard(
                 child: Column(
@@ -202,7 +211,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                     label: 'Building Owner Valid ID',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.buildingOwnerValidIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.buildingOwnerValidIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -221,7 +234,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                     label: 'Authorization Letter or SPA',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.authorizationLetterUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.authorizationLetterUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -350,7 +367,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                     label: 'Lot Owner Valid ID',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.lotOwnerValidIdUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.lotOwnerValidIdUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -369,7 +390,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                     label: 'Lot Owner Consent',
                   );
                   if (picked == null) return;
-                  setState(() { _consent.lotOwnerConsentUpload = picked; });
+                  // The picker can outlive this step; setState on a defunct State throws.
+                  if (!mounted) return;
+                  setState(() {
+                    _consent.lotOwnerConsentUpload = picked;
+                  });
                   widget.onChanged();
                 },
                 allowReplace: true,
@@ -392,7 +417,11 @@ class _Step6OwnershipConsentState extends State<Step6OwnershipConsent> {
                   label: 'Proof of Ownership',
                 );
                 if (picked == null) return;
-                setState(() { _consent.proofOfOwnershipUpload = picked; });
+                // The picker can outlive this step; setState on a defunct State throws.
+                if (!mounted) return;
+                setState(() {
+                  _consent.proofOfOwnershipUpload = picked;
+                });
                 widget.onChanged();
               },
               allowReplace: true,

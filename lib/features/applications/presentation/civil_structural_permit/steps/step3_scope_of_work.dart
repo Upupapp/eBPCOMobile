@@ -42,7 +42,9 @@ class _Step3ScopeOfWorkState extends State<Step3ScopeOfWork> {
     super.initState();
     _otherScope = TextEditingController(text: _scope.otherScopeDescription);
     _workTitle = TextEditingController(text: _scope.workTitle);
-    _generalDescription = TextEditingController(text: _scope.generalDescription);
+    _generalDescription = TextEditingController(
+      text: _scope.generalDescription,
+    );
     _existingCondition = TextEditingController(
       text: _scope.existingStructuralCondition,
     );
@@ -102,7 +104,9 @@ class _Step3ScopeOfWorkState extends State<Step3ScopeOfWork> {
                   ),
               ],
             ),
-            if (_scope.selectedScopes.contains(CivilStructuralScopeType.others)) ...[
+            if (_scope.selectedScopes.contains(
+              CivilStructuralScopeType.others,
+            )) ...[
               const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: _otherScope,

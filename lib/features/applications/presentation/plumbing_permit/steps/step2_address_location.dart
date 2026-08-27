@@ -326,10 +326,8 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                     label: 'Related Building Permit Status *',
                     items: RelatedBuildingPermitStatus.values
                         .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(s.label),
-                          ),
+                          (s) =>
+                              DropdownMenuItem(value: s, child: Text(s.label)),
                         )
                         .toList(),
                     onChanged: (v) {

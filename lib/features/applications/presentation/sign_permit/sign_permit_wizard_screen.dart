@@ -43,8 +43,7 @@ class SignPermitWizardScreen extends StatefulWidget {
   const SignPermitWizardScreen({super.key});
 
   @override
-  State<SignPermitWizardScreen> createState() =>
-      _SignPermitWizardScreenState();
+  State<SignPermitWizardScreen> createState() => _SignPermitWizardScreenState();
 }
 
 class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {

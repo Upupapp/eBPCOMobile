@@ -57,7 +57,9 @@ class DatePickerField extends FormField<DateTime> {
                  errorText: state.errorText,
                ),
                child: Text(
-                 state.value != null ? format.format(state.value!) : 'Select a date',
+                 state.value != null
+                     ? format.format(state.value!)
+                     : 'Select a date',
                  style: state.value != null
                      ? AppTypography.body
                      : AppTypography.helper,

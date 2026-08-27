@@ -34,8 +34,7 @@ class Step5ProfessionalInCharge extends StatefulWidget {
       _Step5ProfessionalInChargeState();
 }
 
-class _Step5ProfessionalInChargeState
-    extends State<Step5ProfessionalInCharge> {
+class _Step5ProfessionalInChargeState extends State<Step5ProfessionalInCharge> {
   late final TextEditingController _fullName;
   late final TextEditingController _address;
   late final TextEditingController _contactNumber;
@@ -55,9 +54,7 @@ class _Step5ProfessionalInChargeState
     _tin = TextEditingController(text: _professional.tin);
     _prcNumber = TextEditingController(text: _professional.prcNumber);
     _ptrNumber = TextEditingController(text: _professional.ptrNumber);
-    _ptrPlaceIssued = TextEditingController(
-      text: _professional.ptrPlaceIssued,
-    );
+    _ptrPlaceIssued = TextEditingController(text: _professional.ptrPlaceIssued);
   }
 
   @override
@@ -154,10 +151,8 @@ class _Step5ProfessionalInChargeState
                     label: 'Profession *',
                     items: ProfessionType.values
                         .map(
-                          (p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p.label),
-                          ),
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
                         )
                         .toList(),
                     validator: (v) =>

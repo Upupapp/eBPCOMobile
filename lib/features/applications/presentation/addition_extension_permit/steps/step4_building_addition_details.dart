@@ -136,10 +136,8 @@ class _Step4BuildingAdditionDetailsState
                     label: 'Building Use *',
                     items: AdditionExtensionOccupancyGroup.values
                         .map(
-                          (g) => DropdownMenuItem(
-                            value: g,
-                            child: Text(g.label),
-                          ),
+                          (g) =>
+                              DropdownMenuItem(value: g, child: Text(g.label)),
                         )
                         .toList(),
                     validator: (v) =>
@@ -194,10 +192,8 @@ class _Step4BuildingAdditionDetailsState
                     label: 'Existing Number of Units *',
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: (v) => _nonNegativeWholeNumber(
-                      v,
-                      'Existing number of units',
-                    ),
+                    validator: (v) =>
+                        _nonNegativeWholeNumber(v, 'Existing number of units'),
                     onChanged: (v) {
                       _details.existingNumberOfUnits = v;
                       widget.onChanged();
@@ -357,8 +353,7 @@ class _Step4BuildingAdditionDetailsState
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
-                    validator: (v) =>
-                        _nonNegativeDecimal(v, 'Estimated cost'),
+                    validator: (v) => _nonNegativeDecimal(v, 'Estimated cost'),
                     onChanged: (v) {
                       _details.estimatedCost = v;
                       widget.onChanged();

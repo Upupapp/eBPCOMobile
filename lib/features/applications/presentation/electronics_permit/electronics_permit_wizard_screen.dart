@@ -69,7 +69,8 @@ class _ElectronicsPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Nature of Electronics Installation',
-      subtitle: 'Select the electronics and IT systems included in the project.',
+      subtitle:
+          'Select the electronics and IT systems included in the project.',
     ),
     _StepMeta(
       title: 'Electronics Professionals',
@@ -284,7 +285,8 @@ class _ElectronicsPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Electronics Permit application step by step.',
+                intro:
+                    'Complete your Electronics Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

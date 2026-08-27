@@ -286,7 +286,8 @@ class _InteriorDesignPermitWizardScreenState
           child: Column(
             children: [
               WizardProgressHeader(
-                intro: 'Complete your Interior Design Permit application step by step.',
+                intro:
+                    'Complete your Interior Design Permit application step by step.',
                 currentStep: _currentStep,
                 totalSteps: totalSteps,
                 title: meta.title,

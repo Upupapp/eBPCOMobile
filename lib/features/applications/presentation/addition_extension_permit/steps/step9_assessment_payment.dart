@@ -50,8 +50,9 @@ class Step9AssessmentPayment extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  for (final item in AdditionExtensionAssessmentPayment
-                      .assessmentLineItems) ...[
+                  for (final item
+                      in AdditionExtensionAssessmentPayment
+                          .assessmentLineItems) ...[
                     _AssessmentRow(label: item),
                     const SizedBox(height: AppSpacing.sm),
                   ],

@@ -221,6 +221,23 @@ class OccupancyRequiredDocuments {
   DocumentModel? civilWorksCertificateUpload;
   DocumentModel? electricalCertificateUpload;
 
+  /// Added 27 Aug 2026, reconciling this step against the requirements
+  /// catalog. Five required documents had no slot: the four every permit type
+  /// needs — proof of ownership, barangay clearance, locational clearance and
+  /// a valid ID — and the final Fire Safety Inspection Certificate, which is a
+  /// precondition of occupancy under RA 9514 and which the app was asking for
+  /// nowhere at all.
+  ///
+  /// The catalog entry for this type is not itself built from a Castilla form,
+  /// but these five appear in the entries that are — the Building Permit and
+  /// Zoning checklists both list them — so they are well founded even though
+  /// this entry is marked unverified.
+  DocumentModel? landTitleOrTaxDeclarationUpload;
+  DocumentModel? barangayClearanceUpload;
+  DocumentModel? locationalClearanceUpload;
+  DocumentModel? validGovernmentIdUpload;
+  DocumentModel? fireSafetyInspectionCertificateUpload;
+
   // Conditionally required in practice ("when applicable" / "when
   // required" per the official form), so not blocking here.
   DocumentModel? otherDisciplineCertificatesUpload;
@@ -234,6 +251,11 @@ class OccupancyRequiredDocuments {
     if (constructionLogbookUpload == null) return false;
     if (civilWorksCertificateUpload == null) return false;
     if (electricalCertificateUpload == null) return false;
+    if (landTitleOrTaxDeclarationUpload == null) return false;
+    if (barangayClearanceUpload == null) return false;
+    if (locationalClearanceUpload == null) return false;
+    if (validGovernmentIdUpload == null) return false;
+    if (fireSafetyInspectionCertificateUpload == null) return false;
     for (final doc in otherDocuments) {
       if (!doc.isValid) return false;
     }

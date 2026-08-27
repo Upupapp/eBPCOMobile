@@ -29,8 +29,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -60,9 +59,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     ].where((s) => s.trim().isNotEmpty).join(' ');
 
     final scopeSummary = scope.selectedScopes.map((s) => s.label).join(', ');
-    final natureSummary = nature.selectedNatures
-        .map((n) => n.label)
-        .join(', ');
+    final natureSummary = nature.selectedNatures.map((n) => n.label).join(', ');
 
     final professionalDocsUploaded = [
       professionals.designSignedDocumentUpload,
@@ -70,29 +67,28 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
     ].where((d) => d != null).length;
 
     final requiredDocuments = _draft.requiredDocuments;
-    final requiredDocsUploaded =
-        [
-          requiredDocuments.interiorPlanAndLayoutUpload,
-          requiredDocuments.wallPartitionsUpload,
-          requiredDocuments.furnitureLayoutUpload,
-          requiredDocuments.equipmentAndApplianceLayoutUpload,
-          requiredDocuments.interiorWallElevationsUpload,
-          requiredDocuments.crossWindowSectionsUpload,
-          requiredDocuments.interiorPerspectiveFromMainEntrancesUpload,
-          requiredDocuments.finishesUpload,
-          requiredDocuments.switchesUpload,
-          requiredDocuments.doorsUpload,
-          requiredDocuments.convenienceOutletsUpload,
-          requiredDocuments.decorationsUpload,
-          requiredDocuments.reflectedCeilingPlanUpload,
-          requiredDocuments.lightingFixtureSpecificationsUpload,
-          requiredDocuments.airConditioningExhaustAndReturnGrillesUpload,
-          requiredDocuments.fireResistivityRatingsUpload,
-          requiredDocuments.toxicityRatingsUpload,
-          requiredDocuments.listOfMaterialsUpload,
-          requiredDocuments.detailedCostEstimatesUpload,
-          requiredDocuments.relatedBuildingPermitUpload,
-        ].where((d) => d != null).length;
+    final requiredDocsUploaded = [
+      requiredDocuments.interiorPlanAndLayoutUpload,
+      requiredDocuments.wallPartitionsUpload,
+      requiredDocuments.furnitureLayoutUpload,
+      requiredDocuments.equipmentAndApplianceLayoutUpload,
+      requiredDocuments.interiorWallElevationsUpload,
+      requiredDocuments.crossWindowSectionsUpload,
+      requiredDocuments.interiorPerspectiveFromMainEntrancesUpload,
+      requiredDocuments.finishesUpload,
+      requiredDocuments.switchesUpload,
+      requiredDocuments.doorsUpload,
+      requiredDocuments.convenienceOutletsUpload,
+      requiredDocuments.decorationsUpload,
+      requiredDocuments.reflectedCeilingPlanUpload,
+      requiredDocuments.lightingFixtureSpecificationsUpload,
+      requiredDocuments.airConditioningExhaustAndReturnGrillesUpload,
+      requiredDocuments.fireResistivityRatingsUpload,
+      requiredDocuments.toxicityRatingsUpload,
+      requiredDocuments.listOfMaterialsUpload,
+      requiredDocuments.detailedCostEstimatesUpload,
+      requiredDocuments.relatedBuildingPermitUpload,
+    ].where((d) => d != null).length;
 
     final needsSeparateLotOwner = consent.needsSeparateLotOwner;
 
@@ -198,10 +194,7 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                   'Profession',
                   professionals.supervisor.profession?.label ?? 'Not set',
                 ),
-                _SummaryRow(
-                  'PRC Number',
-                  professionals.supervisor.prcNumber,
-                ),
+                _SummaryRow('PRC Number', professionals.supervisor.prcNumber),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -269,8 +262,8 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                         'I understand that interior works must follow the '
                         'approved plans and applicable regulations.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsMustFollowApprovedPlansAndRegulations =
+                      (val) =>
+                          _review.understandsMustFollowApprovedPlansAndRegulations =
                               val,
                       v,
                     ),
@@ -282,20 +275,21 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                         'null and void unless accompanied by a valid '
                         'related Building Permit.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsDependsOnRelatedBuildingPermit = val,
+                      (val) =>
+                          _review.understandsDependsOnRelatedBuildingPermit =
+                              val,
                       v,
                     ),
                   ),
                   _DeclarationCheckbox(
-                    value: _review
-                        .understandsProfessionalDocumentsMustBeAuthentic,
+                    value:
+                        _review.understandsProfessionalDocumentsMustBeAuthentic,
                     label:
                         'I understand that all required signed and sealed '
                         'professional documents must be authentic.',
                     onChanged: (v) => _toggle(
-                      (val) => _review
-                          .understandsProfessionalDocumentsMustBeAuthentic =
+                      (val) =>
+                          _review.understandsProfessionalDocumentsMustBeAuthentic =
                               val,
                       v,
                     ),

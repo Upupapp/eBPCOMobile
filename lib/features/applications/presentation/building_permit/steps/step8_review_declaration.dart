@@ -34,8 +34,7 @@ class Step8ReviewDeclaration extends StatefulWidget {
   });
 
   @override
-  State<Step8ReviewDeclaration> createState() =>
-      _Step8ReviewDeclarationState();
+  State<Step8ReviewDeclaration> createState() => _Step8ReviewDeclarationState();
 }
 
 class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
@@ -69,38 +68,32 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
         .join(', ');
 
     final requiredDocsUploaded = [
-          documents.landTitleUpload,
-          documents.taxDeclarationUpload,
-          documents.realPropertyTaxReceiptUpload,
-          documents.plansUpload,
-          documents.specificationsUpload,
-          documents.billOfMaterialsUpload,
-          documents.prcIdChecklistUpload,
-          documents.ptrChecklistUpload,
-          documents.signedFormsUpload,
-          documents.barangayClearanceUpload,
-          documents.zoningClearanceUpload,
-          documents.fireRelatedRequirementsUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      documents.landTitleUpload,
+      documents.taxDeclarationUpload,
+      documents.realPropertyTaxReceiptUpload,
+      documents.plansUpload,
+      documents.specificationsUpload,
+      documents.billOfMaterialsUpload,
+      documents.prcIdChecklistUpload,
+      documents.ptrChecklistUpload,
+      documents.signedFormsUpload,
+      documents.barangayClearanceUpload,
+      documents.zoningClearanceUpload,
+      documents.fireRelatedRequirementsUpload,
+    ].where((d) => d != null).length;
 
     final professionalDocsUploaded = [
-          professional.prcIdUpload,
-          professional.ptrUpload,
-          professional.signedSealedUpload,
-        ]
-        .where((d) => d != null)
-        .length;
+      professional.prcIdUpload,
+      professional.ptrUpload,
+      professional.signedSealedUpload,
+    ].where((d) => d != null).length;
 
     final isRepresentative = consent.isRegisteredOwner == false;
     final consentDocsUploaded = isRepresentative
         ? [
-                consent.authorizationLetterUpload,
-                consent.ownerValidIdUpload,
-              ]
-              .where((d) => d != null)
-              .length
+            consent.authorizationLetterUpload,
+            consent.ownerValidIdUpload,
+          ].where((d) => d != null).length
         : 0;
 
     return Form(
@@ -234,8 +227,10 @@ class _Step8ReviewDeclarationState extends State<Step8ReviewDeclaration> {
                     value: _review.certifiesTrueAndCorrect,
                     label:
                         'I certify that the information provided is true and correct.',
-                    onChanged: (v) =>
-                        _toggle((val) => _review.certifiesTrueAndCorrect = val, v),
+                    onChanged: (v) => _toggle(
+                      (val) => _review.certifiesTrueAndCorrect = val,
+                      v,
+                    ),
                   ),
                   _DeclarationCheckbox(
                     value: _review.understandsRequirements,
@@ -279,9 +274,7 @@ class _SummarySection extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(
-              child: Text(title, style: AppTypography.cardTitle),
-            ),
+            Expanded(child: Text(title, style: AppTypography.cardTitle)),
             TextButton(onPressed: onEdit, child: const Text('Edit')),
           ],
         ),

@@ -27,13 +27,14 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
-  ArchitecturalRequiredDocuments get _documents => widget.draft.requiredDocuments;
-  ArchitecturalComplianceDetails get _compliance => widget.draft.complianceDetails;
+  ArchitecturalRequiredDocuments get _documents =>
+      widget.draft.requiredDocuments;
+  ArchitecturalComplianceDetails get _compliance =>
+      widget.draft.complianceDetails;
   ArchitecturalScopeOfWork get _scope => widget.draft.scopeOfWork;
   ArchitecturalProfessionals get _professionals => widget.draft.professionals;
 
@@ -51,14 +52,11 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       document: getDocument(),
       allowReplace: true,
       onUpload: () async {
-        final picked = await showAttachDocumentOptions(
-          context,
-          label: label,
-        );
+        final picked = await showAttachDocumentOptions(context, label: label);
         if (picked == null) return;
-        setState(
-          () => setDocument(picked),
-        );
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
+        setState(() => setDocument(picked));
         widget.onChanged();
       },
       onRemove: () {
@@ -146,7 +144,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
 
             ExpandableSection(
               title: 'Accessibility and Detail Drawings',
-              subtitle: 'Required based on the accessibility facilities selected in Step 4.',
+              subtitle:
+                  'Required based on the accessibility facilities selected in Step 4.',
               children: [
                 _uploadTile(
                   label: 'Ramp Details',
@@ -258,8 +257,10 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Specifications',
-                  statusLabel: 'Already provided in Step 5 — shown here for review.',
-                  getDocument: () => _professionals.signedSealedSpecificationsUpload,
+                  statusLabel:
+                      'Already provided in Step 5 — shown here for review.',
+                  getDocument: () =>
+                      _professionals.signedSealedSpecificationsUpload,
                   setDocument: (d) =>
                       _professionals.signedSealedSpecificationsUpload = d,
                 ),

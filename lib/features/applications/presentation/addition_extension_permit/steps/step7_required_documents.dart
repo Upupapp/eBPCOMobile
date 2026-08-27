@@ -31,8 +31,7 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
@@ -68,6 +67,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
       onUpload: () async {
         final result = await showAttachDocumentOptions(context, label: label);
         if (result == null) return;
+        // The picker can outlive this step; setState on a defunct State throws.
+        if (!mounted) return;
         setState(() => setDocument(result));
         widget.onChanged();
       },
@@ -125,6 +126,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               label: label,
             );
             if (result == null) return;
+            // The picker can outlive this step; setState on a defunct State throws.
+            if (!mounted) return;
             setState(() => slot.upload = result);
             widget.onChanged();
           },
@@ -295,8 +298,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                       ? 'Conditionally required — structural work is involved'
                       : 'Not required for the selected affected areas',
                   getDocument: () => _documents.civilStructuralPlansUpload,
-                  setDocument: (d) =>
-                      _documents.civilStructuralPlansUpload = d,
+                  setDocument: (d) => _documents.civilStructuralPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Structural Analysis and Design Calculations',
@@ -306,7 +308,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                             'Structural Analysis upload'
                       : 'Not required for the selected affected areas',
                   getDocument: () => _professional.structuralAnalysisUpload,
-                  setDocument: (d) => _professional.structuralAnalysisUpload = d,
+                  setDocument: (d) =>
+                      _professional.structuralAnalysisUpload = d,
                 ),
                 _uploadTile(
                   label: 'Electrical Plans',
@@ -376,8 +379,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Detailed Cost Estimate',
                   getDocument: () => _documents.detailedCostEstimateUpload,
-                  setDocument: (d) =>
-                      _documents.detailedCostEstimateUpload = d,
+                  setDocument: (d) => _documents.detailedCostEstimateUpload = d,
                 ),
               ],
             ),
@@ -400,8 +402,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Signed and Sealed Plans',
                   getDocument: () => _professional.signedSealedPlansUpload,
-                  setDocument: (d) =>
-                      _professional.signedSealedPlansUpload = d,
+                  setDocument: (d) => _professional.signedSealedPlansUpload = d,
                 ),
                 _uploadTile(
                   label: 'Signed and Sealed Forms',
@@ -428,8 +429,7 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 _uploadTile(
                   label: 'Fire Safety Evaluation',
                   getDocument: () => _documents.fireSafetyEvaluationUpload,
-                  setDocument: (d) =>
-                      _documents.fireSafetyEvaluationUpload = d,
+                  setDocument: (d) => _documents.fireSafetyEvaluationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Other LGU-Required Clearances',

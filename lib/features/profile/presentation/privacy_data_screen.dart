@@ -72,7 +72,8 @@ class PrivacyDataScreen extends StatelessWidget {
                   'Documents to see every one, when it was imported, and where '
                   'it has been used.',
               actionLabel: 'Open My Documents',
-              onTap: () => Navigator.of(context).pushNamed('/profile/documents'),
+              onTap: () =>
+                  Navigator.of(context).pushNamed('/profile/documents'),
             ),
             const _RightTile(
               icon: Icons.edit_outlined,
@@ -248,7 +249,9 @@ class _RightTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tone = destructive ? AppColors.statusRejected : AppColors.secondaryBlue;
+    final tone = destructive
+        ? AppColors.statusRejected
+        : AppColors.secondaryBlue;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),

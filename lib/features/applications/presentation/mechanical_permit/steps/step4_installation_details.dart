@@ -65,7 +65,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
     return controller;
   }
 
-  MechanicalInstallationDetails get _details => widget.draft.installationDetails;
+  MechanicalInstallationDetails get _details =>
+      widget.draft.installationDetails;
 
   late final TextEditingController _otherEquipment;
   late final TextEditingController _totalCost;
@@ -186,7 +187,9 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
     _pvVesselType = _bind(_details.pvVesselType);
     _pvVolumeOrCapacity = _bind(_details.pvVolumeOrCapacity);
-    _pvMaxAllowableWorkingPressure = _bind(_details.pvMaxAllowableWorkingPressure);
+    _pvMaxAllowableWorkingPressure = _bind(
+      _details.pvMaxAllowableWorkingPressure,
+    );
     _pvOperatingTemperature = _bind(_details.pvOperatingTemperature);
     _pvNumberOfUnits = _bind(_details.pvNumberOfUnits);
 
@@ -324,7 +327,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Mechanical Installation Types', style: AppTypography.cardTitle),
+            Text(
+              'Mechanical Installation Types',
+              style: AppTypography.cardTitle,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Select every mechanical system or equipment type included '
@@ -344,7 +350,9 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   ),
               ],
             ),
-            if (_details.selectedEquipment.contains(MechanicalEquipmentType.others)) ...[
+            if (_details.selectedEquipment.contains(
+              MechanicalEquipmentType.others,
+            )) ...[
               const SizedBox(height: AppSpacing.md),
               _text(
                 _otherEquipment,
@@ -365,9 +373,13 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _text(
                     _totalCost,
                     'Total Estimated Project Cost (₱) *',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) =>
-                        _nonNegativeDecimalError(v, 'Total Estimated Project Cost'),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: (v) => _nonNegativeDecimalError(
+                      v,
+                      'Total Estimated Project Cost',
+                    ),
                     onSave: (v) => _details.totalEstimatedProjectCost = v,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -432,8 +444,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _text(
                     _equipmentLocation,
                     'Equipment Location *',
-                    validator: (v) =>
-                        Validators.required(v, fieldLabel: 'Equipment location'),
+                    validator: (v) => Validators.required(
+                      v,
+                      fieldLabel: 'Equipment location',
+                    ),
                     onSave: (v) => _details.equipmentLocation = v,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -453,7 +467,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasFireSprinkler) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Automatic Fire Sprinkler System Details', style: AppTypography.cardTitle),
+              Text(
+                'Automatic Fire Sprinkler System Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
@@ -469,27 +486,34 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _fsDesignCoverageArea,
                   'Design Coverage Area (sq. m.) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Design Coverage Area'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Design Coverage Area'),
                   onSave: (v) => _details.fsDesignCoverageArea = v,
                 ),
                 _text(
                   _fsWaterSource,
                   'Water Source *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Water source'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Water source'),
                   onSave: (v) => _details.fsWaterSource = v,
                 ),
                 _text(
                   _fsPumpCapacity,
                   'Pump Capacity (GPM) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Pump Capacity'),
                   onSave: (v) => _details.fsPumpCapacity = v,
                 ),
                 _text(
                   _fsSystemType,
                   'System Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'System type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'System type'),
                   onSave: (v) => _details.fsSystemType = v,
                 ),
               ]),
@@ -503,35 +527,44 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _boilerType,
                   'Boiler Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Boiler type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Boiler type'),
                   onSave: (v) => _details.boilerType = v,
                 ),
                 _text(
                   _boilerRatedCapacity,
                   'Rated Capacity (BHP) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Rated Capacity'),
                   onSave: (v) => _details.boilerRatedCapacity = v,
                 ),
                 _text(
                   _boilerOperatingPressure,
                   'Operating Pressure (psi) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Operating Pressure'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Operating Pressure'),
                   onSave: (v) => _details.boilerOperatingPressure = v,
                 ),
                 _text(
                   _boilerFuelType,
                   'Fuel Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Fuel type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Fuel type'),
                   onSave: (v) => _details.boilerFuelType = v,
                 ),
                 _text(
                   _boilerNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.boilerNumberOfUnits = v,
                 ),
               ]),
@@ -545,20 +578,26 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _pvVesselType,
                   'Vessel Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Vessel type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Vessel type'),
                   onSave: (v) => _details.pvVesselType = v,
                 ),
                 _text(
                   _pvVolumeOrCapacity,
                   'Volume or Capacity *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Volume or Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Volume or Capacity'),
                   onSave: (v) => _details.pvVolumeOrCapacity = v,
                 ),
                 _text(
                   _pvMaxAllowableWorkingPressure,
                   'Maximum Allowable Working Pressure (psi) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(
                     v,
                     'Maximum Allowable Working Pressure',
@@ -572,15 +611,18 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     decimal: true,
                     signed: true,
                   ),
-                  validator: (v) => _nonNegativeDecimalError(v, 'Operating Temperature'),
+                  validator: (v) =>
+                      _nonNegativeDecimalError(v, 'Operating Temperature'),
                   onSave: (v) => _details.pvOperatingTemperature = v,
                 ),
                 _text(
                   _pvNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.pvNumberOfUnits = v,
                 ),
               ]),
@@ -588,40 +630,50 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasInternalCombustionEngine) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Internal Combustion Engine Details', style: AppTypography.cardTitle),
+              Text(
+                'Internal Combustion Engine Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
                   _iceEngineType,
                   'Engine Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Engine type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Engine type'),
                   onSave: (v) => _details.iceEngineType = v,
                 ),
                 _text(
                   _iceRatedPower,
                   'Rated Power (HP) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Rated Power'),
                   onSave: (v) => _details.iceRatedPower = v,
                 ),
                 _text(
                   _iceFuelType,
                   'Fuel Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Fuel type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Fuel type'),
                   onSave: (v) => _details.iceFuelType = v,
                 ),
                 _text(
                   _iceNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.iceNumberOfUnits = v,
                 ),
                 _text(
                   _iceIntendedUse,
                   'Intended Use *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Intended use'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Intended use'),
                   onSave: (v) => _details.iceIntendedUse = v,
                 ),
               ]),
@@ -638,7 +690,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _refrigSystemType,
                   'System Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'System type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'System type'),
                   onSave: (v) => _details.refrigSystemType = v,
                 ),
                 _text(
@@ -651,14 +704,19 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _refrigCoolingCapacity,
                   'Cooling Capacity (TR) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Cooling Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Cooling Capacity'),
                   onSave: (v) => _details.refrigCoolingCapacity = v,
                 ),
                 _text(
                   _refrigStorageVolume,
                   'Storage Volume (cu. m.) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Storage Volume'),
                   onSave: (v) => _details.refrigStorageVolume = v,
                 ),
@@ -666,8 +724,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _refrigNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.refrigNumberOfUnits = v,
                 ),
               ]),
@@ -681,22 +741,28 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _acType,
                   'Air-Conditioning Type *',
-                  validator: (v) =>
-                      Validators.required(v, fieldLabel: 'Air-conditioning type'),
+                  validator: (v) => Validators.required(
+                    v,
+                    fieldLabel: 'Air-conditioning type',
+                  ),
                   onSave: (v) => _details.acType = v,
                 ),
                 _text(
                   _acNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.acNumberOfUnits = v,
                 ),
                 _text(
                   _acCoolingCapacityPerUnit,
                   'Cooling Capacity per Unit (TR) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) =>
                       _positiveDecimalError(v, 'Cooling Capacity per Unit'),
                   onSave: (v) => _details.acCoolingCapacityPerUnit = v,
@@ -704,8 +770,11 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _acTotalCoolingCapacity,
                   'Total Cooling Capacity (TR) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Total Cooling Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Total Cooling Capacity'),
                   onSave: (v) => _details.acTotalCoolingCapacity = v,
                 ),
                 _text(
@@ -718,7 +787,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _acServedArea,
                   'Served Area *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Served area'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Served area'),
                   onSave: (v) => _details.acServedArea = v,
                 ),
               ]),
@@ -726,7 +796,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasMechanicalVentilation) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Mechanical Ventilation Details', style: AppTypography.cardTitle),
+              Text(
+                'Mechanical Ventilation Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
@@ -739,22 +812,28 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _ventAirflowCapacity,
                   'Airflow Capacity (CFM) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Airflow Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Airflow Capacity'),
                   onSave: (v) => _details.ventAirflowCapacity = v,
                 ),
                 _text(
                   _ventNumberOfFans,
                   'Number of Fans *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of fans'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of fans',
+                  ),
                   onSave: (v) => _details.ventNumberOfFans = v,
                 ),
                 _text(
                   _ventServedArea,
                   'Served Area *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Served area'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Served area'),
                   onSave: (v) => _details.ventServedArea = v,
                 ),
                 _text(
@@ -779,7 +858,12 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                       value: _details.pipingServiceType,
                       label: 'Service Type *',
                       items: PowerPipingServiceType.values
-                          .map((s) => DropdownMenuItem(value: s, child: Text(s.label)))
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(s.label),
+                            ),
+                          )
                           .toList(),
                       validator: (v) =>
                           v == null ? 'Please select a service type.' : null,
@@ -800,23 +884,31 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                     _text(
                       _pipingDesignPressure,
                       'Design Pressure (psi) *',
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (v) => _positiveDecimalError(v, 'Design Pressure'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Design Pressure'),
                       onSave: (v) => _details.pipingDesignPressure = v,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _text(
                       _pipingPipeDiameter,
                       'Pipe Diameter (mm) *',
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (v) => _positiveDecimalError(v, 'Pipe Diameter'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (v) =>
+                          _positiveDecimalError(v, 'Pipe Diameter'),
                       onSave: (v) => _details.pipingPipeDiameter = v,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _text(
                       _pipingApproximateLength,
                       'Approximate Pipe Length (m) *',
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (v) =>
                           _positiveDecimalError(v, 'Approximate Pipe Length'),
                       onSave: (v) => _details.pipingApproximateLength = v,
@@ -844,14 +936,18 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _elevRatedCapacity,
                   'Rated Capacity (kg) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Rated Capacity'),
                   onSave: (v) => _details.elevRatedCapacity = v,
                 ),
                 _text(
                   _elevRatedSpeed,
                   'Rated Speed (m/s) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Rated Speed'),
                   onSave: (v) => _details.elevRatedSpeed = v,
                 ),
@@ -859,14 +955,18 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _elevNumberOfStops,
                   'Number of Stops *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of stops'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of stops',
+                  ),
                   onSave: (v) => _details.elevNumberOfStops = v,
                 ),
                 _text(
                   _elevTravelDistance,
                   'Travel Distance (m) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Travel Distance'),
                   onSave: (v) => _details.elevTravelDistance = v,
                 ),
@@ -874,8 +974,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _elevNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.elevNumberOfUnits = v,
                 ),
                 _text(
@@ -895,27 +997,34 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _pumpsType,
                   'Pump Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Pump type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Pump type'),
                   onSave: (v) => _details.pumpsType = v,
                 ),
                 _text(
                   _pumpsCapacity,
                   'Pump Capacity (GPM) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Pump Capacity'),
                   onSave: (v) => _details.pumpsCapacity = v,
                 ),
                 _text(
                   _pumpsTotalHead,
                   'Total Head (m) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Total Head'),
                   onSave: (v) => _details.pumpsTotalHead = v,
                 ),
                 _text(
                   _pumpsMotorRating,
                   'Motor Rating (HP) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Motor Rating'),
                   onSave: (v) => _details.pumpsMotorRating = v,
                 ),
@@ -923,8 +1032,10 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                   _pumpsNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.pumpsNumberOfUnits = v,
                 ),
               ]),
@@ -932,42 +1043,55 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasPressurizedWaterHeater) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Pressurized Water Heater Details', style: AppTypography.cardTitle),
+              Text(
+                'Pressurized Water Heater Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
                   _pwhHeaterType,
                   'Heater Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Heater type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Heater type'),
                   onSave: (v) => _details.pwhHeaterType = v,
                 ),
                 _text(
                   _pwhTankCapacity,
                   'Tank Capacity (L) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Tank Capacity'),
                   onSave: (v) => _details.pwhTankCapacity = v,
                 ),
                 _text(
                   _pwhPressureRating,
                   'Pressure Rating (psi) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Pressure Rating'),
                   onSave: (v) => _details.pwhPressureRating = v,
                 ),
                 _text(
                   _pwhHeatingCapacity,
                   'Heating Capacity (kW) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Heating Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Heating Capacity'),
                   onSave: (v) => _details.pwhHeatingCapacity = v,
                 ),
                 _text(
                   _pwhNumberOfUnits,
                   'Number of Units *',
                   keyboardType: TextInputType.number,
-                  validator: (v) =>
-                      Validators.positiveWholeNumber(v, fieldLabel: 'Number of units'),
+                  validator: (v) => Validators.positiveWholeNumber(
+                    v,
+                    fieldLabel: 'Number of units',
+                  ),
                   onSave: (v) => _details.pwhNumberOfUnits = v,
                 ),
               ]),
@@ -975,26 +1099,35 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasCompressedAirOrVacuumGroup) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Compressed Air or Vacuum System Details', style: AppTypography.cardTitle),
+              Text(
+                'Compressed Air or Vacuum System Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
                   _cavSystemType,
                   'System Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'System type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'System type'),
                   onSave: (v) => _details.cavSystemType = v,
                 ),
                 _text(
                   _cavOperatingPressure,
                   'Operating Pressure (psi) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Operating Pressure'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Operating Pressure'),
                   onSave: (v) => _details.cavOperatingPressure = v,
                 ),
                 _text(
                   _cavCapacity,
                   'Capacity (CFM) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Capacity'),
                   onSave: (v) => _details.cavCapacity = v,
                 ),
@@ -1011,7 +1144,8 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _cavServedArea,
                   'Served Area *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Served area'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Served area'),
                   onSave: (v) => _details.cavServedArea = v,
                 ),
               ]),
@@ -1019,33 +1153,44 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
 
             if (_details.hasGasGroup) ...[
               const SizedBox(height: AppSpacing.xl),
-              Text('Institutional / Industrial Gas Details', style: AppTypography.cardTitle),
+              Text(
+                'Institutional / Industrial Gas Details',
+                style: AppTypography.cardTitle,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _group([
                 _text(
                   _gasType,
                   'Gas Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Gas type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Gas type'),
                   onSave: (v) => _details.gasType = v,
                 ),
                 _text(
                   _gasStorageCapacity,
                   'Storage Capacity *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Storage Capacity'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Storage Capacity'),
                   onSave: (v) => _details.gasStorageCapacity = v,
                 ),
                 _text(
                   _gasOperatingPressure,
                   'Operating Pressure (psi) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) => _positiveDecimalError(v, 'Operating Pressure'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (v) =>
+                      _positiveDecimalError(v, 'Operating Pressure'),
                   onSave: (v) => _details.gasOperatingPressure = v,
                 ),
                 _text(
                   _gasServedArea,
                   'Served Area *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Served area'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Served area'),
                   onSave: (v) => _details.gasServedArea = v,
                 ),
                 _text(
@@ -1072,27 +1217,34 @@ class _Step4InstallationDetailsState extends State<Step4InstallationDetails> {
                 _text(
                   _convSystemType,
                   'System Type *',
-                  validator: (v) => Validators.required(v, fieldLabel: 'System type'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'System type'),
                   onSave: (v) => _details.convSystemType = v,
                 ),
                 _text(
                   _convRatedCapacity,
                   'Rated Capacity *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Rated Capacity'),
                   onSave: (v) => _details.convRatedCapacity = v,
                 ),
                 _text(
                   _convTravelLength,
                   'Travel Length (m) *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Travel Length'),
                   onSave: (v) => _details.convTravelLength = v,
                 ),
                 _text(
                   _convSpeed,
                   'Speed *',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (v) => _positiveDecimalError(v, 'Speed'),
                   onSave: (v) => _details.convSpeed = v,
                 ),

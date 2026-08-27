@@ -51,7 +51,9 @@ class _Step3ScopeOfWorkState extends State<Step3ScopeOfWork> {
     super.initState();
     _otherScope = TextEditingController(text: _scope.otherScopeDescription);
     _workTitle = TextEditingController(text: _scope.workTitle);
-    _generalDescription = TextEditingController(text: _scope.generalDescription);
+    _generalDescription = TextEditingController(
+      text: _scope.generalDescription,
+    );
     _existingCondition = TextEditingController(
       text: _scope.existingElectricalCondition,
     );
@@ -410,8 +412,9 @@ class _Step3ScopeOfWorkState extends State<Step3ScopeOfWork> {
                 child: DatePickerField(
                   label: 'Expected Removal Date *',
                   value: _scope.expectedRemovalDate,
-                  validator: (v) =>
-                      v == null ? 'Please select an expected removal date.' : null,
+                  validator: (v) => v == null
+                      ? 'Please select an expected removal date.'
+                      : null,
                   onChanged: (v) {
                     setState(() => _scope.expectedRemovalDate = v);
                     widget.onChanged();

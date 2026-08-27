@@ -34,8 +34,7 @@ class Step6ConsentAuthorization extends StatefulWidget {
       _Step6ConsentAuthorizationState();
 }
 
-class _Step6ConsentAuthorizationState
-    extends State<Step6ConsentAuthorization> {
+class _Step6ConsentAuthorizationState extends State<Step6ConsentAuthorization> {
   late final TextEditingController _representativeName;
   late final TextEditingController _representativeAddress;
   late final TextEditingController _ctcNumber;
@@ -232,7 +231,7 @@ class _Step6ConsentAuthorizationState
                 onPreview: _consent.authorizationLetterUpload == null
                     ? null
                     : () =>
-                        _previewDocument(_consent.authorizationLetterUpload!),
+                          _previewDocument(_consent.authorizationLetterUpload!),
                 onRemove: () {
                   setState(() => _consent.authorizationLetterUpload = null);
                   widget.onChanged();

@@ -36,8 +36,7 @@ class Step4RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step4RequiredDocuments> createState() =>
-      _Step4RequiredDocumentsState();
+  State<Step4RequiredDocuments> createState() => _Step4RequiredDocumentsState();
 }
 
 class _Step4RequiredDocumentsState extends State<Step4RequiredDocuments> {
@@ -96,6 +95,44 @@ class _Step4RequiredDocumentsState extends State<Step4RequiredDocuments> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
+            // The four every permit type needs, plus the final FSIC. Added
+            // when this step was reconciled against the requirements catalog —
+            // an applicant could previously reach submission without any proof
+            // of ownership, any clearance, or the fire certificate that RA 9514
+            // makes a precondition of occupancy.
+            _uploadTile(
+              label: 'Land Title or Tax Declaration',
+              getDocument: () => _documents.landTitleOrTaxDeclarationUpload,
+              setDocument: (d) =>
+                  _documents.landTitleOrTaxDeclarationUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'Barangay Clearance',
+              getDocument: () => _documents.barangayClearanceUpload,
+              setDocument: (d) => _documents.barangayClearanceUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'Locational Clearance / Zoning Certification',
+              getDocument: () => _documents.locationalClearanceUpload,
+              setDocument: (d) => _documents.locationalClearanceUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'Valid Government-Issued ID',
+              getDocument: () => _documents.validGovernmentIdUpload,
+              setDocument: (d) => _documents.validGovernmentIdUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'Fire Safety Inspection Certificate (final)',
+              getDocument: () =>
+                  _documents.fireSafetyInspectionCertificateUpload,
+              setDocument: (d) =>
+                  _documents.fireSafetyInspectionCertificateUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
             _uploadTile(
               label: 'As-Built Plans and Specifications',
               getDocument: () => _documents.asBuiltPlansUpload,

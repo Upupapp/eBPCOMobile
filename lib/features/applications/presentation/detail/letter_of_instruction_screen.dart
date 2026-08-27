@@ -28,7 +28,8 @@ class LetterOfInstructionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<ApplicationsProvider>();
     final application = provider.byId(applicationId);
-    final letter = application?.openInstruction ?? application?.instructions.firstOrNull;
+    final letter =
+        application?.openInstruction ?? application?.instructions.firstOrNull;
 
     if (application == null || letter == null) {
       return Scaffold(
@@ -36,7 +37,8 @@ class LetterOfInstructionScreen extends StatelessWidget {
         body: const EmptyState(
           icon: Icons.assignment_turned_in_outlined,
           title: 'Nothing outstanding',
-          message: 'There is no open Letter of Instruction on this application.',
+          message:
+              'There is no open Letter of Instruction on this application.',
         ),
       );
     }
@@ -55,7 +57,10 @@ class LetterOfInstructionScreen extends StatelessWidget {
                   AppConstants.screenPaddingHorizontal,
                 ),
                 children: [
-                  _Header(letter: letter, issuedOn: format.format(letter.issuedAt)),
+                  _Header(
+                    letter: letter,
+                    issuedOn: format.format(letter.issuedAt),
+                  ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
                     'What must be corrected',
@@ -167,10 +172,7 @@ class _Header extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  'Issued $issuedOn',
-                  style: AppTypography.cardTitle,
-                ),
+                child: Text('Issued $issuedOn', style: AppTypography.cardTitle),
               ),
             ],
           ),
