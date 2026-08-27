@@ -1,5 +1,25 @@
 # Wizard upload slots vs the requirements catalog — 27 August 2026
 
+> **CORRECTION, same day. The per-wizard slot counts below are wrong and are
+> retained only as a record of how.** Counting upload slots by grepping for
+> `DocumentUploadTile(` undercounts every wizard that wraps the widget in a
+> local helper and calls that — the widget appears once in the source while
+> the slots number a dozen. Building Permit was reported as 5 slots; rendering
+> the step shows 12 in that step alone. A second attempt, following helper call
+> sites, over-counted just as badly (87 slots for Mechanical) by picking up
+> unrelated `label:` arguments.
+>
+> **Three static counts, three wrong answers.** The reliable method is the one
+> used for the catalog itself: render the widgets and count them.
+> `test/features/applications/building_permit/required_documents_reconciliation_test.dart`
+> does that for Building Permit. The rest of this table needs the same
+> treatment before any of its numbers are acted on.
+>
+> What survives the correction is the *shape* of the finding — the app and the
+> checklist disagree, in both directions, per permit type — and the conclusion
+> that reconciling is a per-document decision rather than a merge. Building
+> Permit has now been reconciled properly; see below.
+
 Produced during TAB 01, by comparing every `DocumentUploadTile` in each wizard
 against the admin's `REQUIREMENTS_CATALOG` for that permit type.
 
@@ -74,3 +94,54 @@ most — Building Permit (+17) and Certificate of Occupancy (+7) — each
 reconciling its slots against the catalog entry and recording the decision per
 document. The catalog's `verified` flag says which entries were built from a
 real Castilla form and can be trusted as-is.
+
+---
+
+## Building Permit – New Construction — RECONCILED, 27 August 2026
+
+Measured by rendering, not grepping. Step 5 offers 3 professional-document
+slots, step 6 offers 2 that appear only when the applicant is not the owner,
+and step 7 — the Unified Application Form's documentary annex — offered 12.
+
+Against the catalog's 22-document checklist (14 required), **seven required
+documents had no slot anywhere**:
+
+| Checklist document | Decision |
+|---|---|
+| Unified Building Permit Form (signed) | **Added** to step 7 |
+| Survey Plan | **Added** to step 7 |
+| Cost Estimate (signed and sealed) | **Added** — distinct from the Bill of Materials already collected |
+| Structural Design and Analysis | **Added** |
+| Soil Analysis / Plate Load Test / Seismic Analysis | **Added** |
+| Approved Construction Safety and Health Program (DOLE) | **Added** — submitted to OBO, as the checklist itself directs |
+| Road Clearance (DPWH / PEO) | **Added** — same |
+
+Step 7 now offers 19 slots, and all 19 gate Continue through
+`RequiredDocuments.isValid`.
+
+### Decisions taken and not taken
+
+**The eight ancillary permit forms stay out.** The checklist lists Electrical,
+Fencing, Architectural, Sanitary/Plumbing, Mechanical, Civil/Structural,
+Excavation and Electronics permit *application forms* as conditional uploads.
+This app files each of those as its own application through its own wizard,
+which is better than asking an applicant to upload a form. Recorded as a
+deliberate divergence rather than a gap.
+
+**Three app-only documents stay in.** Tax Declaration, Real Property Tax
+Receipt and Barangay Clearance are collected by the app and are not on the OME
+checklist. Barangay Clearance in particular is real Castilla practice. Kept,
+and flagged for the office to confirm.
+
+**The PRC ID / PTR duplication is not a defect.** Those appear in both step 5
+and step 7, which looks like double-asking. The model says why: step 7 "is the
+consolidated document-checklist annex from the Unified Application Form …
+tracked independently from any similarly-named uploads collected earlier",
+because the annex is a checklist in its own right. Left alone.
+
+### What this cost to get right
+
+The first count said 5 slots. The second said 17. Rendering said 15, of which
+step 7 held 12. The reconciliation only became possible once the measurement
+was taken from the running widget rather than from the source text — the same
+lesson the requirements catalog itself taught two hours earlier, learned again.

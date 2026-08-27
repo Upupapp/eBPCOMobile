@@ -27,8 +27,7 @@ class Step7RequiredDocuments extends StatefulWidget {
   });
 
   @override
-  State<Step7RequiredDocuments> createState() =>
-      _Step7RequiredDocumentsState();
+  State<Step7RequiredDocuments> createState() => _Step7RequiredDocumentsState();
 }
 
 class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
@@ -84,6 +83,12 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               initiallyExpanded: true,
               children: [
                 _uploadTile(
+                  label: 'Signed Unified Application Form',
+                  getDocument: () => _documents.unifiedApplicationFormUpload,
+                  setDocument: (d) =>
+                      _documents.unifiedApplicationFormUpload = d,
+                ),
+                _uploadTile(
                   label: 'Land Title',
                   getDocument: () => _documents.landTitleUpload,
                   setDocument: (d) => _documents.landTitleUpload = d,
@@ -114,6 +119,28 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Specifications',
                   getDocument: () => _documents.specificationsUpload,
                   setDocument: (d) => _documents.specificationsUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Survey Plan',
+                  getDocument: () => _documents.surveyPlanUpload,
+                  setDocument: (d) => _documents.surveyPlanUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Cost Estimate',
+                  getDocument: () => _documents.costEstimateUpload,
+                  setDocument: (d) => _documents.costEstimateUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Structural Design and Analysis',
+                  getDocument: () =>
+                      _documents.structuralDesignAndAnalysisUpload,
+                  setDocument: (d) =>
+                      _documents.structuralDesignAndAnalysisUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Soil Analysis / Plate Load Test',
+                  getDocument: () => _documents.soilAnalysisUpload,
+                  setDocument: (d) => _documents.soilAnalysisUpload = d,
                 ),
                 _uploadTile(
                   label: 'Bill of Materials',
@@ -156,6 +183,17 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   label: 'Zoning Clearance',
                   getDocument: () => _documents.zoningClearanceUpload,
                   setDocument: (d) => _documents.zoningClearanceUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Construction Safety and Health Program (DOLE)',
+                  getDocument: () => _documents.constructionSafetyProgramUpload,
+                  setDocument: (d) =>
+                      _documents.constructionSafetyProgramUpload = d,
+                ),
+                _uploadTile(
+                  label: 'Road Clearance (DPWH / PEO)',
+                  getDocument: () => _documents.roadClearanceUpload,
+                  setDocument: (d) => _documents.roadClearanceUpload = d,
                 ),
                 _uploadTile(
                   label: 'Fire-Related Requirements',

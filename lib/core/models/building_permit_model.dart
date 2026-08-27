@@ -345,6 +345,16 @@ class RequiredDocuments {
   DocumentModel? specificationsUpload;
   DocumentModel? billOfMaterialsUpload;
 
+  // Added 27 Aug 2026 when this step was reconciled against Castilla OME's
+  // real "Building Permit Documentary Requirements" checklist, as mirrored in
+  // the requirements catalog. Seven required documents on that checklist had
+  // no slot here at all, so an applicant who supplied everything the app asked
+  // for had still not supplied everything the office needs.
+  DocumentModel? surveyPlanUpload;
+  DocumentModel? costEstimateUpload;
+  DocumentModel? structuralDesignAndAnalysisUpload;
+  DocumentModel? soilAnalysisUpload;
+
   // Professional Documents
   DocumentModel? prcIdChecklistUpload;
   DocumentModel? ptrChecklistUpload;
@@ -354,6 +364,17 @@ class RequiredDocuments {
   DocumentModel? barangayClearanceUpload;
   DocumentModel? zoningClearanceUpload;
   DocumentModel? fireRelatedRequirementsUpload;
+
+  /// Issued by DOLE and DPWH/PEO respectively. This app does not route to
+  /// either office, so both are submitted to the OBO as part of the
+  /// documentary requirements — which is what the checklist itself says.
+  DocumentModel? constructionSafetyProgramUpload;
+  DocumentModel? roadClearanceUpload;
+
+  /// The Unified Application Form itself, signed. The checklist lists the form
+  /// as one of the documents to submit, distinct from the data the wizard
+  /// collects.
+  DocumentModel? unifiedApplicationFormUpload;
 
   bool get isValid =>
       landTitleUpload != null &&
@@ -367,7 +388,14 @@ class RequiredDocuments {
       signedFormsUpload != null &&
       barangayClearanceUpload != null &&
       zoningClearanceUpload != null &&
-      fireRelatedRequirementsUpload != null;
+      fireRelatedRequirementsUpload != null &&
+      surveyPlanUpload != null &&
+      costEstimateUpload != null &&
+      structuralDesignAndAnalysisUpload != null &&
+      soilAnalysisUpload != null &&
+      constructionSafetyProgramUpload != null &&
+      roadClearanceUpload != null &&
+      unifiedApplicationFormUpload != null;
 }
 
 /// Step 8 — Review & Declaration: no new form fields, just the three
