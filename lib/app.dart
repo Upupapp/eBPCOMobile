@@ -28,6 +28,8 @@ import 'core/providers/professionals_provider.dart';
 import 'core/repositories/repository_factory.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/providers/sign_permit_provider.dart';
+import 'core/providers/fsec_permit_provider.dart';
+import 'core/providers/fsic_permit_provider.dart';
 import 'core/providers/zoning_permit_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/text_scale_clamp.dart';
@@ -134,6 +136,12 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ),
         ChangeNotifierProvider<ZoningPermitProvider>(
           create: (_) => ZoningPermitProvider(),
+        ),
+        ChangeNotifierProvider<FsicPermitProvider>(
+          create: (_) => FsicPermitProvider(),
+        ),
+        ChangeNotifierProvider<FsecPermitProvider>(
+          create: (_) => FsecPermitProvider(),
         ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),

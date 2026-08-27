@@ -75,12 +75,12 @@ void main() {
         'lib/core/providers/draft_registry.dart',
       ).readAsStringSync();
 
-      // Seventeen since the Zoning / Locational Clearance wizard was added —
-      // the first of the three permit types the admin portal recognised and
-      // this app could not file.
+      // Nineteen: the sixteen original wizards plus Zoning, FSEC and FSIC — the
+      // three permit types the admin portal recognised and this app could not
+      // file.
       expect(
         implementers,
-        hasLength(17),
+        hasLength(19),
         reason: 'every wizard provider should expose its draft',
       );
 
@@ -105,8 +105,8 @@ void main() {
         r'context\.read<(\w+)>\(\)',
       ).allMatches(registry).map((m) => m.group(1)!).toList();
 
-      expect(named, hasLength(17));
-      expect(named.toSet(), hasLength(17), reason: 'no duplicates');
+      expect(named, hasLength(19));
+      expect(named.toSet(), hasLength(19), reason: 'no duplicates');
     });
   });
 }

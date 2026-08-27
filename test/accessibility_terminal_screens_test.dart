@@ -30,6 +30,8 @@ import 'package:ebpco_user_app/features/splash/presentation/splash_screen.dart';
 
 import 'support/clipping.dart';
 import 'package:ebpco_user_app/features/applications/presentation/zoning_clearance/zoning_clearance_submitted_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/fsec_clearance/fsec_clearance_submitted_screen.dart';
+import 'package:ebpco_user_app/features/applications/presentation/fsic_clearance/fsic_clearance_submitted_screen.dart';
 
 /// The last screens with no accessibility coverage: the sixteen terminal
 /// confirmation pages one per permit type, plus splash and document preview.
@@ -139,6 +141,14 @@ final _screens = <String, Widget Function()>{
     relatedBuildingPermitStatus: _relatedStatus,
   ),
   'ZoningClearance': () => ZoningClearanceSubmittedScreen(
+    referenceNumber: _reference,
+    submissionDate: _submissionDate,
+  ),
+  'FsecClearance': () => FsecClearanceSubmittedScreen(
+    referenceNumber: _reference,
+    submissionDate: _submissionDate,
+  ),
+  'FsicClearance': () => FsicClearanceSubmittedScreen(
     referenceNumber: _reference,
     submissionDate: _submissionDate,
   ),

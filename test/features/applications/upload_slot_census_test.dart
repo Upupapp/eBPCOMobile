@@ -130,6 +130,12 @@ import 'package:ebpco_user_app/features/applications/presentation/excavation_per
 import 'package:ebpco_user_app/core/models/zoning_permit_model.dart' as mz;
 import 'package:ebpco_user_app/features/applications/presentation/zoning_clearance/steps/step4_required_documents.dart'
     as wz;
+import 'package:ebpco_user_app/core/models/fsec_permit_model.dart' as mfe;
+import 'package:ebpco_user_app/core/models/fsic_permit_model.dart' as mfi;
+import 'package:ebpco_user_app/features/applications/presentation/fsec_clearance/steps/step3_required_documents.dart'
+    as wfe;
+import 'package:ebpco_user_app/features/applications/presentation/fsic_clearance/steps/step3_required_documents.dart'
+    as wfi;
 
 /// How many documents each wizard actually asks an applicant to upload.
 ///
@@ -157,6 +163,8 @@ const _expected = <String, int>{
   'building_permit': 22,
   'certificate_of_occupancy': 13,
   'zoning_clearance': 16,
+  'fsec_clearance': 9,
+  'fsic_clearance': 10,
   'civil_structural_permit': 61,
   'demolition_permit': 33,
   'electrical_permit': 51,
@@ -172,6 +180,26 @@ const _expected = <String, int>{
 };
 
 final _wizards = <String, List<Widget Function()> Function()>{
+  'fsec_clearance': () {
+    final draft = mfe.FsecPermitDraft();
+    return <Widget Function()>[
+      () => wfe.Step3RequiredDocuments(
+        formKey: GlobalKey<FormState>(),
+        draft: draft,
+        onChanged: () {},
+      ),
+    ];
+  },
+  'fsic_clearance': () {
+    final draft = mfi.FsicPermitDraft();
+    return <Widget Function()>[
+      () => wfi.Step3RequiredDocuments(
+        formKey: GlobalKey<FormState>(),
+        draft: draft,
+        onChanged: () {},
+      ),
+    ];
+  },
   'zoning_clearance': () {
     final draft = mz.ZoningPermitDraft();
     return <Widget Function()>[

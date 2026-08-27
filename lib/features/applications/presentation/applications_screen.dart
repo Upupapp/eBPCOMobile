@@ -106,6 +106,22 @@ class ApplicationsScreen extends StatelessWidget {
 
   static const _ancillaryPermitOptions = [
     _PermitOption(
+      icon: Icons.local_fire_department_outlined,
+      title: 'Fire Safety Evaluation Clearance (FSEC)',
+      canonical: CanonicalPermitType.fsecForBuildingPermitBfp,
+      description:
+          'Required before your Building Permit is issued. Applied for at the Bureau of Fire Protection.',
+      routePath: '/applications/new/fsec-clearance',
+    ),
+    _PermitOption(
+      icon: Icons.local_fire_department,
+      title: 'Fire Safety Inspection Certificate (FSIC)',
+      canonical: CanonicalPermitType.fsicForOccupancyPermitBfp,
+      description:
+          'Required before your Certificate of Occupancy is issued. Applied for at the Bureau of Fire Protection.',
+      routePath: '/applications/new/fsic-clearance',
+    ),
+    _PermitOption(
       icon: Icons.map_outlined,
       title: 'Zoning / Locational Clearance',
       canonical: CanonicalPermitType.zoningLocationalClearance,

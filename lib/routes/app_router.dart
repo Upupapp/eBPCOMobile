@@ -73,6 +73,10 @@ import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/applications/presentation/zoning_clearance/zoning_clearance_wizard_screen.dart';
 import '../features/applications/presentation/zoning_clearance/zoning_clearance_submitted_screen.dart';
+import '../features/applications/presentation/fsec_clearance/fsec_clearance_wizard_screen.dart';
+import '../features/applications/presentation/fsec_clearance/fsec_clearance_submitted_screen.dart';
+import '../features/applications/presentation/fsic_clearance/fsic_clearance_wizard_screen.dart';
+import '../features/applications/presentation/fsic_clearance/fsic_clearance_submitted_screen.dart';
 
 /// Builds the application's [GoRouter] configuration. A single router
 /// instance is created for the app's lifetime and driven by [authProvider]
@@ -236,7 +240,7 @@ class AppRouter {
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
                   extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending Issuance',
+                  'Pending Issuance',
             );
           },
         ),
@@ -258,8 +262,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -280,8 +283,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
               electricalContractorRequired:
                   extra?['electricalContractorRequired'] as bool? ?? false,
             );
@@ -304,8 +306,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -326,15 +327,13 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
         GoRoute(
           path: '/applications/new/interior-design-permit',
-          builder: (context, state) =>
-              const InteriorDesignPermitWizardScreen(),
+          builder: (context, state) => const InteriorDesignPermitWizardScreen(),
         ),
         GoRoute(
           path: '/applications/new/interior-design-permit/submitted',
@@ -349,8 +348,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -371,8 +369,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -393,8 +390,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -415,8 +411,41 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/fsec-clearance',
+          builder: (context, state) => const FsecClearanceWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/fsec-clearance/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return FsecClearanceSubmittedScreen(
+              applicationId: extra?['applicationId'] as String?,
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'FSEC-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/applications/new/fsic-clearance',
+          builder: (context, state) => const FsicClearanceWizardScreen(),
+        ),
+        GoRoute(
+          path: '/applications/new/fsic-clearance/submitted',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, Object?>?;
+            return FsicClearanceSubmittedScreen(
+              applicationId: extra?['applicationId'] as String?,
+              referenceNumber:
+                  extra?['referenceNumber'] as String? ?? 'FSIC-UNKNOWN',
+              submissionDate:
+                  extra?['submissionDate'] as DateTime? ?? DateTime.now(),
             );
           },
         ),
@@ -454,8 +483,7 @@ class AppRouter {
                   extra?['submissionDate'] as DateTime? ?? DateTime.now(),
               buildingPermitNumber:
                   extra?['buildingPermitNumber'] as String? ?? '',
-              certificateType:
-                  extra?['certificateType'] as String? ?? 'Full',
+              certificateType: extra?['certificateType'] as String? ?? 'Full',
             );
           },
         ),
@@ -476,8 +504,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
@@ -499,8 +526,7 @@ class AppRouter {
               relatedBuildingPermitNumber:
                   extra?['relatedBuildingPermitNumber'] as String? ?? '',
               relatedBuildingPermitStatus:
-                  extra?['relatedBuildingPermitStatus'] as String? ??
-                      'Pending',
+                  extra?['relatedBuildingPermitStatus'] as String? ?? 'Pending',
             );
           },
         ),
