@@ -208,6 +208,13 @@ class PaymentAssessmentModel {
   /// Voids, reversals, refunds and corrections the office applied.
   final List<PaymentAdjustmentRecord> adjustments;
 
+  /// Assessments this one replaced, newest first.
+  ///
+  /// Kept rather than discarded: an applicant reassessed after a revision sees
+  /// a different total from the one they were quoted, and "the figure changed"
+  /// with no way to see what it was before is not an explanation.
+  final List<OrderOfPayment> supersededOrders;
+
   const PaymentAssessmentModel({
     required this.status,
     this.orderOfPayment,
@@ -219,10 +226,23 @@ class PaymentAssessmentModel {
     this.verifiedAt,
     this.transactions = const [],
     this.adjustments = const [],
+    this.supersededOrders = const [],
   });
 
   /// The amount due, or null when nothing has been assessed.
-  PesoAmount? get amountDue => orderOfPayment?.total;
+  ///
+  /// Null too when the current order is not payable — a superseded or voided
+  /// assessment has no amount the applicant should act on, and returning its
+  /// total would invite payment against a figure the office has replaced.
+  PesoAmount? get amountDue {
+    final order = orderOfPayment;
+    if (order == null || !order.isPayable) return null;
+    return order.total;
+  }
+
+  /// Whether the assessment the applicant was previously shown has been
+  /// replaced by a newer one.
+  bool get wasReassessed => supersededOrders.isNotEmpty;
 
   /// What the office has actually accepted so far.
   ///
@@ -278,6 +298,7 @@ class PaymentAssessmentModel {
     DateTime? verifiedAt,
     List<PaymentTransactionRecord>? transactions,
     List<PaymentAdjustmentRecord>? adjustments,
+    List<OrderOfPayment>? supersededOrders,
   }) {
     return PaymentAssessmentModel(
       orderOfPayment: orderOfPayment ?? this.orderOfPayment,
@@ -291,6 +312,7 @@ class PaymentAssessmentModel {
       verifiedAt: verifiedAt ?? this.verifiedAt,
       transactions: transactions ?? this.transactions,
       adjustments: adjustments ?? this.adjustments,
+      supersededOrders: supersededOrders ?? this.supersededOrders,
     );
   }
 }

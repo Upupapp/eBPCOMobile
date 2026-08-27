@@ -70,7 +70,11 @@ class OrderOfPaymentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             _FeeBreakdown(order: order, payment: payment),
             const SizedBox(height: AppSpacing.lg),
-            if (payment!.receipts.isNotEmpty) ...[
+            if (payment!.wasReassessed) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _Reassessed(payment: payment),
+            ],
+            if (payment.receipts.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               _Receipts(payments: payment.receipts),
             ],
@@ -605,6 +609,75 @@ class _Adjustments extends StatelessWidget {
               Text(adjustment.reason!, style: AppTypography.helper),
             const SizedBox(height: AppSpacing.xs),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Says that the assessment was replaced, and what it replaced.
+///
+/// The office does not edit an issued assessment — a correction builds a new
+/// version and supersedes the old one. Without this the applicant sees a total
+/// that has silently changed since they last looked, which reads as an error
+/// in the app rather than a decision by the office.
+class _Reassessed extends StatelessWidget {
+  final PaymentAssessmentModel payment;
+
+  const _Reassessed({required this.payment});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = DateFormat('MMM d, yyyy');
+    final current = payment.orderOfPayment;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.statusPendingBg,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'This assessment was reassessed',
+            style: AppTypography.cardTitle.copyWith(
+              color: AppColors.statusPending,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            current == null
+                ? 'A new Order of Payment is being prepared.'
+                : 'Order of Payment ${current.number} '
+                      '(version ${current.version}) replaces what you were '
+                      'shown before. Pay against this one.',
+            style: AppTypography.body,
+          ),
+          if (current?.revisionReason != null)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: Text(
+                current!.revisionReason!,
+                style: AppTypography.bodyMuted,
+              ),
+            ),
+          const SizedBox(height: AppSpacing.sm),
+          Text('Replaced', style: AppTypography.label),
+          for (final order in payment.supersededOrders)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: AmountRow(
+                label: Text(
+                  'v${order.version} · ${format.format(order.assessedAt)}',
+                  style: AppTypography.helper,
+                ),
+                amount: Text(
+                  order.total.formatted,
+                  style: AppTypography.helper,
+                ),
+              ),
+            ),
         ],
       ),
     );

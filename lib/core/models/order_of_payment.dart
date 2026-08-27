@@ -1,3 +1,4 @@
+import '../contract/admin_vocabulary.dart';
 import 'money.dart';
 
 /// One chargeable line on an Order of Payment.
@@ -105,13 +106,41 @@ class OrderOfPayment {
   /// Last day to pay before the assessment is treated as overdue.
   final DateTime? dueDate;
 
+  /// Which version of the assessment this is, counting from 1.
+  ///
+  /// The office does not edit an issued assessment. A correction after
+  /// issuance builds a new version and marks the old one superseded, so the
+  /// figures an applicant was shown before are still the figures they were
+  /// shown — which matters if they paid against them.
+  final int version;
+
+  /// Where this version stands. `superseded` is the one that changes what the
+  /// applicant should do: a superseded assessment is not payable, and showing
+  /// it as though it were invites payment against a figure the office has
+  /// replaced.
+  final AssessmentStatus status;
+
+  /// Why this version replaced the one before it, when the office said.
+  final String? revisionReason;
+
   const OrderOfPayment({
     required this.number,
     required this.assessedAt,
     required this.fees,
     this.assessedBy,
     this.dueDate,
+    this.version = 1,
+    this.status = AssessmentStatus.issued,
+    this.revisionReason,
   });
+
+  /// Whether this is the version the applicant should pay against.
+  bool get isPayable =>
+      status != AssessmentStatus.superseded &&
+      status != AssessmentStatus.voided &&
+      status != AssessmentStatus.draft;
+
+  bool get isSuperseded => status == AssessmentStatus.superseded;
 
   PesoAmount get total => fees.total;
 
