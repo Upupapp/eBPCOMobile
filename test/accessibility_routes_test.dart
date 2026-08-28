@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ebpco_user_app/core/constants/app_constants.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
+import 'package:ebpco_user_app/core/providers/contact_verification_provider.dart';
+import 'package:ebpco_user_app/core/repositories/contact_verification_repository.dart';
 import 'package:ebpco_user_app/core/providers/business_provider.dart';
 import 'package:ebpco_user_app/core/providers/documents_provider.dart';
 import 'package:ebpco_user_app/core/providers/navigation_provider.dart';
@@ -34,6 +36,7 @@ import 'package:ebpco_user_app/features/documents/presentation/my_documents_scre
 import 'package:ebpco_user_app/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:ebpco_user_app/features/payments/presentation/payments_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/change_password_screen.dart';
+import 'package:ebpco_user_app/features/profile/presentation/contact_verification_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/edit_profile_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/help_support_screen.dart';
 import 'package:ebpco_user_app/features/profile/presentation/language_screen.dart';
@@ -88,6 +91,7 @@ final _screens = <String, Widget Function()>{
   'NotificationPreferences': () => NotificationPreferencesScreen(),
   'Language': () => LanguageScreen(),
   'HelpSupport': () => HelpSupportScreen(),
+  'ContactVerification': () => const ContactVerificationScreen(),
   'PrivacyPolicy': () => PrivacyPolicyScreen(),
   'TermsConditions': () => TermsConditionsScreen(),
 };
@@ -110,6 +114,13 @@ Widget _host(Widget Function() build, double textScale) {
       ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
       ChangeNotifierProvider<NavigationProvider>(
         create: (_) => NavigationProvider(),
+      ),
+      // The Profile screen shows a verification badge beside the email
+      // address and the mobile number.
+      ChangeNotifierProvider<ContactVerificationProvider>(
+        create: (_) => ContactVerificationProvider(
+          repository: MockContactVerificationRepository(),
+        ),
       ),
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),

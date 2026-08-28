@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_strings.dart';
 import 'core/providers/addition_extension_permit_provider.dart';
 import 'core/providers/application_intent_provider.dart';
+import 'core/providers/contact_verification_provider.dart';
 import 'core/providers/applications_provider.dart';
+import 'core/repositories/contact_verification_repository.dart';
 import 'core/providers/architectural_permit_provider.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/building_permit_provider.dart';
@@ -84,6 +86,28 @@ class _EbpcoAppState extends State<EbpcoApp> {
             repository: context.read<RepositoryFactory>().applications(),
           ),
         ),
+        // Per-channel contact verification. Seeded from the session and kept
+        // in step with it: a changed address is an unverified address, and
+        // carrying a verified status across an edit would let someone confirm
+        // one mailbox and substitute another.
+        ChangeNotifierProxyProvider<AuthProvider, ContactVerificationProvider>(
+          create: (_) => ContactVerificationProvider(
+            repository: MockContactVerificationRepository(),
+          ),
+          update: (_, auth, verification) {
+            final provider =
+                verification ??
+                ContactVerificationProvider(
+                  repository: MockContactVerificationRepository(),
+                );
+            provider.updateContactDetails(
+              email: auth.currentUser?.email,
+              mobileNumber: auth.currentUser?.mobileNumber,
+            );
+            return provider;
+          },
+        ),
+
         // Holds a pending renewal or amendment between the screen that starts
         // it and the wizard that files it.
         ChangeNotifierProvider<ApplicationIntentProvider>(

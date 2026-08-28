@@ -19,6 +19,13 @@ enum QueuedOperationKind {
 
   /// Submits proof of payment.
   paymentProof,
+
+  /// Asks the LGU to send a verification link or one-time code.
+  ///
+  /// Queued like the rest because a request lost to a dropped connection is a
+  /// request the applicant thinks they made. It carries no document and
+  /// depends on nothing, so it is the cheapest thing in here to replay.
+  contactVerificationRequest,
 }
 
 /// Where an item is, and — the part that matters most — what the applicant is

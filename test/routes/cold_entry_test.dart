@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ebpco_user_app/core/constants/app_strings.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
+import 'package:ebpco_user_app/core/providers/contact_verification_provider.dart';
+import 'package:ebpco_user_app/core/repositories/contact_verification_repository.dart';
 import 'package:ebpco_user_app/core/providers/business_provider.dart';
 import 'package:ebpco_user_app/core/providers/documents_provider.dart';
 import 'package:ebpco_user_app/core/providers/navigation_provider.dart';
@@ -76,6 +78,7 @@ const _paths = <String>[
   '/profile/help',
   '/profile/terms',
   '/profile/professionals',
+  '/profile/contact-verification',
   '/profile/privacy-data',
   '/profile/privacy',
   '/charter/building-permit',
@@ -94,6 +97,13 @@ Widget _app(AuthProvider auth, GoRouter router) {
       ChangeNotifierProvider<AuthProvider>.value(value: auth),
       ChangeNotifierProvider<NavigationProvider>(
         create: (_) => NavigationProvider(),
+      ),
+      // The Profile screen shows a verification badge beside the email
+      // address and the mobile number.
+      ChangeNotifierProvider<ContactVerificationProvider>(
+        create: (_) => ContactVerificationProvider(
+          repository: MockContactVerificationRepository(),
+        ),
       ),
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),

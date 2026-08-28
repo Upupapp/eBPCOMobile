@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/models/contact_verification.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/contact_verification_provider.dart';
 import '../../../core/services/permission_service.dart';
 import '../../../core/services/profile_photo_service.dart';
 import '../../../core/theme/app_typography.dart';
@@ -14,6 +16,8 @@ import '../../../shared/widgets/badges/status_badge.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
 import '../../../shared/widgets/dialogs/permission_dialogs.dart';
+import '../../../shared/widgets/layout/reflowing_row.dart';
+import 'contact_verification_screen.dart';
 import 'widgets/profile_photo_avatar.dart';
 import 'widgets/profile_photo_bottom_sheet.dart';
 
@@ -143,6 +147,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
+    final verification = context.watch<ContactVerificationProvider>();
     final dateFormat = DateFormat('MMM d, yyyy');
 
     return Scaffold(
@@ -220,10 +225,16 @@ class ProfileScreen extends StatelessWidget {
                 label: 'Full Name',
                 value: user?.fullName ?? '-',
               ),
+              // Per channel, because an account whose email is confirmed and
+              // whose mobile number is not is a real and common state, and one
+              // status for the pair could not say so.
               _ProfileTile(
                 icon: Icons.mail_outline,
                 label: 'Email Address',
                 value: user?.email ?? '-',
+                trailing: ContactVerificationBadge(
+                  verification: verification.of(ContactChannel.email),
+                ),
               ),
               _ProfileTile(
                 icon: Icons.call_outlined,
@@ -231,7 +242,16 @@ class ProfileScreen extends StatelessWidget {
                 value: (user?.mobileNumber.isNotEmpty ?? false)
                     ? user!.mobileNumber
                     : 'Not provided',
+                trailing: ContactVerificationBadge(
+                  verification: verification.of(ContactChannel.mobile),
+                ),
               ),
+              if (verification.actionable.isNotEmpty)
+                _ProfileActionTile(
+                  icon: Icons.verified_user_outlined,
+                  label: 'Verify your contact details',
+                  onTap: () => context.push('/profile/contact-verification'),
+                ),
               _ProfileTile(
                 icon: Icons.location_on_outlined,
                 label: 'Address',
@@ -330,10 +350,16 @@ class _ProfileTile extends StatelessWidget {
   final String label;
   final String value;
 
+  /// Sits at the end of the row. Used by the two contact channels to carry
+  /// their verification status, which belongs beside the detail it describes
+  /// rather than in a section of its own.
+  final Widget? trailing;
+
   const _ProfileTile({
     required this.icon,
     required this.label,
     required this.value,
+    this.trailing,
   });
 
   @override
@@ -353,11 +379,25 @@ class _ProfileTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label, style: AppTypography.caption),
-                  Text(
-                    value,
-                    style: AppTypography.bodyStrong,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  if (trailing == null)
+                    Text(
+                      value,
+                      style: AppTypography.bodyStrong,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  else
+                    // Inside the column rather than beside it: at 2.0x the
+                    // badge alone is wider than the space an Expanded value
+                    // leaves it, and it has to be able to drop onto its own
+                    // line. Same reason ReflowingRow exists at all.
+                    ReflowingRow(
+                      leading: Text(
+                        value,
+                        style: AppTypography.bodyStrong,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: trailing!,
+                    ),
                 ],
               ),
             ),

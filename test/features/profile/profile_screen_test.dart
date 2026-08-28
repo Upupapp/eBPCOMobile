@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ebpco_user_app/core/models/user_model.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
+import 'package:ebpco_user_app/core/providers/contact_verification_provider.dart';
+import 'package:ebpco_user_app/core/repositories/contact_verification_repository.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/providers/settings_provider.dart';
@@ -111,6 +113,13 @@ Widget _wrapWithRouter(AuthProvider authProvider) {
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: _EmptyNotificationsRepository()),
+      ),
+      // The Profile screen shows a verification badge beside the email
+      // address and the mobile number.
+      ChangeNotifierProvider<ContactVerificationProvider>(
+        create: (_) => ContactVerificationProvider(
+          repository: MockContactVerificationRepository(),
+        ),
       ),
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),

@@ -66,6 +66,7 @@ import '../features/profile/presentation/notification_preferences_screen.dart';
 import '../features/applications/presentation/continuation/continue_application_screen.dart';
 import '../features/documents/presentation/official_form_screen.dart';
 import '../features/profile/presentation/citizens_charter_screen.dart';
+import '../features/profile/presentation/contact_verification_screen.dart';
 import '../features/profile/presentation/privacy_data_screen.dart';
 import '../features/profile/presentation/professionals_screen.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
@@ -597,6 +598,10 @@ class AppRouter {
         GoRoute(
           path: '/profile/professionals',
           builder: (context, state) => const ProfessionalsScreen(),
+        ),
+        GoRoute(
+          path: '/profile/contact-verification',
+          builder: (context, state) => const ContactVerificationScreen(),
         ),
         GoRoute(
           path: '/profile/privacy-data',
