@@ -12,6 +12,21 @@ import 'permit_classification.dart';
 /// The kind of permit action an application represents.
 enum ApplicationType { newPermit, renewal, amendment }
 
+extension ApplicationTypeWire on ApplicationType {
+  /// The exact string the admin uses on the wire, as `ApplicationAction`.
+  ///
+  /// Lived inline in the HTTP repository's request body until TAB 15, which is
+  /// the one place nothing could compare it against the admin. Every other
+  /// closed vocabulary states its wire form beside the enum; this one now does
+  /// too, and the standing parity test asserts all three values against the
+  /// admin's own source.
+  String get wire => switch (this) {
+    ApplicationType.newPermit => 'New',
+    ApplicationType.renewal => 'Renewal',
+    ApplicationType.amendment => 'Amendment',
+  };
+}
+
 extension ApplicationTypeX on ApplicationType {
   String get label {
     switch (this) {

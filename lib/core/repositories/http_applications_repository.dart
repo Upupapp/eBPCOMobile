@@ -64,11 +64,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // locally-generated one is deliberately not sent — the parsed
         // response is the record of truth for the number.
         'permitType': ?permitTypeLabel,
-        'applicationAction': switch (lineage?.action ?? type) {
-          ApplicationType.newPermit => 'New',
-          ApplicationType.renewal => 'Renewal',
-          ApplicationType.amendment => 'Amendment',
-        },
+        'applicationAction': (lineage?.action ?? type).wire,
         'documents': [
           for (final document in documents)
             {'label': document.label, 'fileName': document.fileName},

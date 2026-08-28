@@ -1,0 +1,94 @@
+{
+  "_comment": "EXTRACTED, not transcribed. Produced by scripts/extract_admin_vocabulary.mjs from the admin portal's src/app/core/domain/. Regenerate with scripts/sync_admin_vocabulary.sh and review the diff: a change here means the admin moved and this app may no longer speak its language. A fixture edited to make a test pass is worse than no fixture.",
+  "source": {
+    "repository": "Upupapp/eBPCO-Web",
+    "commit": "e0925d9",
+    "commitDate": "2026-08-26",
+    "extractedOn": "2026-08-28",
+    "path": "src/app/core/domain/"
+  },
+  "permitTypes": [
+    "Building Permit – New Construction",
+    "Building Permit – Renovation / Alteration",
+    "Building Permit – Addition / Extension",
+    "Demolition Permit",
+    "Zoning / Locational Clearance",
+    "Architectural Permit",
+    "Civil / Structural Permit",
+    "Electrical Permit",
+    "Mechanical Permit",
+    "Sanitary Permit",
+    "Plumbing Permit",
+    "Electronics Permit",
+    "Interior Design Permit",
+    "Fencing Permit",
+    "Sign Permit",
+    "Excavation Permit",
+    "FSEC for Building Permit (BFP)",
+    "Certificate of Occupancy",
+    "FSIC for Occupancy Permit (BFP)"
+  ],
+  "applicationActions": [
+    "New",
+    "Renewal",
+    "Amendment"
+  ],
+  "documentStatuses": [
+    "Missing",
+    "Uploaded",
+    "Submitted",
+    "Under Review",
+    "Accepted",
+    "Rejected",
+    "Revision Required",
+    "Expired"
+  ],
+  "paymentTransactionStatuses": [
+    "Pending Verification",
+    "Verified",
+    "Rejected",
+    "Voided"
+  ],
+  "collectingAgencies": [
+    "OBO/LGU",
+    "BFP"
+  ],
+  "paymentAdjustmentTypes": [
+    "Void",
+    "Reversal",
+    "Refund",
+    "Correction"
+  ],
+  "assessmentStatuses": [
+    "Draft",
+    "For Approval",
+    "Issued",
+    "Partially Paid",
+    "Paid",
+    "Overdue",
+    "Superseded",
+    "Voided"
+  ],
+  "assessmentStatusOrderConstant": [
+    "Draft",
+    "For Approval",
+    "Issued",
+    "Partially Paid",
+    "Overdue",
+    "Paid",
+    "Superseded",
+    "Voided"
+  ],
+  "contactVerificationStatuses": [
+    "Unverified",
+    "Pending Verification",
+    "Verified",
+    "Verification Failed"
+  ],
+  "contactVerificationMethods": [
+    "Email Verification Link",
+    "Mobile OTP",
+    "Manual Administrator Confirmation",
+    "Verified-Document Matching"
+  ]
+}
