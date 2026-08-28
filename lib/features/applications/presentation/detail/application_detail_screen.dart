@@ -9,6 +9,7 @@ import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/application_detail.dart';
 import '../../../../core/models/application_model.dart';
 import '../../../../core/models/document_model.dart';
+import '../../../../core/models/document_review_reason.dart';
 import '../../../../core/models/lifecycle_status.dart';
 import '../../../../core/models/payment_assessment_model.dart';
 import '../../../../core/models/permit_classification.dart';
@@ -440,8 +441,19 @@ class _DocumentRow extends StatelessWidget {
             ),
           ],
         ),
-        // The evaluator's own words, in full. A status without the reason
-        // tells the applicant to guess at what to change.
+        // The office's standard reason and its own words, in that order and in
+        // full. A status without the reason tells the applicant to guess at
+        // what to change.
+        //
+        // The standard reason is rendered as a chip rather than folded into
+        // the sentence: it is the categorical answer, it is what the applicant
+        // will quote at the counter, and it is the half that reads identically
+        // whoever wrote it.
+        if (document.reviewReason != null && !document.reviewReason!.isOther)
+          Padding(
+            padding: const EdgeInsets.only(left: 36, top: AppSpacing.xs),
+            child: _ReviewReasonChip(reason: document.reviewReason!),
+          ),
         if (document.remarks != null && document.remarks!.trim().isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(left: 36, top: AppSpacing.xs),
@@ -580,6 +592,37 @@ class _PermitSummary extends StatelessWidget {
               const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The office's standard, reusable reason for turning a document back.
+///
+/// Its own shape rather than a line of text because it is a *category*: the
+/// applicant may quote it at the counter, and it reads identically whichever
+/// officer picked it. The custom remark sits beneath it in ordinary prose,
+/// which is the right weighting — the category says what kind of problem, the
+/// remark says which page.
+class _ReviewReasonChip extends StatelessWidget {
+  final DocumentReviewReason reason;
+
+  const _ReviewReasonChip({required this.reason});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.statusRejectedBg,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusSmall),
+      ),
+      child: Text(
+        reason.label,
+        style: AppTypography.helper.copyWith(
+          color: AppColors.statusRejected,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import '../contract/admin_vocabulary.dart';
+import 'document_review_reason.dart';
 
 /// One earlier submission of the same requirement, kept when a document is
 /// replaced.
@@ -56,10 +57,20 @@ class DocumentModel {
   /// Null until the office has looked at it.
   final DocumentStatus? status;
 
-  /// Required by the office whenever [status] is rejected or revisionRequired,
-  /// and the whole point of surfacing status at all: "Rejected" without a
-  /// reason tells the applicant to guess.
+  /// The office's own words about this submission — custom feedback written
+  /// for this applicant, this document. "Illegible" does not say which page.
   final String? remarks;
+
+  /// The standard, reusable reason the office picked from its catalogue.
+  ///
+  /// Owner decision, 2026-08-28: an adverse review carries **both** a standard
+  /// reason and custom feedback. Either alone satisfies the rule that a
+  /// rejection must say why — a code *is* a reason — except the catalogue's
+  /// `other`, which means nothing without the remark beside it.
+  ///
+  /// Null on a document nobody has turned back, and on one turned back with
+  /// free text only.
+  final DocumentReviewReason? reviewReason;
 
   /// The office or agency that issued the document itself — a barangay, the
   /// BFP, the DPWH. Distinct from whoever reviews it.
@@ -83,6 +94,7 @@ class DocumentModel {
     this.filePath,
     this.status,
     this.remarks,
+    this.reviewReason,
     this.issuingOffice,
     this.issueDate,
     this.expiryDate,
@@ -97,6 +109,24 @@ class DocumentModel {
       status == DocumentStatus.rejected ||
       status == DocumentStatus.revisionRequired ||
       isExpired;
+
+  /// Everything the office said about this document, in one line.
+  ///
+  /// The standard reason first because it is the categorical answer, then the
+  /// custom remark because it is the specific one. `other` is suppressed on its
+  /// own — it is a filing category, not something to tell an applicant — so a
+  /// document carrying only `other` reads as its remark alone.
+  String? get reviewFeedback {
+    final reason = reviewReason;
+    final remark = remarks?.trim();
+    final hasRemark = remark != null && remark.isNotEmpty;
+    final showReason = reason != null && !reason.isOther;
+
+    if (showReason && hasRemark) return '${reason.label} — $remark';
+    if (showReason) return reason.label;
+    if (hasRemark) return remark;
+    return null;
+  }
 
   /// Past its own expiry, whatever the office has got round to recording.
   ///
@@ -115,6 +145,7 @@ class DocumentModel {
     DateTime? uploadedAt,
     DocumentStatus? status,
     String? remarks,
+    DocumentReviewReason? reviewReason,
     List<DocumentSubmission>? history,
   }) => DocumentModel(
     id: id,
@@ -125,6 +156,10 @@ class DocumentModel {
     filePath: filePath,
     status: status ?? this.status,
     remarks: remarks,
+    // Cleared alongside `remarks` rather than carried: a resubmission answers
+    // the old verdict, and a reason left standing beside a fresh submission
+    // reads as a fresh rejection.
+    reviewReason: reviewReason,
     issuingOffice: issuingOffice,
     issueDate: issueDate,
     expiryDate: expiryDate,

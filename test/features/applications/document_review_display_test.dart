@@ -8,6 +8,7 @@ import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
+import 'package:ebpco_user_app/core/models/document_review_reason.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
@@ -86,6 +87,7 @@ DocumentModel _doc(
   String label, {
   DocumentStatus? status,
   String? remarks,
+  DocumentReviewReason? reviewReason,
   String? issuingOffice,
   List<DocumentSubmission> history = const [],
 }) => DocumentModel(
@@ -95,6 +97,7 @@ DocumentModel _doc(
   uploadedAt: DateTime(2026, 8, 1),
   status: status,
   remarks: remarks,
+  reviewReason: reviewReason,
   issuingOffice: issuingOffice,
   history: history,
 );
@@ -114,6 +117,10 @@ ApplicationModel _application() => ApplicationModel(
     _doc(
       'Land Title',
       status: DocumentStatus.rejected,
+      reviewReason: const DocumentReviewReason(
+        code: 'not-certified-true-copy',
+        label: 'Not a certified true copy',
+      ),
       remarks: 'Submit a Certified True Copy issued within six months.',
       issuingOffice: 'Registry of Deeds',
       history: [
@@ -124,6 +131,14 @@ ApplicationModel _application() => ApplicationModel(
           remarks: 'Photocopy not acceptable.',
         ),
       ],
+    ),
+    // 'Other' carries no meaning without the remark beside it, so the screen
+    // must not render it as though it were an answer.
+    _doc(
+      'Lot Plan',
+      status: DocumentStatus.revisionRequired,
+      reviewReason: const DocumentReviewReason(code: 'other', label: 'Other'),
+      remarks: 'Wrong lot number throughout.',
     ),
   ],
 );
@@ -235,11 +250,14 @@ void main() {
     await _open(tester);
 
     expect(find.text('Rejected'), findsOneWidget);
+    // Two of the four documents are adverse — one Rejected, one Revision
+    // Required — and both offer it. The other two (Accepted, Under Review) do
+    // not, which is what this count discriminates.
     final replace = find.text('Replace this document');
-    expect(replace, findsOneWidget, reason: 'only the rejected one offers it');
+    expect(replace, findsNWidgets(2), reason: 'both adverse ones offer it');
 
-    await tester.ensureVisible(replace);
-    await tester.tap(replace);
+    await tester.ensureVisible(replace.first);
+    await tester.tap(replace.first);
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
@@ -261,8 +279,43 @@ void main() {
     tester,
   ) async {
     // An accepted document with a Replace button invites an applicant to undo
-    // work the office already signed off.
+    // work the office already signed off. Two of the four documents are
+    // adverse; the Accepted and Under Review ones are not among them.
     await _open(tester);
-    expect(find.text('Replace this document'), findsOneWidget);
+    expect(find.text('Replace this document'), findsNWidgets(2));
+  });
+
+  group('the standard reason reaches the screen', () {
+    testWidgets('a rejected document shows the reason AND the remark', (
+      tester,
+    ) async {
+      // Owner decision, 2026-08-28: both halves. The category is what the
+      // applicant quotes at the counter; the remark is what tells them which
+      // page. A test that checked only the remark would have let the chip be
+      // added and never rendered.
+      await _open(tester);
+
+      expect(find.text('Not a certified true copy'), findsOneWidget);
+      expect(
+        find.text('Submit a Certified True Copy issued within six months.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('"Other" is never shown on its own', (tester) async {
+      // A filing category. Rendering it looks like an answer and tells the
+      // applicant nothing; its remark carries the whole message.
+      await _open(tester);
+
+      expect(find.text('Other'), findsNothing);
+      expect(find.text('Wrong lot number throughout.'), findsOneWidget);
+    });
+
+    testWidgets('an accepted document carries no reason', (tester) async {
+      await _open(tester);
+      // 'Plans' is accepted. No reason chip should exist anywhere for it, and
+      // the two that do exist belong to the two adverse documents.
+      expect(find.text('Not a certified true copy'), findsOneWidget);
+    });
   });
 }
