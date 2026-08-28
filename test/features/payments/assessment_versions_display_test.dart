@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
+import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
@@ -39,6 +40,7 @@ class _Repo implements ApplicationsRepository {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) => throw UnimplementedError();
   @override
   Future<ApplicationModel> resubmitDocument(
@@ -53,7 +55,8 @@ class _Repo implements ApplicationsRepository {
     DocumentModel? proof,
   }) => throw UnimplementedError();
   @override
-  Future<ApplicationModel> advanceStatus(String id) => throw UnimplementedError();
+  Future<ApplicationModel> advanceStatus(String id) =>
+      throw UnimplementedError();
 }
 
 class _Notifs implements NotificationsRepository {
@@ -92,11 +95,7 @@ ApplicationModel _application() => ApplicationModel(
       revisionReason: 'Floor area corrected after evaluation.',
     ),
     supersededOrders: [
-      _order(
-        filing: 250000,
-        version: 1,
-        status: AssessmentStatus.superseded,
-      ),
+      _order(filing: 250000, version: 1, status: AssessmentStatus.superseded),
     ],
   ),
 );

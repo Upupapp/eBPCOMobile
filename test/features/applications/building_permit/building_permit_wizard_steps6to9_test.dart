@@ -11,6 +11,7 @@ import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_do
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// Covers Steps 6-9 (Consent & Authorization, Required Documents, Review &
@@ -47,6 +48,11 @@ Widget _wrap() {
     providers: [
       ChangeNotifierProvider<BuildingPermitProvider>(
         create: (_) => BuildingPermitProvider(),
+      ),
+      // Every wizard's submit handler reads this to pick up a pending
+      // renewal or amendment.
+      ChangeNotifierProvider<ApplicationIntentProvider>(
+        create: (_) => ApplicationIntentProvider(),
       ),
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>

@@ -1,6 +1,7 @@
 import '../api/api_client.dart';
 import '../api/api_exception.dart';
 import '../api/application_dto.dart';
+import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/document_model.dart';
 import '../models/payment_assessment_model.dart';
@@ -41,7 +42,19 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) async {
+    // `applicationAction` below already carries New / Renewal / Amendment,
+    // which both lines have agreed on since the first reconciliation. What
+    // neither carries is *what* is being renewed or amended: the admin's
+    // `ApplicationRecord` has no field pointing at a prior application or
+    // permit, and neither does the contract's POST /applications body.
+    //
+    // So the reference is deliberately NOT sent. An undeclared field against a
+    // strict server fails the whole submission, which would cost the applicant
+    // their filing to gain a field the office cannot read anyway. It is kept
+    // on the local record, and the gap is recorded for the backend lane as
+    // M-44 rather than papered over here.
     final json = await _api.post(
       '/applications',
       body: {
@@ -51,7 +64,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // locally-generated one is deliberately not sent — the parsed
         // response is the record of truth for the number.
         'permitType': ?permitTypeLabel,
-        'applicationAction': switch (type) {
+        'applicationAction': switch (lineage?.action ?? type) {
           ApplicationType.newPermit => 'New',
           ApplicationType.renewal => 'Renewal',
           ApplicationType.amendment => 'Amendment',

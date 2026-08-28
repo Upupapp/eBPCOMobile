@@ -14,6 +14,7 @@ import '../../../../core/models/payment_assessment_model.dart';
 import '../../../../core/models/permit_classification.dart';
 import '../../../../core/providers/applications_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../routes/wizard_routes.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/badges/status_badge.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
@@ -108,6 +109,22 @@ class ApplicationDetailScreen extends StatelessWidget {
                       context.push('/applications/$applicationId/permit'),
                 ),
               ),
+
+            // Amendment, from the application being amended. Offered only
+            // while the office still has it: amending something already
+            // released is a renewal or a fresh filing, and amending something
+            // rejected or cancelled is not a thing the office can act on.
+            if (application.isInFlight &&
+                wizardRouteForLabel(application.permitTypeLabel ?? '') !=
+                    null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              SecondaryButton(
+                label: 'Amend this application',
+                icon: Icons.edit_note_outlined,
+                onPressed: () =>
+                    context.push('/applications/$applicationId/amend'),
+              ),
+            ],
 
             const SizedBox(height: AppSpacing.xxl),
           ],

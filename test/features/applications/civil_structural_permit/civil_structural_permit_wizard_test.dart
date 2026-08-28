@@ -12,6 +12,7 @@ import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_do
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 
 /// End-to-end coverage of the Civil / Structural Permit wizard — fully
@@ -56,6 +57,11 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      // Every wizard's submit handler reads this to pick up a pending
+      // renewal or amendment.
+      ChangeNotifierProvider<ApplicationIntentProvider>(
+        create: (_) => ApplicationIntentProvider(),
+      ),
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),

@@ -53,7 +53,10 @@ void main() {
       final assessment = _assessment(
         transactions: [
           _txn(centavos: 40000, status: PaymentTransactionStatus.verified),
-          _txn(centavos: 30000, status: PaymentTransactionStatus.pendingVerification),
+          _txn(
+            centavos: 30000,
+            status: PaymentTransactionStatus.pendingVerification,
+          ),
         ],
       );
       expect(assessment.amountPaid, const PesoAmount(40000));

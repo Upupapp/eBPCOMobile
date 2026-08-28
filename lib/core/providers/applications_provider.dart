@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/action_item.dart';
 import '../models/application_detail.dart';
+import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
@@ -204,14 +205,19 @@ class ApplicationsProvider extends ChangeNotifier {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) async {
     final application = await _repository.submitApplication(
       businessId: businessId,
       businessName: businessName,
-      type: type,
+      // The lineage is the authority on what this is. A renewal that arrived
+      // with `type: newPermit` because a caller passed the default would be
+      // filed as a first application against a permit that already exists.
+      type: lineage?.action ?? type,
       documents: documents,
       permitTypeLabel: permitTypeLabel,
       applicationNumber: applicationNumber,
+      lineage: lineage,
     );
     _applications = [..._applications, application];
     notifyListeners();

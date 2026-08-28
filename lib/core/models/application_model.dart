@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import 'application_detail.dart';
 import '../contract/requirements_catalog.dart';
+import 'application_lineage.dart';
 import 'document_model.dart';
 import 'lifecycle_status.dart';
 import 'payment_assessment_model.dart';
@@ -138,6 +139,14 @@ class ApplicationModel {
   final ApplicationType type;
   final ApplicationStatus status;
   final DateTime submittedDate;
+
+  /// What this application continues, when it continues something.
+  ///
+  /// Null on a first filing, which is most of them. Present on a renewal or an
+  /// amendment, and then it names the permit or application concerned — the
+  /// action on its own would leave the office to work out which.
+  final ApplicationLineage? lineage;
+
   final List<DocumentModel> documents;
   final PaymentAssessmentModel? payment;
   final String? permitNumber;
@@ -191,6 +200,7 @@ class ApplicationModel {
     required this.type,
     required this.status,
     required this.submittedDate,
+    this.lineage,
     this.documents = const [],
     this.payment,
     this.permitNumber,
@@ -357,6 +367,7 @@ class ApplicationModel {
 
   ApplicationModel copyWith({
     ApplicationStatus? status,
+    ApplicationLineage? lineage,
     List<DocumentModel>? documents,
     PaymentAssessmentModel? payment,
     String? permitNumber,
@@ -381,6 +392,7 @@ class ApplicationModel {
       type: type,
       status: status ?? this.status,
       submittedDate: submittedDate,
+      lineage: lineage ?? this.lineage,
       documents: documents ?? this.documents,
       payment: payment ?? this.payment,
       permitNumber: permitNumber ?? this.permitNumber,

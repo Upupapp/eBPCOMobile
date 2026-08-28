@@ -62,7 +62,8 @@ void main() {
       expect(
         entry.offices.any((o) => o.contains('Building Official')),
         isFalse,
-        reason: 'sending an applicant to the OBO for zoning is the wrong '
+        reason:
+            'sending an applicant to the OBO for zoning is the wrong '
             'counter',
       );
     });
@@ -90,8 +91,10 @@ void main() {
         CanonicalPermitType.fsicForOccupancyPermitBfp: 'bfp',
       };
       expected.forEach((type, departmentId) {
-        expect(requirementsCatalog[type]!.responsibleDepartmentId,
-            departmentId);
+        expect(
+          requirementsCatalog[type]!.responsibleDepartmentId,
+          departmentId,
+        );
       });
     });
   });

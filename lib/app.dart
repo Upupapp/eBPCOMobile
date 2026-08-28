@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'core/constants/app_strings.dart';
 import 'core/providers/addition_extension_permit_provider.dart';
+import 'core/providers/application_intent_provider.dart';
 import 'core/providers/applications_provider.dart';
 import 'core/providers/architectural_permit_provider.dart';
 import 'core/providers/auth_provider.dart';
@@ -82,6 +83,11 @@ class _EbpcoAppState extends State<EbpcoApp> {
             notifications: context.read<NotificationsProvider>(),
             repository: context.read<RepositoryFactory>().applications(),
           ),
+        ),
+        // Holds a pending renewal or amendment between the screen that starts
+        // it and the wizard that files it.
+        ChangeNotifierProvider<ApplicationIntentProvider>(
+          create: (_) => ApplicationIntentProvider(),
         ),
         ChangeNotifierProvider<DocumentsProvider>(
           create: (_) => DocumentsProvider(),

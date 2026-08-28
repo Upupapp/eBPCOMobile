@@ -2,6 +2,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import 'package:ebpco_user_app/core/providers/addition_extension_permit_provider.dart';
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/architectural_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/certificate_of_occupancy_provider.dart';
@@ -30,6 +31,11 @@ import 'package:ebpco_user_app/core/providers/zoning_permit_provider.dart';
 /// out in each harness meant sixteen lines of noise per test file and one more
 /// place to forget when a seventeenth permit arrives.
 List<SingleChildWidget> wizardProviders() => [
+  // Every wizard's submit handler reads this to pick up a pending renewal or
+  // amendment, so a test that mounts a wizard without it crashes on submit.
+  ChangeNotifierProvider<ApplicationIntentProvider>(
+    create: (_) => ApplicationIntentProvider(),
+  ),
   ChangeNotifierProvider<BuildingPermitProvider>(
     create: (_) => BuildingPermitProvider(),
   ),

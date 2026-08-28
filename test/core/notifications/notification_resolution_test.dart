@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
@@ -227,6 +228,7 @@ class _ResubmitRepository implements ApplicationsRepository {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) => throw UnimplementedError();
 
   @override

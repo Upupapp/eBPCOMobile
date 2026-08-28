@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/business_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/business_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
@@ -42,6 +44,7 @@ class _ThrowingApplications implements ApplicationsRepository {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) async => throw _Offline();
   @override
   Future<ApplicationModel> attachPayment(
@@ -89,6 +92,11 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          // Every wizard's submit handler reads this to pick up a pending
+          // renewal or amendment.
+          ChangeNotifierProvider<ApplicationIntentProvider>(
+            create: (_) => ApplicationIntentProvider(),
+          ),
           ChangeNotifierProvider<NotificationsProvider>(
             create: (_) =>
                 NotificationsProvider(repository: _ThrowingNotifications()),

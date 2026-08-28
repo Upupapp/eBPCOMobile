@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -124,6 +125,21 @@ class DigitalPermitScreen extends StatelessWidget {
                   );
                 },
               ),
+
+            // Renewal, from the permit itself. TAB 09 gave this screen an
+            // expiry date and TAB 13 gave it a notification; until now both
+            // told the applicant their permit was running out and offered no
+            // way to answer either. Shown only where the type actually
+            // expires — a Certificate of Occupancy has nothing to renew.
+            if (application.expiryDate != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              SecondaryButton(
+                label: 'Renew this permit',
+                icon: Icons.autorenew,
+                onPressed: () =>
+                    context.push('/applications/$applicationId/renew'),
+              ),
+            ],
 
             if (release != null) ...[
               const SizedBox(height: AppSpacing.xl),

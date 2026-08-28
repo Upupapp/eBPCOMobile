@@ -82,7 +82,10 @@ void main() {
         // applicant should be told; a bare 9514 in a sentence about pesos is
         // not. Strip the citations, then look for a figure.
         final withoutCitations = basis.replaceAll(
-          RegExp(r'\b(RA|PD|BP|EO|JMC)\s*(No\.?\s*)?[\d-]+', caseSensitive: true),
+          RegExp(
+            r'\b(RA|PD|BP|EO|JMC)\s*(No\.?\s*)?[\d-]+',
+            caseSensitive: true,
+          ),
           '',
         );
         expect(

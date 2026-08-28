@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
@@ -29,6 +30,11 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
+            // Every wizard's submit handler reads this to pick up a pending
+            // renewal or amendment.
+            ChangeNotifierProvider<ApplicationIntentProvider>(
+              create: (_) => ApplicationIntentProvider(),
+            ),
             ChangeNotifierProvider<NotificationsProvider>(
               create: (_) => NotificationsProvider(
                 repository: MockNotificationsRepository(),

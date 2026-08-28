@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 import 'package:ebpco_user_app/core/contract/requirements_catalog.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
+import 'package:ebpco_user_app/core/providers/application_intent_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/auth_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
@@ -40,8 +41,7 @@ Widget _wrap() {
           final extra = state.extra as Map<String, Object?>?;
           return ZoningClearanceSubmittedScreen(
             applicationId: extra?['applicationId'] as String?,
-            referenceNumber:
-                extra?['referenceNumber'] as String? ?? 'ZON-X',
+            referenceNumber: extra?['referenceNumber'] as String? ?? 'ZON-X',
             submissionDate:
                 extra?['submissionDate'] as DateTime? ?? DateTime(2026, 8, 27),
           );
@@ -58,6 +58,11 @@ Widget _wrap() {
       ChangeNotifierProvider<ZoningPermitProvider>(
         create: (_) => ZoningPermitProvider(),
       ),
+      // Every wizard's submit handler reads this to pick up a pending
+      // renewal or amendment.
+      ChangeNotifierProvider<ApplicationIntentProvider>(
+        create: (_) => ApplicationIntentProvider(),
+      ),
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),
@@ -69,10 +74,7 @@ Widget _wrap() {
         ),
       ),
     ],
-    child: MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
-    ),
+    child: MaterialApp.router(theme: AppTheme.lightTheme, routerConfig: router),
   );
 }
 
@@ -183,7 +185,10 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 
-    expect(find.text('Zoning Clearance Application Submitted!'), findsOneWidget);
+    expect(
+      find.text('Zoning Clearance Application Submitted!'),
+      findsOneWidget,
+    );
     expect(find.textContaining('ZON-'), findsOneWidget);
     expect(
       find.text('Municipal Planning and Development Office'),

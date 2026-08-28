@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/models/application_model.dart';
+import '../../../../core/providers/application_intent_provider.dart';
 import '../../../../core/providers/applications_provider.dart';
 
 /// Records a construction-permit submission as a real application.
@@ -42,16 +43,25 @@ Future<ApplicationModel?> submitPermitApplication(
   required String applicantName,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
+  // A renewal or amendment started elsewhere and walked the applicant into
+  // this wizard. Consumed here rather than in sixteen wizards, and consumed
+  // rather than read: an intent that survives its filing is one that can
+  // attach itself to the next one.
+  final lineage = context.read<ApplicationIntentProvider>().consumeFor(
+    permitTypeLabel,
+  );
   try {
     return await context.read<ApplicationsProvider>().submitApplication(
       businessId: '',
       businessName: applicantName,
-      // The only options are new/renewal/amendment. Every permit wizard files
-      // a new one; [permitTypeLabel] is what actually names it on screen.
+      // New unless the applicant came in through a renewal or an amendment,
+      // which the lineage is the authority on; [permitTypeLabel] is what
+      // actually names the permit on screen.
       type: ApplicationType.newPermit,
       documents: const [],
       permitTypeLabel: permitTypeLabel,
       applicationNumber: referenceNumber,
+      lineage: lineage,
     );
   } catch (_) {
     messenger.showSnackBar(

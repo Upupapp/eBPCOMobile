@@ -247,8 +247,12 @@ class ActionItemBuilder {
                   ? 'Its validity period ended. Renewal is required before '
                         'work continues.'
                   : '$daysLeft day(s) of validity left on this permit.',
-              actionLabel: 'View permit',
-              route: '/applications/${application.id}',
+              // Straight to the renewal, not to the record. The applicant
+              // reading "your permit expires in 12 days" wants the thing that
+              // answers it, and an extra hop through the detail screen is
+              // where an intention goes to die.
+              actionLabel: 'Renew permit',
+              route: '/applications/${application.id}/renew',
             ),
           );
         }

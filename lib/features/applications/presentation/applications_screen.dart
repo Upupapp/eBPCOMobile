@@ -7,6 +7,7 @@ import '../../../core/contract/admin_vocabulary.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/layout/responsive_card_grid.dart';
+import '../../../routes/wizard_routes.dart';
 import 'widgets/application_option_card.dart';
 import 'widgets/before_you_start_card.dart';
 
@@ -20,7 +21,6 @@ class _PermitOption {
   final String title;
 
   final String description;
-  final String? routePath;
 
   /// What the office calls this permit.
   ///
@@ -38,12 +38,22 @@ class _PermitOption {
     required this.icon,
     required this.title,
     required this.description,
-    this.routePath,
+    this.explicitRoutePath,
     this.canonical,
   });
 
+  /// Only the legacy Business Permit flow names its own route. Every catalog
+  /// type takes it from [permitWizardRoutes], so the renewal flow — which
+  /// starts from an issued permit and never sees this screen — opens the same
+  /// wizard the catalog would have.
+  final String? explicitRoutePath;
+
   /// What to pass to anything that looks a permit up.
   String get lookupKey => canonical?.wire ?? title;
+
+  String? get routePath =>
+      explicitRoutePath ??
+      (canonical == null ? null : permitWizardRoutes[canonical]);
 }
 
 /// Landing page for the "Applications" tab: a catalog of every permit type
@@ -65,7 +75,7 @@ class ApplicationsScreen extends StatelessWidget {
       description:
           'New, renewal, or amendment of a business permit for an existing '
           'registered business.',
-      routePath: '/applications/new/business-permit',
+      explicitRoutePath: '/applications/new/business-permit',
     ),
   ];
 
@@ -76,7 +86,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.buildingPermitNewConstruction,
       description:
           'For building a completely new structure or property from the ground up, such as houses, commercial buildings, or facilities.',
-      routePath: '/applications/new/building-permit',
     ),
     _PermitOption(
       icon: Icons.handyman_outlined,
@@ -84,7 +93,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.buildingPermitRenovationAlteration,
       description:
           'For improving, remodeling, or upgrading an existing structure without significantly increasing its size or floor area.',
-      routePath: '/applications/new/renovation-permit',
     ),
     _PermitOption(
       icon: Icons.open_in_full_rounded,
@@ -92,7 +100,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.buildingPermitAdditionExtension,
       description:
           'For adding new spaces or expanding parts of an existing building, such as additional rooms, floors, or attached structures.',
-      routePath: '/applications/new/addition-extension-permit',
     ),
     _PermitOption(
       icon: Icons.domain_disabled_outlined,
@@ -100,7 +107,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.demolitionPermit,
       description:
           'For safely removing or tearing down an existing structure, building, or portion of a property.',
-      routePath: '/applications/new/demolition-permit',
     ),
   ];
 
@@ -111,7 +117,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.fsecForBuildingPermitBfp,
       description:
           'Required before your Building Permit is issued. Applied for at the Bureau of Fire Protection.',
-      routePath: '/applications/new/fsec-clearance',
     ),
     _PermitOption(
       icon: Icons.local_fire_department,
@@ -119,7 +124,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.fsicForOccupancyPermitBfp,
       description:
           'Required before your Certificate of Occupancy is issued. Applied for at the Bureau of Fire Protection.',
-      routePath: '/applications/new/fsic-clearance',
     ),
     _PermitOption(
       icon: Icons.map_outlined,
@@ -128,14 +132,12 @@ class ApplicationsScreen extends StatelessWidget {
       description:
           'Confirms your proposed use is allowed on the lot. Most other '
           'permits ask for this first. Issued by the MPDO.',
-      routePath: '/applications/new/zoning-clearance',
     ),
     _PermitOption(
       icon: Icons.architecture_outlined,
       title: 'Architectural',
       canonical: CanonicalPermitType.architecturalPermit,
       description: 'For the architectural design and layout of the structure.',
-      routePath: '/applications/new/architectural-permit',
     ),
     _PermitOption(
       icon: Icons.engineering_outlined,
@@ -143,14 +145,12 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.civilStructuralPermit,
       description:
           'For the structural framework, foundation, and load-bearing design.',
-      routePath: '/applications/new/civil-structural-permit',
     ),
     _PermitOption(
       icon: Icons.electrical_services_outlined,
       title: 'Electrical',
       canonical: CanonicalPermitType.electricalPermit,
       description: 'For electrical wiring, distribution, and installation.',
-      routePath: '/applications/new/electrical-permit',
     ),
     _PermitOption(
       icon: Icons.precision_manufacturing_outlined,
@@ -158,7 +158,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.mechanicalPermit,
       description:
           'For mechanical systems such as HVAC and other equipment installations.',
-      routePath: '/applications/new/mechanical-permit',
     ),
     _PermitOption(
       icon: Icons.plumbing_outlined,
@@ -166,7 +165,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.sanitaryPermit,
       description:
           'For water supply, drainage, plumbing fixtures, and sanitary sewage disposal system installations.',
-      routePath: '/applications/new/sanitary-plumbing-permit',
     ),
     _PermitOption(
       icon: Icons.water_damage_outlined,
@@ -174,7 +172,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.plumbingPermit,
       description:
           'For plumbing fixtures, water distribution, sewage, septic tank, and storm drainage installations.',
-      routePath: '/applications/new/plumbing-permit',
     ),
     _PermitOption(
       icon: Icons.memory_outlined,
@@ -182,14 +179,12 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.electronicsPermit,
       description:
           'For electronic systems such as fire alarms, CCTV, and communication wiring.',
-      routePath: '/applications/new/electronics-permit',
     ),
     _PermitOption(
       icon: Icons.chair_outlined,
       title: 'Interior',
       canonical: CanonicalPermitType.interiorDesignPermit,
       description: 'For interior design and fit-out of enclosed spaces.',
-      routePath: '/applications/new/interior-design-permit',
     ),
   ];
 
@@ -200,7 +195,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.fencingPermit,
       description:
           'For construction of perimeter fences and walls around a property.',
-      routePath: '/applications/new/fencing-permit',
     ),
     _PermitOption(
       icon: Icons.campaign_outlined,
@@ -208,7 +202,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.signPermit,
       description:
           'For installation of business signages, billboards, and similar structures.',
-      routePath: '/applications/new/sign-permit',
     ),
     _PermitOption(
       icon: Icons.terrain_outlined,
@@ -216,7 +209,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.excavationPermit,
       description:
           'For ground excavation, earthworks, and site preparation activities.',
-      routePath: '/applications/new/excavation-permit',
     ),
   ];
 
@@ -227,7 +219,6 @@ class ApplicationsScreen extends StatelessWidget {
       canonical: CanonicalPermitType.certificateOfOccupancy,
       description:
           'Apply for a certificate of occupancy after building completion.',
-      routePath: '/applications/new/certificate-of-occupancy',
     ),
   ];
 

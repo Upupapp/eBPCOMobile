@@ -129,9 +129,8 @@ void main() {
       await _open(tester, const FsecClearanceWizardScreen());
       await _reachDocuments(tester);
 
-      final catalog = requirementsCatalog[
-        CanonicalPermitType.fsecForBuildingPermitBfp
-      ]!;
+      final catalog =
+          requirementsCatalog[CanonicalPermitType.fsecForBuildingPermitBfp]!;
       expect(
         find.byType(DocumentUploadTile, skipOffstage: false).evaluate().length,
         catalog.documents.length,
@@ -165,9 +164,8 @@ void main() {
       await _open(tester, const FsicClearanceWizardScreen());
       await _reachDocuments(tester);
 
-      final catalog = requirementsCatalog[
-        CanonicalPermitType.fsicForOccupancyPermitBfp
-      ]!;
+      final catalog =
+          requirementsCatalog[CanonicalPermitType.fsicForOccupancyPermitBfp]!;
       expect(
         find.byType(DocumentUploadTile, skipOffstage: false).evaluate().length,
         catalog.documents.length,

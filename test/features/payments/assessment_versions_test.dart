@@ -35,10 +35,7 @@ void main() {
     });
 
     test('a superseded one is not', () {
-      expect(
-        _order(status: AssessmentStatus.superseded).isPayable,
-        isFalse,
-      );
+      expect(_order(status: AssessmentStatus.superseded).isPayable, isFalse);
     });
 
     test('a voided one is not', () {
@@ -92,7 +89,8 @@ void main() {
       expect(
         assessment.supersededOrders.single.total,
         const PesoAmount(250000),
-        reason: '"the figure changed" with no way to see what it was before '
+        reason:
+            '"the figure changed" with no way to see what it was before '
             'is not an explanation',
       );
       expect(

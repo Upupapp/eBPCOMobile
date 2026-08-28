@@ -95,10 +95,11 @@ void main() {
     // The wizards generate their own reference numbers from the clock — this
     // asserts that trick was never applied to a receipt.
     final offenders = <String>[];
-    for (final file in Directory('lib')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.dart'))) {
+    for (final file
+        in Directory('lib')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))) {
       final lines = file.readAsStringSync().split('\n');
       for (var i = 0; i < lines.length; i++) {
         final line = lines[i];
@@ -115,7 +116,8 @@ void main() {
     expect(
       offenders,
       isEmpty,
-      reason: 'an Official Receipt number must come from the office that '
+      reason:
+          'an Official Receipt number must come from the office that '
           'issued it. Found at:\n  ${offenders.join('\n  ')}',
     );
   });

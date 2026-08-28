@@ -63,6 +63,7 @@ import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/help_support_screen.dart';
 import '../features/profile/presentation/language_screen.dart';
 import '../features/profile/presentation/notification_preferences_screen.dart';
+import '../features/applications/presentation/continuation/continue_application_screen.dart';
 import '../features/documents/presentation/official_form_screen.dart';
 import '../features/profile/presentation/citizens_charter_screen.dart';
 import '../features/profile/presentation/privacy_data_screen.dart';
@@ -610,6 +611,23 @@ class AppRouter {
         // through the EN DASH in "Building Permit – New Construction". The
         // charter route below carried that second decode and the app's three
         // most common permit types could not open their own charter.
+        // A renewal starts from the permit and an amendment from the
+        // application, so both hang off the record they continue rather than
+        // off the catalog.
+        GoRoute(
+          path: '/applications/:applicationId/renew',
+          builder: (context, state) => ContinueApplicationScreen(
+            applicationId: state.pathParameters['applicationId']!,
+            kind: ContinuationKind.renewal,
+          ),
+        ),
+        GoRoute(
+          path: '/applications/:applicationId/amend',
+          builder: (context, state) => ContinueApplicationScreen(
+            applicationId: state.pathParameters['applicationId']!,
+            kind: ContinuationKind.amendment,
+          ),
+        ),
         GoRoute(
           path: '/forms/:permitType',
           builder: (context, state) => OfficialFormScreen(

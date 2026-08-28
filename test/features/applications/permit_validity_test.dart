@@ -76,9 +76,7 @@ void main() {
     });
 
     test('a twelve-month permit has both on the same day, and still two', () {
-      final application = _issued(
-        type: CanonicalPermitType.electricalPermit,
-      );
+      final application = _issued(type: CanonicalPermitType.electricalPermit);
       expect(application.expiryDate, application.commenceByDate);
       // Same date, different rules — one is about the permit lapsing, the
       // other about work not starting. They coincide here by arithmetic, not

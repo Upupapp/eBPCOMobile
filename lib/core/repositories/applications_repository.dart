@@ -1,5 +1,6 @@
 import '../../mock/mock_applications_data.dart';
 import '../constants/app_constants.dart';
+import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/document_model.dart';
 import '../models/payment_assessment_model.dart';
@@ -25,6 +26,10 @@ abstract class ApplicationsRepository {
     /// screen. Passed in rather than generated so the number on that screen
     /// and the number in the list are the same number.
     String? applicationNumber,
+
+    /// What this application continues, on a renewal or an amendment. Null on
+    /// a first filing.
+    ApplicationLineage? lineage,
   });
 
   Future<ApplicationModel> attachPayment(
@@ -66,6 +71,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
     required List<DocumentModel> documents,
     String? permitTypeLabel,
     String? applicationNumber,
+    ApplicationLineage? lineage,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final now = DateTime.now();
@@ -79,6 +85,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
       type: type,
       status: ApplicationStatus.submitted,
       submittedDate: now,
+      lineage: lineage,
       documents: documents,
       statusHistory: [
         StatusHistoryEntry(status: ApplicationStatus.submitted, timestamp: now),

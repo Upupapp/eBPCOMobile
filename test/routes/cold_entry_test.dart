@@ -65,6 +65,8 @@ const _paths = <String>[
   '/applications/does-not-exist/permit',
   '/applications/does-not-exist/outcome',
   '/applications/does-not-exist/pay',
+  '/applications/does-not-exist/renew',
+  '/applications/does-not-exist/amend',
   '/payments/history',
   '/profile/edit',
   '/profile/change-password',
