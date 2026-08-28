@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/contract/admin_vocabulary.dart';
 import '../../../core/models/contact_verification.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -214,8 +215,16 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.receipt_long_outlined,
                 label: 'Citizen’s Charter',
                 subtitle: 'Processing times, fees, and what to bring',
+                // The office's own name for the permit, not the catalog card's
+                // short one. `charterFor` is keyed on the canonical label, so
+                // 'New Construction' missed and fell through to the generic
+                // ancillary entry — which pledges 7 working days against the
+                // Building Permit's real 20. Under RA 11032 that number is the
+                // published service standard an applicant holds the office to,
+                // so quoting the wrong one is not a display bug.
                 onTap: () => context.push(
-                  '/charter/${Uri.encodeComponent('New Construction')}',
+                  '/charter/'
+                  '${Uri.encodeComponent(CanonicalPermitType.buildingPermitNewConstruction.wire)}',
                 ),
               ),
               const SizedBox(height: 20),
