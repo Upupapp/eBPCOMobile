@@ -16,7 +16,7 @@ class NotificationsProvider extends ChangeNotifier {
     required this._repository,
     DateTime Function()? clock,
     this.preferences = const NotificationPreferences(),
-  })  : _clock = clock ?? DateTime.now {
+  }) : _clock = clock ?? DateTime.now {
     _load();
   }
 
@@ -198,7 +198,8 @@ class NotificationsProvider extends ChangeNotifier {
 
   // -- state ---------------------------------------------------------------
 
-  void markAsRead(String id) => _update(id, (e) => e.copyWith(readAt: _clock()));
+  void markAsRead(String id) =>
+      _update(id, (e) => e.copyWith(readAt: _clock()));
 
   /// Marks everything read. Deliberately does **not** resolve anything: an
   /// outstanding P1 keeps its place in Needs your action and its badge.
@@ -229,6 +230,31 @@ class NotificationsProvider extends ChangeNotifier {
       if (event.applicationId == applicationId &&
           event.type == type &&
           !event.isResolved) {
+        _events[i] = event.copyWith(resolvedAt: now);
+        changed = true;
+      }
+    }
+    if (changed) notifyListeners();
+  }
+
+  /// Resolves every outstanding notice whose dedupe key starts with [prefix].
+  ///
+  /// Needed because [resolveFor] is per application and per type, and one
+  /// application can carry several notices of the same type about different
+  /// subjects: three documents turned back are three separate obligations,
+  /// and correcting one must not silence the other two. The dedupe key is
+  /// already the identity of the subject, so it is what the caller keys on.
+  ///
+  /// A prefix rather than an exact key, because the key encodes the attempt
+  /// count as well as the subject: after a resubmission the derived key has
+  /// moved on, while the notice still standing carries the old one.
+  void resolveByDedupeKeyPrefix(String prefix) {
+    final now = _clock();
+    var changed = false;
+    for (var i = 0; i < _events.length; i++) {
+      final event = _events[i];
+      final key = event.dedupeKey;
+      if (key != null && key.startsWith(prefix) && !event.isResolved) {
         _events[i] = event.copyWith(resolvedAt: now);
         changed = true;
       }

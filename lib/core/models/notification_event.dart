@@ -72,6 +72,17 @@ enum NotificationType {
   professionalCredentialExpiring,
   draftIdle,
   occupancyNowPossible,
+
+  // Added with contract 0.2.0, for states TABs 02, 06, 07 and 09 gave the
+  // applicant but gave nobody a way to announce. Appended rather than slotted
+  // in beside their relatives: `code` is derived from the enum's index, so
+  // inserting anywhere earlier would renumber every catalog code after it and
+  // silently rewrite the reference an applicant was quoted.
+  documentRejected,
+  paymentRejected,
+  assessmentSuperseded,
+  permitExpiryWarning,
+
   accountUpdate,
 }
 
@@ -94,6 +105,9 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.inspectionScheduled:
       case NotificationType.pledgeLapsed:
       case NotificationType.permitCommencementWarning:
+      case NotificationType.documentRejected:
+      case NotificationType.paymentRejected:
+      case NotificationType.permitExpiryWarning:
         return NotificationPriority.action;
 
       case NotificationType.documentVerificationStarted:
@@ -112,6 +126,8 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.paymentReceived:
       case NotificationType.paymentVerified:
       case NotificationType.paymentOverdue:
+      case NotificationType.paymentRejected:
+      case NotificationType.assessmentSuperseded:
         return NotificationCategory.payments;
 
       case NotificationType.approved:
@@ -120,6 +136,7 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.released:
       case NotificationType.rejected:
       case NotificationType.permitCommencementWarning:
+      case NotificationType.permitExpiryWarning:
       case NotificationType.occupancyNowPossible:
         return NotificationCategory.permitStatus;
 
@@ -128,6 +145,7 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.documentVerificationStarted:
       case NotificationType.professionalCredentialExpiring:
       case NotificationType.draftIdle:
+      case NotificationType.documentRejected:
         return NotificationCategory.documentReminders;
 
       case NotificationType.inspectionScheduled:
@@ -153,6 +171,7 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.paymentVerified:
         return Icons.receipt_long_outlined;
       case NotificationType.paymentOverdue:
+      case NotificationType.paymentRejected:
         return Icons.warning_amber_rounded;
       case NotificationType.readyForRelease:
       case NotificationType.released:
@@ -166,6 +185,12 @@ extension NotificationTypeX on NotificationType {
       case NotificationType.pledgeLapsed:
       case NotificationType.pledgeApproaching:
         return Icons.timelapse_outlined;
+      case NotificationType.permitExpiryWarning:
+        return Icons.event_busy_outlined;
+      case NotificationType.documentRejected:
+        return Icons.rule_folder_outlined;
+      case NotificationType.assessmentSuperseded:
+        return Icons.published_with_changes_outlined;
       case NotificationType.approved:
       case NotificationType.permitGenerated:
         return Icons.verified_outlined;
@@ -304,6 +329,14 @@ class NotificationEvent {
         return 'Unfinished draft';
       case NotificationType.occupancyNowPossible:
         return 'You may file for occupancy';
+      case NotificationType.documentRejected:
+        return 'Document turned back';
+      case NotificationType.paymentRejected:
+        return 'Payment not accepted';
+      case NotificationType.assessmentSuperseded:
+        return 'Your Order of Payment was revised';
+      case NotificationType.permitExpiryWarning:
+        return 'Permit expiring';
       case NotificationType.accountUpdate:
         return payload['title'] ?? 'Account update';
     }
@@ -402,6 +435,31 @@ class NotificationEvent {
         return 'Construction under ${payload['permitNumber'] ?? 'your permit'} '
             'is complete on record. You may now file for your Certificate of '
             'Occupancy.';
+      case NotificationType.documentRejected:
+        // The remarks are the whole message. "Rejected" on its own tells the
+        // applicant to guess, and guessing is another trip to the office.
+        return 'The office turned back '
+            '${payload['document'] ?? 'a document'} on $ref.'
+            '${payload['remarks'] != null ? ' Remarks: "${payload['remarks']}".' : ''}'
+            ' Upload a corrected copy to continue.';
+      case NotificationType.paymentRejected:
+        return 'Your payment for $ref was not accepted.'
+            '${payload['reason'] != null ? ' Reason: "${payload['reason']}".' : ''}'
+            ' The amount is still due.';
+      case NotificationType.assessmentSuperseded:
+        // Deliberately does not quote the new total: the replacement order
+        // raises its own orderOfPaymentIssued carrying the figure, and two
+        // notices disagreeing about what is owed is worse than one saying
+        // less.
+        return 'The Order of Payment for $ref has been replaced by a revised '
+            'assessment'
+            '${payload['reason'] != null ? ' (${payload['reason']})' : ''}'
+            '. Pay against the current version only.';
+      case NotificationType.permitExpiryWarning:
+        return 'Permit ${payload['permitNumber'] ?? ''} for $ref is valid until '
+            '${payload['date'] ?? 'its stated date'}.'
+            '${payload['days'] != null ? ' ${payload['days']} days remain.' : ''}'
+            ' This is separate from the deadline to start work.';
       case NotificationType.accountUpdate:
         return payload['body'] ?? '';
     }
@@ -413,16 +471,21 @@ class NotificationEvent {
     final id = applicationId;
     switch (type) {
       case NotificationType.letterOfInstructionIssued:
-        return id == null ? '/app/applications' : '/applications/$id/instructions';
+        return id == null
+            ? '/app/applications'
+            : '/applications/$id/instructions';
       case NotificationType.orderOfPaymentIssued:
       case NotificationType.paymentReceived:
       case NotificationType.paymentVerified:
       case NotificationType.paymentOverdue:
+      case NotificationType.paymentRejected:
+      case NotificationType.assessmentSuperseded:
         return id == null ? '/app/payments' : '/applications/$id/pay';
       case NotificationType.permitGenerated:
       case NotificationType.readyForRelease:
       case NotificationType.released:
       case NotificationType.permitCommencementWarning:
+      case NotificationType.permitExpiryWarning:
         return id == null ? '/app/applications' : '/applications/$id/permit';
       case NotificationType.rejected:
       case NotificationType.pledgeLapsed:

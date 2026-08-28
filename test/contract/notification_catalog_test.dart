@@ -47,7 +47,7 @@ void main() {
 
   group('contract: notification catalog', () {
     test('the vendored fixture is the one this test was written against', () {
-      expect(contract['contractVersion'], '0.1.0');
+      expect(contract['contractVersion'], '0.2.0');
     });
 
     test('the server carries exactly this app’s types', () {
@@ -58,7 +58,7 @@ void main() {
           .map((type) => wireNameOf(type.name))
           .toSet();
 
-      expect(fromApp, hasLength(25));
+      expect(fromApp, hasLength(29));
       expect(
         fromContract,
         fromApp,

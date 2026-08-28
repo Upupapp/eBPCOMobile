@@ -15,22 +15,22 @@ NotificationEvent _event(
   createdAt: DateTime(2026, 8, 18, 10),
 );
 
-/// The 24 numbered catalog entries. accountUpdate sits outside it by design.
+/// The 28 numbered catalog entries. accountUpdate sits outside it by design.
 final _catalog = NotificationType.values
     .where((t) => t != NotificationType.accountUpdate)
     .toList();
 
 void main() {
-  test('the catalog holds exactly 24 numbered entries', () {
-    expect(_catalog, hasLength(24));
+  test('the catalog holds exactly 28 numbered entries', () {
+    expect(_catalog, hasLength(28));
     expect(_catalog.first.code, 'N-01');
-    expect(_catalog.last.code, 'N-24');
+    expect(_catalog.last.code, 'N-28');
   });
 
   test('codes are unique and contiguous', () {
     final codes = _catalog.map((t) => t.code).toList();
-    expect(codes.toSet(), hasLength(24));
-    for (var i = 0; i < 24; i++) {
+    expect(codes.toSet(), hasLength(28));
+    for (var i = 0; i < 28; i++) {
       expect(codes[i], 'N-${(i + 1).toString().padLeft(2, '0')}');
     }
   });
@@ -86,23 +86,32 @@ void main() {
     },
   );
 
-  test('the nine action-priority events are the ones demanding a response', () {
-    final action = _catalog
-        .where((t) => t.priority == NotificationPriority.action)
-        .toSet();
+  test(
+    'the twelve action-priority events are the ones demanding a response',
+    () {
+      final action = _catalog
+          .where((t) => t.priority == NotificationPriority.action)
+          .toSet();
 
-    expect(action, {
-      NotificationType.letterOfInstructionIssued,
-      NotificationType.revisionRequired,
-      NotificationType.orderOfPaymentIssued,
-      NotificationType.paymentOverdue,
-      NotificationType.readyForRelease,
-      NotificationType.rejected,
-      NotificationType.inspectionScheduled,
-      NotificationType.pledgeLapsed,
-      NotificationType.permitCommencementWarning,
-    });
-  });
+      expect(action, {
+        NotificationType.letterOfInstructionIssued,
+        NotificationType.revisionRequired,
+        NotificationType.orderOfPaymentIssued,
+        NotificationType.paymentOverdue,
+        NotificationType.readyForRelease,
+        NotificationType.rejected,
+        NotificationType.inspectionScheduled,
+        NotificationType.pledgeLapsed,
+        NotificationType.permitCommencementWarning,
+        // Contract 0.2.0. Each is something the office decided and the applicant
+        // must answer: supply a corrected document, pay again, renew before the
+        // permit lapses.
+        NotificationType.documentRejected,
+        NotificationType.paymentRejected,
+        NotificationType.permitExpiryWarning,
+      });
+    },
+  );
 
   test('ambient events never push', () {
     for (final type in _catalog) {

@@ -1,3 +1,4 @@
+import '../contract/admin_vocabulary.dart';
 import '../models/application_model.dart';
 import '../models/draft_summary.dart';
 import '../models/lifecycle_status.dart';
@@ -78,8 +79,7 @@ class NotificationEvaluator {
       // Keyed on the save date, so the nudge repeats if the applicant opens
       // the draft, changes something, and abandons it again — but not while
       // the same untouched draft simply sits there.
-      dedupeKey:
-          '${draft.route}:${_dateKey(draft.lastSavedAt!)}',
+      dedupeKey: '${draft.route}:${_dateKey(draft.lastSavedAt!)}',
       payload: {
         'permitType': draft.permitTypeLabel,
         'percent': '${draft.percentComplete}',
@@ -131,7 +131,8 @@ class NotificationEvaluator {
 
     // -- PD 1096 commencement deadline ------------------------------------
     final commenceBy = application.commenceByDate;
-    final permitNumber = application.permitNumber ?? application.permit?.permitNumber;
+    final permitNumber =
+        application.permitNumber ?? application.permit?.permitNumber;
     if (commenceBy != null) {
       final daysLeft = _daysBetween(asOf, commenceBy);
       if (daysLeft <= ApplicationModel.commencementWarningDays) {
@@ -153,6 +154,94 @@ class NotificationEvaluator {
       }
     }
 
+    // -- permit validity ---------------------------------------------------
+    //
+    // A second deadline on the same permit, and not the one above. PD 1096's
+    // commencement rule is about work starting; validity is how long the
+    // permit itself lasts — six months, twelve, or none for a Certificate of
+    // Occupancy. A Fencing Permit expires before it must be commenced, so an
+    // applicant told only about commencement is told the later of the two
+    // dates and none of the consequence.
+    final expiry = application.expiryDate;
+    if (expiry != null) {
+      final daysLeft = _daysBetween(asOf, expiry);
+      if (daysLeft <= ApplicationModel.commencementWarningDays) {
+        yield DerivedNotification(
+          type: NotificationType.permitExpiryWarning,
+          // Same 60/30/lapsed bucketing as commencement, and deliberately a
+          // separate key namespace: both can be outstanding at once on a
+          // twelve-month permit, where the two dates coincide.
+          dedupeKey:
+              'expiry:${application.id}:${_commencementBucket(daysLeft)}',
+          applicationId: application.id,
+          applicationNumber: reference,
+          payload: {
+            'permitNumber': ?permitNumber,
+            'date': _dateKey(expiry),
+            'days': '$daysLeft',
+          },
+        );
+      }
+    }
+
+    // -- documents the office turned back ----------------------------------
+    //
+    // One notice per document, not one per application. The remarks are what
+    // the applicant has to act on, and merging three rejections into "3
+    // documents need attention" throws away the only part that tells them
+    // what to do.
+    for (final document in application.documents) {
+      if (document.status != DocumentStatus.rejected &&
+          document.status != DocumentStatus.revisionRequired) {
+        continue;
+      }
+      yield DerivedNotification(
+        type: NotificationType.documentRejected,
+        // Keyed on the document and how many times it has been submitted, so
+        // a corrected copy that is turned back again raises a fresh notice
+        // rather than being swallowed by the resolved one.
+        dedupeKey:
+            'documentRejected:${application.id}:${document.id}'
+            ':${document.history.length}',
+        applicationId: application.id,
+        applicationNumber: reference,
+        payload: {'document': document.label, 'remarks': ?document.remarks},
+      );
+    }
+
+    // -- payments the office refused, and assessments it replaced ----------
+    final payment = application.payment;
+    if (payment != null) {
+      for (final transaction in payment.rejectedTransactions) {
+        yield DerivedNotification(
+          type: NotificationType.paymentRejected,
+          // The transaction id is already unique per attempt, so paying again
+          // and being refused again says so again.
+          dedupeKey: 'paymentRejected:${application.id}:${transaction.id}',
+          applicationId: application.id,
+          applicationNumber: reference,
+          payload: {'reason': ?transaction.rejectionReason},
+        );
+      }
+
+      // A revised Order of Payment. Progress rather than action: the
+      // replacement carries its own orderOfPaymentIssued with the new total,
+      // and two notices disagreeing about what is owed is worse than one
+      // saying less.
+      final current = payment.orderOfPayment;
+      if (payment.wasReassessed && current != null) {
+        yield DerivedNotification(
+          type: NotificationType.assessmentSuperseded,
+          // Keyed on the version that replaced them, so a second revision is
+          // announced too.
+          dedupeKey: 'superseded:${application.id}:v${current.version}',
+          applicationId: application.id,
+          applicationNumber: reference,
+          payload: {'reason': ?current.revisionReason},
+        );
+      }
+    }
+
     // -- occupancy now possible -------------------------------------------
     //
     // A released construction permit is the point at which a Certificate of
@@ -163,7 +252,9 @@ class NotificationEvaluator {
         application.lifecycleStatus == ApplicationLifecycleStatus.released ||
         application.lifecycleStatus == ApplicationLifecycleStatus.completed;
     final permitType = application.permitTypeLabel;
-    if (isReleased && permitType != null && permitType != 'Certificate of Occupancy') {
+    if (isReleased &&
+        permitType != null &&
+        permitType != 'Certificate of Occupancy') {
       yield DerivedNotification(
         type: NotificationType.occupancyNowPossible,
         dedupeKey: 'occupancy:${application.id}',
@@ -204,8 +295,9 @@ class NotificationEvaluator {
       '${value.month.toString().padLeft(2, '0')}-'
       '${value.day.toString().padLeft(2, '0')}';
 
-  static int _daysBetween(DateTime from, DateTime to) =>
-      DateTime(to.year, to.month, to.day)
-          .difference(DateTime(from.year, from.month, from.day))
-          .inDays;
+  static int _daysBetween(DateTime from, DateTime to) => DateTime(
+    to.year,
+    to.month,
+    to.day,
+  ).difference(DateTime(from.year, from.month, from.day)).inDays;
 }

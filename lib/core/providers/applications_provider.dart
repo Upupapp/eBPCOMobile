@@ -246,6 +246,13 @@ class ApplicationsProvider extends ChangeNotifier {
           if (application.id == updated.id) updated else application,
       ];
       notifyListeners();
+      // Reading a rejection is not correcting one, so the notice survives
+      // being opened. Supplying the corrected copy is what discharges it —
+      // and only for this document: the other two the office turned back are
+      // still outstanding.
+      _notifications.resolveByDedupeKeyPrefix(
+        'documentRejected:$applicationId:$documentId:',
+      );
       return updated;
     } catch (error) {
       _loadError = error;
@@ -277,6 +284,7 @@ class ApplicationsProvider extends ChangeNotifier {
       updated.id,
       NotificationType.orderOfPaymentIssued,
     );
+    _notifications.resolveFor(updated.id, NotificationType.paymentRejected);
     return updated;
   }
 
@@ -443,6 +451,10 @@ class ApplicationsProvider extends ChangeNotifier {
       NotificationType.orderOfPaymentIssued,
     );
     _notifications.resolveFor(application.id, NotificationType.paymentOverdue);
+    // A refused payment is answered by paying again. The rejected transaction
+    // itself never changes — the office keeps the record — so nothing else
+    // would ever clear these.
+    _notifications.resolveFor(application.id, NotificationType.paymentRejected);
   }
 
   void _replace(ApplicationModel updated) {
