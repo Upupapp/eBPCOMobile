@@ -47,3 +47,48 @@ app.*.map.json
 
 # Swift Package Manager artefacts, regenerated on every iOS build.
 ios/**/xcshareddata/swiftpm/
+
+# ── Credentials and signing material ────────────────────────────────────────
+#
+# Nothing matching these has ever been tracked here — checked before adding
+# them, against every path in `git ls-files`. They are here because this
+# repository is PUBLIC and its history is permanent: a key committed once is
+# disclosed even if the next commit deletes it, and this account has published
+# secrets to a public repo twice. The cost of the rule is nil; the cost of the
+# omission is a rotation.
+#
+# Both lanes are covered on purpose — see LANES.md. The Windows agent owns
+# `android/` and its keystore, and a Mac cannot test what that lane commits.
+
+# Keys and certificates, any lane
+*.pem
+*.key
+*.p12
+*.pfx
+*.der
+*.cer
+
+# Android signing (the Windows lane's)
+*.jks
+*.keystore
+key.properties
+
+# Apple signing and App Store Connect
+*.p8
+AuthKey_*.p8
+*.mobileprovision
+*.provisionprofile
+.appstoreconnect/
+
+# Environment and service credentials. `.env.example` is deliberately kept:
+# a committed template is how the next person knows which variables exist.
+.env
+.env.*
+!.env.example
+service-account*.json
+*-service-account.json
+
+# Anything a developer names as a secret
+secrets.dart
+**/secrets/
+
