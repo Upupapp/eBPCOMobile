@@ -2,10 +2,10 @@
 
 ## Closing certification
 
-**Verdict: NOT CERTIFIED.**
+**Verdict: NOT CERTIFIED.** *(Amended 28 August 2026 — see §3; B-1 and B-2 were re-measured against the backend repository after publication. The verdict is unchanged.)*
 
 Every one of the sixteen build TABs is complete, all twenty standing gaps are
-closed in this repository, and the suite is green at 1462 tests. The programme
+closed in this repository, and the suite is green at 1484 tests. The programme
 is not certified because certification is a claim about a working system, and
 three things stand between this repository and one. None of them is code in
 this repository, and none of them can be closed by this lane.
@@ -98,27 +98,65 @@ inspection. All twenty are closed in this repository.
 
 ## 3. Why NOT CERTIFIED
 
-### B-1 — There is no backend. *Owner: backend lane.*
+> **AMENDED 28 August 2026, after publication.** B-1 and B-2 were re-measured
+> against the backend repository `~/ebpco-api` at `6138996`, which this section
+> had not accounted for. The verdict does not change; two of its reasons do, and
+> the amended text stands below with the original preserved beneath each.
 
-The app has never spoken to a server. `RepositoryFactory` returns the mock
-implementations because no API is configured; `HttpApplicationsRepository`
-exists, is tested, and is reached by nothing in a running build. Everything
-below follows from this, and nothing above can be verified against a live
-system until it is answered. This is M-27, and it is a decision as much as a
-task: technology, hosting, and who operates it.
+### B-1 — A backend exists and is reachable by nobody. *Owner: backend lane.*
 
-### B-2 — Three routes the app calls do not exist. *Owner: backend lane.*
+`~/ebpco-api` has **86 routes**. What has not happened is a deployment:
+`AppConfig.apiBaseUrl` is a `String.fromEnvironment` with **no default**, so
+`RepositoryFactory` still returns the mock implementations, and
+`HttpApplicationsRepository` is still reached by nothing in a running build.
+Nothing above can be verified against a live system until an instance exists
+somewhere.
 
-| | Route | Recorded |
+This is still M-27, and it is still a decision as much as a task — but the
+decision left is **hosting and who operates it**, not the technology, which the
+backend repository has settled.
+
+*Originally published as "There is no backend. The app has never spoken to a
+server." The second sentence remains true; the first was wrong.*
+
+### B-2 — Two of the three routes the app calls still do not exist. *Owner: backend lane.*
+
+| | Route | State |
 |---|---|---|
-| Document resubmission | `POST /applications/:id/documents/:documentId/resubmit` | M-43 |
-| Renewal / amendment reference | field on `POST /applications` | M-44 |
-| Contact verification | send and confirm, per channel | M-45 |
+| Document resubmission | `POST /applications/:id/documents/:documentId/resubmit` | **M-43 open** |
+| Renewal / amendment reference | `renews_permit_id` on `POST /applications` | **M-44 closed** `e60cf3f` |
+| Contact verification | send and confirm, per channel | **M-45 server half only** |
 
-Each fails loudly rather than quietly on a live build, deliberately. The
-resubmission route is additionally the one thing failing the contract
-repository's own client-alignment check, and has been since before this
-programme.
+**M-44 is genuinely closed** — a `renews_permit_id` foreign key plus
+`renewsPermitNumber` on both filing paths, refusing a renewal that names
+nothing, a permit that is not the applicant's, or a New application claiming to
+renew, with the database constraint enforcing it independently.
+
+**M-45 has a server half and no delivery.** `GET /me/contacts` and
+`POST /me/contacts/:channel/request|confirm` exist and use the admin's exact
+wire strings. There is no email or SMS provider, so `request` answers `202`
+with `delivery: "not-sent"` and **no human can reach the success path** — the
+server's tests plant a digest to get past it. That is the same honest refusal
+the app makes, and it is not a closure.
+
+**M-43 is open, and was briefly and wrongly recorded as closed.** The app makes
+*two* resubmit calls and only one has a server:
+
+- `POST /applications/:id/instructions/:letterId/resubmit` — **exists**
+  (`applicant-write.controller.ts:249`), the Letter of Instruction loop.
+- `POST /applications/:id/documents/:documentId/resubmit` — **absent**, and
+  undeclared in the contract too.
+
+They are different operations: a document can be rejected with remarks when no
+Letter of Instruction exists at all, which is why TAB 02 built the per-document
+loop. A search for "resubmit" matches the first and reads as closure — the
+failure mode this programme has hit repeatedly, where a lookup *resolves
+plausibly* instead of failing.
+
+`~/ebpco-contract/tools/verify.sh` has said so throughout and still does:
+*"the server has no route for: mobile calls POST
+/applications/{param}/documents/{param}/resubmit"*. **Trust the gate over the
+grep.**
 
 ### B-3 — Two subsystems are built, tested, and wired to nothing.
 
@@ -144,12 +182,12 @@ decision, and a server to flush to.
 
 ### Backend lane
 
-| Item | What it needs |
-|---|---|
-| M-27 | Decide the backend technology, hosting, and operator |
-| M-43 | Provide the document-resubmission route |
-| M-44 | Carry `priorApplicationId` / `priorPermitNumber` on `POST /applications` — a contract change, so a version bump |
-| M-45 | Send and check the email link and the mobile OTP |
+| Item | What it needs | State |
+|---|---|---|
+| M-27 | **Deploy it somewhere and decide who operates it.** The technology is settled; nothing is deployed | Open |
+| M-43 | Provide the **per-document** resubmission route, and declare it in the contract | Open |
+| M-44 | Carry the renewal reference on `POST /applications` | **Closed** `e60cf3f` |
+| M-45 | An email and SMS provider. The routes exist; delivery does not, so no applicant can complete a verification | Half open |
 
 Contract `0.2.0` was published from this programme (TAB 13): four notification
 types for states the applicant could reach and nobody could announce. Its
@@ -182,7 +220,7 @@ Against the admin's own source, extracted today:
 - **Nine closed vocabularies match**, in order, and parsing is total and closed:
   every value the admin can send round-trips, and an unrecognised one throws
   rather than defaulting to something plausible.
-- **1462 tests**, `flutter analyze` clean, zero layout overflows at 2.0× text
+- **1484 tests**, `flutter analyze` clean, zero layout overflows at 2.0× text
   scale across every routable screen.
 
 And one habit, worth more than any of them: **a green result is a claim that
