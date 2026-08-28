@@ -105,6 +105,12 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
+    # The blank official application forms and the Castilla OBO checklist,
+    # copied verbatim from the admin portal's public/assets/permits/. Bundled
+    # rather than fetched because the point of them is offline preparation:
+    # an applicant filling the paper form with a professional, away from the
+    # office and often away from a connection. ~6.6 MB across 18 files.
+    - assets/permits/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

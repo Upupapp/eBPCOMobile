@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -11,6 +10,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
+import '../../../shared/widgets/documents/pdf_file_view.dart';
 import '../../../shared/widgets/states/error_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
 import '../../../shared/widgets/text_fields/app_text_field.dart';
@@ -38,7 +38,6 @@ class DocumentPreviewScreen extends StatefulWidget {
 class _DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   bool _checkingFile = true;
   bool _fileMissing = false;
-  bool _pdfFailedToRender = false;
 
   @override
   void initState() {
@@ -218,8 +217,7 @@ class _DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
       return const ErrorState(
         icon: Icons.error_outline,
         title: 'File Not Available',
-        message:
-            'This file has been deleted, moved, or is no longer readable.',
+        message: 'This file has been deleted, moved, or is no longer readable.',
       );
     }
     if (document.fileType.isImage) {
@@ -239,23 +237,9 @@ class _DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
       );
     }
 
-    if (_pdfFailedToRender) {
-      return const ErrorState(
-        icon: Icons.error_outline,
-        title: 'File Not Available',
-        message:
-            'This PDF has been deleted, moved, or is no longer readable.',
-      );
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-      child: PDFView(
-        filePath: document.localPath,
-        fitPolicy: FitPolicy.WIDTH,
-        onError: (error) => setState(() => _pdfFailedToRender = true),
-        onPageError: (page, error) =>
-            setState(() => _pdfFailedToRender = true),
-      ),
+    return PdfFileView(
+      filePath: document.localPath,
+      onFailure: missingLocalFileState,
     );
   }
 
@@ -324,7 +308,10 @@ class _DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(document.name, style: AppTypography.bodyStrong),
+                              Text(
+                                document.name,
+                                style: AppTypography.bodyStrong,
+                              ),
                               const SizedBox(height: AppSpacing.xs),
                               Wrap(
                                 spacing: AppSpacing.md,

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/contract/permit_forms.dart';
 import '../../../core/contract/requirements_catalog.dart';
 import '../../../core/models/citizens_charter.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -52,6 +53,10 @@ class _PreFlightScreenState extends State<PreFlightScreen> {
     // Null for a permit type the catalog does not name — the screen still
     // works, it simply says less, rather than failing on an unmapped type.
     final requirements = requirementsForLabel(widget.permitType);
+    // Null where the LGU publishes nothing for this type; the buttons below
+    // are then simply absent.
+    final form = permitFormForLabel(widget.permitType);
+    final checklist = permitChecklistForLabel(widget.permitType);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -143,6 +148,34 @@ class _PreFlightScreenState extends State<PreFlightScreen> {
                 '/charter/${Uri.encodeComponent(widget.permitType)}',
               ),
             ),
+
+            // The blank paper the office works from. Offered here because
+            // this is the last screen before nine steps of typing, and it is
+            // the point at which someone preparing with an engineer, or
+            // filling the form by hand, wants to see it.
+            //
+            // Rendered only where something is actually bundled: an entry
+            // point that opens an empty screen is worse than none.
+            if (form != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              SecondaryButton(
+                label: form.isOfficialCastillaForm
+                    ? 'View the official form'
+                    : 'View the reference form',
+                onPressed: () => context.push(
+                  '/forms/${Uri.encodeComponent(widget.permitType)}',
+                ),
+              ),
+            ],
+            if (checklist != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              SecondaryButton(
+                label: 'View the office checklist',
+                onPressed: () => context.push(
+                  '/forms/${Uri.encodeComponent(widget.permitType)}/checklist',
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xxl),
           ],
         ),

@@ -63,6 +63,7 @@ import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/help_support_screen.dart';
 import '../features/profile/presentation/language_screen.dart';
 import '../features/profile/presentation/notification_preferences_screen.dart';
+import '../features/documents/presentation/official_form_screen.dart';
 import '../features/profile/presentation/citizens_charter_screen.dart';
 import '../features/profile/presentation/privacy_data_screen.dart';
 import '../features/profile/presentation/professionals_screen.dart';
@@ -600,12 +601,32 @@ class AppRouter {
           path: '/profile/privacy-data',
           builder: (context, state) => const PrivacyDataScreen(),
         ),
+        // The blank official form and the OBO checklist. Two routes rather
+        // than one with a query parameter, because a notification or a shared
+        // link should be able to name which of the two it means.
+        // `pathParameters` arrives already decoded. Decoding it a second time
+        // throws "Illegal percent encoding in URI" on any value containing a
+        // non-ASCII character — which the three Building Permit sub-types do,
+        // through the EN DASH in "Building Permit – New Construction". The
+        // charter route below carried that second decode and the app's three
+        // most common permit types could not open their own charter.
+        GoRoute(
+          path: '/forms/:permitType',
+          builder: (context, state) => OfficialFormScreen(
+            permitType: state.pathParameters['permitType']!,
+          ),
+        ),
+        GoRoute(
+          path: '/forms/:permitType/checklist',
+          builder: (context, state) => OfficialFormScreen(
+            permitType: state.pathParameters['permitType']!,
+            checklist: true,
+          ),
+        ),
         GoRoute(
           path: '/charter/:permitType',
           builder: (context, state) => CitizensCharterScreen(
-            permitType: Uri.decodeComponent(
-              state.pathParameters['permitType']!,
-            ),
+            permitType: state.pathParameters['permitType']!,
           ),
         ),
         GoRoute(

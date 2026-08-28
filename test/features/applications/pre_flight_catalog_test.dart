@@ -108,4 +108,74 @@ void main() {
     expect(find.textContaining('Unified Building Permit Form'), findsOneWidget);
     expect(find.textContaining('14 required'), findsOneWidget);
   });
+
+  group('the blank official form', () {
+    testWidgets('every catalog type offers its form from pre-flight', (
+      tester,
+    ) async {
+      // The entry point has to exist for all nineteen, because the pre-flight
+      // gate is the one screen every catalog card routes through.
+      for (final type in CanonicalPermitType.values) {
+        await _open(tester, type.wire);
+        final official = find.text('View the official form');
+        final reference = find.text('View the reference form');
+        expect(
+          official.evaluate().length + reference.evaluate().length,
+          1,
+          reason: '${type.wire} offers no way to see its form',
+        );
+      }
+    });
+
+    testWidgets('a Castilla form is offered as the official one', (
+      tester,
+    ) async {
+      await _open(tester, CanonicalPermitType.fencingPermit.wire);
+      expect(find.text('View the official form'), findsOneWidget);
+      expect(find.text('View the reference form'), findsNothing);
+    });
+
+    testWidgets('a stand-in template is not called official', (tester) async {
+      // Architectural is one of the five the LGU has not published a form
+      // for. Calling it "the official form" here would send someone to the
+      // counter with the wrong paper.
+      await _open(tester, CanonicalPermitType.architecturalPermit.wire);
+      expect(find.text('View the reference form'), findsOneWidget);
+      expect(find.text('View the official form'), findsNothing);
+    });
+
+    testWidgets('the office checklist appears for the four types it covers', (
+      tester,
+    ) async {
+      for (final type in [
+        CanonicalPermitType.buildingPermitNewConstruction,
+        CanonicalPermitType.buildingPermitRenovationAlteration,
+        CanonicalPermitType.buildingPermitAdditionExtension,
+        CanonicalPermitType.certificateOfOccupancy,
+      ]) {
+        await _open(tester, type.wire);
+        expect(
+          find.text('View the office checklist'),
+          findsOneWidget,
+          reason: type.wire,
+        );
+      }
+    });
+
+    testWidgets('and not for the fifteen it does not', (tester) async {
+      await _open(tester, CanonicalPermitType.electricalPermit.wire);
+      expect(find.text('View the office checklist'), findsNothing);
+    });
+
+    testWidgets('a permit type outside the catalog offers neither', (
+      tester,
+    ) async {
+      // The legacy Business Permit flow has no entry in the construction
+      // catalog. No form, so no button — rather than a button to nothing.
+      await _open(tester, 'Business Permit');
+      expect(find.text('View the official form'), findsNothing);
+      expect(find.text('View the reference form'), findsNothing);
+      expect(find.text('View the office checklist'), findsNothing);
+    });
+  });
 }

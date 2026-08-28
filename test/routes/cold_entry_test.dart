@@ -77,6 +77,8 @@ const _paths = <String>[
   '/profile/privacy-data',
   '/profile/privacy',
   '/charter/building-permit',
+  '/forms/Fencing%20Permit',
+  '/forms/Fencing%20Permit/checklist',
   '/app/home',
   '/app/applications',
   '/app/payments',
