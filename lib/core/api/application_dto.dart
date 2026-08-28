@@ -1,6 +1,8 @@
 import '../models/application_detail.dart';
 import '../models/application_model.dart';
+import '../contract/admin_vocabulary.dart';
 import '../models/document_model.dart';
+import '../models/document_review_reason.dart';
 import '../models/lifecycle_status.dart';
 import '../models/order_of_payment.dart';
 import '../models/payment_assessment_model.dart';
@@ -57,7 +59,10 @@ class ApplicationDto {
       release: _release(json['release']),
       payment: _payment(json['payment']),
       permitNumber: json['permit'] is Map
-          ? _stringOrNull(json['permit'] as Map<String, dynamic>, 'permitNumber')
+          ? _stringOrNull(
+              json['permit'] as Map<String, dynamic>,
+              'permitNumber',
+            )
           : null,
       issuedDate: json['permit'] is Map
           ? _dateTimeOrNull(
@@ -126,10 +131,7 @@ class ApplicationDto {
       case 'Highly Technical':
         return PermitClassification.highlyTechnical;
     }
-    throw ApiException(
-      ApiFailure.malformed,
-      'unknown classification "$raw"',
-    );
+    throw ApiException(ApiFailure.malformed, 'unknown classification "$raw"');
   }
 
   static ApplicationType _applicationAction(String? raw) {
@@ -175,7 +177,10 @@ class ApplicationDto {
       case 'Rejected':
         return EvaluationResult.rejected;
     }
-    throw ApiException(ApiFailure.malformed, 'unknown evaluation result "$raw"');
+    throw ApiException(
+      ApiFailure.malformed,
+      'unknown evaluation result "$raw"',
+    );
   }
 
   static PaymentAssessmentStatus _paymentStatus(String raw) {
@@ -230,6 +235,14 @@ class ApplicationDto {
 
   // -- nested records ------------------------------------------------------
 
+  /// One attached document, INCLUDING what the office decided about it.
+  ///
+  /// Until now this read four fields — id, label, fileName, uploadedAt — and
+  /// dropped the rest on the floor. The whole per-document review layer built
+  /// in TAB 02 (status, the evaluator's remarks, the issuing office, the
+  /// document's own expiry, the submission history) was therefore reachable
+  /// from the mock repository and from nowhere else: the models held it, three
+  /// screens rendered it, and a live server could not have filled any of it.
   static List<DocumentModel> _documents(dynamic raw) {
     if (raw is! List) return const [];
     return [
@@ -239,8 +252,70 @@ class ApplicationDto {
           label: _string(row, 'label'),
           fileName: _stringOrNull(row, 'fileName') ?? '',
           uploadedAt: _dateTime(row, 'uploadedAt'),
+          status: _documentStatus(_stringOrNull(row, 'status')),
+          remarks: _stringOrNull(row, 'remarks'),
+          reviewReason: _reviewReason(row['reviewReason']),
+          issuingOffice: _stringOrNull(row, 'issuingOffice'),
+          issueDate: _dateTimeOrNull(row, 'issueDate'),
+          expiryDate: _dateTimeOrNull(row, 'expiryDate'),
+          history: _submissions(row['history']),
         ),
     ];
+  }
+
+  /// Absent means nobody has reviewed it, which is a real state and not a
+  /// failure. Present but unrecognised is a failure: this vocabulary is the
+  /// admin's closed set, and guessing at a status is how an applicant gets
+  /// told their document was accepted.
+  static DocumentStatus? _documentStatus(String? raw) {
+    if (raw == null) return null;
+    try {
+      return documentStatusFromWire(raw);
+    } on UnknownWireValue {
+      throw ApiException(
+        ApiFailure.malformed,
+        'unknown document status "$raw"',
+      );
+    }
+  }
+
+  /// The office's standard reason, from a catalogue the LGU edits.
+  ///
+  /// **Deliberately never throws**, unlike every other vocabulary parsed in
+  /// this file. An office adding a reason is an ordinary administrative act,
+  /// and a client that crashes on one it has not seen would turn that act into
+  /// an outage on the applicant's phone. An unknown code renders; a missing
+  /// label is humanised from the code.
+  static DocumentReviewReason? _reviewReason(dynamic raw) {
+    if (raw is! Map<String, dynamic>) return null;
+    final code = _stringOrNull(raw, 'code');
+    if (code == null || code.trim().isEmpty) return null;
+    return DocumentReviewReason.fromWire(
+      code: code,
+      label: _stringOrNull(raw, 'label'),
+      description: _stringOrNull(raw, 'description'),
+    );
+  }
+
+  /// Earlier submissions of the same requirement, oldest first.
+  ///
+  /// The office keeps every one, and so must this: an applicant who resubmits
+  /// a rejected title should not lose the record of what was rejected, or why.
+  static List<DocumentSubmission> _submissions(dynamic raw) {
+    if (raw is! List) return const [];
+    final entries = [
+      for (final row in raw.whereType<Map<String, dynamic>>())
+        DocumentSubmission(
+          fileName: _stringOrNull(row, 'fileName') ?? '',
+          submittedAt: _dateTime(row, 'submittedAt'),
+          status:
+              _documentStatus(_stringOrNull(row, 'status')) ??
+              DocumentStatus.submitted,
+          remarks: _stringOrNull(row, 'remarks'),
+        ),
+    ];
+    entries.sort((a, b) => a.submittedAt.compareTo(b.submittedAt));
+    return entries;
   }
 
   static List<TimelineEntry> _timeline(dynamic raw) {
@@ -396,10 +471,7 @@ class ApplicationDto {
   static String _string(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is String && value.isNotEmpty) return value;
-    throw ApiException(
-      ApiFailure.malformed,
-      'missing required string "$key"',
-    );
+    throw ApiException(ApiFailure.malformed, 'missing required string "$key"');
   }
 
   static String? _stringOrNull(Map<String, dynamic> json, String key) {

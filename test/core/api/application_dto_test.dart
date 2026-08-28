@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebpco_user_app/core/api/api_exception.dart';
 import 'package:ebpco_user_app/core/api/application_dto.dart';
 import 'package:ebpco_user_app/core/models/application_detail.dart';
+import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
@@ -335,5 +336,184 @@ void main() {
       () => ApplicationDto.parseList([_payload(), 'oops']),
       throwsA(isA<ApiException>()),
     );
+  });
+
+  group('the per-document review layer reaches the model', () {
+    // Everything TAB 02 built was reachable from the mock repository and from
+    // nowhere else: the parser read four fields and dropped status, remarks,
+    // the issuing office, the document's own expiry and the whole submission
+    // history. Three screens rendered data a live server could never have
+    // supplied.
+
+    Map<String, dynamic> withDocuments(List<Object> docs) => {
+      ..._payload(),
+      'documents': docs,
+    };
+
+    test('status, remarks and the standard reason all arrive', () {
+      final parsed = ApplicationDto.parse(
+        withDocuments([
+          {
+            'id': 'doc-1',
+            'label': 'Certified True Copy of Title',
+            'fileName': 'title.pdf',
+            'uploadedAt': '2026-08-04T10:00:00+08:00',
+            'status': 'Rejected',
+            'remarks': 'Page 3 cannot be read.',
+            'reviewReason': {'code': 'illegible', 'label': 'Illegible'},
+            'issuingOffice': 'Registry of Deeds',
+            'issueDate': '2026-01-10T00:00:00+08:00',
+            'expiryDate': '2027-01-10T00:00:00+08:00',
+          },
+        ]),
+      );
+
+      final doc = parsed.documents.single;
+      expect(doc.status, DocumentStatus.rejected);
+      expect(doc.remarks, 'Page 3 cannot be read.');
+      expect(doc.reviewReason?.code, 'illegible');
+      expect(doc.reviewReason?.label, 'Illegible');
+      expect(doc.issuingOffice, 'Registry of Deeds');
+      expect(doc.issueDate, isNotNull);
+      expect(doc.expiryDate, isNotNull);
+      expect(doc.needsApplicantAction, isTrue);
+      expect(doc.reviewFeedback, 'Illegible — Page 3 cannot be read.');
+    });
+
+    test('an absent status means nobody has reviewed it, not a failure', () {
+      final parsed = ApplicationDto.parse(
+        withDocuments([
+          {
+            'id': 'doc-1',
+            'label': 'Cedula',
+            'fileName': 'cedula.pdf',
+            'uploadedAt': '2026-08-04T10:00:00+08:00',
+          },
+        ]),
+      );
+      expect(parsed.documents.single.status, isNull);
+      expect(parsed.documents.single.needsApplicantAction, isFalse);
+    });
+
+    test('an UNKNOWN status is a failure, because guessing is worse', () {
+      // The admin's closed vocabulary. Inventing a meaning for a status is how
+      // an applicant gets told their document was accepted.
+      expect(
+        () => ApplicationDto.parse(
+          withDocuments([
+            {
+              'id': 'doc-1',
+              'label': 'Cedula',
+              'fileName': 'cedula.pdf',
+              'uploadedAt': '2026-08-04T10:00:00+08:00',
+              'status': 'Approved',
+            },
+          ]),
+        ),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
+    test(
+      'an unknown review REASON is fine, because that catalogue is open',
+      () {
+        // The opposite rule, deliberately. An office adding a reason must not
+        // crash a phone that shipped last month.
+        final parsed = ApplicationDto.parse(
+          withDocuments([
+            {
+              'id': 'doc-1',
+              'label': 'Lot Plan',
+              'fileName': 'plan.pdf',
+              'uploadedAt': '2026-08-04T10:00:00+08:00',
+              'status': 'Revision Required',
+              'reviewReason': {'code': 'smudged-ink'},
+            },
+          ]),
+        );
+
+        final reason = parsed.documents.single.reviewReason!;
+        expect(reason.code, 'smudged-ink');
+        // No label sent, so it is humanised rather than left blank.
+        expect(reason.label, 'Smudged ink');
+      },
+    );
+
+    test('a malformed reviewReason is dropped, not fatal', () {
+      for (final bad in [<String, dynamic>{}, 'illegible', 42, null]) {
+        final parsed = ApplicationDto.parse(
+          withDocuments([
+            {
+              'id': 'doc-1',
+              'label': 'Lot Plan',
+              'fileName': 'plan.pdf',
+              'uploadedAt': '2026-08-04T10:00:00+08:00',
+              'reviewReason': bad,
+            },
+          ]),
+        );
+        expect(parsed.documents.single.reviewReason, isNull, reason: '$bad');
+      }
+    });
+
+    test(
+      'submission history arrives oldest first, whatever order was sent',
+      () {
+        final parsed = ApplicationDto.parse(
+          withDocuments([
+            {
+              'id': 'doc-1',
+              'label': 'Land Title',
+              'fileName': 'title-v3.pdf',
+              'uploadedAt': '2026-08-04T10:00:00+08:00',
+              'history': [
+                {
+                  'fileName': 'title-v2.pdf',
+                  'submittedAt': '2026-07-20T10:00:00+08:00',
+                  'status': 'Rejected',
+                  'remarks': 'Still a photocopy.',
+                },
+                {
+                  'fileName': 'title-v1.pdf',
+                  'submittedAt': '2026-07-01T10:00:00+08:00',
+                  'status': 'Rejected',
+                  'remarks': 'Photocopy not acceptable.',
+                },
+              ],
+            },
+          ]),
+        );
+
+        final history = parsed.documents.single.history;
+        expect(history.map((h) => h.fileName), [
+          'title-v1.pdf',
+          'title-v2.pdf',
+        ]);
+        expect(history.first.remarks, 'Photocopy not acceptable.');
+      },
+    );
+
+    test('a history entry with no status is a submission, not a verdict', () {
+      final parsed = ApplicationDto.parse(
+        withDocuments([
+          {
+            'id': 'doc-1',
+            'label': 'Land Title',
+            'fileName': 'title-v2.pdf',
+            'uploadedAt': '2026-08-04T10:00:00+08:00',
+            'history': [
+              {
+                'fileName': 'title-v1.pdf',
+                'submittedAt': '2026-07-01T10:00:00+08:00',
+              },
+            ],
+          },
+        ]),
+      );
+      expect(
+        parsed.documents.single.history.single.status,
+        DocumentStatus.submitted,
+      );
+    });
   });
 }
