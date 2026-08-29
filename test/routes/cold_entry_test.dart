@@ -62,6 +62,34 @@ const _paths = <String>[
   '/applications/new/certificate-of-occupancy/submitted',
   '/applications/new/plumbing-permit/submitted',
   '/applications/new/sanitary-plumbing-permit/submitted',
+  // Added by TABs 03, 04 and 05 and missed by this sweep at the time —
+  // sixteen of the nineteen confirmation routes were listed and these
+  // three were not, which is exactly the hole the sweep exists to find.
+  '/applications/new/zoning-clearance/submitted',
+  '/applications/new/fsec-clearance/submitted',
+  '/applications/new/fsic-clearance/submitted',
+  // The wizards themselves, entered cold. A deep link or a restored
+  // session can land on one directly, and each builds a PageView over a
+  // draft its provider may not have started yet.
+  '/applications/new/building-permit',
+  '/applications/new/renovation-permit',
+  '/applications/new/addition-extension-permit',
+  '/applications/new/demolition-permit',
+  '/applications/new/zoning-clearance',
+  '/applications/new/architectural-permit',
+  '/applications/new/civil-structural-permit',
+  '/applications/new/electrical-permit',
+  '/applications/new/mechanical-permit',
+  '/applications/new/sanitary-plumbing-permit',
+  '/applications/new/plumbing-permit',
+  '/applications/new/electronics-permit',
+  '/applications/new/interior-design-permit',
+  '/applications/new/fencing-permit',
+  '/applications/new/sign-permit',
+  '/applications/new/excavation-permit',
+  '/applications/new/fsec-clearance',
+  '/applications/new/fsic-clearance',
+  '/applications/new/certificate-of-occupancy',
   '/applications/does-not-exist',
   '/applications/does-not-exist/instructions',
   '/applications/does-not-exist/permit',
