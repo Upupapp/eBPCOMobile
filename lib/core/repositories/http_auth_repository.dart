@@ -22,16 +22,18 @@ class HttpAuthRepository implements AuthRepository {
     required String password,
   }) async {
     try {
-      final tokens = await _api.post('/auth/token', body: {
-        'grantType': 'password',
-        'email': email,
-        'password': password,
-      });
+      final tokens = await _api.post(
+        '/auth/token',
+        body: {'grantType': 'password', 'email': email, 'password': password},
+      );
 
       final access = tokens['accessToken'];
       final refresh = tokens['refreshToken'];
       if (access is! String || refresh is! String) {
-        throw const ApiException(ApiFailure.malformed, 'token response missing a token');
+        throw const ApiException(
+          ApiFailure.malformed,
+          'token response missing a token',
+        );
       }
 
       // Stored before the profile call, so the profile request carries it.
@@ -55,13 +57,16 @@ class HttpAuthRepository implements AuthRepository {
     required String mobileNumber,
     required String password,
   }) async {
-    await _api.post('/auth/register', body: {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'mobileNumber': mobileNumber,
-      'password': password,
-    });
+    await _api.post(
+      '/auth/register',
+      body: {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'mobileNumber': mobileNumber,
+        'password': password,
+      },
+    );
     // 202 whether or not the address was already registered. Returning true
     // either way is deliberate: anything else would let the app tell an
     // applicant which of their neighbours already has an account here.
@@ -76,14 +81,49 @@ class HttpAuthRepository implements AuthRepository {
       final me = await _api.getObject('/me');
       return UserModel(
         firstName: _string(me, 'firstName') ?? '',
+        middleName: _string(me, 'middleName') ?? '',
         lastName: _string(me, 'lastName') ?? '',
         email: _string(me, 'email') ?? email,
         mobileNumber: _string(me, 'mobileNumber') ?? '',
+        // The Profile screen renders every one of these. Filling four of
+        // fourteen left a signed-in applicant looking at their own record with
+        // no address, no account type, no status and no join date — all of
+        // which the screen has rendered since it was built.
+        photoPath: _string(me, 'photoPath'),
+        address: _string(me, 'address') ?? '',
+        province: _string(me, 'province') ?? '',
+        city: _string(me, 'city') ?? '',
+        barangay: _string(me, 'barangay') ?? '',
+        zipCode: _string(me, 'zipCode') ?? '',
+        accountType: _string(me, 'accountType') ?? 'Individual Applicant',
+        accountStatus: _accountStatus(_string(me, 'accountStatus')),
+        registeredSince: _dateTimeOrNull(me, 'registeredSince'),
       );
     } on ApiException catch (error) {
       if (error.failure == ApiFailure.unauthorized) return null;
       rethrow;
     }
+  }
+
+  /// The account's standing, as the office words it.
+  ///
+  /// Defaults to pending rather than verified when absent or unrecognised.
+  /// Getting this wrong in the safe direction matters: an account shown as
+  /// Verified that the office has not verified is a claim this app has no
+  /// basis for, while an unnecessary "Pending Verification" costs only a
+  /// question at the counter. Deliberately does not throw — a profile that
+  /// fails to load locks the applicant out of everything.
+  static AccountStatus _accountStatus(String? raw) => switch (raw) {
+    'Verified' => AccountStatus.verified,
+    'Pending Verification' || 'Pending' => AccountStatus.pending,
+    'Suspended' => AccountStatus.suspended,
+    _ => AccountStatus.pending,
+  };
+
+  static DateTime? _dateTimeOrNull(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is! String || value.isEmpty) return null;
+    return DateTime.tryParse(value)?.toLocal();
   }
 
   static String? _string(Map<String, dynamic> json, String key) {

@@ -273,4 +273,86 @@ void main() {
       );
     });
   });
+
+  group('the notification payload reaches the body', () {
+    // Found by diffing every model constructor against what each parser fills.
+    // NotificationEvent declares ten fields and this parser set six, dropping
+    // `payload` -- which is what `body` templates every specific message from.
+    // Without it, "Your Order of Payment for E-BPCO-2026-000145 is ready:
+    // PHP 5,000" degraded to "your application ... see the breakdown".
+
+    Future<List<NotificationEvent>> fetch(Map<String, dynamic> row) async {
+      final repo = HttpNotificationsRepository(
+        clientFor(
+          _Canned(
+            200,
+            jsonEncode({
+              'data': [row],
+            }),
+          ),
+        ),
+      );
+      return repo.fetchAll();
+    }
+
+    test('the reference and the template values both arrive', () async {
+      final events = await fetch({
+        'id': 'n-1',
+        'type': 'order-of-payment-issued',
+        'applicationId': 'app-1',
+        'applicationNumber': 'E-BPCO-2026-000145',
+        'createdAt': '2026-08-12T09:00:00+08:00',
+        'payload': {'total': 'PHP 5,000.00'},
+      });
+
+      final event = events.single;
+      expect(event.applicationNumber, 'E-BPCO-2026-000145');
+      expect(event.payload['total'], 'PHP 5,000.00');
+      // The whole point: the body is specific rather than generic.
+      expect(event.body, contains('E-BPCO-2026-000145'));
+      expect(event.body, contains('PHP 5,000.00'));
+    });
+
+    test('numbers in the payload are coerced, not rejected', () async {
+      // The server sends counts and amounts as numbers; the body interpolates
+      // everything into text anyway. A notification is not worth failing to
+      // load over a value's JSON type.
+      final events = await fetch({
+        'id': 'n-2',
+        'type': 'letter-of-instruction-issued',
+        'applicationId': 'app-1',
+        'createdAt': '2026-08-12T09:00:00+08:00',
+        'payload': {'count': 3},
+      });
+      expect(events.single.payload['count'], '3');
+      expect(events.single.body, contains('3 item'));
+    });
+
+    test('a missing or malformed payload is empty, not fatal', () async {
+      for (final bad in [null, 'nope', 42, <String, dynamic>{}]) {
+        final events = await fetch({
+          'id': 'n-3',
+          'type': 'approved',
+          'applicationId': 'app-1',
+          'createdAt': '2026-08-12T09:00:00+08:00',
+          'payload': bad,
+        });
+        expect(events.single.payload, isEmpty, reason: '$bad');
+        expect(events.single.body, isNotEmpty);
+      }
+    });
+
+    test('null payload values are dropped rather than stringified', () async {
+      // '${null}' is the string "null", which would render literally in a body.
+      final events = await fetch({
+        'id': 'n-4',
+        'type': 'permit-generated',
+        'applicationId': 'app-1',
+        'createdAt': '2026-08-12T09:00:00+08:00',
+        'payload': {'permitNumber': null},
+      });
+      expect(events.single.payload.containsKey('permitNumber'), isFalse);
+      expect(events.single.body, isNot(contains('null')));
+    });
+  });
 }
