@@ -1,0 +1,120 @@
+{
+  "_comment": "VENDORED from ~/ebpco-contract — the RESPONSE schemas this app parses. The counterpart to write-bodies.json. Where mobile reads a field the contract does not declare, a conforming server will never send it and the feature is mock-only.",
+  "source": {
+    "repository": "ebpco-contract",
+    "extractedOn": "2026-08-29"
+  },
+  "ApplicationCore": {
+    "properties": [
+      "applicantStatus",
+      "applicationAction",
+      "businessId",
+      "businessName",
+      "classification",
+      "dateSubmitted",
+      "id",
+      "lifecycleStatus",
+      "location",
+      "openInstructionCount",
+      "permitType",
+      "pledge",
+      "referenceNumber",
+      "requiresApplicantAction",
+      "serviceDomain",
+      "updatedAt"
+    ],
+    "required": [],
+    "additionalPropertiesAllowed": true
+  },
+  "Document": {
+    "properties": [
+      "applicationId",
+      "byteSize",
+      "contentType",
+      "expiresOn",
+      "fileName",
+      "id",
+      "label",
+      "scanCleared",
+      "sha256",
+      "status",
+      "uploadedAt"
+    ],
+    "required": [
+      "id",
+      "label",
+      "fileName",
+      "uploadedAt",
+      "status"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "PaymentState": {
+    "properties": [
+      "balanceCentavos",
+      "method",
+      "officialReceiptNumber",
+      "orderOfPayment",
+      "referenceNumber",
+      "status",
+      "submittedAt",
+      "verifiedAt"
+    ],
+    "required": [
+      "status"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "Notification": {
+    "properties": [
+      "applicationId",
+      "body",
+      "category",
+      "createdAt",
+      "deepLink",
+      "id",
+      "readAt",
+      "requiresAction",
+      "resolvedAt",
+      "title",
+      "type"
+    ],
+    "required": [
+      "id",
+      "type",
+      "category",
+      "title",
+      "body",
+      "createdAt",
+      "requiresAction"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "Business": {
+    "properties": [
+      "barangay",
+      "category",
+      "city",
+      "dateRegistered",
+      "id",
+      "name",
+      "province",
+      "registrationNumber",
+      "status",
+      "street"
+    ],
+    "required": [
+      "id",
+      "name",
+      "category",
+      "street",
+      "barangay",
+      "city",
+      "province",
+      "registrationNumber",
+      "dateRegistered",
+      "status"
+    ],
+    "additionalPropertiesAllowed": false
+  }
+}

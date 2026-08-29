@@ -1,4 +1,4 @@
-# M-47 — three of five client write paths cannot succeed
+# M-47 — the contract and the app describe different products
 
 **Hand-off to the contract lane, with the backend and admin lanes.**
 
@@ -27,6 +27,10 @@ stands** — so the day one is reconciled, that test fails and says what to do.
 ---
 
 ## Summary
+
+**Both directions diverge.** Three of five write paths would be rejected; and
+on the read path the app parses a materially richer record than the contract
+describes, so a conforming server would leave those fields null.
 
 | Path | Verdict |
 |---|---|
@@ -102,6 +106,44 @@ thing, and it went unnoticed because nothing had ever compared a body.
 
 ---
 
+---
+
+## 4. The read path: the contract describes a thinner product
+
+The write paths are the urgent half. This is the larger one.
+
+Mobile parses fields the contract does not declare, and every one of them is
+built, tested, and on a screen today:
+
+| Schema | Mobile reads, contract does not declare |
+|---|---|
+| `Document` | `remarks`, `reviewReason`, `issuingOffice`, `issueDate`, `expiryDate`, `history` — the whole per-document review layer (G-01, G-02, G-18) |
+| `PaymentState` | `transactions`, `adjustments`, `supersededOrders`, `proof` — partial payment, rejection reasons, the Official Receipt, assessment supersession (TABs 06–08) |
+| `Notification` | `payload`, `applicationNumber` |
+
+The admin portal already models all of it. The contract was never widened to
+carry it, so the two describe different products.
+
+Two details worth naming:
+
+- **`Document.expiresOn` vs mobile's `expiryDate`** — the same concept, two
+  spellings. Even once the review layer is added, this one silently yields null.
+- **Who renders a notification.** The contract declares `title`, `body` and
+  `deepLink` and says the server renders them; mobile computes all three
+  client-side from `type` + `payload`, which the contract does not declare.
+  **This is a design disagreement, not a parser bug**, and it needs deciding
+  before either side changes. I corrected my own record here: on 28 August I
+  "fixed" mobile to read `payload`, which made mobile self-consistent and
+  changes nothing against a conforming server.
+
+Six fields the contract declares and mobile never reads are recorded too —
+`applicantStatus`, `location`, `pledge`, `requiresApplicantAction`,
+`serviceDomain`, `updatedAt`. Not defects, but `pledge` is notable: the contract
+states it is "computed in exactly one place server-side; clients display and
+never compute", and mobile computes it.
+
+---
+
 ## What I recommend
 
 **Move the contract and the server onto the admin's 19 canonical labels.**
@@ -147,7 +189,8 @@ Item 4 of §1 needs nothing from mobile — it already sends the canonical label
 ```sh
 cd ~/eBPCO-Mobile-App
 flutter test test/contract/application_submission_test.dart \
-             test/contract/write_bodies_test.dart
+             test/contract/write_bodies_test.dart \
+             test/contract/response_bodies_test.dart
 ```
 
 Every expectation in a `DIVERGENCE` group is written to **fail once
