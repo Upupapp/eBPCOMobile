@@ -2,6 +2,7 @@ import '../models/application_detail.dart';
 import '../models/application_model.dart';
 import '../contract/admin_vocabulary.dart';
 import '../models/document_model.dart';
+import '../models/money.dart';
 import '../models/document_review_reason.dart';
 import '../models/lifecycle_status.dart';
 import '../models/order_of_payment.dart';
@@ -23,6 +24,19 @@ import 'api_exception.dart';
 class ApplicationDto {
   const ApplicationDto._();
 
+  /// Two fields on [ApplicationModel] are deliberately NOT parsed here, and
+  /// are recorded rather than left to look like oversights:
+  ///
+  /// **`lineage`** — TAB 14's renewal / amendment reference. The server accepts
+  /// `renewsPermitNumber` on the write controllers but does not return it on
+  /// the ApplicationDetail payload, so there is no field to read. Inventing a
+  /// key here would produce a parser that silently never fires. Recorded as
+  /// M-44's remaining half.
+  ///
+  /// **`statusHistory`** — the older coarse status list, superseded by
+  /// `timeline`, which this parser does fill. The detail screen renders it
+  /// only as a fallback for records that predate lifecycle tracking, and a
+  /// live server has none of those.
   static ApplicationModel parse(Map<String, dynamic> json) {
     final id = _string(json, 'id');
     final lifecycle = _lifecycleStatus(_string(json, 'lifecycleStatus'));
@@ -183,12 +197,22 @@ class ApplicationDto {
     );
   }
 
+  /// The five payment states, not four.
+  ///
+  /// `Partially Paid` was added to the model by TAB 06 (G-04) and never added
+  /// here, so this parser rejected it as malformed — and because the payment
+  /// is parsed inside [parse], the whole application failed to load. An
+  /// applicant who had paid *some* of what they owed could not open their own
+  /// record. Found by an audit that diffed every model's constructor against
+  /// what this file actually fills.
   static PaymentAssessmentStatus _paymentStatus(String raw) {
     switch (raw) {
       case 'Not Yet Available':
         return PaymentAssessmentStatus.notYetAvailable;
       case 'Pending Verification':
         return PaymentAssessmentStatus.pending;
+      case 'Partially Paid':
+        return PaymentAssessmentStatus.partiallyPaid;
       case 'Paid':
         return PaymentAssessmentStatus.paid;
       case 'Overdue':
@@ -425,6 +449,18 @@ class ApplicationDto {
     );
   }
 
+  /// The applicant's payment position, INCLUDING every payment made against it.
+  ///
+  /// The four collection fields were dropped here for the same reason the
+  /// document review layer was: nobody re-read the parser after the models
+  /// grew. TABs 06, 07 and 08 added partial payment, rejection reasons, the
+  /// Official Receipt, the collecting agency and assessment supersession —
+  /// and every one of them was reachable from the mock repository and from
+  /// nowhere else.
+  ///
+  /// The single-payment fields above are NOT redundant with [transactions]:
+  /// they describe the applicant's most recent submission and are what most of
+  /// the app still reads. Both are parsed.
   static PaymentAssessmentModel? _payment(dynamic raw) {
     if (raw is! Map<String, dynamic>) return null;
     return PaymentAssessmentModel(
@@ -435,7 +471,119 @@ class ApplicationDto {
       submittedAt: _dateTimeOrNull(raw, 'submittedAt'),
       officialReceiptNumber: _stringOrNull(raw, 'officialReceiptNumber'),
       verifiedAt: _dateTimeOrNull(raw, 'verifiedAt'),
+      // The applicant's own upload — a deposit slip or a screenshot. Parsed
+      // through the same document reader so it carries any review the office
+      // made of it, rather than being a bare filename.
+      proof: _documents([raw['proof']]).firstOrNull,
+      transactions: _transactions(raw['transactions']),
+      adjustments: _adjustments(raw['adjustments']),
+      supersededOrders: _supersededOrders(raw['supersededOrders']),
     );
+  }
+
+  /// Every payment made against the assessment, oldest first.
+  ///
+  /// Only a verified, unvoided one counts toward the balance — the model
+  /// enforces that — so a rejected payment must arrive with its reason or the
+  /// applicant is told the money did not land and never why.
+  static List<PaymentTransactionRecord> _transactions(dynamic raw) {
+    if (raw is! List) return const [];
+    final records = [
+      for (final row in raw.whereType<Map<String, dynamic>>())
+        PaymentTransactionRecord(
+          id: _string(row, 'id'),
+          amount: PesoAmount(_centavos(row, 'amountCentavos')),
+          method:
+              _paymentMethod(_stringOrNull(row, 'method')) ??
+              PaymentMethod.onsite,
+          reference: _stringOrNull(row, 'reference') ?? '',
+          status: _transactionStatus(_string(row, 'status')),
+          submittedAt: _dateTime(row, 'submittedAt'),
+          verifiedAt: _dateTimeOrNull(row, 'verifiedAt'),
+          rejectionReason: _stringOrNull(row, 'rejectionReason'),
+          isVoid: row['isVoid'] == true,
+          agency: _collectingAgency(_stringOrNull(row, 'agency')),
+          // NEVER fabricated. An OR number is a government instrument, and a
+          // plausible-looking one invented by a parser is worse than an empty
+          // field because the applicant would quote it.
+          orNumber: _stringOrNull(row, 'orNumber'),
+          orDate: _dateTimeOrNull(row, 'orDate'),
+          orIssuedBy: _stringOrNull(row, 'orIssuedBy'),
+        ),
+    ];
+    records.sort((a, b) => a.submittedAt.compareTo(b.submittedAt));
+    return records;
+  }
+
+  static PaymentTransactionStatus _transactionStatus(String raw) {
+    try {
+      return paymentTransactionStatusFromWire(raw);
+    } on UnknownWireValue {
+      throw ApiException(
+        ApiFailure.malformed,
+        'unknown payment transaction status "$raw"',
+      );
+    }
+  }
+
+  /// Which office took the money.
+  ///
+  /// Defaults to the LGU rather than throwing when absent, because most
+  /// payments are the LGU's and an older server may not send it — but an
+  /// unrecognised value throws, since sending an applicant to the wrong
+  /// cashier costs them the morning.
+  static CollectingAgency _collectingAgency(String? raw) {
+    if (raw == null) return CollectingAgency.oboLgu;
+    try {
+      return collectingAgencyFromWire(raw);
+    } on UnknownWireValue {
+      throw ApiException(
+        ApiFailure.malformed,
+        'unknown collecting agency "$raw"',
+      );
+    }
+  }
+
+  /// Voids, reversals, refunds and corrections the office applied.
+  static List<PaymentAdjustmentRecord> _adjustments(dynamic raw) {
+    if (raw is! List) return const [];
+    final records = [
+      for (final row in raw.whereType<Map<String, dynamic>>())
+        PaymentAdjustmentRecord(
+          id: _string(row, 'id'),
+          type: _adjustmentType(_string(row, 'type')),
+          amount: PesoAmount(_centavos(row, 'amountCentavos')),
+          appliedAt: _dateTime(row, 'appliedAt'),
+          reason: _stringOrNull(row, 'reason'),
+        ),
+    ];
+    records.sort((a, b) => a.appliedAt.compareTo(b.appliedAt));
+    return records;
+  }
+
+  static PaymentAdjustmentType _adjustmentType(String raw) {
+    try {
+      return paymentAdjustmentTypeFromWire(raw);
+    } on UnknownWireValue {
+      throw ApiException(
+        ApiFailure.malformed,
+        'unknown payment adjustment type "$raw"',
+      );
+    }
+  }
+
+  /// Assessments this one replaced, newest first.
+  ///
+  /// "The figure changed" with no way to see what it was before is not an
+  /// explanation, which is why TAB 08 kept them.
+  static List<OrderOfPayment> _supersededOrders(dynamic raw) {
+    if (raw is! List) return const [];
+    final orders = [
+      for (final row in raw.whereType<Map<String, dynamic>>())
+        ?_orderOfPayment(row),
+    ];
+    orders.sort((a, b) => b.assessedAt.compareTo(a.assessedAt));
+    return orders;
   }
 
   static OrderOfPayment? _orderOfPayment(dynamic raw) {
@@ -452,6 +600,12 @@ class ApplicationDto {
       assessedAt: _dateTime(raw, 'assessedAt'),
       assessedBy: _stringOrNull(raw, 'assessedBy'),
       dueDate: _dateTimeOrNull(raw, 'dueDate'),
+      // TAB 08. Without these an applicant paying against a superseded order
+      // sees it as the live one: `isPayable` is derived from `status`, and a
+      // parser that never set it left every order looking payable.
+      version: _intOrNull(raw, 'version') ?? 1,
+      status: _assessmentStatus(_stringOrNull(raw, 'status')),
+      revisionReason: _stringOrNull(raw, 'revisionReason'),
       fees: AssessmentFees(
         // Centavos on the wire as well as in the app — the admin stores them
         // as integers, and converting through a float anywhere in the chain
@@ -464,6 +618,21 @@ class ApplicationDto {
         others: _centavos(fees, 'others'),
       ),
     );
+  }
+
+  /// Absent means an ordinary issued order — the model's own default — while
+  /// an unrecognised value throws, because 'Superseded' and 'Issued' decide
+  /// whether the applicant may pay against it.
+  static AssessmentStatus _assessmentStatus(String? raw) {
+    if (raw == null) return AssessmentStatus.issued;
+    try {
+      return assessmentStatusFromWire(raw);
+    } on UnknownWireValue {
+      throw ApiException(
+        ApiFailure.malformed,
+        'unknown assessment status "$raw"',
+      );
+    }
   }
 
   // -- primitives ----------------------------------------------------------

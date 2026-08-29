@@ -516,4 +516,244 @@ void main() {
       );
     });
   });
+
+  group('the payment layer reaches the model', () {
+    // Same shape of gap as the documents one, found by diffing every model's
+    // constructor against what this parser actually sets. TABs 06, 07 and 08
+    // built partial payment, rejection reasons, the Official Receipt, the
+    // collecting agency and assessment supersession — and the parser filled
+    // seven of eleven fields, so all of it was mock-only.
+
+    Map<String, dynamic> withPayment(Map<String, dynamic> payment) => {
+      ..._payload(),
+      'payment': payment,
+    };
+
+    Map<String, dynamic> order({
+      String number = 'OP-2026-0002',
+      int version = 2,
+      String? status,
+      String? revisionReason,
+    }) => {
+      'number': number,
+      'assessedAt': '2026-08-12T09:00:00+08:00',
+      'version': version,
+      'status': ?status,
+      'revisionReason': ?revisionReason,
+      'fees': {
+        'filing': 50000,
+        'processing': 0,
+        'architectural': 0,
+        'structural': 0,
+        'electrical': 0,
+        'others': 0,
+      },
+    };
+
+    test('every payment made against the assessment arrives, oldest first', () {
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Partially Paid',
+          'orderOfPayment': order(),
+          'transactions': [
+            {
+              'id': 'txn-2',
+              'amountCentavos': 20000,
+              'method': 'Bank Transfer',
+              'reference': 'DEP-2',
+              'status': 'Verified',
+              'submittedAt': '2026-08-15T09:00:00+08:00',
+              'agency': 'BFP',
+              'orNumber': 'OR-2026-000123',
+              'orDate': '2026-08-16T09:00:00+08:00',
+              'orIssuedBy': 'City Treasurer',
+            },
+            {
+              'id': 'txn-1',
+              'amountCentavos': 10000,
+              'method': 'Onsite',
+              'reference': 'CTR-1',
+              'status': 'Rejected',
+              'submittedAt': '2026-08-13T09:00:00+08:00',
+              'rejectionReason': 'Deposit slip is illegible.',
+            },
+          ],
+        }),
+      );
+
+      final txns = parsed.payment!.transactions;
+      expect(txns.map((t) => t.id), ['txn-1', 'txn-2']);
+
+      // A rejected payment must carry its reason or the applicant is told the
+      // money did not land and never why.
+      expect(txns.first.rejectionReason, 'Deposit slip is illegible.');
+      expect(txns.first.countsTowardBalance, isFalse);
+
+      // The Official Receipt, never fabricated, and the office that took it.
+      expect(txns.last.orNumber, 'OR-2026-000123');
+      expect(txns.last.agency, CollectingAgency.bfp);
+      expect(txns.last.hasOfficialReceipt, isTrue);
+      expect(txns.last.countsTowardBalance, isTrue);
+    });
+
+    test('a transaction with no agency is the LGU, not a failure', () {
+      // Most payments are, and an older server may not send the field.
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Paid',
+          'orderOfPayment': order(),
+          'transactions': [
+            {
+              'id': 'txn-1',
+              'amountCentavos': 50000,
+              'method': 'Onsite',
+              'reference': 'CTR-1',
+              'status': 'Verified',
+              'submittedAt': '2026-08-13T09:00:00+08:00',
+            },
+          ],
+        }),
+      );
+      expect(
+        parsed.payment!.transactions.single.agency,
+        CollectingAgency.oboLgu,
+      );
+      expect(parsed.payment!.transactions.single.orNumber, isNull);
+    });
+
+    test('an unknown collecting agency throws rather than defaulting', () {
+      // Sending an applicant to the wrong cashier costs them the morning.
+      expect(
+        () => ApplicationDto.parse(
+          withPayment({
+            'status': 'Paid',
+            'orderOfPayment': order(),
+            'transactions': [
+              {
+                'id': 'txn-1',
+                'amountCentavos': 50000,
+                'method': 'Onsite',
+                'reference': 'CTR-1',
+                'status': 'Verified',
+                'submittedAt': '2026-08-13T09:00:00+08:00',
+                'agency': 'Barangay',
+              },
+            ],
+          }),
+        ),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
+    test('the order carries its version, status and revision reason', () {
+      // isPayable is derived from status. A parser that never set it left
+      // every order looking payable, including a superseded one.
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Pending Verification',
+          'orderOfPayment': order(
+            version: 2,
+            status: 'Issued',
+            revisionReason: 'Floor area corrected after ocular inspection',
+          ),
+          'supersededOrders': [
+            order(number: 'OP-2026-0001', version: 1, status: 'Superseded'),
+          ],
+        }),
+      );
+
+      final payment = parsed.payment!;
+      expect(payment.orderOfPayment!.version, 2);
+      expect(payment.orderOfPayment!.isPayable, isTrue);
+      expect(
+        payment.orderOfPayment!.revisionReason,
+        'Floor area corrected after ocular inspection',
+      );
+
+      expect(payment.wasReassessed, isTrue);
+      expect(payment.supersededOrders.single.isSuperseded, isTrue);
+      expect(payment.supersededOrders.single.isPayable, isFalse);
+    });
+
+    test('an order with no status is an ordinary issued one', () {
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Pending Verification',
+          'orderOfPayment': order(),
+        }),
+      );
+      expect(parsed.payment!.orderOfPayment!.status, AssessmentStatus.issued);
+      expect(parsed.payment!.orderOfPayment!.isPayable, isTrue);
+    });
+
+    test('adjustments arrive with what they were for', () {
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Paid',
+          'orderOfPayment': order(),
+          'adjustments': [
+            {
+              'id': 'adj-1',
+              'type': 'Refund',
+              'amountCentavos': 5000,
+              'appliedAt': '2026-08-20T09:00:00+08:00',
+              'reason': 'Overpayment returned.',
+            },
+          ],
+        }),
+      );
+      final adj = parsed.payment!.adjustments.single;
+      expect(adj.type, PaymentAdjustmentType.refund);
+      expect(adj.reason, 'Overpayment returned.');
+    });
+
+    test('proof of payment parses as a document, not a bare filename', () {
+      final parsed = ApplicationDto.parse(
+        withPayment({
+          'status': 'Pending Verification',
+          'orderOfPayment': order(),
+          'proof': {
+            'id': 'doc-proof',
+            'label': 'Deposit slip',
+            'fileName': 'slip.jpg',
+            'uploadedAt': '2026-08-13T09:00:00+08:00',
+            'status': 'Rejected',
+            'remarks': 'The reference number is not readable.',
+          },
+        }),
+      );
+      final proof = parsed.payment!.proof!;
+      expect(proof.label, 'Deposit slip');
+      expect(proof.status, DocumentStatus.rejected);
+      expect(proof.needsApplicantAction, isTrue);
+    });
+
+    test('an assessment with none of it still parses', () {
+      final parsed = ApplicationDto.parse(
+        withPayment({'status': 'Not Yet Available'}),
+      );
+      expect(parsed.payment!.transactions, isEmpty);
+      expect(parsed.payment!.adjustments, isEmpty);
+      expect(parsed.payment!.supersededOrders, isEmpty);
+      expect(parsed.payment!.proof, isNull);
+    });
+  });
+
+  test('every payment status the app models can arrive on the wire', () {
+    // The audit that found the gap above also found this: the parser knew four
+    // of the five. 'Partially Paid' failed as malformed, and because payment is
+    // parsed inside parse(), the WHOLE application failed to load -- an
+    // applicant who had paid some of what they owed could not open their own
+    // record.
+    //
+    // Asserted over the enum rather than a hand-written list, so a sixth state
+    // added to the model fails here instead of at an applicant.
+    for (final status in PaymentAssessmentStatus.values) {
+      final parsed = ApplicationDto.parse({
+        ..._payload(),
+        'payment': {'status': status.label},
+      });
+      expect(parsed.payment!.status, status, reason: status.label);
+    }
+  });
 }
