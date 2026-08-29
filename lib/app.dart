@@ -6,6 +6,8 @@ import 'core/constants/app_strings.dart';
 import 'core/providers/addition_extension_permit_provider.dart';
 import 'core/providers/application_intent_provider.dart';
 import 'core/providers/contact_verification_provider.dart';
+import 'core/sync/sync_provider.dart';
+import 'core/sync/offline_queue.dart';
 import 'core/providers/applications_provider.dart';
 import 'core/repositories/contact_verification_repository.dart';
 import 'core/providers/architectural_permit_provider.dart';
@@ -47,9 +49,50 @@ class EbpcoApp extends StatefulWidget {
   State<EbpcoApp> createState() => _EbpcoAppState();
 }
 
-class _EbpcoAppState extends State<EbpcoApp> {
+class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
   final AuthProvider _authProvider = AuthProvider();
   late final GoRouter _router = AppRouter.build(_authProvider);
+
+  /// Owns the durable queue for the whole app. Built here rather than in a
+  /// `create` callback because the lifecycle observer below has to reach it,
+  /// and because two queues over one keychain key would each overwrite the
+  /// other's saves.
+  late final SyncProvider _sync = SyncProvider(
+    queue: OfflineQueue(SecureQueueStore()),
+    api: _repositories.client,
+  );
+
+  late final RepositoryFactory _repositories = RepositoryFactory();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Count what is waiting before anything renders, so a queued item is
+    // visible from the first frame rather than after the first flush.
+    _sync.refresh();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _repositories.dispose();
+    super.dispose();
+  }
+
+  /// Resuming is the one connectivity signal available without a package.
+  ///
+  /// It is not a good one — an applicant can resume the app still offline, and
+  /// can regain a connection without ever backgrounding it — but it costs
+  /// nothing and covers the common case of walking back into signal and
+  /// reopening the app. A real connectivity trigger needs `connectivity_plus`,
+  /// which is the owner's call; see `SyncProvider`'s `ConnectivityMonitor`.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _sync.flush();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +105,10 @@ class _EbpcoAppState extends State<EbpcoApp> {
         // First, because the repositories every other provider is built from
         // come out of it. One place decides whether this build talks to the
         // API or to seed data, so a build cannot end up half-live.
-        Provider<RepositoryFactory>(
-          create: (_) => RepositoryFactory(),
-          dispose: (_, factory) => factory.dispose(),
-        ),
+        Provider<RepositoryFactory>.value(value: _repositories),
+        // The offline queue, finally constructed. Everything queued by a write
+        // that failed lives here until it reaches the LGU.
+        ChangeNotifierProvider<SyncProvider>.value(value: _sync),
         // Declared before ApplicationsProvider/BusinessProvider so their
         // `create` callbacks can read it via `context.read` to post
         // notifications for submit/pay/advance/register actions.
@@ -93,12 +136,19 @@ class _EbpcoAppState extends State<EbpcoApp> {
         ChangeNotifierProxyProvider<AuthProvider, ContactVerificationProvider>(
           create: (_) => ContactVerificationProvider(
             repository: MockContactVerificationRepository(),
+            // TAB 11 built the enqueue-on-failure path and could only be
+            // handed null, because nothing constructed a queue. Its acceptance
+            // criterion — "verification requests survive a failed network
+            // call" — was true of the unit and false of the product until
+            // this line.
+            queue: _sync.queue,
           ),
           update: (_, auth, verification) {
             final provider =
                 verification ??
                 ContactVerificationProvider(
                   repository: MockContactVerificationRepository(),
+                  queue: _sync.queue,
                 );
             provider.updateContactDetails(
               email: auth.currentUser?.email,

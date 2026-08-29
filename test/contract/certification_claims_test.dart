@@ -82,10 +82,18 @@ void main() {
     }
   });
 
-  test('the two dormant subsystems really are dormant', () {
-    // The certification says OfflineQueue and SyncEngine are constructed
-    // nowhere in lib/. Asserted rather than believed, because the day someone
-    // wires them the document becomes wrong in the direction that flatters it.
+  test('the two formerly-dormant subsystems are still wired', () {
+    // This assertion has been INVERTED, and the inversion is the record.
+    //
+    // It was written to prove B-3: OfflineQueue and SyncEngine were built,
+    // tested, and constructed nowhere in lib/, so the certification could not
+    // become wrong in the direction that flattered us. On 29 August they were
+    // wired, and this test fired and said so by name — which is what it was
+    // for.
+    //
+    // The risk is now the opposite one: that somebody unbuilds the wiring and
+    // the only evidence is an applicant losing queued work. So it now fails if
+    // they go back to being constructed nowhere.
     final constructedIn = <String>[];
     for (final entity in Directory('lib').listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
@@ -99,10 +107,11 @@ void main() {
 
     expect(
       constructedIn,
-      isEmpty,
+      isNotEmpty,
       reason:
-          'these are now wired in $constructedIn — B-3 in the certification '
-          'is out of date and should be revisited',
+          'the offline queue is constructed nowhere again — B-3 has reopened, '
+          'and queued work now goes nowhere. See '
+          'test/architecture/queue_is_wired_test.dart',
     );
   });
 

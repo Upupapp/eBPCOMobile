@@ -5,10 +5,13 @@
 **Verdict: NOT CERTIFIED.** *(Amended 28 August 2026 — see §3; B-1 and B-2 were re-measured against the backend repository after publication. The verdict is unchanged.)*
 
 Every one of the sixteen build TABs is complete, all twenty standing gaps are
-closed in this repository, and the suite is green at 1484 tests. The programme
+closed in this repository, and the suite is green at 1544 tests. The programme
 is not certified because certification is a claim about a working system, and
-three things stand between this repository and one. None of them is code in
-this repository, and none of them can be closed by this lane.
+three things stood between this repository and one. Two of them — no deployed
+backend, and routes the app calls that do not exist — are the backend lane's
+and remain open. The third, an offline queue built and wired to nothing, **was**
+this lane's, and was closed on 29 August; what is left of it is two triggers
+that are decisions rather than work. See §3.
 
 *Measured 28 August 2026 against the admin portal at `Upupapp/eBPCO-Web`
 `e0925d9` (26 August 2026), and this repository at the commit that carries this
@@ -158,23 +161,36 @@ plausibly* instead of failing.
 /applications/{param}/documents/{param}/resubmit"*. **Trust the gate over the
 grep.**
 
-### B-3 — Two subsystems are built, tested, and wired to nothing.
+### B-3 — Wired 29 August. Largely closed; two triggers remain a decision.
 
-`OfflineQueue` and `SyncEngine` are constructed **nowhere** in `lib/`.
-Measured, not assumed: `grep -rn "OfflineQueue(" lib` outside its own file
-returns nothing.
+**Amended.** As published this read: *"`OfflineQueue` and `SyncEngine` are
+constructed **nowhere** in `lib/`"* — measured, and true at the time. The
+consequence it drew was that TAB 11's criterion, *"verification requests
+survive a failed network call"*, was satisfied by the provider and proven by a
+test that handed it a queue, while the running app had no queue to give it:
+real code with no live wiring.
 
-This has a consequence the acceptance criteria did not anticipate. TAB 11's
-criterion — *"verification requests survive a failed network call"* — is
-satisfied by the provider, which enqueues on failure, and is proven by a test
-that hands it a queue. In the running app the provider is constructed with no
-queue, because there is none to give it. **The behaviour is real code with no
-live wiring.** Saying it is done would be true of the unit and false of the
-product.
+Both are now constructed. `SyncProvider` owns a `SecureQueueStore`-backed
+`OfflineQueue`, the contact-verification provider is handed that same queue
+rather than null, and a flush runs on app resume. The assertion in
+`certification_claims_test.dart` that guarded this claim **fired on the day it
+changed, naming both files** — which is what it was for — and has been inverted:
+it now fails if the wiring is ever removed.
 
-This is M-39, and it is the one open item that is neither purely backend nor
-purely a decision: wiring it needs `connectivity_plus`, a background-execution
-decision, and a server to flush to.
+**What is still open, and why it is not this lane's to close:**
+
+| Trigger | Blocked on |
+|---|---|
+| On regaining connectivity | `connectivity_plus` — a new dependency in a public LGU app, the owner's call. A `ConnectivityMonitor` seam exists so it is one class, not a refactor |
+| While backgrounded | A background-execution entitlement, which changes what Apple reviews |
+
+And a flush has nowhere to send to until B-1 is answered, so with no API
+configured every item stays queued — the honest outcome, and asserted as such
+rather than allowed to look like success. Four of the five operation kinds
+throw rather than replaying, deliberately: a `_send` that silently succeeded
+would drop an applicant's work while reporting it delivered.
+
+M-39 accordingly narrows from "wire it" to "decide the two triggers".
 
 ---
 
@@ -220,7 +236,7 @@ Against the admin's own source, extracted today:
 - **Nine closed vocabularies match**, in order, and parsing is total and closed:
   every value the admin can send round-trips, and an unrecognised one throws
   rather than defaulting to something plausible.
-- **1484 tests**, `flutter analyze` clean, zero layout overflows at 2.0× text
+- **1544 tests**, `flutter analyze` clean, zero layout overflows at 2.0× text
   scale across every routable screen.
 
 And one habit, worth more than any of them: **a green result is a claim that
