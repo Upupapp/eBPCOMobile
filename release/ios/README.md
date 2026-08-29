@@ -17,11 +17,32 @@ gitignored.
 
 ## State
 
-Never archived and never submitted. The app runs on the simulator; there is no
-distribution certificate, no provisioning profile, and no App Store Connect
-record. Bundle identifier is `com.ebpco.ebpcoUserApp`, a development
-placeholder — see M-29, which must be settled *before* the first submission
-because it cannot be changed afterwards without losing the listing.
+Never archived and never submitted. Measured 29 August 2026 — see `NOTES.md`
+for the evidence.
+
+**Corrected:** this section previously said "there is no distribution
+certificate, no provisioning profile" and treated that as the blocker. That
+reading is wrong, and it is the same wrong reading that cost `ServanaWorkerAPP`
+an owner task list and a hunt for a `.p12` that was never needed. Xcode signs
+with a **cloud-managed** distribution certificate — Apple holds the private key,
+so it never appears in the local keychain and `security find-identity` will
+always show only an Apple Development identity. Xcode here is signed into
+**UPUP TECHNOLOGIES PTE. LTD (`2K2SF7NRQP`)**, the same Company team that has
+produced signed builds from this Mac.
+
+What actually blocks a first archive:
+
+1. **`DEVELOPMENT_TEAM` is unset** in the Xcode project.
+2. **The bundle identifier is a placeholder** — `com.ebpco.ebpcoUserApp`, M-29.
+   No archive has been attempted *because* of this: provisioning would register
+   that identifier against the company team and may consume a capped
+   distribution certificate slot, for an id the owner has not chosen and cannot
+   change after publication.
+3. **The app has no privacy manifest** — M-46. Only third-party bundles carry
+   one, and Apple rejects an app using required-reason APIs without its own.
+
+The build itself is not a blocker: `flutter build ios --release --no-codesign`
+produces `Runner.app` (33.9 MB) in about 90 seconds.
 
 ## Running locally
 
@@ -42,8 +63,11 @@ Developer account and the owner's credentials.
 2. Resolve the deployment target (M-38): the floor is 15.0 because the plugin
    set raised it, not because anyone chose to drop iOS 13 and 14.
 3. Create the App Store Connect record and set a development team in Xcode.
-4. Provide the privacy nutrition label. The app collects government IDs and
-   proof-of-ownership documents, so the answers are not the defaults.
+4. Provide the privacy nutrition label AND the app's own
+   `PrivacyInfo.xcprivacy` (M-46). The app collects government IDs and
+   proof-of-ownership documents, so neither can be defaulted, and a manifest
+   drafted with an empty collection section would assert the app collects
+   nothing.
 5. Prepare App Review notes with the demo login, since the app is behind
    authentication and a reviewer cannot see past it otherwise.
 
