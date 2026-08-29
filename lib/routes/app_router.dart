@@ -169,9 +169,25 @@ class AppRouter {
         ),
         GoRoute(
           path: '/applications/new/building-permit/submitted',
-          builder: (context, state) => ApplicationSubmittedScreen(
-            trackingId: state.extra as String? ?? 'BP-UNKNOWN',
-          ),
+          // The odd one out of nineteen: this route was written to take a bare
+          // String while every other confirmation route takes a Map. An
+          // unchecked `as String?` on a Map is a FAILED CAST, not a null — it
+          // throws inside the builder and the applicant gets a red screen
+          // instead of the confirmation for the permit they just filed.
+          //
+          // Found by the accessibility sweep of all thirty-eight wizard and
+          // confirmation screens, which drives every route with the map shape
+          // eighteen of them use. Accepting both costs three lines and removes
+          // a trap that only fires for whoever assumes the common shape.
+          builder: (context, state) {
+            final extra = state.extra;
+            final fromMap = extra is Map<String, Object?>
+                ? (extra['referenceNumber'] ?? extra['trackingId']) as String?
+                : null;
+            return ApplicationSubmittedScreen(
+              trackingId: (extra is String ? extra : fromMap) ?? 'BP-UNKNOWN',
+            );
+          },
         ),
         GoRoute(
           path: '/applications/new/renovation-permit',
