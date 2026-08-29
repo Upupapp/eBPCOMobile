@@ -297,8 +297,13 @@ class _EmptyFor extends StatelessWidget {
           icon: Icons.edit_note_outlined,
           title: 'No drafts',
           message:
-              'Applications you start but do not finish are saved here so you '
-              'can pick them up later.',
+              // Narrowed 29 August, alongside the Before-you-start card. Both
+              // made the same promise and only one was corrected first time —
+              // fixing one copy and missing its sibling is its own recurring
+              // defect here. Drafts live in memory and die with the process;
+              // see draft_persistence_test and M-48.
+              'Applications you start but do not finish are listed here while '
+              'the app is open. Closing it loses an unsubmitted application.',
         );
       case ApplicationSegment.inProgress:
         return const EmptyState(

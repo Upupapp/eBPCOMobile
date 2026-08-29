@@ -408,9 +408,14 @@ void main() {
       expect(find.textContaining('null and void'), findsOneWidget);
     });
 
-    testWidgets('downloading makes the permit available offline', (
+    testWidgets('downloading marks the permit, and says the file is not saved', (
       tester,
     ) async {
+      // Renamed and re-pointed 29 August. It asserted "Available without a
+      // connection" — which was the app's claim, and false: downloadPermit
+      // sets a path and writes no file. The test was faithfully checking a
+      // promise the code never kept, which is how the copy survived this long.
+      // See honest_assurances_test and M-49.
       await tester.pumpWidget(
         _wrap(
           _application(
@@ -425,13 +430,16 @@ void main() {
       );
       await _settle(tester);
 
-      expect(find.textContaining('Download to keep a copy'), findsOneWidget);
+      expect(
+        find.textContaining('Offline copies are not available yet'),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Download permit'));
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('Available without a connection'),
+        find.textContaining('The file itself is not saved yet'),
         findsOneWidget,
       );
       expect(find.text('Share a copy'), findsOneWidget);

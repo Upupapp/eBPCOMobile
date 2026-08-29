@@ -86,11 +86,19 @@ class DigitalPermitScreen extends StatelessWidget {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
+                      // `downloadPermit` sets a path and writes NO FILE — its
+                      // own comment says it "stands in for writing the fetched
+                      // PDF", and there is no server to fetch one from. Saying
+                      // the permit is available without a connection is the
+                      // costliest kind of false assurance: an applicant would
+                      // rely on it at the counter, offline, with nothing to
+                      // show. Honest until M-49 makes it true.
                       permit.isAvailableOffline
-                          ? 'Saved to this device. Available without a '
-                                'connection.'
-                          : 'Download to keep a copy you can show without a '
-                                'connection.',
+                          ? 'Marked for offline use. The file itself is not '
+                                'saved yet — you will still need a connection '
+                                'to show this permit.'
+                          : 'Offline copies are not available yet. You will '
+                                'need a connection to show this permit.',
                       style: AppTypography.helper,
                     ),
                   ),
@@ -108,7 +116,9 @@ class DigitalPermitScreen extends StatelessWidget {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Permit saved to this device.'),
+                      content: Text(
+                        'Marked for offline use. The file is not saved yet.',
+                      ),
                     ),
                   );
                 },
