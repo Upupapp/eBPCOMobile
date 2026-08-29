@@ -1,0 +1,46 @@
+{
+  "_comment": "VENDORED from ~/ebpco-contract openapi/ebpco.openapi.yaml — the POST /applications request schema. The app files every application through this one body. additionalProperties is false, so a single undeclared key rejects the whole submission; a divergence here is not cosmetic.",
+  "source": {
+    "repository": "ebpco-contract",
+    "schema": "ApplicationSubmission",
+    "extractedOn": "2026-08-29"
+  },
+  "additionalPropertiesAllowed": false,
+  "required": [
+    "serviceDomain",
+    "permitType",
+    "applicationAction"
+  ],
+  "properties": [
+    "applicationAction",
+    "businessId",
+    "documentIds",
+    "form",
+    "location",
+    "permitType",
+    "serviceDomain"
+  ],
+  "serviceDomain": [
+    "Business Permit",
+    "Construction Permit"
+  ],
+  "permitType": [
+    "New Construction",
+    "Renovation",
+    "Addition/Extension",
+    "Demolition",
+    "Architectural",
+    "Civil/Structural",
+    "Electrical",
+    "Mechanical",
+    "Sanitary/Plumbing",
+    "Plumbing",
+    "Electronics",
+    "Interior Design",
+    "Fencing",
+    "Sign",
+    "Excavation",
+    "Certificate of Occupancy",
+    "Business Permit"
+  ]
+}
