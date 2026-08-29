@@ -94,10 +94,23 @@ void main() {
     });
 
     test('4. NO permit type the app sends is in the contract enum', () {
-      // The sharpest of the four. The contract still carries the app's OLD
-      // short display names — 'New Construction', 'Fencing' — while TAB 00 and
-      // TAB 12 moved this app onto the admin's canonical labels, which is what
-      // the reconciliation asked for. The contract never followed.
+      // The sharpest of the four, and the one I first described wrongly.
+      //
+      // It is NOT a stale contract that mobile has outrun. `ebpco-api`'s
+      // `permit_types` table carries the same 17 short names, so the split is
+      // admin + mobile (19 canonical labels) against contract + server (17
+      // short names): two internally consistent pairs that disagree with each
+      // other.
+      //
+      // 15 pairs differ only in spelling; one — Certificate of Occupancy — is
+      // identical; and 3 mobile types have NO server row at all (Zoning /
+      // Locational Clearance, FSEC, FSIC), so TABs 03, 04 and 05 built filing
+      // wizards for permits the server does not know exist. Reconciling is
+      // therefore not a rename: `permit_types.permit_type` is a primary key
+      // with `document_requirements` referencing it.
+      //
+      // Full measurement and recommendation:
+      // docs/HANDOFF-M-47-permit-vocabulary.md
       final contractTypes = listOf('permitType').toSet();
       final sent = CanonicalPermitType.values.map((t) => t.wire).toSet();
 
