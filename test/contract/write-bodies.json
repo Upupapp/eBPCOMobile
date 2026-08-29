@@ -1,0 +1,97 @@
+{
+  "_comment": "VENDORED from ~/ebpco-contract openapi/ebpco.openapi.yaml — every request body this app sends. All are additionalProperties:false, so one undeclared key rejects the whole request. Refresh alongside the other contract fixtures.",
+  "source": {
+    "repository": "ebpco-contract",
+    "extractedOn": "2026-08-29"
+  },
+  "ApplicationSubmission": {
+    "properties": [
+      "applicationAction",
+      "businessId",
+      "documentIds",
+      "form",
+      "location",
+      "permitType",
+      "serviceDomain"
+    ],
+    "required": [
+      "serviceDomain",
+      "permitType",
+      "applicationAction"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "PaymentProof": {
+    "properties": [
+      "amountCentavos",
+      "documentId",
+      "method",
+      "paidOn",
+      "referenceNumber"
+    ],
+    "required": [
+      "referenceNumber",
+      "method",
+      "paidOn"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "InstructionResponse": {
+    "properties": [
+      "items"
+    ],
+    "required": [
+      "items"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "BusinessRegistration": {
+    "properties": [
+      "barangay",
+      "category",
+      "city",
+      "name",
+      "province",
+      "street"
+    ],
+    "required": [
+      "name",
+      "category",
+      "street",
+      "barangay",
+      "city",
+      "province"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "TokenRequest": {
+    "properties": [
+      "code",
+      "email",
+      "grantType",
+      "password",
+      "totp"
+    ],
+    "required": [
+      "grantType"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "RegistrationRequest": {
+    "properties": [
+      "email",
+      "firstName",
+      "lastName",
+      "mobileNumber",
+      "password"
+    ],
+    "required": [
+      "firstName",
+      "lastName",
+      "email",
+      "mobileNumber",
+      "password"
+    ],
+    "additionalPropertiesAllowed": false
+  }
+}
