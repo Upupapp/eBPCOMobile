@@ -1,0 +1,96 @@
+# M-10 asks for forms the app already ships — for ten of the nineteen
+
+*Audited 31 August 2026 in `eBPCO-Mobile-App`. Front-end mobile only. Every
+figure measured, and the one thing that could not be measured is named as
+such.*
+
+---
+
+## Why this audit happened
+
+M-10 sits in the register as *"Provide the Unified Building Permit Application
+Form and Unified Application Form for Certificate of Occupancy so wizard fields
+can be audited field-for-field"*, against an external party.
+
+Before asking anyone for anything, the question worth answering is what the app
+already has. It has more than the register assumed.
+
+## What is on disk
+
+**Eighteen blank PDFs under `assets/permits/`**, registered in `pubspec.yaml`,
+~6.6 MB: seventeen application forms plus the OBO's documentary checklist. All
+nineteen permit types resolve to one. Three building sub-types share a single
+file, because Castilla's Unified Application Form covers New Construction,
+Renovation / Alteration and Addition / Extension through its own Scope of Work
+checkboxes.
+
+`permit_forms.dart` flags **fourteen** of them as genuine Castilla or BFP
+documents. The other five are generic reference templates standing in for forms
+the LGU has not published — and the screen labels them as such, which is the
+part of that promise a test can hold, and now does.
+
+## The finding
+
+The requirements catalogue makes a second provenance judgement about the same
+nineteen permits: `verified` — *"true only where this entry was built from an
+actual Castilla or BFP form rather than a national-law baseline or a
+placeholder"*. **Four are true.**
+
+Fourteen against four. **Ten permits ship a form the app calls Castilla's own
+while their requirements were built from a national baseline instead:**
+
+Renovation / Alteration · Addition / Extension · Civil/Structural · Electrical ·
+Electronics · Mechanical · Plumbing · Sanitary/Plumbing · Fencing · Excavation
+
+Either the catalogue is behind the forms — in which case **ten wizards can be
+audited field-for-field today, against paper already in this repository, with
+nothing required from the LGU** — or the form flag is optimistic. Both are
+worth knowing and neither is mine to settle.
+
+### The sharpest case is a three-way one
+
+New Construction, Renovation / Alteration and Addition / Extension share **one
+physical form**. The catalogue records the first as built from a Castilla form
+and the other two as not. Same paper, three permits, two verdicts. They cannot
+all be right, and no external party is needed to work out which.
+
+## What could not be measured, and why it is said out loud
+
+The `isOfficialCastillaForm` flag is a human judgement, and this audit could not
+verify it. Of the fourteen forms flagged as genuine, **two** — Fencing and
+Sanitary/Plumbing — carry the words *CASTILLA* and *SORSOGON* in text these
+tools can extract, by two independent extraction methods.
+
+For the other twelve, the absence of those words is **not evidence of
+anything**: the pages are images, and neither `strings` nor a stream-level text
+extractor reads them. A first attempt found the marker in Sanitary/Plumbing and
+missed it in Fencing, which is exactly how a measurement tool proves itself
+unreliable. So the gate **pins** the flags rather than verifying them, and says
+so where somebody might otherwise assume it had checked.
+
+## What guards it
+
+`test/architecture/bundled_forms_test.dart`, six tests:
+
+- every declared form is on disk, non-empty, and resolves for all nineteen
+  types — the failure being a form dropped from the bundle while its entry
+  stays, so the screen offers an applicant a document that does not exist,
+  offline, which is exactly when they cannot go and look;
+- no PDF ships unreferenced;
+- the assets are registered, without which none of the above ships at all;
+- a stand-in form is labelled as one on screen;
+- the 14-against-4 counts;
+- and the ten disagreements **by name**, so resolving one fails the test and
+  says which, and adding an eleventh does too.
+
+## What this changes about M-10
+
+It does not close it. The Certificate of Occupancy form is one of the five
+stand-ins, and the DPWH/JMC unified forms are still worth having as the
+national reference.
+
+What it changes is the size and the order. **Ten of the nineteen wizards can be
+audited now**, against files already committed here, by someone who can open a
+PDF and read a form. That is work this lane cannot do — reading a scanned form
+is not a source scan — but it is work that needs no external party, and the
+register said otherwise.
