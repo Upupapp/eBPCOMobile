@@ -39,17 +39,85 @@ class ApiClient {
 
   static Future<String?> _noToken() async => null;
 
-  Future<Map<String, dynamic>> getObject(String path,
-          {Map<String, String>? query}) async =>
-      _asObject(await _send('GET', path, query: query));
+  Future<Map<String, dynamic>> getObject(
+    String path, {
+    Map<String, String>? query,
+  }) async => _asObject(await _send('GET', path, query: query));
 
-  Future<List<dynamic>> getList(String path,
-          {Map<String, String>? query}) async =>
-      _asList(await _send('GET', path, query: query));
+  Future<List<dynamic>> getList(
+    String path, {
+    Map<String, String>? query,
+  }) async => _asList(await _send('GET', path, query: query));
 
-  Future<Map<String, dynamic>> post(String path,
-          {Object? body}) async =>
-      _asObject(await _send('POST', path, body: body));
+  /// A write.
+  ///
+  /// [idempotencyKey] is REQUIRED here because the contract requires the
+  /// header on every POST an applicant can make, and because a named parameter
+  /// nobody can forget is the only version of this that stays true. It used to
+  /// be sent on none of them: a retry after a timeout was a SECOND filing.
+  ///
+  /// Pass the SAME key when retrying the same operation — that is the whole
+  /// point of it. `newIdempotencyKey()` makes one.
+  Future<Map<String, dynamic>> post(
+    String path, {
+    Object? body,
+    required String idempotencyKey,
+  }) async => _asObject(
+    await _send('POST', path, body: body, idempotencyKey: idempotencyKey),
+  );
+
+  /// Uploads one file as `multipart/form-data`.
+  ///
+  /// Separate from [post] because the body is bytes rather than JSON, and
+  /// because the failures are different: 413 and 415 are both things the
+  /// applicant can act on and neither means "check your details".
+  ///
+  /// The bytes are streamed from [filePath] rather than read into memory. A
+  /// scanned plan set is tens of megabytes and this app runs on mid-range
+  /// Android hardware.
+  Future<Map<String, dynamic>> upload(
+    String path, {
+    required String filePath,
+    required String label,
+    String? applicationId,
+    required String idempotencyKey,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Accept'] = 'application/json'
+      ..headers['Idempotency-Key'] = idempotencyKey
+      ..fields['label'] = label;
+    if (applicationId != null) request.fields['applicationId'] = applicationId;
+
+    final token = await _authToken();
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
+
+    try {
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    } on Exception catch (error) {
+      // The picked file is gone — the OS reclaimed the temporary container, or
+      // the applicant deleted it between picking and filing. Reported as its
+      // own failure rather than as a network problem, because retrying will
+      // not help and the applicant has to pick the file again.
+      throw ApiException(
+        ApiFailure.rejected,
+        'the file to upload could not be read: $error',
+      );
+    }
+
+    http.Response response;
+    try {
+      final streamed = await _http.send(request).timeout(timeout);
+      response = await http.Response.fromStream(streamed);
+    } on TimeoutException catch (error) {
+      throw ApiException(ApiFailure.timeout, 'POST $uri timed out: $error');
+    } catch (error) {
+      throw ApiException(ApiFailure.network, 'POST $uri failed: $error');
+    }
+
+    _throwOnError(response, 'POST', uri);
+    return _asObject(jsonDecode(response.body));
+  }
 
   Future<Map<String, dynamic>> patch(String path, {Object? body}) async =>
       _asObject(await _send('PATCH', path, body: body));
@@ -61,14 +129,16 @@ class ApiClient {
     String path, {
     Map<String, String>? query,
     Object? body,
+    String? idempotencyKey,
   }) async {
-    final uri = Uri.parse('$baseUrl$path').replace(
-      queryParameters: query == null || query.isEmpty ? null : query,
-    );
+    final uri = Uri.parse(
+      '$baseUrl$path',
+    ).replace(queryParameters: query == null || query.isEmpty ? null : query);
 
     final headers = <String, String>{
       'Accept': 'application/json',
       if (body != null) 'Content-Type': 'application/json',
+      'Idempotency-Key': ?idempotencyKey,
     };
     final token = await _authToken();
     if (token != null) headers['Authorization'] = 'Bearer $token';
@@ -116,6 +186,8 @@ class ApiClient {
       403 => ApiFailure.forbidden,
       404 => ApiFailure.notFound,
       409 || 422 => ApiFailure.rejected,
+      413 => ApiFailure.tooLarge,
+      415 => ApiFailure.unsupportedMedia,
       _ when status >= 500 => ApiFailure.server,
       // Any other 4xx is the app sending something wrong, which is a bug on
       // this side rather than an outage.

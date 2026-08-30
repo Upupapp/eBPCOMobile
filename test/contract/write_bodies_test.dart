@@ -37,7 +37,18 @@ void main() {
 
   /// The literal keys of the body a method builds, read from source so it
   /// cannot drift from the code it describes.
-  /// [anchor] must identify the WRITE call, not merely the path.
+  ///
+  /// [path] identifies the WRITE call, not merely the path: the regex requires
+  /// `post(` immediately before it. A path that is also read elsewhere —
+  /// `getList('/businesses')` precedes `post('/businesses', …)` — would
+  /// otherwise match the read and slice an empty range, which reads as "sends
+  /// nothing". That is exactly how this gate first reported a false divergence
+  /// against a body that is correct.
+  ///
+  /// `post\s*\(\s*` rather than `post('`: dart format wraps a long call onto
+  /// its own lines, and the literal form stopped finding `/businesses` the
+  /// moment an extra argument pushed it over the line length. It reported the
+  /// anchor as "moved" when the call had not moved at all.
   ///
   /// A path that is also read elsewhere — `getList('/businesses')` precedes
   /// `post('/businesses', …)` — would otherwise match the read and slice an
@@ -45,12 +56,18 @@ void main() {
   /// gate first reported a false divergence against a body that is correct.
   Set<String> bodyOf(
     String file,
-    String anchor, {
+    String path, {
     Set<String> nested = const {},
   }) {
     final source = File(file).readAsStringSync();
-    final start = source.indexOf(anchor);
-    expect(start, greaterThan(0), reason: 'anchor "$anchor" moved in $file');
+    final escaped = RegExp.escape(path);
+    final match = RegExp(
+      'post'
+      r'\s*\(\s*'
+      '$escaped',
+    ).firstMatch(source);
+    expect(match, isNotNull, reason: 'no post to "$path" in $file');
+    final start = match!.start;
     final end = source.indexOf('return', start);
     return RegExp(
         r"'(\w+)':",
@@ -82,7 +99,7 @@ void main() {
     test('POST /businesses sends exactly what is required', () {
       final body = bodyOf(
         'lib/core/repositories/http_business_repository.dart',
-        "post('/businesses'",
+        "'/businesses'",
       );
       expect(body, containsAll(requiredOf('BusinessRegistration')));
       expect(
@@ -95,7 +112,7 @@ void main() {
     test('POST /auth/register and /auth/token conform', () {
       final register = bodyOf(
         'lib/core/repositories/http_auth_repository.dart',
-        "'/auth/register',",
+        "'/auth/register'",
       );
       expect(register, containsAll(requiredOf('RegistrationRequest')));
       expect(
@@ -105,7 +122,7 @@ void main() {
 
       final token = bodyOf(
         'lib/core/repositories/http_auth_repository.dart',
-        "'/auth/token',",
+        "'/auth/token'",
       );
       expect(token, containsAll(requiredOf('TokenRequest')));
       expect(token.difference(propsOf('TokenRequest').toSet()), isEmpty);
@@ -114,7 +131,7 @@ void main() {
 
   group('FIXED — the payment report now carries what it must', () {
     const file = 'lib/core/repositories/http_applications_repository.dart';
-    const anchor = "'/applications/\$applicationId/payments'";
+    const path = "'/applications/\$applicationId/payments'";
 
     test('paidOn is required, and is now sent', () {
       // The app never asked the applicant WHEN they paid — there was no field
@@ -123,7 +140,7 @@ void main() {
       // sheet and threaded through the model.
       expect(requiredOf('PaymentProof'), contains('paidOn'));
       expect(
-        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        bodyOf(file, path, nested: {'label', 'fileName'}),
         contains('paidOn'),
       );
     });
@@ -145,7 +162,7 @@ void main() {
       final source = File(file).readAsStringSync();
       expect(source, isNot(contains("referenceNumber: proof?.label ?? ''")));
       expect(
-        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        bodyOf(file, path, nested: {'label', 'fileName'}),
         contains('referenceNumber'),
       );
     });
@@ -157,7 +174,7 @@ void main() {
       expect(requiredOf('PaymentProof'), isNot(contains('amountCentavos')));
       expect(propsOf('PaymentProof'), contains('amountCentavos'));
       expect(
-        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        bodyOf(file, path, nested: {'label', 'fileName'}),
         contains('amountCentavos'),
       );
     });
@@ -172,11 +189,11 @@ void main() {
       // silently discarding the receipt the applicant attached — the same
       // reasoning as `documents` on the submission body.
       const file = 'lib/core/repositories/http_applications_repository.dart';
-      const anchor = "'/applications/\$applicationId/payments'";
+      const path = "'/applications/\$applicationId/payments'";
       expect(propsOf('PaymentProof'), contains('documentId'));
       expect(propsOf('PaymentProof'), isNot(contains('proof')));
       expect(
-        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        bodyOf(file, path, nested: {'label', 'fileName'}),
         contains('proof'),
       );
     },

@@ -11,6 +11,7 @@ import '../models/document_model.dart';
 import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
+import '../repositories/document_upload_repository.dart';
 import '../services/service_pledge_service.dart';
 import 'notifications_provider.dart';
 
@@ -22,6 +23,12 @@ class ApplicationsProvider extends ChangeNotifier {
   ApplicationsProvider({
     required this._notifications,
     required this._repository,
+
+    /// Null on a build with no server, where there is nothing to upload to.
+    /// The app then behaves as it did before: it sends the attachments' labels
+    /// and filenames, which a conforming server refuses — loudly, rather than
+    /// filing an application without them.
+    this._documentUploads,
     ServicePledgeService? pledgeService,
     this.actionItemBuilder = const ActionItemBuilder(),
     DateTime Function()? clock,
@@ -31,6 +38,7 @@ class ApplicationsProvider extends ChangeNotifier {
   }
 
   final ApplicationsRepository _repository;
+  final DocumentUploadRepository? _documentUploads;
   final NotificationsProvider _notifications;
   final ServicePledgeService _pledgeService;
   final ActionItemBuilder actionItemBuilder;
@@ -208,6 +216,17 @@ class ApplicationsProvider extends ChangeNotifier {
     String? applicationNumber,
     ApplicationLineage? lineage,
   }) async {
+    // The files go first. An application filed before its documents reach the
+    // office is an application the office cannot act on, and if any upload
+    // fails this throws before anything is filed — the applicant sees an
+    // error and still has their draft, rather than a filed application
+    // missing the plans.
+    //
+    // All-or-nothing on purpose. A partial upload would put SOME ids in the
+    // body, and a submission listing eleven of twenty-four documents reads to
+    // the office like an applicant who forgot thirteen.
+    final documentIds = await _uploadAll(documents);
+
     final application = await _repository.submitApplication(
       businessId: businessId,
       businessName: businessName,
@@ -219,6 +238,7 @@ class ApplicationsProvider extends ChangeNotifier {
       permitTypeLabel: permitTypeLabel,
       applicationNumber: applicationNumber,
       lineage: lineage,
+      documentIds: documentIds,
     );
     _applications = [..._applications, application];
     notifyListeners();
@@ -229,6 +249,26 @@ class ApplicationsProvider extends ChangeNotifier {
       payload: {'permitType': application.permitTypeLabel ?? type.label},
     );
     return application;
+  }
+
+  /// Uploads every attachment that has a file behind it, in order.
+  ///
+  /// Returns an empty list on a build with no upload repository, which is the
+  /// state that makes the submission body fall back to the undeclared
+  /// `documents` key and be refused. That is the intended failure: see
+  /// `HttpApplicationsRepository.submitApplication`.
+  ///
+  /// Sequential rather than parallel. Twenty-four concurrent multipart uploads
+  /// from a phone on a rural connection is how a submission times out, and the
+  /// applicant would rather wait than start again.
+  Future<List<String>> _uploadAll(List<DocumentModel> documents) async {
+    final uploads = _documentUploads;
+    if (uploads == null || documents.isEmpty) return const [];
+    final ids = <String>[];
+    for (final document in documents) {
+      ids.add((await uploads.upload(document)).id);
+    }
+    return ids;
   }
 
   /// Sends a replacement for a document the office turned back.
@@ -276,6 +316,14 @@ class ApplicationsProvider extends ChangeNotifier {
     PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async {
+    // The receipt goes first, for the same reason the application's documents
+    // do: a payment reported before its proof reaches the office is a payment
+    // the Treasurer's Office cannot verify.
+    final uploads = _documentUploads;
+    final documentId = (uploads == null || proof == null)
+        ? null
+        : (await uploads.upload(proof, applicationId: applicationId)).id;
+
     final updated = await _repository.attachPayment(
       applicationId,
       method: method,
@@ -283,6 +331,7 @@ class ApplicationsProvider extends ChangeNotifier {
       paidOn: paidOn,
       amountPaid: amountPaid,
       proof: proof,
+      documentId: documentId,
     );
     _replace(updated);
     _notifications.record(

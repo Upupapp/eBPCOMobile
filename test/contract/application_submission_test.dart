@@ -120,20 +120,41 @@ void main() {
   });
 
   group('DIVERGENCE — what is left, and why it is left', () {
-    test('an undeclared key is sent: documents', () {
+    test('documentIds is sent when the files could be uploaded', () {
+      // Added 30 August 2026 with `POST /documents`. This is the declared
+      // key, and the one a conforming server accepts.
+      expect(listOf('properties'), contains('documentIds'));
+      expect(bodyKeys(), contains('documentIds'));
+    });
+
+    test('and the undeclared key is still the fallback, on purpose', () {
       // The contract declares `documentIds` — uuids of documents already
       // uploaded through /documents. The app sends `documents`, a list of
       // local labels and filenames, because the separate upload flow is not
       // built. With additionalProperties false this alone rejects the body.
       //
-      // LEFT DELIBERATELY. Dropping the key would make the filing succeed
-      // while discarding every attachment the applicant made — on a Building
-      // Permit, twenty-four of them — and the wizard would have told them
-      // their documents were sent. A loud rejection is the better failure
-      // until the upload flow exists.
+      // LEFT DELIBERATELY, and it is no longer the only path: `documentIds`
+      // goes when the files were uploaded. This branch is what happens when
+      // documents were attached and NONE could be uploaded — a mock build, or
+      // a server that refused every file. Dropping the key there would make
+      // the filing succeed while discarding every attachment the applicant
+      // made, on a Building Permit twenty-four of them, after the wizard told
+      // them their documents were sent. A loud rejection is the better
+      // failure.
       expect(listOf('properties'), contains('documentIds'));
       expect(listOf('properties'), isNot(contains('documents')));
       expect(bodyKeys(), contains('documents'));
+
+      final repository = File(
+        'lib/core/repositories/http_applications_repository.dart',
+      ).readAsStringSync();
+      expect(
+        repository,
+        contains("if (documentIds.isNotEmpty)"),
+        reason:
+            'the two keys must be mutually exclusive — sending both would be '
+            'refused for the undeclared one, which is the worst of both',
+      );
     });
 
     test('NO permit type the app sends is in the contract enum', () {

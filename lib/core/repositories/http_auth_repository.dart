@@ -1,4 +1,5 @@
 import '../api/api_client.dart';
+import '../api/idempotency_key.dart';
 import '../api/api_exception.dart';
 import '../models/user_model.dart';
 import '../services/secure_session_store.dart';
@@ -25,6 +26,13 @@ class HttpAuthRepository implements AuthRepository {
       final tokens = await _api.post(
         '/auth/token',
         body: {'grantType': 'password', 'email': email, 'password': password},
+        // One key per attempt. The contract requires the header and this app
+        // sent it on nothing until 30 August 2026. Note the limit honestly: a
+        // key made here is stable across the client's own retry of this call,
+        // and NOT across an applicant tapping the button twice — the durable
+        // version generates it where the operation is created, as the offline
+        // queue already does. Recorded in M-47.
+        idempotencyKey: newIdempotencyKey(),
       );
 
       final access = tokens['accessToken'];
@@ -66,6 +74,13 @@ class HttpAuthRepository implements AuthRepository {
         'mobileNumber': mobileNumber,
         'password': password,
       },
+      // One key per attempt. The contract requires the header and this app
+      // sent it on nothing until 30 August 2026. Note the limit honestly: a
+      // key made here is stable across the client's own retry of this call,
+      // and NOT across an applicant tapping the button twice — the durable
+      // version generates it where the operation is created, as the offline
+      // queue already does. Recorded in M-47.
+      idempotencyKey: newIdempotencyKey(),
     );
     // 202 whether or not the address was already registered. Returning true
     // either way is deliberate: anything else would let the app tell an

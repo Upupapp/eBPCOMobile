@@ -40,6 +40,7 @@ class _FakeRepository implements ApplicationsRepository {
     String? permitTypeLabel,
     String? applicationNumber,
     ApplicationLineage? lineage,
+    List<String> documentIds = const [],
   }) => throw UnimplementedError();
 
   @override
@@ -50,6 +51,7 @@ class _FakeRepository implements ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+    String? documentId,
   }) => throw UnimplementedError();
   @override
   Future<ApplicationModel> resubmitDocument(

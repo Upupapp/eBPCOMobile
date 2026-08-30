@@ -155,16 +155,52 @@
 		  applicationAction; payment method and reference number; and the
 		  LABELS AND FILENAMES of attached documents.
 
-		  The document FILES are not here, and that is a measurement rather
-		  than a position: the separate upload flow is not built, so no file
-		  bytes leave the device today. The moment one does, this manifest
-		  needs NSPrivacyCollectedDataTypePhotosorVideos or
-		  NSPrivacyCollectedDataTypeOtherUserContent — and the test guarding
-		  this file fails until it gets them.
+		  The document FILES were not here when this manifest was written, and
+		  the note said the moment one left the device this file would need
+		  photo and user-content entries. That happened on 30 August 2026:
+		  `POST /documents` was built, the guarding test failed exactly as it
+		  was designed to, and the two entries below were added.
 		-->
 		<dict>
 			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeOtherDataTypes</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!--
+		  Photographs the applicant takes or chooses: a land title, a tax
+		  declaration, a receipt, a government ID. Uploaded to `/documents`
+		  since 30 August 2026 — before that the app sent only a filename, and
+		  this entry would have been a false statement.
+		-->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePhotosorVideos</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!--
+		  The same upload path also carries files that are not photographs —
+		  PDF plan sets, signed and sealed drawings, scanned clearances.
+		  Declared separately because "photos or videos" does not cover a
+		  document an architect exported, and an applicant reading the label
+		  should recognise what they attached.
+		-->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherUserContent</string>
 			<key>NSPrivacyCollectedDataTypeLinked</key>
 			<true/>
 			<key>NSPrivacyCollectedDataTypeTracking</key>

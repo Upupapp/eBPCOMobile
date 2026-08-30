@@ -4,6 +4,7 @@ import '../services/secure_session_store.dart';
 import 'applications_repository.dart';
 import 'auth_repository.dart';
 import 'business_repository.dart';
+import 'document_upload_repository.dart';
 import 'http_applications_repository.dart';
 import 'http_auth_repository.dart';
 import 'http_business_repository.dart';
@@ -17,11 +18,9 @@ import 'notifications_repository.dart';
 /// cannot half-happen, with applications coming from a server while payments
 /// still come from seed data.
 class RepositoryFactory {
-  RepositoryFactory({
-    ApiClient? apiClient,
-    SessionStore? session,
-  })  : _session = session ?? SecureSessionStore(),
-        _injectedClient = apiClient;
+  RepositoryFactory({ApiClient? apiClient, SessionStore? session})
+    : _session = session ?? SecureSessionStore(),
+      _injectedClient = apiClient;
 
   /// The keychain, not SharedPreferences. The token used to be read from an
   /// unencrypted preferences file; it now comes from the platform keystore, and
@@ -60,12 +59,16 @@ class RepositoryFactory {
 
   ApplicationsRepository applications() {
     final api = client;
-    return api == null ? MockApplicationsRepository() : HttpApplicationsRepository(api);
+    return api == null
+        ? MockApplicationsRepository()
+        : HttpApplicationsRepository(api);
   }
 
   AuthRepository auth() {
     final api = client;
-    return api == null ? MockAuthRepository() : HttpAuthRepository(api, _session);
+    return api == null
+        ? MockAuthRepository()
+        : HttpAuthRepository(api, _session);
   }
 
   BusinessRepository businesses() {
@@ -73,9 +76,23 @@ class RepositoryFactory {
     return api == null ? MockBusinessRepository() : HttpBusinessRepository(api);
   }
 
+  /// Uploads, or a repository that refuses.
+  ///
+  /// There is no mock. A fabricated document id would let a submission succeed
+  /// while the office held a reference to nothing, and the applicant would be
+  /// told their documents were received — so the mock build refuses instead.
+  DocumentUploadRepository documentUploads() {
+    final api = client;
+    return api == null
+        ? const UnavailableDocumentUploadRepository()
+        : HttpDocumentUploadRepository(api);
+  }
+
   NotificationsRepository notifications() {
     final api = client;
-    return api == null ? MockNotificationsRepository() : HttpNotificationsRepository(api);
+    return api == null
+        ? MockNotificationsRepository()
+        : HttpNotificationsRepository(api);
   }
 
   void dispose() => _client?.close();

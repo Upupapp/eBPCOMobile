@@ -49,6 +49,11 @@ const Map<String, String> _declaredFor = {
   'label': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'fileName': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'proof': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  // The ids that came back from /documents. The FILES themselves are what is
+  // really being declared — see the user-content entries in the manifest — and
+  // these keys are how a filing points at them.
+  'documentIds': 'NSPrivacyCollectedDataTypePhotosorVideos',
+  'documentId': 'NSPrivacyCollectedDataTypePhotosorVideos',
   // The applicant's answer to a Letter of Instruction: which deficiency, and
   // what they wrote back about it. Application content.
   'items': 'NSPrivacyCollectedDataTypeOtherDataTypes',
@@ -200,6 +205,9 @@ void main() {
           )
           .map((f) => f.readAsStringSync())
           .join();
+      // `lib/core/services/` is excluded: the PBKDF2 verifier base64-encodes a
+      // password hash on the device and sends nothing, and a scan that counted
+      // it would report an upload path that does not exist.
       final uploads = [
         for (final marker in const [
           'MultipartRequest',

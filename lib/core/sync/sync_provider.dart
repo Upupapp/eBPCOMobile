@@ -102,7 +102,15 @@ class SyncProvider extends ChangeNotifier {
     switch (operation.kind) {
       case QueuedOperationKind.contactVerificationRequest:
         final channel = operation.payload['channel'];
-        await api.post('/me/contacts/$channel/request', body: const {});
+        await api.post(
+          '/me/contacts/$channel/request',
+          body: const {},
+          // The queue's own key, created when the operation was enqueued and
+          // reused on every retry — which is exactly what the header is for.
+          // Every other write in this app makes a fresh key per attempt; this
+          // is the one path where a retry is provably the same operation.
+          idempotencyKey: operation.idempotencyKey,
+        );
       case QueuedOperationKind.applicationSubmission:
       case QueuedOperationKind.documentUpload:
       case QueuedOperationKind.instructionResponse:

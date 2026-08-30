@@ -1,4 +1,5 @@
 import '../api/api_client.dart';
+import '../api/idempotency_key.dart';
 import '../api/api_exception.dart';
 import '../api/application_dto.dart';
 import '../contract/service_domain.dart';
@@ -45,6 +46,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     String? permitTypeLabel,
     String? applicationNumber,
     ApplicationLineage? lineage,
+    List<String> documentIds = const [],
   }) async {
     // `applicationAction` below already carries New / Renewal / Amendment,
     // which both lines have agreed on since the first reconciliation. What
@@ -75,11 +77,32 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // response is the record of truth for the number.
         'permitType': ?permitTypeLabel,
         'applicationAction': (lineage?.action ?? type).wire,
-        'documents': [
-          for (final document in documents)
-            {'label': document.label, 'fileName': document.fileName},
-        ],
+        // The contract declares `documentIds` — uuids of files already
+        // uploaded through /documents — and this app could not produce them
+        // until the upload repository existed. It can now, so it sends them.
+        //
+        // The fallback is deliberate and is NOT a fallback to something that
+        // works. When documents were attached and none could be uploaded, the
+        // app sends the undeclared `documents` key it always sent, and a
+        // conforming server refuses the whole filing. That is the intended
+        // outcome: the alternative is a submission that succeeds while
+        // silently discarding twenty-four attachments the wizard told the
+        // applicant were sent. M-47.
+        if (documentIds.isNotEmpty)
+          'documentIds': documentIds
+        else if (documents.isNotEmpty)
+          'documents': [
+            for (final document in documents)
+              {'label': document.label, 'fileName': document.fileName},
+          ],
       },
+      // One key per attempt. The contract requires the header and this app
+      // sent it on nothing until 30 August 2026. Note the limit honestly: a
+      // key made here is stable across the client's own retry of this call,
+      // and NOT across an applicant tapping the button twice — the durable
+      // version generates it where the operation is created, as the offline
+      // queue already does. Recorded in M-47.
+      idempotencyKey: newIdempotencyKey(),
     );
     return ApplicationDto.parse(json);
   }
@@ -96,6 +119,13 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     final json = await _api.post(
       '/applications/$applicationId/documents/$documentId/resubmit',
       body: {'fileName': replacement.fileName, 'label': replacement.label},
+      // One key per attempt. The contract requires the header and this app
+      // sent it on nothing until 30 August 2026. Note the limit honestly: a
+      // key made here is stable across the client's own retry of this call,
+      // and NOT across an applicant tapping the button twice — the durable
+      // version generates it where the operation is created, as the offline
+      // queue already does. Recorded in M-47.
+      idempotencyKey: newIdempotencyKey(),
     );
     return ApplicationDto.parse(json);
   }
@@ -108,6 +138,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+    String? documentId,
   }) => reportPayment(
     applicationId,
     method: method,
@@ -119,6 +150,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     paidOn: paidOn,
     amountPaid: amountPaid,
     proof: proof,
+    documentId: documentId,
   );
 
   /// Reports a payment made against an existing Order of Payment.
@@ -133,6 +165,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+    String? documentId,
   }) async {
     final json = await _api.post(
       '/applications/$applicationId/payments',
@@ -155,15 +188,27 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // lets the Treasurer's Office see a short payment as a short payment
         // rather than as a mystery.
         if (amountPaid != null) 'amountCentavos': amountPaid.centavos,
-        // DELIBERATELY LEFT DIVERGENT. The contract declares `documentId` —
-        // the id of a receipt already uploaded through /documents — and that
-        // flow is not built, so the app has no id to send. Dropping the key
-        // would let the request succeed while silently discarding the receipt
-        // the applicant attached; sending it fails the request loudly instead.
-        // The same reasoning as `documents` on the submission body. M-47.
-        if (proof != null)
+        // The contract's declared field, now that /documents exists.
+        //
+        // The fallback below is the same deliberate failure as `documents` on
+        // the submission body: when a receipt was attached and could not be
+        // uploaded, the app sends the undeclared `proof` key and a conforming
+        // server refuses the report. Dropping it instead would record a
+        // payment with no receipt while the applicant was told theirs was
+        // sent, and the Treasurer's Office would have nothing to verify
+        // against. M-47.
+        if (documentId != null)
+          'documentId': documentId
+        else if (proof != null)
           'proof': {'label': proof.label, 'fileName': proof.fileName},
       },
+      // One key per attempt. The contract requires the header and this app
+      // sent it on nothing until 30 August 2026. Note the limit honestly: a
+      // key made here is stable across the client's own retry of this call,
+      // and NOT across an applicant tapping the button twice — the durable
+      // version generates it where the operation is created, as the offline
+      // queue already does. Recorded in M-47.
+      idempotencyKey: newIdempotencyKey(),
     );
     return ApplicationDto.parse(json);
   }
@@ -207,6 +252,13 @@ class HttpApplicationsRepository implements ApplicationsRepository {
             },
         ],
       },
+      // One key per attempt. The contract requires the header and this app
+      // sent it on nothing until 30 August 2026. Note the limit honestly: a
+      // key made here is stable across the client's own retry of this call,
+      // and NOT across an applicant tapping the button twice — the durable
+      // version generates it where the operation is created, as the offline
+      // queue already does. Recorded in M-47.
+      idempotencyKey: newIdempotencyKey(),
     );
     return ApplicationDto.parse(json);
   }

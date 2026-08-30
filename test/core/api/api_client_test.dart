@@ -32,6 +32,11 @@ class _FakeClient extends http.BaseClient {
   }
 }
 
+/// A fixed key. The contract requires `Idempotency-Key` on every POST, so the
+/// client makes it a required argument; the VALUE is irrelevant to what these
+/// tests assert, and a fresh uuid per call would only add noise.
+const _key = '00000000-0000-4000-8000-000000000000';
+
 void main() {
   group('requests', () {
     test('builds the URL, headers, and JSON body', () async {
@@ -42,7 +47,7 @@ void main() {
         authToken: () async => 'token-123',
       );
 
-      await api.post('/applications', body: {'businessId': 'biz-1'});
+      await api.post('/applications', body: {'businessId': 'biz-1'}, idempotencyKey: _key);
 
       final request = fake.lastRequest! as http.Request;
       expect(request.method, 'POST');
@@ -193,7 +198,7 @@ void main() {
       );
 
       expect(
-        await api.post('/applications/a/instructions/l/resubmit'),
+        await api.post('/applications/a/instructions/l/resubmit', idempotencyKey: _key),
         isEmpty,
       );
     });

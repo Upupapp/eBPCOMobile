@@ -220,6 +220,12 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
           create: (context) => ApplicationsProvider(
             notifications: context.read<NotificationsProvider>(),
             repository: context.read<RepositoryFactory>().applications(),
+            // The other half of the write path: files go to /documents before
+            // an application references them. Refuses on a mock build rather
+            // than fabricating ids. M-47.
+            documentUploads: context
+                .read<RepositoryFactory>()
+                .documentUploads(),
           ),
         ),
         // Per-channel contact verification. Seeded from the session and kept

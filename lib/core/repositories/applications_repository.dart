@@ -31,6 +31,14 @@ abstract class ApplicationsRepository {
     /// What this application continues, on a renewal or an amendment. Null on
     /// a first filing.
     ApplicationLineage? lineage,
+
+    /// The ids of documents already uploaded through `/documents`.
+    ///
+    /// Empty when nothing was uploaded, which is not the same as "there are no
+    /// documents": [documents] may be full while this is empty, and that is
+    /// precisely the state in which a filing must fail rather than succeed
+    /// without them. See `HttpApplicationsRepository.submitApplication`.
+    List<String> documentIds = const [],
   });
 
   /// Reports a payment the applicant says they made.
@@ -46,6 +54,11 @@ abstract class ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+
+    /// The id of a receipt already uploaded through `/documents`. Null when
+    /// nothing could be uploaded — see the note on `documentIds` above; the
+    /// same all-or-nothing rule applies, for the same reason.
+    String? documentId,
   });
 
   /// Replaces one document on a filed application with a newly supplied file.
@@ -82,6 +95,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
     String? permitTypeLabel,
     String? applicationNumber,
     ApplicationLineage? lineage,
+    List<String> documentIds = const [],
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final now = DateTime.now();
@@ -113,6 +127,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+    String? documentId,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final index = _applications.indexWhere((a) => a.id == applicationId);

@@ -46,6 +46,7 @@ class _ThrowingApplications implements ApplicationsRepository {
     String? permitTypeLabel,
     String? applicationNumber,
     ApplicationLineage? lineage,
+    List<String> documentIds = const [],
   }) async => throw _Offline();
   @override
   Future<ApplicationModel> attachPayment(
@@ -55,6 +56,7 @@ class _ThrowingApplications implements ApplicationsRepository {
     required DateTime paidOn,
     PesoAmount? amountPaid,
     DocumentModel? proof,
+    String? documentId,
   }) async => throw _Offline();
   @override
   Future<ApplicationModel> resubmitDocument(

@@ -28,6 +28,20 @@ enum ApiFailure {
   /// 409/422 — the server rejected the request as invalid.
   rejected,
 
+  /// 413 — the file is larger than the per-file or per-application cap.
+  ///
+  /// Separate from [rejected] because the remedy is the applicant's and is
+  /// specific: photograph the page again at a lower resolution, or split the
+  /// plan set. "Check your details and try again" is useless advice for it.
+  tooLarge,
+
+  /// 415 — the content is not an allowed type, by magic-byte inspection.
+  ///
+  /// Note what that means for the message: the server did not look at the file
+  /// extension, so renaming it will not help, and telling an applicant to
+  /// "try a different format" has to mean re-exporting rather than renaming.
+  unsupportedMedia,
+
   /// 5xx — the server broke.
   server,
 
@@ -61,6 +75,14 @@ extension ApiFailureX on ApiFailure {
       case ApiFailure.rejected:
         return 'The office’s system did not accept this. Please check your '
             'details and try again.';
+      case ApiFailure.tooLarge:
+        return 'That file is too large to upload. Try photographing the page '
+            'again at a lower resolution, or send the plans as separate '
+            'files.';
+      case ApiFailure.unsupportedMedia:
+        return 'That file type cannot be accepted. Please upload a PDF or a '
+            'photo — renaming the file will not help, because the office’s '
+            'system checks the contents rather than the name.';
       case ApiFailure.server:
         return 'The office’s system is having trouble. Please try again '
             'shortly.';
@@ -120,9 +142,12 @@ class ProblemDetails {
       return ProblemDetails(
         type: type,
         title: title,
-        detail: decoded['detail'] is String ? decoded['detail'] as String : null,
-        correlationId:
-            decoded['correlationId'] is String ? decoded['correlationId'] as String : null,
+        detail: decoded['detail'] is String
+            ? decoded['detail'] as String
+            : null,
+        correlationId: decoded['correlationId'] is String
+            ? decoded['correlationId'] as String
+            : null,
         fieldErrors: errors,
       );
     } on FormatException {
@@ -146,7 +171,12 @@ class ApiException implements Exception {
   /// The structured problem, when the server sent one.
   final ProblemDetails? problem;
 
-  const ApiException(this.failure, this.detail, {this.statusCode, this.problem});
+  const ApiException(
+    this.failure,
+    this.detail, {
+    this.statusCode,
+    this.problem,
+  });
 
   /// The message safe to put in front of an applicant.
   ///
