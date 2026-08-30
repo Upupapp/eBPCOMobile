@@ -622,7 +622,9 @@ class InteriorProcessingInfo {
   String? permitIssuanceStatus;
 
   double? get totalAssessedFees {
-    if (filingFee == null && processingFee == null && otherAssessedFees == null) {
+    if (filingFee == null &&
+        processingFee == null &&
+        otherAssessedFees == null) {
       return null;
     }
     return (filingFee ?? 0) + (processingFee ?? 0) + (otherAssessedFees ?? 0);
@@ -639,11 +641,39 @@ class InteriorProcessingInfo {
     'Building Official Decision',
   ];
 
+  /// Read off Box 10 of the bundled interior design form, 31 August 2026.
+  ///
+  /// With one qualification the screen carries: that form is a REFERENCE
+  /// TEMPLATE, not Castilla's. Its signature block names another
+  /// municipality's Municipal Engineer and two of its Processing and
+  /// Evaluation Division staff, which is what
+  /// `LguSourceNotice.conditionsFromReferenceForm` warns the applicant about.
+  ///
+  /// So what is stated here is deliberately limited to the parts that are
+  /// NATIONAL law and would hold whichever LGU issues the permit — Article
+  /// 1723 of the Civil Code and R.A. 8534 — rather than that municipality's
+  /// own terms. Nothing here says what Castilla will attach; the screen says
+  /// so too.
+  ///
+  /// Two changes from what this list used to say:
+  ///   * 'Required signed and sealed professional documents must be
+  ///     authentic.' is gone. It appears on no form. It is the same invented
+  ///     condition removed from the fencing permit — a rule about the
+  ///     applicant's honesty, standing where the office's obligations belong.
+  ///   * Article 1723 and the completion documents were missing entirely, and
+  ///     they are the two conditions with real consequences: a fifteen-year
+  ///     liability, and the paperwork without which the works cannot close.
   static const List<String> permitConditions = [
-    'Interior works must follow the approved plans and applicable regulations.',
-    'A licensed professional must supervise or take charge of the work.',
-    'Required signed and sealed professional documents must be authentic.',
-    'The Interior Design Permit is invalid without the related Building Permit.',
+    'Interior works must follow the plans filed with the Office of the '
+        'Building Official and conform to the Philippine Interior Design Act '
+        'of 1998 (R.A. 8534), the National Building Code and its IRR.',
+    'The interior designer is liable for fifteen years under Article 1723 of '
+        'the Civil Code and is expected to inspect the work periodically.',
+    'A licensed professional must be in full-time charge of the work.',
+    'On completion, that professional submits the signed logbook entry, the '
+        'as-built plans and a Certificate of Completion.',
+    'The Interior Design Permit is invalid without the related Building '
+        'Permit.',
   ];
 
   bool get isValid => true;

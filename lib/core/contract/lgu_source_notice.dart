@@ -1,3 +1,5 @@
+import 'admin_vocabulary.dart';
+import 'permit_forms.dart';
 import 'requirements_catalog.dart';
 
 /// What the app is allowed to claim about where its LGU-specific facts came
@@ -56,6 +58,34 @@ class LguSourceNotice {
       'The Municipality of Castilla’s own published Citizen’s Charter has not '
       'been supplied to this app, so treat the offices and the “where to '
       'secure” notes as a guide and confirm them with the office.';
+
+  /// Shown beside the permit conditions of a permit whose bundled form is a
+  /// reference template rather than Castilla's own.
+  ///
+  /// Three of the nine wizards that display `permitConditions` — Architectural,
+  /// Demolition and Interior Design — ship a form the LGU has not published.
+  /// Reading the interior design form's page two settled what "reference
+  /// template" means in practice: its signature block names **another
+  /// municipality's** Municipal Engineer and two of its Processing and
+  /// Evaluation Division staff. Its Box 10 conditions are that municipality's,
+  /// not Castilla's.
+  ///
+  /// So those three wizards may not present their conditions as the ones the
+  /// office will attach. The conditions are still worth showing — they tell an
+  /// applicant what will be asked — but only with this beside them, which is
+  /// the same rule `permit_forms.dart` already applies to the form itself.
+  static const String conditionsFromReferenceForm =
+      'These follow national practice. The Municipality of Castilla has not '
+      'published its own form for this permit, so confirm the conditions with '
+      'the office when your permit is issued.';
+
+  /// Whether this permit's bundled form is Castilla's own.
+  ///
+  /// Delegates to `permit_forms.dart`, which carries the judgement, rather
+  /// than holding a second opinion — the same reason
+  /// [isConfirmedForPermit] delegates to the requirements catalogue.
+  static bool isFormCastillasOwn(CanonicalPermitType type) =>
+      permitFormFor(type)?.isOfficialCastillaForm ?? false;
 
   /// The one part of the charter that IS national law, and may be stated
   /// plainly: RA 11032's 3 / 7 / 20 working-day ceilings.

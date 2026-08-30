@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
+import 'package:ebpco_user_app/core/contract/lgu_source_notice.dart';
+import 'package:ebpco_user_app/core/models/electrical_permit_model.dart';
 import 'package:ebpco_user_app/core/models/fencing_permit_model.dart';
+import 'package:ebpco_user_app/core/models/interior_design_permit_model.dart';
+import 'package:ebpco_user_app/core/models/mechanical_permit_model.dart';
 import 'package:ebpco_user_app/core/models/plumbing_permit_model.dart';
 
 /// What the app tells an applicant their permit requires.
@@ -71,6 +76,109 @@ void main() {
       expect(joined, contains('Master Plumber'));
       expect(joined, contains('as-built'));
       expect(joined, contains('without the related Building Permit'));
+    });
+  });
+
+  group('Mechanical — NBC Form A-04, Box 9', () {
+    test('the Notice of Construction is unconditional here too', () {
+      final notice = MechanicalEvaluationPermitStatus.permitConditions
+          .singleWhere((c) => c.contains('Notice of Construction'));
+      expect(notice, isNot(contains('when required')));
+      expect(notice, contains('Before any mechanical installation'));
+      expect(notice, contains('Office of the Building Official'));
+    });
+  });
+
+  group('Electrical — NBC Form A-03, Box 8', () {
+    test('the Notice of Construction names who must submit it', () {
+      // The form is specific where the app was not: "the Owner/Permittee
+      // shall submit". An applicant reading "a Notice of Construction must be
+      // submitted" can reasonably assume their engineer handles it.
+      final notice = ElectricalEvaluationPermitStatus.permitConditions
+          .singleWhere((c) => c.contains('Notice of Construction'));
+      expect(notice, isNot(contains('when required')));
+      expect(notice, contains('owner or permittee'));
+    });
+
+    test('the PCAB threshold is stated, not called "qualifying"', () {
+      // 200 amperes at 230 volts is the whole content of that condition: it
+      // is how an applicant works out whether it binds them. "Qualifying
+      // installations" told them there is a rule and not what it is.
+      final pcab = ElectricalEvaluationPermitStatus.permitConditions
+          .singleWhere((c) => c.contains('PCAB'));
+      expect(pcab, contains('200 amperes'));
+      expect(pcab, contains('230 volts'));
+      expect(pcab, isNot(contains('qualifying')));
+    });
+  });
+
+  group('Interior Design — a REFERENCE form, and treated as one', () {
+    test('the national obligations are stated', () {
+      final joined = InteriorProcessingInfo.permitConditions.join(' ');
+      expect(joined, contains('Article 1723'));
+      expect(joined, contains('R.A. 8534'));
+      expect(joined, contains('Certificate of Completion'));
+      expect(joined, contains('logbook'));
+    });
+
+    test('and the invented one is gone here too', () {
+      expect(
+        InteriorProcessingInfo.permitConditions.join(' '),
+        isNot(contains('must be authentic')),
+        reason:
+            'the same phantom condition removed from fencing. It appears on '
+            'no form, and it is a rule about the applicant rather than one '
+            'about the permit',
+      );
+    });
+
+    test('the three reference-form wizards do not claim these will apply', () {
+      // The interior design form's signature block names another
+      // municipality's Municipal Engineer and two of its Processing and
+      // Evaluation Division staff. Its Box 10 is that LGU's, not Castilla's,
+      // so the screen may not say "these conditions will apply once the
+      // permit is issued" the way the wizards with a real Castilla form do.
+      for (final wizard in ['architectural', 'demolition', 'interior_design']) {
+        final source = File(
+          'lib/features/applications/presentation/${wizard}_permit/steps/'
+          'step9_evaluation_status.dart',
+        ).readAsStringSync();
+        expect(
+          source,
+          contains('LguSourceNotice.conditionsFromReferenceForm'),
+          reason: '$wizard ships a reference form and must say so',
+        );
+        expect(
+          source,
+          isNot(contains('will apply once the permit is issued')),
+          reason: '$wizard cannot promise conditions no Castilla form carries',
+        );
+      }
+    });
+
+    test('and that set is exactly the forms flagged as not Castilla\'s', () {
+      // Delegates rather than holding a second opinion: if the LGU publishes
+      // its own architectural form and the flag flips, this fails and the
+      // caveat above comes off that screen.
+      const shown = {
+        CanonicalPermitType.architecturalPermit,
+        CanonicalPermitType.civilStructuralPermit,
+        CanonicalPermitType.demolitionPermit,
+        CanonicalPermitType.electricalPermit,
+        CanonicalPermitType.electronicsPermit,
+        CanonicalPermitType.interiorDesignPermit,
+        CanonicalPermitType.mechanicalPermit,
+        CanonicalPermitType.plumbingPermit,
+        CanonicalPermitType.sanitaryPermit,
+      };
+      final reference = shown
+          .where((t) => !LguSourceNotice.isFormCastillasOwn(t))
+          .toSet();
+      expect(reference, {
+        CanonicalPermitType.architecturalPermit,
+        CanonicalPermitType.demolitionPermit,
+        CanonicalPermitType.interiorDesignPermit,
+      });
     });
   });
 

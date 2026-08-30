@@ -456,11 +456,15 @@ class ElectricalInstallationDetails {
         return false;
       }
     }
-    if (hasOtherOutlets && Validators.required(otherOutletDescription) != null) {
+    if (hasOtherOutlets &&
+        Validators.required(otherOutletDescription) != null) {
       return false;
     }
 
-    if (_requiredPositiveDecimal(totalConnectedLoadKva, 'Total Connected Load') !=
+    if (_requiredPositiveDecimal(
+          totalConnectedLoadKva,
+          'Total Connected Load',
+        ) !=
         null) {
       return false;
     }
@@ -578,10 +582,7 @@ class ElectricalContractor {
       Validators.required(pcabLicenseNumber) == null &&
       pcabLicenseValidityDate != null &&
       Validators.required(electricalWorksClassification) == null &&
-      Validators.required(
-            contactNumber,
-            fieldLabel: 'Contact number',
-          ) ==
+      Validators.required(contactNumber, fieldLabel: 'Contact number') ==
           null &&
       pcabLicenseUpload != null &&
       contractorAccreditationUpload != null &&
@@ -593,8 +594,9 @@ class ElectricalContractor {
 /// fields/uploads are never populated — Step 7's document checklist reads
 /// the Design Professional's uploads for both roles in that case.
 class ElectricalProfessionals {
-  final ElectricalProfessionalInfo designProfessional = ElectricalProfessionalInfo()
-    ..profession = ElectricalProfessionType.professionalElectricalEngineer;
+  final ElectricalProfessionalInfo designProfessional =
+      ElectricalProfessionalInfo()
+        ..profession = ElectricalProfessionType.professionalElectricalEngineer;
   DocumentModel? designPrcIdUpload;
   DocumentModel? designPtrDocumentUpload;
   DocumentModel? signedSealedPlansUpload;
@@ -614,7 +616,8 @@ class ElectricalProfessionals {
   final ElectricalContractor contractor = ElectricalContractor();
 
   bool isValid({required bool contractorRequired}) {
-    final designValid = designProfessional.isValid &&
+    final designValid =
+        designProfessional.isValid &&
         designPrcIdUpload != null &&
         designPtrDocumentUpload != null &&
         signedSealedPlansUpload != null &&
@@ -623,7 +626,8 @@ class ElectricalProfessionals {
     if (!designValid) return false;
 
     if (!isSupervisorSameAsDesignProfessional) {
-      final supervisorValid = supervisor.isValid &&
+      final supervisorValid =
+          supervisor.isValid &&
           supervisorPrcIdUpload != null &&
           supervisorPtrUpload != null &&
           signedSupervisorConfirmationUpload != null;
@@ -707,10 +711,12 @@ class ElectricalRequiredDocuments {
   DocumentModel? electricalLayoutPlansUpload;
   DocumentModel? lightingLayoutUpload;
   DocumentModel? powerLayoutUpload;
-  DocumentModel? fireAlarmLayoutUpload; // conditional — fire alarm detectors > 0
+  DocumentModel?
+  fireAlarmLayoutUpload; // conditional — fire alarm detectors > 0
 
   // Load and Capacity Documents.
-  DocumentModel? transformerCapacityDetailsUpload; // optional, "when applicable"
+  DocumentModel?
+  transformerCapacityDetailsUpload; // optional, "when applicable"
   DocumentModel? shortCircuitCalculationUpload; // optional, "when applicable"
   DocumentModel? voltageDropCalculationUpload; // optional, "when applicable"
 
@@ -723,7 +729,8 @@ class ElectricalRequiredDocuments {
   DocumentModel? waterPumpScheduleUpload;
   DocumentModel? generatorDetailsUpload; // conditional — generator capacity > 0
   DocumentModel? upsDetailsUpload; // conditional — UPS capacity > 0
-  DocumentModel? fireAlarmDetectorScheduleUpload; // conditional — fire alarm detectors > 0
+  DocumentModel?
+  fireAlarmDetectorScheduleUpload; // conditional — fire alarm detectors > 0
   DocumentModel? otherEquipmentDocumentsUpload; // optional
 
   // Scope-conditional documents (Step 3).
@@ -757,7 +764,8 @@ class ElectricalRequiredDocuments {
     required bool hasRelocation,
     required bool hasTemporaryInstallation,
   }) {
-    final baseValid = singleLineDiagramUpload != null &&
+    final baseValid =
+        singleLineDiagramUpload != null &&
         loadScheduleUpload != null &&
         panelboardScheduleUpload != null &&
         serviceEntranceDetailsUpload != null &&
@@ -866,8 +874,9 @@ extension ElectricalDocumentEvaluationStatusX
 enum ElectricalPaymentMethod { payOnsite, bankTransfer }
 
 extension ElectricalPaymentMethodX on ElectricalPaymentMethod {
-  String get label =>
-      this == ElectricalPaymentMethod.payOnsite ? 'Pay Onsite' : 'Bank Transfer';
+  String get label => this == ElectricalPaymentMethod.payOnsite
+      ? 'Pay Onsite'
+      : 'Bank Transfer';
 }
 
 /// Frontend-only permit status values the applicant can observe but never
@@ -933,7 +942,8 @@ class ElectricalEvaluationPermitStatus {
     'Special Fixtures and Equipment':
         ElectricalDocumentEvaluationStatus.pendingReview,
     'Starting Date': ElectricalDocumentEvaluationStatus.pendingReview,
-    'Expected Completion Date': ElectricalDocumentEvaluationStatus.pendingReview,
+    'Expected Completion Date':
+        ElectricalDocumentEvaluationStatus.pendingReview,
     'Other Documents': ElectricalDocumentEvaluationStatus.pendingReview,
   };
 
@@ -962,8 +972,21 @@ class ElectricalEvaluationPermitStatus {
 
   static const List<String> permitConditions = [
     'Electrical work must follow the approved plans and applicable electrical codes.',
-    'A Notice of Construction must be submitted when required before installation.',
-    'A PCAB-licensed specialty contractor is required for qualifying installations.',
+    // NBC Form A-03, Box 8: "prior to any electrical installation, the
+    // Owner/Permittee SHALL submit a duly accomplished prescribed Notice of
+    // Construction". The form names who must do it, which the applicant needs
+    // to know is them.
+    'Before any electrical installation, you as the owner or permittee must '
+        'submit a duly accomplished Notice of Construction to the Office of '
+        'the Building Official.',
+    // The form gives the threshold: "for installed electrical capacity of 200
+    // amperes and above at 230 volts nominal and above". "Qualifying
+    // installations" hid the one fact an applicant needs to work out whether
+    // it applies to them.
+    'For an installed electrical capacity of 200 amperes and above at 230 '
+        'volts nominal and above, a specialty electrical contractor licensed '
+        'by the Philippine Contractors Accreditation Board (PCAB) is '
+        'required.',
     'A licensed electrical practitioner must supervise the work.',
     'Required logbook entries, as-built plans, and completion documents must be submitted.',
     'A Certificate of Final Electrical Inspection is required before actual occupancy.',
@@ -979,7 +1002,8 @@ enum ElectricalPermitDraftStatus { draft, submitted }
 /// The full mutable draft for one Electrical Permit application session.
 class ElectricalPermitDraft {
   final ElectricalApplicantInfo applicant = ElectricalApplicantInfo();
-  final ElectricalApplicantAddress applicantAddress = ElectricalApplicantAddress();
+  final ElectricalApplicantAddress applicantAddress =
+      ElectricalApplicantAddress();
   final ElectricalProjectLocation projectLocation = ElectricalProjectLocation();
   final ElectricalRelatedBuildingPermit relatedBuildingPermit =
       ElectricalRelatedBuildingPermit();
@@ -987,7 +1011,8 @@ class ElectricalPermitDraft {
   final ElectricalInstallationDetails installationDetails =
       ElectricalInstallationDetails();
   final ElectricalProfessionals professionals = ElectricalProfessionals();
-  final ElectricalOwnershipConsent ownershipConsent = ElectricalOwnershipConsent();
+  final ElectricalOwnershipConsent ownershipConsent =
+      ElectricalOwnershipConsent();
   final ElectricalRequiredDocuments requiredDocuments =
       ElectricalRequiredDocuments();
   final ElectricalReviewDeclaration reviewDeclaration =
@@ -1001,14 +1026,17 @@ class ElectricalPermitDraft {
 
   bool get isStep1Valid => applicant.isValid;
   bool get isStep2Valid =>
-      applicantAddress.isValid && projectLocation.isValid && relatedBuildingPermit.isValid;
+      applicantAddress.isValid &&
+      projectLocation.isValid &&
+      relatedBuildingPermit.isValid;
   bool get isStep3Valid => scopeOfWork.isValid;
   bool get isStep4Valid => installationDetails.isValid;
   bool get isStep5Valid => professionals.isValid(
-        contractorRequired: installationDetails.requiresElectricalContractor,
-      );
+    contractorRequired: installationDetails.requiresElectricalContractor,
+  );
   bool get isStep6Valid => ownershipConsent.isValid;
-  bool get isStep7Valid => requiredDocuments.isValid(
+  bool get isStep7Valid =>
+      requiredDocuments.isValid(
         hasFireAlarmDetectors: installationDetails.hasFireAlarmDetectors,
         hasGeneratorCapacity: installationDetails.hasGeneratorCapacity,
         hasUpsCapacity: installationDetails.hasUpsCapacity,

@@ -535,9 +535,11 @@ class MechanicalInstallationDetails {
   String convSpeed = '';
   String convNumberOfStations = '';
 
-  bool get hasFireSprinkler =>
-      selectedEquipment.contains(MechanicalEquipmentType.automaticFireSprinklerSystem);
-  bool get hasBoiler => selectedEquipment.contains(MechanicalEquipmentType.boiler);
+  bool get hasFireSprinkler => selectedEquipment.contains(
+    MechanicalEquipmentType.automaticFireSprinklerSystem,
+  );
+  bool get hasBoiler =>
+      selectedEquipment.contains(MechanicalEquipmentType.boiler);
   bool get hasPressureVessel =>
       selectedEquipment.contains(MechanicalEquipmentType.pressureVessel);
   bool get hasInternalCombustionEngine => selectedEquipment.contains(
@@ -548,11 +550,15 @@ class MechanicalInstallationDetails {
       selectedEquipment.contains(MechanicalEquipmentType.coldStorage) ||
       selectedEquipment.contains(MechanicalEquipmentType.icePlant);
   bool get hasAirConditioningGroup =>
-      selectedEquipment.contains(MechanicalEquipmentType.windowTypeAirConditioning) ||
+      selectedEquipment.contains(
+        MechanicalEquipmentType.windowTypeAirConditioning,
+      ) ||
       selectedEquipment.contains(
         MechanicalEquipmentType.packagedSplitTypeAirConditioning,
       ) ||
-      selectedEquipment.contains(MechanicalEquipmentType.centralAirConditioning);
+      selectedEquipment.contains(
+        MechanicalEquipmentType.centralAirConditioning,
+      );
   bool get hasMechanicalVentilation =>
       selectedEquipment.contains(MechanicalEquipmentType.mechanicalVentilation);
   bool get hasPowerPiping =>
@@ -565,14 +571,18 @@ class MechanicalInstallationDetails {
       selectedEquipment.contains(MechanicalEquipmentType.cableCar) ||
       selectedEquipment.contains(MechanicalEquipmentType.dumbwaiter) ||
       selectedEquipment.contains(MechanicalEquipmentType.funicular);
-  bool get hasPumps => selectedEquipment.contains(MechanicalEquipmentType.pumps);
-  bool get hasPressurizedWaterHeater =>
-      selectedEquipment.contains(MechanicalEquipmentType.pressurizedWaterHeater);
+  bool get hasPumps =>
+      selectedEquipment.contains(MechanicalEquipmentType.pumps);
+  bool get hasPressurizedWaterHeater => selectedEquipment.contains(
+    MechanicalEquipmentType.pressurizedWaterHeater,
+  );
   bool get hasCompressedAirOrVacuumGroup =>
       selectedEquipment.contains(MechanicalEquipmentType.compressedAirSystem) ||
       selectedEquipment.contains(MechanicalEquipmentType.vacuumSystem);
   bool get hasGasGroup =>
-      selectedEquipment.contains(MechanicalEquipmentType.institutionalGasSystem) ||
+      selectedEquipment.contains(
+        MechanicalEquipmentType.institutionalGasSystem,
+      ) ||
       selectedEquipment.contains(MechanicalEquipmentType.industrialGasSystem);
   bool get hasConveyorGroup =>
       selectedEquipment.contains(MechanicalEquipmentType.pneumaticTubes) ||
@@ -586,7 +596,10 @@ class MechanicalInstallationDetails {
       return false;
     }
 
-    if (_nonNegativeDecimal(totalEstimatedProjectCost, 'Total Estimated Project Cost') !=
+    if (_nonNegativeDecimal(
+          totalEstimatedProjectCost,
+          'Total Estimated Project Cost',
+        ) !=
         null) {
       return false;
     }
@@ -614,11 +627,14 @@ class MechanicalInstallationDetails {
           null) {
         return false;
       }
-      if (_positiveDecimal(fsDesignCoverageArea, 'Design Coverage Area') != null) {
+      if (_positiveDecimal(fsDesignCoverageArea, 'Design Coverage Area') !=
+          null) {
         return false;
       }
       if (Validators.required(fsWaterSource) != null) return false;
-      if (_positiveDecimal(fsPumpCapacity, 'Pump Capacity') != null) return false;
+      if (_positiveDecimal(fsPumpCapacity, 'Pump Capacity') != null) {
+        return false;
+      }
       if (Validators.required(fsSystemType) != null) return false;
     }
 
@@ -627,7 +643,8 @@ class MechanicalInstallationDetails {
       if (_positiveDecimal(boilerRatedCapacity, 'Rated Capacity') != null) {
         return false;
       }
-      if (_positiveDecimal(boilerOperatingPressure, 'Operating Pressure') != null) {
+      if (_positiveDecimal(boilerOperatingPressure, 'Operating Pressure') !=
+          null) {
         return false;
       }
       if (Validators.required(boilerFuelType) != null) return false;
@@ -652,7 +669,10 @@ class MechanicalInstallationDetails {
           null) {
         return false;
       }
-      if (_nonNegativeDecimal(pvOperatingTemperature, 'Operating Temperature') !=
+      if (_nonNegativeDecimal(
+            pvOperatingTemperature,
+            'Operating Temperature',
+          ) !=
           null) {
         return false;
       }
@@ -706,7 +726,10 @@ class MechanicalInstallationDetails {
           null) {
         return false;
       }
-      if (_positiveDecimal(acCoolingCapacityPerUnit, 'Cooling Capacity per Unit') !=
+      if (_positiveDecimal(
+            acCoolingCapacityPerUnit,
+            'Cooling Capacity per Unit',
+          ) !=
           null) {
         return false;
       }
@@ -743,7 +766,10 @@ class MechanicalInstallationDetails {
       if (_positiveDecimal(pipingPipeDiameter, 'Pipe Diameter') != null) {
         return false;
       }
-      if (_positiveDecimal(pipingApproximateLength, 'Approximate Pipe Length') !=
+      if (_positiveDecimal(
+            pipingApproximateLength,
+            'Approximate Pipe Length',
+          ) !=
           null) {
         return false;
       }
@@ -776,9 +802,13 @@ class MechanicalInstallationDetails {
 
     if (hasPumps) {
       if (Validators.required(pumpsType) != null) return false;
-      if (_positiveDecimal(pumpsCapacity, 'Pump Capacity') != null) return false;
+      if (_positiveDecimal(pumpsCapacity, 'Pump Capacity') != null) {
+        return false;
+      }
       if (_positiveDecimal(pumpsTotalHead, 'Total Head') != null) return false;
-      if (_positiveDecimal(pumpsMotorRating, 'Motor Rating') != null) return false;
+      if (_positiveDecimal(pumpsMotorRating, 'Motor Rating') != null) {
+        return false;
+      }
       if (Validators.positiveWholeNumber(
             pumpsNumberOfUnits,
             fieldLabel: 'Number of units',
@@ -790,7 +820,9 @@ class MechanicalInstallationDetails {
 
     if (hasPressurizedWaterHeater) {
       if (Validators.required(pwhHeaterType) != null) return false;
-      if (_positiveDecimal(pwhTankCapacity, 'Tank Capacity') != null) return false;
+      if (_positiveDecimal(pwhTankCapacity, 'Tank Capacity') != null) {
+        return false;
+      }
       if (_positiveDecimal(pwhPressureRating, 'Pressure Rating') != null) {
         return false;
       }
@@ -808,7 +840,8 @@ class MechanicalInstallationDetails {
 
     if (hasCompressedAirOrVacuumGroup) {
       if (Validators.required(cavSystemType) != null) return false;
-      if (_positiveDecimal(cavOperatingPressure, 'Operating Pressure') != null) {
+      if (_positiveDecimal(cavOperatingPressure, 'Operating Pressure') !=
+          null) {
         return false;
       }
       if (_positiveDecimal(cavCapacity, 'Capacity') != null) return false;
@@ -827,11 +860,14 @@ class MechanicalInstallationDetails {
       if (_positiveDecimal(gasStorageCapacity, 'Storage Capacity') != null) {
         return false;
       }
-      if (_positiveDecimal(gasOperatingPressure, 'Operating Pressure') != null) {
+      if (_positiveDecimal(gasOperatingPressure, 'Operating Pressure') !=
+          null) {
         return false;
       }
       if (Validators.required(gasServedArea) != null) return false;
-      if (Validators.required(gasSafetyControlDescription) != null) return false;
+      if (Validators.required(gasSafetyControlDescription) != null) {
+        return false;
+      }
     }
 
     if (hasConveyorGroup) {
@@ -839,7 +875,9 @@ class MechanicalInstallationDetails {
       if (_positiveDecimal(convRatedCapacity, 'Rated Capacity') != null) {
         return false;
       }
-      if (_positiveDecimal(convTravelLength, 'Travel Length') != null) return false;
+      if (_positiveDecimal(convTravelLength, 'Travel Length') != null) {
+        return false;
+      }
       if (_positiveDecimal(convSpeed, 'Speed') != null) return false;
       if (Validators.positiveWholeNumber(
             convNumberOfStations,
@@ -858,10 +896,14 @@ class MechanicalInstallationDetails {
 /// Charge. The Design Professional's profession is always fixed to
 /// [professionalMechanicalEngineer] (see [MechanicalProfessionals]) — not
 /// user-selectable.
-enum MechanicalProfessionType { professionalMechanicalEngineer, mechanicalEngineer }
+enum MechanicalProfessionType {
+  professionalMechanicalEngineer,
+  mechanicalEngineer,
+}
 
 extension MechanicalProfessionTypeX on MechanicalProfessionType {
-  String get label => this == MechanicalProfessionType.professionalMechanicalEngineer
+  String get label =>
+      this == MechanicalProfessionType.professionalMechanicalEngineer
       ? 'Professional Mechanical Engineer'
       : 'Mechanical Engineer';
 }
@@ -902,8 +944,9 @@ class MechanicalProfessionalInfo {
 /// are never populated — Step 7's document checklist reads the Design
 /// Professional's uploads for both roles in that case.
 class MechanicalProfessionals {
-  final MechanicalProfessionalInfo designProfessional = MechanicalProfessionalInfo()
-    ..profession = MechanicalProfessionType.professionalMechanicalEngineer;
+  final MechanicalProfessionalInfo designProfessional =
+      MechanicalProfessionalInfo()
+        ..profession = MechanicalProfessionType.professionalMechanicalEngineer;
   DocumentModel? designPrcIdUpload;
   DocumentModel? designPtrDocumentUpload;
   DocumentModel? signedSealedPlansUpload;
@@ -917,7 +960,8 @@ class MechanicalProfessionals {
   DocumentModel? signedSupervisorConfirmationUpload;
 
   bool get isValid {
-    final designValid = designProfessional.isValid &&
+    final designValid =
+        designProfessional.isValid &&
         designPrcIdUpload != null &&
         designPtrDocumentUpload != null &&
         signedSealedPlansUpload != null &&
@@ -1070,7 +1114,8 @@ class MechanicalRequiredDocuments {
   // Supporting Documents.
   DocumentModel? relatedBuildingPermitUpload;
   DocumentModel? equipmentCertificationsUpload; // optional, "when applicable"
-  DocumentModel? manufacturerCertificationsUpload; // optional, "when applicable"
+  DocumentModel?
+  manufacturerCertificationsUpload; // optional, "when applicable"
   DocumentModel? testingCommissioningPlanUpload;
   DocumentModel? installationScheduleUpload; // optional, "when available"
   DocumentModel? otherMechanicalDocumentsUpload; // optional
@@ -1089,7 +1134,8 @@ class MechanicalRequiredDocuments {
     required bool hasGasGroup,
     required bool hasConveyorGroup,
   }) {
-    final baseValid = equipmentLayoutUpload != null &&
+    final baseValid =
+        equipmentLayoutUpload != null &&
         schematicDiagramsUpload != null &&
         equipmentSchedulesUpload != null &&
         controlDiagramsUpload != null &&
@@ -1103,7 +1149,8 @@ class MechanicalRequiredDocuments {
     if (!baseValid) return false;
 
     if (hasFireSprinkler &&
-        (sprinklerLayoutUpload == null || hydraulicCalculationsUpload == null)) {
+        (sprinklerLayoutUpload == null ||
+            hydraulicCalculationsUpload == null)) {
       return false;
     }
     if (hasBoiler &&
@@ -1126,11 +1173,13 @@ class MechanicalRequiredDocuments {
       return false;
     }
     if (hasMechanicalVentilation &&
-        (ventilationLayoutUpload == null || airflowCalculationsUpload == null)) {
+        (ventilationLayoutUpload == null ||
+            airflowCalculationsUpload == null)) {
       return false;
     }
     if (hasPowerPiping &&
-        (pipingLayoutUpload == null || pipingPressureCalculationsUpload == null)) {
+        (pipingLayoutUpload == null ||
+            pipingPressureCalculationsUpload == null)) {
       return false;
     }
     if (hasElevatorGroup &&
@@ -1138,14 +1187,17 @@ class MechanicalRequiredDocuments {
             manufacturerSpecificationsUpload == null)) {
       return false;
     }
-    if (hasPumps && (pumpScheduleUpload == null || capacityHeadCalculationsUpload == null)) {
+    if (hasPumps &&
+        (pumpScheduleUpload == null ||
+            capacityHeadCalculationsUpload == null)) {
       return false;
     }
     // "Compressed Air, Vacuum or Gas Systems" is one shared document
     // group on the official form — required whenever either equipment
     // group is selected.
     if ((hasCompressedAirOrVacuumGroup || hasGasGroup) &&
-        (cavPipingDiagramUpload == null || cavSafetyControlDetailsUpload == null)) {
+        (cavPipingDiagramUpload == null ||
+            cavSafetyControlDetailsUpload == null)) {
       return false;
     }
     if (hasConveyorGroup &&
@@ -1193,7 +1245,8 @@ enum MechanicalDocumentEvaluationStatus {
   notApplicable,
 }
 
-extension MechanicalDocumentEvaluationStatusX on MechanicalDocumentEvaluationStatus {
+extension MechanicalDocumentEvaluationStatusX
+    on MechanicalDocumentEvaluationStatus {
   String get label {
     switch (this) {
       case MechanicalDocumentEvaluationStatus.pendingReview:
@@ -1263,13 +1316,16 @@ extension MechanicalPermitStatusX on MechanicalPermitStatus {
 /// The Certificate of Operation is a genuinely separate, later process —
 /// never marked complete just because the application was submitted.
 class MechanicalEvaluationPermitStatus {
-  static const Map<String, MechanicalDocumentEvaluationStatus> documentEvaluation = {
+  static const Map<String, MechanicalDocumentEvaluationStatus>
+  documentEvaluation = {
     'Mechanical Plans and Specifications':
         MechanicalDocumentEvaluationStatus.pendingReview,
     'Bill of Materials': MechanicalDocumentEvaluationStatus.pendingReview,
     'Cost Estimate': MechanicalDocumentEvaluationStatus.pendingReview,
-    'Equipment-Specific Documents': MechanicalDocumentEvaluationStatus.pendingReview,
-    'Other Submitted Documents': MechanicalDocumentEvaluationStatus.pendingReview,
+    'Equipment-Specific Documents':
+        MechanicalDocumentEvaluationStatus.pendingReview,
+    'Other Submitted Documents':
+        MechanicalDocumentEvaluationStatus.pendingReview,
   };
 
   static const List<String> progressStages = [
@@ -1289,7 +1345,13 @@ class MechanicalEvaluationPermitStatus {
 
   static const List<String> permitConditions = [
     'Mechanical work must follow the approved mechanical plans and applicable codes.',
-    'A Notice of Construction must be submitted when required before work begins.',
+    // NBC Form A-04, Box 9: "prior to any mechanical installation, a duly
+    // accomplished prescribed NOTICE OF CONSTRUCTION shall be submitted to
+    // the Office of the Building Official". "When required" was a softening
+    // nobody had the authority for.
+    'Before any mechanical installation, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
     'A licensed supervisor or Mechanical Engineer must oversee the work.',
     'Required logbook entries, as-built plans, and completion documents must be submitted.',
     'The Mechanical Permit is invalid without the related Building Permit.',
@@ -1304,7 +1366,8 @@ enum MechanicalPermitDraftStatus { draft, submitted }
 /// The full mutable draft for one Mechanical Permit application session.
 class MechanicalPermitDraft {
   final MechanicalApplicantInfo applicant = MechanicalApplicantInfo();
-  final MechanicalApplicantAddress applicantAddress = MechanicalApplicantAddress();
+  final MechanicalApplicantAddress applicantAddress =
+      MechanicalApplicantAddress();
   final MechanicalProjectLocation projectLocation = MechanicalProjectLocation();
   final MechanicalRelatedBuildingPermit relatedBuildingPermit =
       MechanicalRelatedBuildingPermit();
@@ -1312,9 +1375,12 @@ class MechanicalPermitDraft {
   final MechanicalInstallationDetails installationDetails =
       MechanicalInstallationDetails();
   final MechanicalProfessionals professionals = MechanicalProfessionals();
-  final MechanicalOwnershipConsent ownershipConsent = MechanicalOwnershipConsent();
-  final MechanicalRequiredDocuments requiredDocuments = MechanicalRequiredDocuments();
-  final MechanicalReviewDeclaration reviewDeclaration = MechanicalReviewDeclaration();
+  final MechanicalOwnershipConsent ownershipConsent =
+      MechanicalOwnershipConsent();
+  final MechanicalRequiredDocuments requiredDocuments =
+      MechanicalRequiredDocuments();
+  final MechanicalReviewDeclaration reviewDeclaration =
+      MechanicalReviewDeclaration();
   final MechanicalEvaluationPermitStatus evaluationPermitStatus =
       MechanicalEvaluationPermitStatus();
 
@@ -1324,12 +1390,15 @@ class MechanicalPermitDraft {
 
   bool get isStep1Valid => applicant.isValid;
   bool get isStep2Valid =>
-      applicantAddress.isValid && projectLocation.isValid && relatedBuildingPermit.isValid;
+      applicantAddress.isValid &&
+      projectLocation.isValid &&
+      relatedBuildingPermit.isValid;
   bool get isStep3Valid => scopeOfWork.isValid;
   bool get isStep4Valid => installationDetails.isValid;
   bool get isStep5Valid => professionals.isValid;
   bool get isStep6Valid => ownershipConsent.isValid;
-  bool get isStep7Valid => requiredDocuments.isValid(
+  bool get isStep7Valid =>
+      requiredDocuments.isValid(
         hasFireSprinkler: installationDetails.hasFireSprinkler,
         hasBoiler: installationDetails.hasBoiler,
         hasPressureVessel: installationDetails.hasPressureVessel,

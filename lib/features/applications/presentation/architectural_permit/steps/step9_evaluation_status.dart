@@ -5,6 +5,7 @@ import '../../../../../core/models/architectural_permit_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/alerts/app_alert.dart';
+import '../../../../../core/contract/lgu_source_notice.dart';
 import '../../../../../shared/widgets/badges/status_badge.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
@@ -162,7 +163,11 @@ class Step9EvaluationStatus extends StatelessWidget {
             Text('Permit Conditions', style: AppTypography.cardTitle),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'These conditions will apply once the permit is issued.',
+              // Not "will apply": the Municipality has not published its own
+              // form for this permit, and the reference form these conditions
+              // follow names another municipality's Building Official. Same
+              // rule the form viewer already applies to the document itself.
+              LguSourceNotice.conditionsFromReferenceForm,
               style: AppTypography.bodyMuted,
             ),
             const SizedBox(height: AppSpacing.sm),
