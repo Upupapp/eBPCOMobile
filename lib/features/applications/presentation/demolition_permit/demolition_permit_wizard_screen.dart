@@ -209,6 +209,16 @@ class _DemolitionPermitWizardScreenState
         'DEM-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
     final application = await submitPermitApplication(
       context,
+      // The contract has declared a nullable `location` since it was
+      // written, and the app sent nothing — so the office learned the
+      // permit type and the applicant and not the site.
+      location: constructionLocationLine(
+        lot: _draft.demolitionLocation.lotNumber,
+        block: _draft.demolitionLocation.blockNumber,
+        street: _draft.demolitionLocation.street,
+        barangay: _draft.demolitionLocation.barangay,
+        city: _draft.demolitionLocation.city,
+      ),
       referenceNumber: referenceNumber,
       permitTypeLabel: CanonicalPermitType.demolitionPermit.wire,
       applicantName: applicantDisplayName(

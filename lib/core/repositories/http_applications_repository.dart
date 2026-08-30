@@ -47,6 +47,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     String? applicationNumber,
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
+    String? location,
   }) async {
     // `applicationAction` below already carries New / Renewal / Amendment,
     // which both lines have agreed on since the first reconciliation. What
@@ -77,6 +78,11 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // response is the record of truth for the number.
         'permitType': ?permitTypeLabel,
         'applicationAction': (lineage?.action ?? type).wire,
+        // Declared by the contract as `[string, null]` and sent as nothing
+        // until 31 August 2026, so an office receiving a filing knew the
+        // permit type and the applicant and not the site. Omitted rather than
+        // sent empty when the wizard has no address of its own.
+        'location': ?location,
         // The contract declares `documentIds` — uuids of files already
         // uploaded through /documents — and this app could not produce them
         // until the upload repository existed. It can now, so it sends them.

@@ -39,6 +39,11 @@ abstract class ApplicationsRepository {
     /// precisely the state in which a filing must fail rather than succeed
     /// without them. See `HttpApplicationsRepository.submitApplication`.
     List<String> documentIds = const [],
+
+    /// The site, as one line. Declared by the contract as a nullable string
+    /// and sent as nothing until 31 August 2026 — see
+    /// `submitPermitApplication`.
+    String? location,
   });
 
   /// Reports a payment the applicant says they made.
@@ -96,6 +101,7 @@ class MockApplicationsRepository implements ApplicationsRepository {
     String? applicationNumber,
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
+    String? location,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final now = DateTime.now();

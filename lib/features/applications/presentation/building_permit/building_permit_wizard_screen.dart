@@ -185,6 +185,16 @@ class _BuildingPermitWizardScreenState
     // the applicant's Building Permit is absent from their own list.
     final application = await submitPermitApplication(
       context,
+      // The contract has declared a nullable `location` since it was
+      // written, and the app sent nothing — so the office learned the
+      // permit type and the applicant and not the site.
+      location: constructionLocationLine(
+        lot: _draft.constructionLocation.lotNumber,
+        block: _draft.constructionLocation.blockNumber,
+        street: _draft.constructionLocation.street,
+        barangay: _draft.constructionLocation.barangay,
+        city: _draft.constructionLocation.city,
+      ),
       referenceNumber: trackingId,
       permitTypeLabel: CanonicalPermitType.buildingPermitNewConstruction.wire,
       applicantName: applicantDisplayName(

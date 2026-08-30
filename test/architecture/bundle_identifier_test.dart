@@ -10,19 +10,30 @@ import 'package:flutter_test/flutter_test.dart';
 /// installed base. It also gates every remaining iOS step, because registering
 /// a provisioning profile binds the id to the team.
 ///
-/// **This file asserts the split AS IT STANDS**, deliberately, the way the
-/// contract gates do. The reason is specific: the halves must change
-/// *together*, and the failure mode is somebody fixing one of them. If either
-/// side moves on its own, these tests fail and say so; when both move to the
-/// same value, the last two tests fail and say to delete them.
+/// **Half applied on 31 August 2026.** The owner approved
+/// `ph.gov.castillasorsogon.ebpco`; iOS and macOS carry it, and Android and
+/// Linux — which this lane does not own — still carry the old one.
 ///
-/// The domain is not this lane's to choose. See
-/// `docs/DECISION-M-29-bundle-identifier.md`.
+/// This file asserts that state as it stands, the way the contract gates do,
+/// so the wait is visible and so neither side can move alone unnoticed. When
+/// the Windows lane applies it, the split test fails and says to delete
+/// itself, which is the only moment M-29 is actually closed.
+///
+/// See `docs/DECISION-M-29-bundle-identifier.md`.
 
-/// What the Apple targets ship under today.
-const _apple = 'com.ebpco.ebpcoUserApp';
+/// The agreed identifier, applied to the Apple targets on 31 August 2026.
+///
+/// Reverse-DNS on `castillasorsogon.gov.ph`, whose zone is delegated to the
+/// Philippine government's own nameservers with DICT as the SOA responsible
+/// party — a `.gov.ph` zone is issued only to a government entity. Measured,
+/// not assumed; see `docs/DECISION-M-29-bundle-identifier.md`.
+const _apple = 'ph.gov.castillasorsogon.ebpco';
 
-/// What the Android and Linux targets ship under today.
+/// What the Android and Linux targets still ship under.
+///
+/// **This lane does not own them.** Android releases belong to the Windows
+/// agent, and the change there is larger than an edit: `MainActivity.kt` lives
+/// at a directory path derived from the identifier, so it is a file move.
 const _android = 'com.ebpco.ebpco_user_app';
 
 String _read(String path) => File(path).readAsStringSync();
@@ -61,7 +72,7 @@ void main() {
     expect(_read('android/app/build.gradle.kts'), contains('applicationId'));
   });
 
-  group('iOS — this machine owns it', () {
+  group('iOS and macOS — this machine owns them, and they are done', () {
     test('all six Xcode entries agree', () {
       final ios = _read('ios/Runner.xcodeproj/project.pbxproj');
       final ids = RegExp(
@@ -70,10 +81,10 @@ void main() {
       expect(ids, {_apple, '$_apple.RunnerTests'});
     });
 
-    test('macOS carries the same spelling as iOS', () {
-      // Not shipped, and still worth pinning: it is one of the two places the
-      // Apple spelling is written down, and a change to only one of them is
-      // the same class of split M-29 exists to close.
+    test('macOS carries the same identifier as iOS', () {
+      // Not shipped, and still worth pinning: it is the other place the Apple
+      // identifier is written down, and changing only one of them is the same
+      // class of split M-29 exists to close.
       expect(
         _read('macos/Runner/Configs/AppInfo.xcconfig'),
         contains('PRODUCT_BUNDLE_IDENTIFIER = $_apple'),
@@ -81,7 +92,7 @@ void main() {
     });
   });
 
-  group('Android — the Windows lane owns it', () {
+  group('Android and Linux — the Windows lane owns them, and they wait', () {
     test('the namespace and the application id agree', () {
       final gradle = _read('android/app/build.gradle.kts');
       expect(gradle, contains('namespace = "$_android"'));
@@ -109,26 +120,25 @@ void main() {
     });
   });
 
-  test('THE SPLIT — four targets, two spellings, one product', () {
-    // The defect M-29 exists to close, held here so that it cannot be closed
-    // by halves. iOS and macOS say one thing; Android and Linux say another.
-    // They are separate namespaces, so nothing breaks today — which is exactly
-    // why nobody had noticed — but both get quoted at Apple and Google as
-    // though deliberate.
+  test('THE SPLIT — half applied, and the other half is another lane\'s', () {
+    // Deliberate and temporary now, rather than accidental. The owner approved
+    // `ph.gov.castillasorsogon.ebpco` on 31 August; iOS and macOS carry it,
+    // and Android and Linux wait for the lane that owns them.
+    //
+    // Held here so the wait is visible. When the Windows lane applies it, this
+    // fails and says to delete itself — which is the only moment M-29 is
+    // actually closed.
     expect(
       _apple,
       isNot(_android),
       reason:
-          'the two halves now agree. Good — that is the point of M-29. Delete '
-          'this expectation and the one below, and set both constants to the '
-          'agreed identifier',
+          'Android and Linux now carry the agreed identifier too. M-29 is '
+          'closed: delete this test and set _android to _apple',
     );
     expect(
-      _apple.toLowerCase(),
-      _android.replaceAll('_', ''),
-      reason:
-          'they differ only in how the words are joined, which is what makes '
-          'this a spelling split rather than two different products',
+      _apple,
+      startsWith('ph.gov.'),
+      reason: 'reverse-DNS of a .gov.ph domain the municipality holds',
     );
   });
 

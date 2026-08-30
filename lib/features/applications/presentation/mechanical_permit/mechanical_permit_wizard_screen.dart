@@ -211,6 +211,16 @@ class _MechanicalPermitWizardScreenState
         'MEC-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
     final application = await submitPermitApplication(
       context,
+      // The contract has declared a nullable `location` since it was
+      // written, and the app sent nothing — so the office learned the
+      // permit type and the applicant and not the site.
+      location: constructionLocationLine(
+        lot: _draft.projectLocation.lotNumber,
+        block: _draft.projectLocation.blockNumber,
+        street: _draft.projectLocation.street,
+        barangay: _draft.projectLocation.barangay,
+        city: _draft.projectLocation.city,
+      ),
       referenceNumber: referenceNumber,
       permitTypeLabel: CanonicalPermitType.mechanicalPermit.wire,
       applicantName: applicantDisplayName(

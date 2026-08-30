@@ -191,10 +191,10 @@ void main() {
     });
   });
 
-  test('DIVERGENCE — the application carries none of its own content', () {
-    // Found 30 August 2026, and never named before: the contract declares
+  test('DIVERGENCE — the application still carries no form data', () {
+    // Found 30 August 2026 and never named before: the contract declares
     // `form` (the permit-type-specific field set) and `location`, and the app
-    // sends NEITHER. Every application it files therefore carries a permit
+    // sent NEITHER. `location` is sent as of 31 August. Every application it files therefore carries a permit
     // type, an action and a business id, and not one of the applicant's typed
     // answers — up to 239 fields on a mechanical permit.
     //
@@ -206,13 +206,11 @@ void main() {
     // would make this app's private shape the de facto official one.
     expect(listOf('properties'), containsAll(['form', 'location']));
     expect(bodyKeys(), isNot(contains('form')));
-    expect(
-      bodyKeys(),
-      isNot(contains('location')),
-      reason:
-          'if location is now sent, good — it is a plain string and needs no '
-          'form schema. Delete this half of the expectation',
-    );
+    // `location` closed on 31 August 2026 — it is a plain nullable string and
+    // needed no form schema, only for somebody to join the address parts the
+    // wizards already collect. `form` is what is left, and it is blocked on
+    // M-10 rather than on effort.
+    expect(bodyKeys(), contains('location'));
   });
 
   test('the fix is NOT to adopt the contract spelling', () {

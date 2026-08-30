@@ -1,5 +1,33 @@
 # M-29 — the bundle identifier. One decision, then a mechanical change.
 
+> **APPLIED, 31 August 2026 — half of it.** The owner approved
+> `ph.gov.castillasorsogon.ebpco`. **iOS and macOS carry it now**: six
+> `PRODUCT_BUNDLE_IDENTIFIER` entries in the Xcode project (three of them the
+> test target) and one line in `macos/Runner/Configs/AppInfo.xcconfig`.
+>
+> **Android and Linux still carry `com.ebpco.ebpco_user_app`, and they are not
+> this lane's to change.** The Windows agent owns Android releases, and the
+> change there is a file move rather than an edit: `MainActivity.kt` lives at
+> `android/app/src/main/kotlin/com/ebpco/ebpco_user_app/`, a directory path
+> derived from the identifier.
+>
+> **For the Windows lane, the whole change is:**
+>
+> 1. `android/app/build.gradle.kts` — `namespace` and `applicationId` both to
+>    `ph.gov.castillasorsogon.ebpco`.
+> 2. Move `android/app/src/main/kotlin/com/ebpco/ebpco_user_app/MainActivity.kt`
+>    to `android/app/src/main/kotlin/ph/gov/castillasorsogon/ebpco/` and change
+>    its `package` line to match.
+> 3. `linux/CMakeLists.txt` — `APPLICATION_ID` to the same.
+> 4. Delete the split expectation in
+>    `test/architecture/bundle_identifier_test.dart` and set `_android` to
+>    `_apple`. That test fails until you do, and says so.
+>
+> Nothing has been published under either identifier, so this is still free.
+> It stops being free at the first store submission.
+
+---
+
 *Measured 29 August 2026. Front-end lane; the Android half is the Windows
 lane's and is described, not changed.*
 

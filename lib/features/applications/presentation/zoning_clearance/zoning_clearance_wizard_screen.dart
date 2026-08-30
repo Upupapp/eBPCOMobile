@@ -177,6 +177,16 @@ class _ZoningClearanceWizardScreenState
         'ZON-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
     final application = await submitPermitApplication(
       context,
+      // The contract has declared a nullable `location` since it was
+      // written, and the app sent nothing — so the office learned the
+      // permit type and the applicant and not the site.
+      location: constructionLocationLine(
+        lot: _draft.siteLocation.lotNumber,
+        block: _draft.siteLocation.blockNumber,
+        street: _draft.siteLocation.street,
+        barangay: _draft.siteLocation.barangay,
+        city: _draft.siteLocation.city,
+      ),
       referenceNumber: referenceNumber,
       permitTypeLabel: CanonicalPermitType.zoningLocationalClearance.wire,
       applicantName: applicantDisplayName(

@@ -8,7 +8,7 @@
 PRODUCT_NAME = ebpco_user_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.ebpco.ebpcoUserApp
+PRODUCT_BUNDLE_IDENTIFIER = ph.gov.castillasorsogon.ebpco
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.ebpco. All rights reserved.

@@ -48,6 +48,7 @@ class _ThrowingApplications implements ApplicationsRepository {
     String? applicationNumber,
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
+    String? location,
   }) async => throw _Offline();
   @override
   Future<ApplicationModel> attachPayment(

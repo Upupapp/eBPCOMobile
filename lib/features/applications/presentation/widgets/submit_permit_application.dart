@@ -41,6 +41,19 @@ Future<ApplicationModel?> submitPermitApplication(
   required String referenceNumber,
   required String permitTypeLabel,
   required String applicantName,
+
+  /// Where the work is, as one line.
+  ///
+  /// `POST /applications` has declared a nullable `location` string since the
+  /// contract was written, and the app sent nothing — so an office receiving a
+  /// filing knew the permit type and the applicant and not the site. Every
+  /// wizard already collects a lot number, a street, a barangay and a city;
+  /// they were simply never joined and never sent. Compose it with
+  /// [constructionLocationLine].
+  ///
+  /// Null where the wizard has no site of its own — the two BFP clearances,
+  /// which attach to a building permit that carries the address.
+  String? location,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   // A renewal or amendment started elsewhere and walked the applicant into
@@ -62,6 +75,7 @@ Future<ApplicationModel?> submitPermitApplication(
       permitTypeLabel: permitTypeLabel,
       applicationNumber: referenceNumber,
       lineage: lineage,
+      location: location,
     );
   } catch (_) {
     messenger.showSnackBar(
@@ -92,4 +106,34 @@ String applicantDisplayName({
   final enterprise = enterpriseName.trim();
   if (enterprise.isNotEmpty) return enterprise;
   return '$firstName $lastName'.trim();
+}
+
+/// Joins the parts of a site address into the one line the contract asks for.
+///
+/// Empty parts are dropped rather than rendered as commas: "Lot 12, , ,
+/// Castilla" is worse than "Lot 12, Castilla", and an applicant who has not
+/// been asked for a block number should not appear to have skipped one.
+///
+/// Returns null when nothing is known, because the contract types the field as
+/// a string OR null and an empty string is neither.
+String? constructionLocationLine({
+  String? lot,
+  String? block,
+  String? street,
+  String? barangay,
+  String? city,
+}) {
+  final parts = [
+    if ((lot ?? '').trim().isNotEmpty) 'Lot ${lot!.trim()}',
+    if ((block ?? '').trim().isNotEmpty) 'Block ${block!.trim()}',
+    ?_clean(street),
+    ?_clean(barangay),
+    ?_clean(city),
+  ];
+  return parts.isEmpty ? null : parts.join(', ');
+}
+
+String? _clean(String? value) {
+  final trimmed = value?.trim() ?? '';
+  return trimmed.isEmpty ? null : trimmed;
 }

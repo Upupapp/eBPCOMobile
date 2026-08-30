@@ -36,6 +36,10 @@ const Map<String, String> _declaredFor = {
   'barangay': 'NSPrivacyCollectedDataTypePhysicalAddress',
   'city': 'NSPrivacyCollectedDataTypePhysicalAddress',
   'province': 'NSPrivacyCollectedDataTypePhysicalAddress',
+  // The construction site, as one line, sent on every filing since 31 August
+  // 2026. A physical address like any other — it is where the applicant is
+  // building, and for a house that is where they will live.
+  'location': 'NSPrivacyCollectedDataTypePhysicalAddress',
   // The application, the business it is filed for, and the credential that
   // authenticates it. All "Other Data Types" in Apple's vocabulary, which has
   // no category for a building permit.

@@ -40,6 +40,7 @@ class _FakeRepository implements ApplicationsRepository {
     String? applicationNumber,
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
+    String? location,
   }) => throw UnimplementedError();
 
   @override

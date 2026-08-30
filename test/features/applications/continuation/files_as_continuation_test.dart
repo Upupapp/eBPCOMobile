@@ -33,6 +33,7 @@ class _RecordingRepository implements ApplicationsRepository {
     String? applicationNumber,
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
+    String? location,
   }) async {
     sawType = type;
     sawLineage = lineage;

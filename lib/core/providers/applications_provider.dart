@@ -215,6 +215,7 @@ class ApplicationsProvider extends ChangeNotifier {
     String? permitTypeLabel,
     String? applicationNumber,
     ApplicationLineage? lineage,
+    String? location,
   }) async {
     // The files go first. An application filed before its documents reach the
     // office is an application the office cannot act on, and if any upload
@@ -239,6 +240,7 @@ class ApplicationsProvider extends ChangeNotifier {
       applicationNumber: applicationNumber,
       lineage: lineage,
       documentIds: documentIds,
+      location: location,
     );
     _applications = [..._applications, application];
     notifyListeners();
