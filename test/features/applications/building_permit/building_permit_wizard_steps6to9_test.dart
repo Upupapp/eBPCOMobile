@@ -176,6 +176,10 @@ Future<void> _completeStep4(WidgetTester tester) async {
     '1',
   );
   await tester.enterText(
+    find.widgetWithText(TextFormField, 'Number of Storeys *'),
+    '2',
+  );
+  await tester.enterText(
     find.widgetWithText(TextFormField, 'Total Floor Area *'),
     '120.5',
   );
@@ -354,7 +358,7 @@ void main() {
         '456 Mabini St., Quezon City',
       );
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'CTC Number *'),
+        find.widgetWithText(TextFormField, 'Government-issued ID Number *'),
         'CTC-0001',
       );
       await tester.enterText(

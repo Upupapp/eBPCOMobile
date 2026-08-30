@@ -75,11 +75,36 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
       building.occupancyClassification,
     );
     out.scalar('buildingDetails.numberOfUnits', building.numberOfUnits);
+    out.scalar('buildingDetails.numberOfStorey', building.numberOfStorey);
     out.scalar('buildingDetails.totalFloorArea', building.totalFloorArea);
     out.scalar('buildingDetails.lotArea', building.lotArea);
     out.scalar(
       'buildingDetails.estimatedConstructionCost',
       building.estimatedConstructionCost,
+    );
+    out.scalar(
+      'buildingDetails.estimatedCostBuilding',
+      building.estimatedCostBuilding,
+    );
+    out.scalar(
+      'buildingDetails.estimatedCostElectrical',
+      building.estimatedCostElectrical,
+    );
+    out.scalar(
+      'buildingDetails.estimatedCostMechanical',
+      building.estimatedCostMechanical,
+    );
+    out.scalar(
+      'buildingDetails.estimatedCostElectronics',
+      building.estimatedCostElectronics,
+    );
+    out.scalar(
+      'buildingDetails.estimatedCostPlumbing',
+      building.estimatedCostPlumbing,
+    );
+    out.scalar(
+      'buildingDetails.costOfEquipmentInstalled',
+      building.costOfEquipmentInstalled,
     );
     out.date(
       'buildingDetails.proposedConstructionDate',
@@ -131,9 +156,21 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
       'consentAuthorization.representativeAddress',
       consent.representativeAddress,
     );
-    out.scalar('consentAuthorization.ctcNumber', consent.ctcNumber);
-    out.date('consentAuthorization.ctcDateIssued', consent.ctcDateIssued);
-    out.scalar('consentAuthorization.ctcPlaceIssued', consent.ctcPlaceIssued);
+    // Renamed on the model, NOT in storage. The key is a compatibility
+    // surface: a draft saved before 31 August 2026 holds these under the old
+    // names, and changing the key would silently lose them on restore.
+    out.scalar(
+      'consentAuthorization.governmentIdNumber',
+      consent.governmentIdNumber,
+    );
+    out.date(
+      'consentAuthorization.governmentIdDateIssued',
+      consent.governmentIdDateIssued,
+    );
+    out.scalar(
+      'consentAuthorization.governmentIdPlaceIssued',
+      consent.governmentIdPlaceIssued,
+    );
     out.document(
       'consentAuthorization.authorizationLetterUpload',
       consent.authorizationLetterUpload,
@@ -325,10 +362,29 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
         'buildingDetails.occupancyClassification',
       )
       ..numberOfUnits = input.string('buildingDetails.numberOfUnits')
+      ..numberOfStorey = input.string('buildingDetails.numberOfStorey')
       ..totalFloorArea = input.string('buildingDetails.totalFloorArea')
       ..lotArea = input.string('buildingDetails.lotArea')
       ..estimatedConstructionCost = input.string(
         'buildingDetails.estimatedConstructionCost',
+      )
+      ..estimatedCostBuilding = input.string(
+        'buildingDetails.estimatedCostBuilding',
+      )
+      ..estimatedCostElectrical = input.string(
+        'buildingDetails.estimatedCostElectrical',
+      )
+      ..estimatedCostMechanical = input.string(
+        'buildingDetails.estimatedCostMechanical',
+      )
+      ..estimatedCostElectronics = input.string(
+        'buildingDetails.estimatedCostElectronics',
+      )
+      ..estimatedCostPlumbing = input.string(
+        'buildingDetails.estimatedCostPlumbing',
+      )
+      ..costOfEquipmentInstalled = input.string(
+        'buildingDetails.costOfEquipmentInstalled',
       )
       ..proposedConstructionDate = input.date(
         'buildingDetails.proposedConstructionDate',
@@ -363,9 +419,19 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
       ..representativeAddress = input.string(
         'consentAuthorization.representativeAddress',
       )
-      ..ctcNumber = input.string('consentAuthorization.ctcNumber')
-      ..ctcDateIssued = input.date('consentAuthorization.ctcDateIssued')
-      ..ctcPlaceIssued = input.string('consentAuthorization.ctcPlaceIssued');
+      // Read under the new key, falling back to the old one so a draft
+      // saved before the rename still gives its answers back.
+      ..governmentIdNumber =
+          input.has('consentAuthorization.governmentIdNumber')
+          ? input.string('consentAuthorization.governmentIdNumber')
+          : input.string('consentAuthorization.ctcNumber')
+      ..governmentIdDateIssued =
+          input.date('consentAuthorization.governmentIdDateIssued') ??
+          input.date('consentAuthorization.ctcDateIssued')
+      ..governmentIdPlaceIssued =
+          input.has('consentAuthorization.governmentIdPlaceIssued')
+          ? input.string('consentAuthorization.governmentIdPlaceIssued')
+          : input.string('consentAuthorization.ctcPlaceIssued');
 
     draft.reviewDeclaration
       ..certifiesTrueAndCorrect = input.boolean(

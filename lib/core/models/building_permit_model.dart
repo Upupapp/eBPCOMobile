@@ -237,9 +237,43 @@ class ProjectInformation {
 class BuildingDetails {
   String occupancyClassification = '';
   String numberOfUnits = '';
+
+  /// How many storeys the building has.
+  ///
+  /// Added 31 August 2026 from the Unified Application Form, which asks for it
+  /// beside Number of Units, Total Floor Area and Lot Area — all three of
+  /// which this app already collected. It is not decoration: storey count
+  /// drives occupancy and structural review under PD 1096, and an application
+  /// that omits it is incomplete on the paper the office files.
+  String numberOfStorey = '';
+
   String totalFloorArea = '';
   String lotArea = '';
+
+  /// TOTAL ESTIMATED COST, as printed at the head of the form's cost block.
   String estimatedConstructionCost = '';
+
+  // The five components the form breaks that total into, and the equipment
+  // line beside them.
+  //
+  // Added 31 August 2026. The app asked for one figure; the form asks for six.
+  // That is not a formatting difference — **building permit fees are assessed
+  // from these components**, so a single number is materially less than the
+  // office needs, and an applicant who gives only a total will be asked for
+  // the breakdown at the counter.
+  //
+  // All optional. The form's own total is the required field, and an applicant
+  // filing a simple residential permit may have nothing to put against
+  // electronics or mechanical.
+  String estimatedCostBuilding = '';
+  String estimatedCostElectrical = '';
+  String estimatedCostMechanical = '';
+  String estimatedCostElectronics = '';
+  String estimatedCostPlumbing = '';
+
+  /// COST OF EQUIPMENT INSTALLED — the column beside the five components.
+  String costOfEquipmentInstalled = '';
+
   DateTime? proposedConstructionDate;
   DateTime? expectedCompletionDate;
 
@@ -251,6 +285,7 @@ class BuildingDetails {
 
     return Validators.required(occupancyClassification) == null &&
         Validators.positiveWholeNumber(numberOfUnits) == null &&
+        Validators.positiveWholeNumber(numberOfStorey) == null &&
         Validators.positiveDecimal(totalFloorArea) == null &&
         Validators.positiveDecimal(lotArea) == null &&
         Validators.positiveDecimal(estimatedConstructionCost) == null;
@@ -319,9 +354,21 @@ class ConsentAuthorization {
 
   String representativeName = '';
   String representativeAddress = '';
-  String ctcNumber = '';
-  DateTime? ctcDateIssued;
-  String ctcPlaceIssued = '';
+
+  // Boxes 3 and 4 of the Unified Application Form ask for a
+  // `Gov't Issued ID No.`, with its date and place of issue — NOT a Community
+  // Tax Certificate. The ancillary forms (Fencing, Civil/Structural,
+  // Electrical and the rest) do ask for a C.T.C. No., which is why this app
+  // models a cedula everywhere and why nobody noticed the building permit is
+  // the exception.
+  //
+  // Read off the form on 31 August 2026. The fields are renamed and the labels
+  // corrected; the STORAGE KEYS deliberately keep their old names so that a
+  // draft saved before today still restores — see the codec, where the new key
+  // is written and the old one is read as a fallback.
+  String governmentIdNumber = '';
+  DateTime? governmentIdDateIssued;
+  String governmentIdPlaceIssued = '';
 
   DocumentModel? authorizationLetterUpload;
   DocumentModel? ownerValidIdUpload;
@@ -331,9 +378,9 @@ class ConsentAuthorization {
     if (isRegisteredOwner == true) return true;
     return Validators.required(representativeName) == null &&
         Validators.required(representativeAddress) == null &&
-        Validators.required(ctcNumber) == null &&
-        ctcDateIssued != null &&
-        Validators.required(ctcPlaceIssued) == null &&
+        Validators.required(governmentIdNumber) == null &&
+        governmentIdDateIssued != null &&
+        Validators.required(governmentIdPlaceIssued) == null &&
         authorizationLetterUpload != null &&
         ownerValidIdUpload != null;
   }

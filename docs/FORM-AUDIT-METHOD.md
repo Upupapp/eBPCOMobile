@@ -114,21 +114,31 @@ permits, not the form flag.
   Preparation Permit*; NBC A-05 is headed *Sanitary Permit*, not "Sanitary /
   Plumbing".
 
-### Filed, not fixed
+### Also fixed, on the Unified Application Form
 
-Three more findings on the Unified Application Form, all bigger than an enum
-value and all on the app's most-filed permit:
+Three findings bigger than an enum value, all on the app's most-filed permit,
+all closed on 31 August:
 
-- **`NUMBER OF STOREY` is not collected.** The form asks for it beside Number
-  of Units, Total Floor Area and Lot Area, which the app does collect.
-- **The estimated-cost breakdown is collapsed to one figure.** The form asks
-  for TOTAL ESTIMATED COST split across *Building · Electrical · Mechanical ·
-  Electronics · Plumbing*, plus *Cost of Equipment Installed*. Building permit
-  fees are assessed from those components, so a single number is not the same
-  information.
-- **Boxes 3 and 4 ask for a `Gov't Issued ID No.`; the app asks for a CTC
-  Number.** The ancillary forms do ask for C.T.C. No., so the app is right
-  elsewhere and wrong here.
+- **`NUMBER OF STOREY` was not collected.** The form asks for it beside Number
+  of Units, Total Floor Area and Lot Area — all three of which the app already
+  required. Storey count drives occupancy and structural review under PD 1096.
+  Now collected and required like its neighbours.
+- **The estimated cost was one figure where the form prints six.** TOTAL
+  ESTIMATED COST split across *Building · Electrical · Mechanical · Electronics
+  · Plumbing*, plus *Cost of Equipment Installed*. **Building permit fees are
+  assessed from those components**, so a total alone is materially less than
+  the office needs. All six are collected now, and all six are optional — a
+  simple residential permit may have nothing against electronics, and demanding
+  a zero would ask a question the paper does not.
+- **Boxes 3 and 4 ask for a `Gov't Issued ID No.`; the app asked for a CTC
+  Number.** The ancillary forms *do* ask for C.T.C. No., which is why the app
+  modelled a cedula everywhere and why the building permit's exception went
+  unnoticed. The fields and labels are corrected.
+
+**The storage keys were not renamed with the fields.** A snapshot key is a
+compatibility surface: drafts have persisted since M-48, and changing a key
+silently loses whatever the applicant had already typed. The codec writes the
+new key and reads the old one as a fallback, and a test holds both halves.
 
 ### One oddity in the LGU's own paperwork
 

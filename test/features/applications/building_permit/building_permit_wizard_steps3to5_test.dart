@@ -182,6 +182,10 @@ Future<void> _completeStep4(WidgetTester tester) async {
     '1',
   );
   await tester.enterText(
+    find.widgetWithText(TextFormField, 'Number of Storeys *'),
+    '2',
+  );
+  await tester.enterText(
     find.widgetWithText(TextFormField, 'Total Floor Area *'),
     '120.5',
   );
@@ -338,6 +342,13 @@ void main() {
 
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Number of Units *'),
+        '2',
+      );
+      // Added 31 August 2026 with the field itself: the Unified Application
+      // Form asks for a storey count beside the unit count, and step 4 now
+      // requires it like its neighbours.
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Number of Storeys *'),
         '2',
       );
       await tester.enterText(

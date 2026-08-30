@@ -16,7 +16,14 @@ import '../widgets/date_picker_field.dart';
 
 /// Step 6 — Consent & Authorization: confirms whether the applicant is the
 /// registered property owner, and if not, collects the authorized
-/// representative's details, CTC information, and supporting uploads.
+/// representative's details, their government-issued ID, and supporting
+/// uploads.
+///
+/// Boxes 3 and 4 of the Unified Application Form ask for a `Gov't Issued ID
+/// No.`, not a Community Tax Certificate. This step asked for a CTC until 31
+/// August 2026, when the form was read — the ancillary permits DO ask for a
+/// cedula, which is why the app modelled one everywhere and why the building
+/// permit's exception went unnoticed.
 class Step6ConsentAuthorization extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final BuildingPermitDraft draft;
@@ -37,8 +44,8 @@ class Step6ConsentAuthorization extends StatefulWidget {
 class _Step6ConsentAuthorizationState extends State<Step6ConsentAuthorization> {
   late final TextEditingController _representativeName;
   late final TextEditingController _representativeAddress;
-  late final TextEditingController _ctcNumber;
-  late final TextEditingController _ctcPlaceIssued;
+  late final TextEditingController _governmentIdNumber;
+  late final TextEditingController _governmentIdPlaceIssued;
 
   ConsentAuthorization get _consent => widget.draft.consentAuthorization;
 
@@ -51,16 +58,20 @@ class _Step6ConsentAuthorizationState extends State<Step6ConsentAuthorization> {
     _representativeAddress = TextEditingController(
       text: _consent.representativeAddress,
     );
-    _ctcNumber = TextEditingController(text: _consent.ctcNumber);
-    _ctcPlaceIssued = TextEditingController(text: _consent.ctcPlaceIssued);
+    _governmentIdNumber = TextEditingController(
+      text: _consent.governmentIdNumber,
+    );
+    _governmentIdPlaceIssued = TextEditingController(
+      text: _consent.governmentIdPlaceIssued,
+    );
   }
 
   @override
   void dispose() {
     _representativeName.dispose();
     _representativeAddress.dispose();
-    _ctcNumber.dispose();
-    _ctcPlaceIssued.dispose();
+    _governmentIdNumber.dispose();
+    _governmentIdPlaceIssued.dispose();
     super.dispose();
   }
 
@@ -178,36 +189,39 @@ class _Step6ConsentAuthorizationState extends State<Step6ConsentAuthorization> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
-                      controller: _ctcNumber,
-                      label: 'CTC Number *',
-                      validator: (v) =>
-                          Validators.required(v, fieldLabel: 'CTC number'),
+                      controller: _governmentIdNumber,
+                      label: 'Government-issued ID Number *',
+                      hint: 'Passport, driver’s licence, PhilID, UMID…',
+                      validator: (v) => Validators.required(
+                        v,
+                        fieldLabel: 'Government-issued ID number',
+                      ),
                       onChanged: (v) {
-                        _consent.ctcNumber = v;
+                        _consent.governmentIdNumber = v;
                         widget.onChanged();
                       },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     DatePickerField(
                       label: 'Date Issued *',
-                      value: _consent.ctcDateIssued,
-                      validator: (_) => _consent.ctcDateIssued == null
+                      value: _consent.governmentIdDateIssued,
+                      validator: (_) => _consent.governmentIdDateIssued == null
                           ? 'Please select the date issued.'
                           : null,
                       onChanged: (date) {
-                        setState(() => _consent.ctcDateIssued = date);
+                        setState(() => _consent.governmentIdDateIssued = date);
                         widget.onChanged();
                       },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
-                      controller: _ctcPlaceIssued,
+                      controller: _governmentIdPlaceIssued,
                       label: 'Place Issued *',
                       textCapitalization: TextCapitalization.words,
                       validator: (v) =>
                           Validators.required(v, fieldLabel: 'Place issued'),
                       onChanged: (v) {
-                        _consent.ctcPlaceIssued = v;
+                        _consent.governmentIdPlaceIssued = v;
                         widget.onChanged();
                       },
                     ),

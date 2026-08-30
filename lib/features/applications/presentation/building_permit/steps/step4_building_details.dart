@@ -31,9 +31,16 @@ class Step4BuildingDetails extends StatefulWidget {
 class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
   late final TextEditingController _occupancyClassification;
   late final TextEditingController _numberOfUnits;
+  late final TextEditingController _numberOfStorey;
   late final TextEditingController _totalFloorArea;
   late final TextEditingController _lotArea;
   late final TextEditingController _estimatedCost;
+
+  /// The five cost components and the equipment line, in the order the form
+  /// prints them. Built as a list rather than six near-identical widgets
+  /// because six copies of one field is six chances for one of them to be
+  /// wired to the wrong model property.
+  late final List<_CostPart> _costParts;
 
   BuildingDetails get _details => widget.draft.buildingDetails;
 
@@ -44,8 +51,41 @@ class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
       text: _details.occupancyClassification,
     );
     _numberOfUnits = TextEditingController(text: _details.numberOfUnits);
+    _numberOfStorey = TextEditingController(text: _details.numberOfStorey);
     _totalFloorArea = TextEditingController(text: _details.totalFloorArea);
     _lotArea = TextEditingController(text: _details.lotArea);
+    _costParts = [
+      _CostPart(
+        'Cost — Building',
+        _details.estimatedCostBuilding,
+        (v) => _details.estimatedCostBuilding = v,
+      ),
+      _CostPart(
+        'Cost — Electrical',
+        _details.estimatedCostElectrical,
+        (v) => _details.estimatedCostElectrical = v,
+      ),
+      _CostPart(
+        'Cost — Mechanical',
+        _details.estimatedCostMechanical,
+        (v) => _details.estimatedCostMechanical = v,
+      ),
+      _CostPart(
+        'Cost — Electronics',
+        _details.estimatedCostElectronics,
+        (v) => _details.estimatedCostElectronics = v,
+      ),
+      _CostPart(
+        'Cost — Plumbing',
+        _details.estimatedCostPlumbing,
+        (v) => _details.estimatedCostPlumbing = v,
+      ),
+      _CostPart(
+        'Cost of Equipment Installed',
+        _details.costOfEquipmentInstalled,
+        (v) => _details.costOfEquipmentInstalled = v,
+      ),
+    ];
     _estimatedCost = TextEditingController(
       text: _details.estimatedConstructionCost,
     );
@@ -55,9 +95,13 @@ class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
   void dispose() {
     _occupancyClassification.dispose();
     _numberOfUnits.dispose();
+    _numberOfStorey.dispose();
     _totalFloorArea.dispose();
     _lotArea.dispose();
     _estimatedCost.dispose();
+    for (final part in _costParts) {
+      part.controller.dispose();
+    }
     super.dispose();
   }
 
@@ -103,6 +147,26 @@ class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
                     ),
                     onChanged: (v) {
                       _details.numberOfUnits = v;
+                      widget.onChanged();
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  // The form asks for this beside Number of Units, Total Floor
+                  // Area and Lot Area — all three of which this step already
+                  // had. Storey count drives occupancy and structural review
+                  // under PD 1096.
+                  AppTextField(
+                    controller: _numberOfStorey,
+                    label: 'Number of Storeys *',
+                    hint: 'How many floors the building has',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (v) => Validators.positiveWholeNumber(
+                      v,
+                      fieldLabel: 'Number of storeys',
+                    ),
+                    onChanged: (v) {
+                      _details.numberOfStorey = v;
                       widget.onChanged();
                     },
                   ),
@@ -193,7 +257,45 @@ class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
                       widget.onChanged();
                     },
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.md),
+                  // The five components the form breaks the total into, and
+                  // the equipment line beside them. Added 31 August 2026: the
+                  // app asked for one figure and the form asks for six, and
+                  // building permit fees are assessed from the components, so
+                  // a total alone is materially less than the office needs.
+                  //
+                  // All optional. A simple residential permit may have nothing
+                  // to put against electronics or mechanical, and demanding a
+                  // zero would be asking the applicant to answer a question
+                  // the form does not press.
+                  for (final part in _costParts)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: AppTextField(
+                        controller: part.controller,
+                        label: part.label,
+                        hint: 'Optional',
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 4),
+                          child: Center(
+                            widthFactor: 1,
+                            child: Text('₱', style: AppTypography.body),
+                          ),
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d*'),
+                          ),
+                        ],
+                        onChanged: (v) {
+                          part.onChanged(v);
+                          widget.onChanged();
+                        },
+                      ),
+                    ),
                   Text(
                     'This amount is an estimate and may be used as part of '
                     'the permit assessment.',
@@ -240,6 +342,17 @@ class _Step4BuildingDetailsState extends State<Step4BuildingDetails> {
       ),
     );
   }
+}
+
+/// One row of the form's cost block: its label, its controller and where the
+/// value goes.
+class _CostPart {
+  _CostPart(this.label, String initial, this.onChanged)
+    : controller = TextEditingController(text: initial);
+
+  final String label;
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
 }
 
 class _UnitSuffix extends StatelessWidget {
