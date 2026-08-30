@@ -111,14 +111,41 @@ class SyncProvider extends ChangeNotifier {
           // is the one path where a retry is provably the same operation.
           idempotencyKey: operation.idempotencyKey,
         );
-      case QueuedOperationKind.applicationSubmission:
       case QueuedOperationKind.documentUpload:
+        // The one write the queue can complete on its own: it needs the bytes
+        // and a label, both of which are in the payload, and it depends on
+        // nothing. The bytes are in the app's own directory — attachments are
+        // copied there when picked — so they are still readable after a
+        // restart, which is what makes replaying this honest.
+        final filePath = operation.payload['filePath'];
+        final label = operation.payload['label'];
+        if (filePath is! String || label is! String) {
+          throw const ApiException(
+            ApiFailure.rejected,
+            'this queued upload has no file to send',
+          );
+        }
+        await api.upload(
+          '/documents',
+          filePath: filePath,
+          label: label,
+          applicationId: operation.applicationId,
+          // The queue's own key, so a replay after the server committed
+          // returns the original document rather than storing it twice.
+          idempotencyKey: operation.idempotencyKey,
+        );
+      case QueuedOperationKind.applicationSubmission:
       case QueuedOperationKind.instructionResponse:
       case QueuedOperationKind.paymentProof:
         // Deliberately unimplemented rather than faked. Each needs the write
-        // path it belongs to — document bytes for an upload, the wizard's
-        // draft for a submission — and a `_send` that silently succeeded would
-        // drop the applicant's work while reporting it sent.
+        // path it belongs to — the wizard's draft for a submission, the
+        // instruction items for a response — and a `_send` that silently
+        // succeeded would drop the applicant's work while reporting it sent.
+        //
+        // `documentUpload` was one of these until 30 August 2026. It became
+        // implementable when two things landed: `POST /documents`, and picked
+        // attachments being copied into the app's own directory so their bytes
+        // survive to be replayed.
         throw ApiException(
           ApiFailure.network,
           'Replaying ${operation.kind.name} is not wired yet; the item stays '

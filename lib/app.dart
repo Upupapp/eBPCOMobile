@@ -58,12 +58,19 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
   /// `create` callback because the lifecycle observer below has to reach it,
   /// and because two queues over one keychain key would each overwrite the
   /// other's saves.
+  /// One queue, reachable by both the thing that drains it and the things
+  /// that fill it. Built before either: two queues over one keychain key would
+  /// each overwrite the other's saves.
+  final OfflineQueue _offlineQueue = OfflineQueue(SecureQueueStore());
+
   late final SyncProvider _sync = SyncProvider(
-    queue: OfflineQueue(SecureQueueStore()),
+    queue: _offlineQueue,
     api: _repositories.client,
   );
 
-  late final RepositoryFactory _repositories = RepositoryFactory();
+  late final RepositoryFactory _repositories = RepositoryFactory(
+    queue: _offlineQueue,
+  );
 
   /// One store behind every persisted wizard draft.
   ///

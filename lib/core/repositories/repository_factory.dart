@@ -4,7 +4,9 @@ import '../services/secure_session_store.dart';
 import 'applications_repository.dart';
 import 'auth_repository.dart';
 import 'business_repository.dart';
+import '../sync/offline_queue.dart';
 import 'document_upload_repository.dart';
+import 'queueing_document_upload_repository.dart';
 import 'http_applications_repository.dart';
 import 'http_auth_repository.dart';
 import 'http_business_repository.dart';
@@ -18,15 +20,23 @@ import 'notifications_repository.dart';
 /// cannot half-happen, with applications coming from a server while payments
 /// still come from seed data.
 class RepositoryFactory {
-  RepositoryFactory({ApiClient? apiClient, SessionStore? session})
-    : _session = session ?? SecureSessionStore(),
-      _injectedClient = apiClient;
+  RepositoryFactory({
+    ApiClient? apiClient,
+    SessionStore? session,
+
+    /// The durable queue, when there is one. An upload that fails transiently
+    /// is put here rather than lost; see [documentUploads]. Named `_queue`
+    /// because it is private state, not part of this class's surface.
+    this._queue,
+  }) : _session = session ?? SecureSessionStore(),
+       _injectedClient = apiClient;
 
   /// The keychain, not SharedPreferences. The token used to be read from an
   /// unencrypted preferences file; it now comes from the platform keystore, and
   /// it is asked for per request so a token issued after sign-in is picked up
   /// without rebuilding anything.
   final SessionStore _session;
+  final OfflineQueue? _queue;
   final ApiClient? _injectedClient;
 
   ApiClient? _client;
@@ -83,9 +93,13 @@ class RepositoryFactory {
   /// told their documents were received — so the mock build refuses instead.
   DocumentUploadRepository documentUploads() {
     final api = client;
-    return api == null
-        ? const UnavailableDocumentUploadRepository()
-        : HttpDocumentUploadRepository(api);
+    if (api == null) return const UnavailableDocumentUploadRepository();
+    final http = HttpDocumentUploadRepository(api);
+    final queue = _queue;
+    // Wrapped only when there is somewhere durable to put a failed upload.
+    // Without a queue the behaviour is unchanged: the failure reaches the
+    // applicant and the bytes sit on the device with nothing watching them.
+    return queue == null ? http : QueueingDocumentUploadRepository(http, queue);
   }
 
   NotificationsRepository notifications() {

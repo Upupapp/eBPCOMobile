@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -5,6 +7,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/document_model.dart';
 import '../../../../core/models/saved_document_model.dart';
 import '../../../../core/services/document_picker_service.dart';
+import '../../../../core/services/document_storage_service.dart';
 import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/permission_service.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -156,6 +159,7 @@ Future<DocumentModel?> _resolve(
 
   final permissionService = PermissionService();
   final pickerService = DocumentPickerService();
+  final storageService = DocumentStorageService();
 
   if (source == _AttachSource.camera) {
     final status = await requestPermissionWithPriming(
@@ -224,14 +228,37 @@ Future<DocumentModel?> _resolve(
       return null;
     case DocumentPickOutcome.success:
       final picked = result.picked!;
-      final size = await picked.file.length();
+      // Copied into the app's own directory rather than referenced where the
+      // picker left it.
+      //
+      // `image_picker` and the system file picker both hand back a path in a
+      // temporary container that the OS may reclaim WITHIN a session — an
+      // applicant who attaches a photograph at step 3 of a nine-step wizard
+      // and files at step 9 can lose it in between, and the failure would
+      // arrive as "the file to upload could not be read" with nothing to
+      // point at. It is also the precondition for queuing an upload: bytes
+      // that may vanish cannot be retried later.
+      //
+      // The My Documents flow has always done this; the wizard attachments
+      // did not.
+      final File stored;
+      try {
+        stored = await storageService.saveCopy(
+          picked.file,
+          originalFileName: picked.originalFileName,
+        );
+      } on Exception {
+        showMessage('The selected file could not be saved.');
+        return null;
+      }
+      final size = await stored.length();
       return DocumentModel(
         id: 'doc-${DateTime.now().microsecondsSinceEpoch}',
         label: label,
         fileName: picked.originalFileName,
         uploadedAt: DateTime.now(),
         fileSizeBytes: size,
-        filePath: picked.file.path,
+        filePath: stored.path,
       );
   }
 }
