@@ -168,7 +168,7 @@ class _FsecClearanceWizardScreenState extends State<FsecClearanceWizardScreen> {
         'FSEC-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
     final application = await submitPermitApplication(
       context,
-      // Everything the applicant typed. Sent since 1 September 2026;
+      // Everything the applicant typed. Sent since 31 August 2026;
       // before this a filing carried none of it. See permitFormPayload.
       form: permitFormPayload(const FsecPermitDraftCodec(), _draft),
       referenceNumber: referenceNumber,

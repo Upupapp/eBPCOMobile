@@ -987,7 +987,7 @@ class CivilStructuralEvaluationPermitStatus {
   static const String recommendingApproval = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
-  /// Read off Box 8 of the bundled civil/structural form, 1 September 2026.
+  /// Read off Box 8 of the bundled civil/structural form, 31 August 2026.
   ///
   /// The form's first condition is the longest one it prints and the app had
   /// reduced it to "remains professionally accountable" — which names no

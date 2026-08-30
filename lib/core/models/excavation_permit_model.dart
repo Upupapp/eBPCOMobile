@@ -576,7 +576,7 @@ class ExcavationProcessingInfo {
     'Building Official Decision',
   ];
 
-  /// Read off Box 7 of the bundled excavation form, 1 September 2026 —
+  /// Read off Box 7 of the bundled excavation form, 31 August 2026 —
   /// Castilla's own, signed by Jesus D. Abitria, Jr.
   ///
   /// **The cash bond was the worst instance found of a condition generalised

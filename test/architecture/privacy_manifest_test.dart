@@ -64,7 +64,7 @@ const Map<String, String> _declaredFor = {
   'itemId': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'response': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   // **A compound, and by far the largest thing this app sends.** `form` is the
-  // whole wizard: every answer the applicant typed, sent since 1 September
+  // whole wizard: every answer the applicant typed, sent since 31 August
   // 2026 and sent as nothing before it. One key in the body, up to 239 fields
   // inside it on a mechanical permit.
   //

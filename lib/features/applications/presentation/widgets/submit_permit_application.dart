@@ -57,7 +57,7 @@ Future<ApplicationModel?> submitPermitApplication(
 
   /// Everything the applicant typed, from the wizard's own draft codec.
   ///
-  /// Until 1 September 2026 no wizard sent any of it: a filing reached the
+  /// Until 31 August 2026 no wizard sent any of it: a filing reached the
   /// office knowing the permit type, the applicant's name and the site line,
   /// and nothing from the nine or ten steps behind them. Build it with
   /// `permitFormPayload`.

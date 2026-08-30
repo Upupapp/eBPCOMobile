@@ -563,7 +563,7 @@ class ElectronicsProcessingInfo {
     'Building Official Decision',
   ];
 
-  /// Read off Box 9 of the bundled electronics form, 1 September 2026.
+  /// Read off Box 9 of the bundled electronics form, 31 August 2026.
   ///
   /// "Applicable electronics and building regulations" is the same
   /// generalisation as the electrical form's "qualifying installations": the

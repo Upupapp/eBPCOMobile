@@ -1,6 +1,6 @@
 # `form` — the applications this app filed carried nothing the applicant typed
 
-Closed 1 September 2026. It was filed as blocked on M-10; **the premise had
+Closed 31 August 2026. It was filed as blocked on M-10; **the premise had
 already expired.**
 
 ## What was happening

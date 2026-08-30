@@ -1162,7 +1162,7 @@ class SanitaryEvaluationPermitStatus {
   static const String recommendingApproval = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
-  /// Read off Box 8 of the bundled sanitary form, 1 September 2026.
+  /// Read off Box 8 of the bundled sanitary form, 31 August 2026.
   ///
   /// The governing code here is the Code on Sanitation of the Philippines —
   /// a different statute from the Revised National Plumbing Code that governs

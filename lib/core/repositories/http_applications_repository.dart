@@ -33,7 +33,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
   /// One application in full, including timeline, evaluations, letters, and
   /// permit — the §7.2 ApplicationDetail payload.
   ///
-  /// Written when this class was, and unreachable until 1 September 2026: the
+  /// Written when this class was, and unreachable until 31 August 2026: the
   /// interface every caller holds did not declare it.
   @override
   Future<ApplicationModel> fetchDetail(String applicationId) async {
@@ -88,7 +88,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // permit type and the applicant and not the site. Omitted rather than
         // sent empty when the wizard has no address of its own.
         'location': ?location,
-        // Everything the applicant typed. Sent since 1 September 2026; before
+        // Everything the applicant typed. Sent since 31 August 2026; before
         // that a filing reached the office carrying the permit type, the
         // applicant's name and the site line, and none of the nine or ten
         // steps behind them. Optional in the contract and the only request

@@ -1,6 +1,6 @@
 # Handoff — the contract's release sample names another LGU's city hall
 
-Found 1 September 2026 while working M-11. **Cross-line: the contract repo is
+Found 31 August 2026 while working M-11. **Cross-line: the contract repo is
 read-only from the mobile front-end lane, so this is filed rather than fixed.**
 
 ## What

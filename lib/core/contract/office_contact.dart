@@ -26,7 +26,7 @@
 /// The first version of this class said the office had published no contact
 /// details; that was a statement about what had been looked at.
 ///
-/// **Corrected 1 September 2026:** this comment used to say a real *address*
+/// **Corrected 31 August 2026:** this comment used to say a real *address*
 /// too, and so did [dataProtectionOfficerPending]'s. Re-reading the checklist
 /// to answer M-11 showed it carries no street address at all — only the
 /// letterhead (Municipality of Castilla, Province of Sorsogon, Office of the

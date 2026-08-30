@@ -1,6 +1,6 @@
 # M-11 — how a permit is claimed
 
-Worked 1 September 2026. **Partly closed from the repository**, which is now
+Worked 31 August 2026. **Partly closed from the repository**, which is now
 the fifth time a task filed as blocked on an external party was answerable from
 a file already bundled with the app.
 

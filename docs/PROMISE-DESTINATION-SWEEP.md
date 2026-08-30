@@ -1,6 +1,6 @@
 # The promise and its destination — a sweep
 
-1 September 2026. Prompted by M-11, where the app sent an applicant to a
+31 August 2026. Prompted by M-11, where the app sent an applicant to a
 section headed *Claim instructions* that rendered a heading and one unrelated
 paragraph. The question this sweep asked: **where else does the app promise
 something and navigate to a place that can be empty?**

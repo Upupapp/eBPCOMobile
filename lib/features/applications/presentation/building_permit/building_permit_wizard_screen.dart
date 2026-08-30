@@ -188,7 +188,7 @@ class _BuildingPermitWizardScreenState
     // the applicant's Building Permit is absent from their own list.
     final application = await submitPermitApplication(
       context,
-      // Everything the applicant typed. Sent since 1 September 2026;
+      // Everything the applicant typed. Sent since 31 August 2026;
       // before this a filing carried none of it. See permitFormPayload.
       form: permitFormPayload(const BuildingPermitDraftCodec(), _draft),
       // The contract has declared a nullable `location` since it was

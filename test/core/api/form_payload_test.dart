@@ -8,7 +8,7 @@ import 'package:ebpco_user_app/core/services/document_storage_service.dart';
 
 /// What a filing actually carries to the Office of the Building Official.
 ///
-/// Until 1 September 2026 the answer was: the permit type, the action, the
+/// Until 31 August 2026 the answer was: the permit type, the action, the
 /// applicant's name, the site line and the uploaded document ids. **Nothing
 /// the applicant typed.** Nine or ten steps of owner details, lot data, scope
 /// of work, professionals and supervisors were collected, validated, shown

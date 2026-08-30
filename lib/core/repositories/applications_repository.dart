@@ -15,7 +15,7 @@ abstract class ApplicationsRepository {
   /// One application in full — timeline, evaluations, open Letters of
   /// Instruction, inspection, permit, release and payment.
   ///
-  /// **Declared here on 1 September 2026, and that is the whole defect.** The
+  /// **Declared here on 31 August 2026, and that is the whole defect.** The
   /// HTTP repository has had this method since it was written; nothing could
   /// call it, because callers hold this interface and this interface did not
   /// have it. So every screen in the app was built from the LIST payload.
@@ -72,7 +72,7 @@ abstract class ApplicationsRepository {
     /// Everything the applicant typed, from the wizard's draft codec.
     ///
     /// Declared by the contract as an optional open object and sent as
-    /// nothing until 1 September 2026, so a filing carried the permit type,
+    /// nothing until 31 August 2026, so a filing carried the permit type,
     /// the applicant and the site and none of the nine or ten steps behind
     /// them. See `permitFormPayload`.
     Map<String, Object?>? form,

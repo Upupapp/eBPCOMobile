@@ -128,7 +128,7 @@ roughly fifteen times in sixteen — in production, on a filing, not here.
 - **No upload progress.** A twenty-megabyte plan set on a slow connection shows
   a spinner and nothing else.
 - ~~**`form` and `location` are still not sent**~~ — **both closed.**
-  `location` on 31 August; `form` on 1 September, once the field-for-field
+  `location` on 31 August; `form` on 31 August, once the field-for-field
   audit against Castilla's own forms retired the reason it was blocked on
   M-10. See `docs/M-47-form-payload.md`.
 - **The App Store Connect privacy label has not been re-read** since the app

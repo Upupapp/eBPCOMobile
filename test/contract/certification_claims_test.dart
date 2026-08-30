@@ -17,9 +17,43 @@ import 'package:ebpco_user_app/routes/wizard_routes.dart';
 /// fails with the code rather than outliving it.
 
 void main() {
-  final certification = File(
-    'docs/CERTIFICATION-2026-08-28.md',
-  ).readAsStringSync();
+  /// The most recent certification, by filename date.
+  ///
+  /// Pinned to one file until 31 August 2026, which is half of why the
+  /// count check below went stale: a new sweep could be written and the gate
+  /// would keep reading the old document. Dated documents are kept rather
+  /// than rewritten — a signed measurement is a record of what was true then
+  /// — so what the gate must follow is the newest.
+  final certifications =
+      Directory('docs')
+          .listSync()
+          .whereType<File>()
+          .where(
+            (f) => RegExp(
+              r'CERTIFICATION-\d{4}-\d{2}-\d{2}\.md$',
+            ).hasMatch(f.path),
+          )
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
+  if (certifications.isEmpty) {
+    // Thrown rather than expect()ed: this runs at load, outside a test body,
+    // and every check below reads the result.
+    throw StateError('no dated CERTIFICATION-*.md in docs/');
+  }
+  final certification = certifications.last.readAsStringSync();
+
+  /// The document that declares the gap register, wherever it lives.
+  ///
+  /// The register is a claim of the programme that closed those gaps, not of
+  /// every later sweep — a closing sweep restates the verdict and the count,
+  /// not twenty rows. Located by content rather than by filename so neither
+  /// document has to be kept in a shape it has outgrown.
+  final register = certifications
+      .map((f) => f.readAsStringSync())
+      .firstWhere(
+        (text) => text.contains('The gap register'),
+        orElse: () => throw StateError('no certification declares a register'),
+      );
 
   test('the document exists and states a verdict', () {
     expect(certification, contains('Verdict: NOT CERTIFIED'));
@@ -59,12 +93,12 @@ void main() {
     for (var i = 1; i <= 20; i++) {
       final id = 'G-${i.toString().padLeft(2, '0')}';
       expect(
-        certification,
+        register,
         contains('| $id |'),
         reason: '$id is missing from the register',
       );
     }
-    expect(certification, contains('**Withdrawn**'));
+    expect(register, contains('**Withdrawn**'));
   });
 
   test('every open item names an owner', () {
@@ -72,13 +106,22 @@ void main() {
     // open and unattributed.
     for (final item in ['M-27', 'M-39', 'M-43', 'M-44', 'M-45']) {
       expect(
-        certification,
+        register,
         contains(item),
         reason: '$item is open and unrecorded in the certification',
       );
     }
     for (final owner in ['Backend lane', 'Admin lane', 'Decisions']) {
-      expect(certification, contains(owner));
+      expect(register, contains(owner));
+    }
+    // And the CURRENT sweep must attribute whatever it leaves open, in the
+    // same way. An open item with no owner is how a list becomes a wish.
+    for (final owner in ['Backend lane', 'Owner decisions', 'LGU']) {
+      expect(
+        certification,
+        contains(owner),
+        reason: 'the latest sweep leaves items open without naming $owner',
+      );
     }
   });
 
@@ -119,17 +162,40 @@ void main() {
     // A dated measurement, and the one number in the document most likely to
     // rot silently. Nobody re-reads a signed document; a test does.
     //
-    // Read from the certification and compared against what `flutter test`
-    // reports, which is what tool/verify.sh prints. If this fails, the
-    // document is stale — update the number, do not delete the check.
+    // **This check used to be a lie, and it is worth saying how.** Its comment
+    // claimed the quoted number was "compared against what `flutter test`
+    // reports". It was not: it asserted `counted > 1400`, a constant. So the
+    // certification could quote 1544 while the suite ran 2152, and it did —
+    // 608 tests stale, four days, and the gate green throughout. A gate that
+    // cannot fail for the reason it states is worse than no gate, because it
+    // is read as evidence.
+    //
+    // `tool/verify.sh` now writes the figure `flutter test` actually reported
+    // to `suite-count.txt`, and this compares the document against that.
     final quoted = RegExp(r'(\d{3,5}) tests').firstMatch(certification);
     expect(quoted, isNotNull, reason: 'the certification quotes no count');
 
-    final counted = int.parse(quoted!.group(1)!);
+    final stamp = File('test/contract/suite-count.txt');
     expect(
-      counted,
+      stamp.existsSync(),
+      isTrue,
+      reason:
+          'run tool/verify.sh — it stamps the count this check reads. Without '
+          'it there is no measurement to compare the document against',
+    );
+    final measured = int.parse(stamp.readAsStringSync().trim());
+    expect(
+      measured,
       greaterThan(1400),
-      reason: 'a plausible count for this suite',
+      reason: 'the stamp is implausible — verify.sh wrote something odd',
+    );
+    expect(
+      int.parse(quoted!.group(1)!),
+      measured,
+      reason:
+          'the certification quotes a test count that is not this suite\'s. '
+          'Update the number in the document — do not weaken this check, '
+          'which is what happened last time',
     );
   });
 }

@@ -34,6 +34,12 @@ overflows=$(printf '%s' "$test_out" | grep -c 'overflowed by')
 
 if [ "$test_code" -eq 0 ]; then
   line "flutter test" "${passed:-?} passed"
+  # Stamped so a document that QUOTES this number can be checked against a
+  # measurement rather than against a plausibility range. The certification
+  # gate used to assert only `> 1400`, which its own comment described as
+  # comparing against what `flutter test` reports; it did not, and the
+  # document went 608 tests stale without the gate noticing.
+  printf '%s\n' "${passed:-0}" > test/contract/suite-count.txt
 else
   line "flutter test" "FAILED"
   printf '%s\n' "$test_out" | grep -E '\[E\]$' | sed 's/.*dart: //;s/ \[E\]//' | sort -u | head -20

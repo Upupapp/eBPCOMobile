@@ -198,7 +198,7 @@ void main() {
     // action and a business id, and not one of the applicant's typed answers
     // — up to 239 fields on a mechanical permit.
     //
-    // `location` closed 31 August. `form` closed 1 September, and the reason
+    // `location` and `form` both closed 31 August, and the reason
     // it stood until then is worth keeping, because it was a good reason that
     // stopped being true:
     //
