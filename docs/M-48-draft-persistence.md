@@ -220,9 +220,21 @@ while the copy said something else.
 
 ## What is NOT done
 
-- **No re-attach prompt inside the wizard.** The Drafts row names the
-  documents; the step that lost them does not flag it. An applicant who resumes
-  straight into step 7 sees empty slots without being told why.
+- ~~No re-attach prompt inside the wizard.~~ **Added 31 August 2026.** All
+  nineteen wizards now show a `ReattachNotice` above the step: what was not
+  kept, by name, dismissible, driven off the same `documentsToReattach` the
+  Drafts row uses. The Drafts row is where the applicant *chose* the draft, not
+  where they fill it in — an empty slot on a step they remember finishing needs
+  its explanation there.
+
+  It is **bounded**, for the reason `WizardProgressHeader` already records: it
+  sits in the same Column above an `Expanded(PageView)`, and twenty-four
+  document names at 200% text scale overflowed by **2,741 pixels**, which would
+  have left the applicant unable to reach the fields. Measured, not guessed —
+  the widget test that found it was written before the notice shipped. The
+  names are capped and ellipsised; the count is not, so an applicant always
+  learns whether they are missing one file or twenty, and the Drafts row, which
+  scrolls, carries the full list.
 - **Enum values are not covered by the runtime gate.** A blank draft cannot say
   what other values an enum has. They are covered by the source gate and by the
   concrete per-wizard tests.

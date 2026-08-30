@@ -23,6 +23,7 @@ import 'steps/step6_supervisor.dart';
 import 'steps/step7_consent.dart';
 import 'steps/step8_fence_specifications.dart';
 import 'steps/step9_review_submission.dart';
+import '../../../../shared/widgets/layout/reattach_notice.dart';
 
 class _StepMeta {
   final String title;
@@ -295,6 +296,18 @@ class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
                 totalSteps: totalSteps,
                 title: meta.title,
                 subtitle: meta.subtitle,
+              ),
+              // What this draft could not give back. The Drafts row names them too,
+              // but that is where the applicant CHOSE the draft, not where they
+              // fill it in — an empty slot on a step they remember finishing needs
+              // its explanation here.
+              ReattachNotice(
+                documents: context
+                    .watch<FencingPermitProvider>()
+                    .documentsToReattach,
+                onDismiss: () => context
+                    .read<FencingPermitProvider>()
+                    .acknowledgeDetachedDocuments(),
               ),
               Expanded(
                 child: PageView(

@@ -24,6 +24,7 @@ import 'steps/step6_required_documents.dart';
 import 'steps/step7_design_professional.dart';
 import 'steps/step8_supervisor.dart';
 import 'steps/step9_consent.dart';
+import '../../../../shared/widgets/layout/reattach_notice.dart';
 
 class _StepMeta {
   final String title;
@@ -300,6 +301,18 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
                 totalSteps: totalSteps,
                 title: meta.title,
                 subtitle: meta.subtitle,
+              ),
+              // What this draft could not give back. The Drafts row names them too,
+              // but that is where the applicant CHOSE the draft, not where they
+              // fill it in — an empty slot on a step they remember finishing needs
+              // its explanation here.
+              ReattachNotice(
+                documents: context
+                    .watch<SignPermitProvider>()
+                    .documentsToReattach,
+                onDismiss: () => context
+                    .read<SignPermitProvider>()
+                    .acknowledgeDetachedDocuments(),
               ),
               Expanded(
                 child: PageView(

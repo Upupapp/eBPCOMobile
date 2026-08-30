@@ -18,6 +18,7 @@ import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
 import '../../../../shared/widgets/layout/wizard_progress_header.dart';
 import '../widgets/submit_permit_application.dart';
+import '../../../../shared/widgets/layout/reattach_notice.dart';
 
 class _StepMeta {
   final String title;
@@ -243,6 +244,18 @@ class _FsicClearanceWizardScreenState extends State<FsicClearanceWizardScreen> {
                 totalSteps: totalSteps,
                 title: meta.title,
                 subtitle: meta.subtitle,
+              ),
+              // What this draft could not give back. The Drafts row names them too,
+              // but that is where the applicant CHOSE the draft, not where they
+              // fill it in — an empty slot on a step they remember finishing needs
+              // its explanation here.
+              ReattachNotice(
+                documents: context
+                    .watch<FsicPermitProvider>()
+                    .documentsToReattach,
+                onDismiss: () => context
+                    .read<FsicPermitProvider>()
+                    .acknowledgeDetachedDocuments(),
               ),
               Expanded(
                 child: PageView(

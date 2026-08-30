@@ -19,6 +19,7 @@ import 'steps/step2_owner_project_info.dart';
 import 'steps/step3_location_and_building.dart';
 import 'steps/step4_required_documents.dart';
 import 'steps/step5_certification_review_submission.dart';
+import '../../../../shared/widgets/layout/reattach_notice.dart';
 
 class _StepMeta {
   final String title;
@@ -255,6 +256,18 @@ class _CertificateOfOccupancyWizardScreenState
                 totalSteps: totalSteps,
                 title: meta.title,
                 subtitle: meta.subtitle,
+              ),
+              // What this draft could not give back. The Drafts row names them too,
+              // but that is where the applicant CHOSE the draft, not where they
+              // fill it in — an empty slot on a step they remember finishing needs
+              // its explanation here.
+              ReattachNotice(
+                documents: context
+                    .watch<CertificateOfOccupancyProvider>()
+                    .documentsToReattach,
+                onDismiss: () => context
+                    .read<CertificateOfOccupancyProvider>()
+                    .acknowledgeDetachedDocuments(),
               ),
               Expanded(
                 child: PageView(
