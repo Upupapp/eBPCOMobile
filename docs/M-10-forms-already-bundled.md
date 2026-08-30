@@ -42,10 +42,28 @@ while their requirements were built from a national baseline instead:**
 Renovation / Alteration · Addition / Extension · Civil/Structural · Electrical ·
 Electronics · Mechanical · Plumbing · Sanitary/Plumbing · Fencing · Excavation
 
-Either the catalogue is behind the forms — in which case **ten wizards can be
-audited field-for-field today, against paper already in this repository, with
-nothing required from the LGU** — or the form flag is optimistic. Both are
-worth knowing and neither is mine to settle.
+### Correction, 31 August: this is not a disagreement at all
+
+The paragraph that stood here offered two explanations — the catalogue is
+behind the forms, or the form flag is optimistic — and both were wrong, because
+**the two flags describe two different documents**.
+
+- `isOfficialCastillaForm` is about the blank **application form** an applicant
+  fills in. Reading all nine confirmed every one of them is Castilla's.
+- `verified` is about the **documentary requirements** — what to bring with the
+  form. Its sources are named in the catalogue: PD 1096, the Fire Code, a
+  Puerto Princesa checklist marked `SAMPLE_REFERENCE_ONLY`, and Castilla's own
+  charter marked `PENDING_CASTILLA_VERIFICATION`. Only **one** entry cites
+  Castilla's own OBO checklist.
+
+So `verified: false` on the ancillary permits is **correct**, and nothing needs
+reconciling. Fourteen and four are answers to different questions.
+
+What that leaves is a real and smaller task: Castilla's own checklist **is**
+bundled — `Building-Permit-and-Occupancy-Checklist.pdf` — and it names the
+building permit's documentary requirements, the Certificate of Occupancy's, and
+the ancillary forms that go with them. Only one catalogue entry cites it. The
+others could be raised against a document already in this repository.
 
 ### The sharpest case is a three-way one
 

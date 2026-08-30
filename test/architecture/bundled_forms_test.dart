@@ -16,11 +16,13 @@ import 'package:ebpco_user_app/core/contract/requirements_catalog.dart';
 /// requirements catalogue records that permit's requirements as built from a
 /// national baseline rather than from a Castilla form.**
 ///
-/// Two provenance judgements about the same nineteen permits, made in two
-/// files, disagreeing. Either the catalogue is behind the forms — in which
-/// case ten wizards can be audited today, against paper already on disk — or
-/// the form flag is optimistic. Both are worth knowing and neither is mine to
-/// settle.
+/// **Read on 31 August, and they are not in conflict.** They describe two
+/// different documents: `isOfficialCastillaForm` is about the blank
+/// APPLICATION FORM, and `verified` is about the DOCUMENTARY REQUIREMENTS that
+/// go with it. Every form is Castilla's; only one catalogue entry cites
+/// Castilla's own checklist, and the rest cite national law and a Puerto
+/// Princesa sample. So `verified: false` is correct, and the gap below is a
+/// fact about provenance rather than a contradiction to resolve.
 ///
 /// **The sharpest case is a three-way one.** New Construction, Renovation /
 /// Alteration and Addition / Extension share ONE physical form, because
@@ -109,8 +111,13 @@ void main() {
     /// Permits whose bundled form is flagged as Castilla's own while their
     /// requirements are recorded as NOT built from a Castilla form.
     ///
+    /// Not a contradiction — see the note at the top of this file. It is the
+    /// list of permits whose requirements could be raised against
+    /// `Building-Permit-and-Occupancy-Checklist.pdf`, which is bundled and
+    /// which only one catalogue entry currently cites.
+    ///
     /// Named rather than counted, so resolving one of them fails this test and
-    /// says which — and so adding a ninth does too.
+    /// says which — and so adding an eleventh does too.
     const disagreeing = {
       // The two building sub-types that share New Construction's form and are
       // recorded as unverified while it is recorded as verified.
@@ -163,10 +170,10 @@ void main() {
         found,
         disagreeing,
         reason:
-            'the disagreement moved. A permit that LEFT this set was audited '
-            'against the bundled form — good, and M-10 shrinks by one. A '
-            "permit that JOINED it has a form flagged as Castilla's while its "
-            'requirements were not built from that form',
+            'the set moved. A permit that LEFT it had its requirements raised '
+            "against Castilla's own checklist — good. A permit that JOINED it "
+            'has a form flagged as Castilla\'s while its requirements were '
+            'built from a national baseline',
       );
     });
   });
