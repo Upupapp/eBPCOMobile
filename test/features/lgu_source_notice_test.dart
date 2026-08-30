@@ -47,12 +47,18 @@ void main() {
     ).readAsStringSync();
     expect(
       RegExp('verified: false').allMatches(catalog).length,
-      15,
+      14,
       reason:
-          'fifteen of the nineteen permits are not built from a Castilla '
-          'form. If this fell, say which permit was confirmed and how',
+          'fourteen of the nineteen permits are not built from a Castilla '
+          'document. If this fell, say which permit was confirmed and how',
     );
-    expect(RegExp('verified: true').allMatches(catalog).length, 4);
+    expect(
+      RegExp('verified: true').allMatches(catalog).length,
+      5,
+      reason:
+          'was four until 31 August 2026, when the Certificate of Occupancy '
+          "entry was transcribed from Castilla's own bundled checklist",
+    );
   });
 
   test('confirmation is read from the catalogue, not held twice', () {

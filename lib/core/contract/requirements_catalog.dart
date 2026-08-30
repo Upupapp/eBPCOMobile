@@ -1896,60 +1896,91 @@ const Map<CanonicalPermitType, PermitRequirements> requirementsCatalog = {
   CanonicalPermitType.certificateOfOccupancy: PermitRequirements(
     permitType: CanonicalPermitType.certificateOfOccupancy,
     requiredForm: 'Application for Certificate of Occupancy',
+    // Transcribed from the Municipality of Castilla's own documentary
+    // checklist on 31 August 2026 — the `CERTIFICATE OF OCCUPANCY DOCUMENTARY
+    // REQUIREMENTS` section of `Building-Permit-and-Occupancy-Checklist.pdf`,
+    // which has been bundled with this app all along and which only the
+    // building permit entry had ever cited.
+    //
+    // What was here before came from PD 1096 and a Puerto Princesa sample, and
+    // it differed from Castilla's list in both directions. It asked for five
+    // documents Castilla does not list — Land Title, Barangay Clearance,
+    // Locational Clearance, a valid ID and a Certificate of Final Electrical
+    // Inspection — and omitted five it does: the Unified Form itself, the
+    // approved plan, the approved specifications, photographs of the structure
+    // and the professionals' licences. It also asked for a Fire Safety
+    // INSPECTION Certificate where Castilla asks for a Fire Safety Compliance
+    // and Commissioning **Report**, which is a different document.
+    //
+    // Copy counts are carried in the descriptions because the office counts
+    // them at the counter, and an applicant who brings one of four is turned
+    // away as surely as one who brings none.
     documents: [
       RequirementDocument(
-        id: 'certificate-of-occupancy-land-title',
-        label: 'Land Title or Tax Declaration of the property',
+        id: 'coo-unified-form',
+        label: 'Unified Form for Certificate of Occupancy',
         isRequired: true,
         reviewingDepartmentId: 'obo',
-      ),
-      RequirementDocument(
-        id: 'certificate-of-occupancy-owner-consent',
-        label: 'Owner\'s Written Consent (if applicant is not the lot owner)',
-        isRequired: false,
-        reviewingDepartmentId: 'obo',
-      ),
-      RequirementDocument(
-        id: 'certificate-of-occupancy-brgy-clearance',
-        label: 'Barangay Clearance',
-        isRequired: true,
-        reviewingDepartmentId: 'zoning',
-      ),
-      RequirementDocument(
-        id: 'certificate-of-occupancy-locational',
-        label: 'Locational Clearance / Zoning Certification',
-        isRequired: true,
-        reviewingDepartmentId: 'zoning',
-      ),
-      RequirementDocument(
-        id: 'certificate-of-occupancy-id',
-        label: 'Valid Government-Issued ID of Applicant/Owner',
-        isRequired: true,
-        reviewingDepartmentId: 'obo',
-      ),
-      RequirementDocument(
-        id: 'coo-asbuilt',
-        label: 'As-Built Plans',
-        isRequired: true,
-        reviewingDepartmentId: 'obo',
+        description: 'Four copies.',
       ),
       RequirementDocument(
         id: 'coo-completion',
         label: 'Certificate of Completion',
         isRequired: true,
         reviewingDepartmentId: 'obo',
+        description: 'Duly notarised, signed and sealed. Four copies.',
       ),
       RequirementDocument(
-        id: 'coo-fsic',
-        label: 'Fire Safety Inspection Certificate (final)',
-        isRequired: true,
-        reviewingDepartmentId: 'bfp',
-      ),
-      RequirementDocument(
-        id: 'coo-electrical-final',
-        label: 'Certificate of Final Electrical Inspection',
+        id: 'coo-approved-plan',
+        label: 'Approved Plan',
         isRequired: true,
         reviewingDepartmentId: 'obo',
+      ),
+      RequirementDocument(
+        id: 'coo-approved-specifications',
+        label: 'Approved Specifications',
+        isRequired: true,
+        reviewingDepartmentId: 'obo',
+      ),
+      RequirementDocument(
+        id: 'coo-construction-logbook',
+        label: 'Construction Logbook',
+        isRequired: true,
+        reviewingDepartmentId: 'obo',
+      ),
+      RequirementDocument(
+        id: 'coo-structure-photographs',
+        label: 'Photographs of the Structure (all sides)',
+        isRequired: true,
+        reviewingDepartmentId: 'obo',
+        description: 'Four copies.',
+      ),
+      RequirementDocument(
+        id: 'coo-professional-licenses',
+        label: 'Valid Licenses of all involved professionals',
+        isRequired: true,
+        reviewingDepartmentId: 'obo',
+        description: 'Three copies.',
+      ),
+      RequirementDocument(
+        id: 'coo-asbuilt',
+        label: 'As-Built Plans',
+        isRequired: false,
+        reviewingDepartmentId: 'obo',
+        description:
+            'Four copies, and only where the building as completed differs '
+            'from the approved plan. The checklist says "in case of changes '
+            'in the building", so it is not demanded of every applicant.',
+      ),
+      RequirementDocument(
+        id: 'coo-fsccr',
+        label: 'Fire Safety Compliance and Commissioning Report (FSCCR)',
+        isRequired: true,
+        reviewingDepartmentId: 'bfp',
+        description:
+            'One copy. NOT the Fire Safety Inspection Certificate, which this '
+            'app asked for until 31 August 2026 — the FSCCR is prepared by the '
+            'project\'s own fire safety practitioner and precedes the FSIC.',
       ),
     ],
     responsibleDepartmentId: 'obo',
@@ -1988,8 +2019,8 @@ const Map<CanonicalPermitType, PermitRequirements> requirementsCatalog = {
     sourceNote:
         'Legal basis: PD 1096 (National Building Code) for the permit itself and RA 9514 Sec. 5(g) where a Fire Safety Inspection Certificate is required; Puerto Princesa OCBO\'s published checklist used only as a structural example of the Unified Application/Ancillary Permit format. Castilla\'s own OBO checklist and fee schedule were not accessible during this research pass — see `sources` below.',
     effectiveDate: '2026-08-20',
-    verified: false,
-    sources: [_src1, _src2, _src3, _src4],
+    verified: true,
+    sources: [_src0, _src1, _src2],
   ),
   CanonicalPermitType.fsicForOccupancyPermitBfp: PermitRequirements(
     permitType: CanonicalPermitType.fsicForOccupancyPermitBfp,

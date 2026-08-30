@@ -150,10 +150,12 @@ void main() {
       );
       expect(
         verifiedRequirements,
-        4,
+        5,
         reason:
-            'requirement sets built from a Castilla or BFP form. If this rose, '
-            'somebody did the audit — say which permits and against what',
+            'requirement sets built from a Castilla or BFP document. Was four '
+            'until 31 August 2026, when the Certificate of Occupancy entry was '
+            "transcribed from Castilla's own bundled checklist. If this rose "
+            'again, say which permit and against what',
       );
     });
 
