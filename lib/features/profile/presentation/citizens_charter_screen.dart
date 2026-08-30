@@ -6,6 +6,7 @@ import '../../../core/models/citizens_charter.dart';
 import '../../../core/models/permit_classification.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/contract/lgu_source_notice.dart';
 
 /// The LGU's Citizen's Charter entry for one permit service.
 ///
@@ -46,11 +47,24 @@ class CitizensCharterScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Maximum processing time under RA 11032, counted from the '
-                    'day the office receives a complete application.',
+                    LguSourceNotice.pledgeIsStatutory,
                     style: AppTypography.bodyMuted,
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Where this screen's content actually comes from. It is titled
+            // with the name of a document the LGU is required to publish, and
+            // until Castilla's own is supplied (M-08) the offices, the
+            // where-to-secure column and the fee basis are a national
+            // compilation. An applicant makes trips on that column.
+            _Panel(
+              tone: AppColors.surfaceMuted,
+              child: Text(
+                LguSourceNotice.charterProvenance,
+                style: AppTypography.bodyMuted,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -92,6 +106,13 @@ class CitizensCharterScreen extends StatelessWidget {
               'Each requirement shows where to secure it.',
               style: AppTypography.bodyMuted,
             ),
+            if (!LguSourceNotice.isConfirmedForPermit(permitType)) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                LguSourceNotice.unconfirmedRequirements,
+                style: AppTypography.helper,
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
             for (final requirement in entry.requirements)
               _RequirementTile(requirement: requirement),

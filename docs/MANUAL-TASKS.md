@@ -55,7 +55,7 @@ is E-1/M-27 — hosting and who operates it. See
 
 | # | Task | Why manual |
 |---|---|---|
-| M-08 | Supply the LGU's Citizen's Charter entry per permit type — classification, pledged days, fee schedule, requirements | LGU-published data; must not be invented |
+| M-08 | **Supply the LGU's Citizen's Charter entry per permit type** — classification, pledged days, fee schedule, requirements. **Sharpened 30 Aug 2026:** the app was already SHOWING a Citizen's Charter — offices involved, what to bring, and *where to secure each item* — under that statutory name, with no statement of where any of it came from, while the sibling requirements catalogue recorded that **15 of 19 permits are not built from a Castilla form** and the pre-flight screen carried a caveat the charter screen did not. An applicant makes trips on the where-to-secure column. The screen now says, always, that it is compiled from national practice and that Castilla's own charter has not been supplied — and still states the RA 11032 pledge as the national law it is. See `docs/M-16-lgu-facts-audit.md` | LGU-published data; must not be invented |
 | M-09 | Confirm which payment channels the LGU formally accepts before any e-wallet is added | Offering an unaccepted channel would strand an applicant's money |
 | M-10 | Provide the Unified Building Permit Application Form and Unified Application Form for Certificate of Occupancy so wizard fields can be audited field-for-field | Needs the actual DPWH/JMC forms |
 | M-11 | Supply the LGU's claim location, office hours, and bring-with-you list for permit release | LGU-specific operational detail |

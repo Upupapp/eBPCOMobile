@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/secondary_button.dart';
+import '../../../core/contract/lgu_source_notice.dart';
 
 /// The gate before a permit wizard.
 ///
@@ -127,9 +128,10 @@ class _PreFlightScreenState extends State<PreFlightScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.sm),
                   child: Text(
-                    'These requirements follow national practice and are still '
-                    'being confirmed against the LGU’s own form. Check with the '
-                    'office before securing anything costly.',
+                    // Was written out here. Moved to LguSourceNotice when the
+                    // Citizen's Charter screen turned out to carry no such
+                    // caveat at all, so the two cannot drift apart.
+                    LguSourceNotice.unconfirmedRequirements,
                     style: AppTypography.helper,
                   ),
                 ),
