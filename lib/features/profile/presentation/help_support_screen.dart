@@ -135,7 +135,8 @@ class HelpSupportScreen extends StatelessWidget {
                     icon: Icons.account_balance_outlined,
                     label: 'Office',
                     value:
-                        '${OfficeContact.office}, '
+                        '${OfficeContact.office} — '
+                        '${OfficeContact.engineeringOffice}, '
                         '${OfficeContact.localGovernment}',
                   ),
                   SizedBox(height: AppSpacing.md),
@@ -146,9 +147,26 @@ class HelpSupportScreen extends StatelessWidget {
                   ),
                   SizedBox(height: AppSpacing.md),
                   _ContactRow(
-                    icon: Icons.info_outline,
-                    label: 'Direct line and email',
-                    value: OfficeContact.detailsPending,
+                    icon: Icons.call_outlined,
+                    label: 'Phone',
+                    value:
+                        '${OfficeContact.phone} — replies '
+                        '${OfficeContact.replyPledge}',
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  _ContactRow(
+                    icon: Icons.mail_outline,
+                    label: 'Email',
+                    value: OfficeContact.email,
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  // Provenance beside the details. An applicant deciding
+                  // whether to trust a number is owed where it came from, and
+                  // this app printed an invented one until yesterday.
+                  _ContactRow(
+                    icon: Icons.verified_outlined,
+                    label: 'Where these came from',
+                    value: OfficeContact.contactSource,
                   ),
                 ],
               ),

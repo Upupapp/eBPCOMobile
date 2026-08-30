@@ -107,9 +107,12 @@ const _sections = [
     title: 'Contact Information',
     body:
         'Questions about this Privacy Policy, and requests to exercise your '
-        'rights under the Data Privacy Act, go to the Office of the Building '
-        'Official at the Municipality of Castilla, Sorsogon. '
-        '${OfficeContact.detailsPending} '
+        'rights under the Data Privacy Act, go to the '
+        '${OfficeContact.office} — ${OfficeContact.engineeringOffice} — at '
+        'the ${OfficeContact.localGovernment}. Call ${OfficeContact.phone} or '
+        'email ${OfficeContact.email}; the office answers '
+        '${OfficeContact.replyPledge}. '
+        '${OfficeContact.dataProtectionOfficerPending} '
         'Office hours are Monday to Friday, 8:00 AM to 5:00 PM.',
   ),
   (

@@ -20,10 +20,13 @@
 /// whose documents were mishandled was being sent to a mailbox that does not
 /// exist and a phone in the wrong region.
 ///
-/// So this app now says only what is recorded. The office is named, the
-/// municipality's own website is given as the one thing the repository does
-/// record, and the direct line and address are stated as not yet published —
-/// which is M-16, and is the LGU's to supply.
+/// So this app says only what is recorded — and, since 31 August 2026, that
+/// includes a real number and a real address. They were **in the repository
+/// the whole time**, in the footer of the OBO's own bundled documentary
+/// checklist. The first version of this class said the office had published
+/// no contact details; that was a statement about what had been looked at.
+///
+/// What is still genuinely unpublished is a named Data Protection Officer.
 class OfficeContact {
   const OfficeContact._();
 
@@ -31,6 +34,14 @@ class OfficeContact {
   static const String office = 'Office of the Building Official';
 
   static const String localGovernment = 'Municipality of Castilla, Sorsogon';
+
+  /// The office that actually answers, as its own checklist names it.
+  ///
+  /// The Office of the Building Official is the statutory role under PD 1096;
+  /// in Castilla it sits with the **Municipal Engineer's Office**, which is
+  /// what the OBO's own documentary checklist and the Excavation permit form
+  /// are both headed. An applicant is looking for a door, so both are said.
+  static const String engineeringOffice = 'Office of the Municipal Engineer';
 
   /// The municipality's official website, as recorded in
   /// `requirements_catalog.dart`.
@@ -43,14 +54,49 @@ class OfficeContact {
   /// open.
   static const String website = 'castillasorsogon.gov.ph';
 
-  /// What to show where a phone number or an email address would go.
+  /// The office's own published mobile number.
   ///
-  /// One sentence, used identically in all three screens, so that the day the
-  /// LGU publishes its details there is exactly one place to change and no
-  /// chance of correcting two screens and missing the third — which is a
-  /// mistake this repository has already made once with the draft copy.
-  static const String detailsPending =
-      'The office has not yet published a direct line or email address for '
-      'this app. Until it does, contact the $office at the $localGovernment, '
-      'or see $website.';
+  /// **Found 31 August 2026 in this repository**, not supplied by anyone. The
+  /// footer of `assets/permits/Building-Permit-and-Occupancy-Checklist.pdf` —
+  /// the Municipality of Castilla's own documentary checklist, under its seal
+  /// — reads: *"For updates and inquiries, please call MEO at 09054818572
+  /// (cellphone) or send an email at meocastilla@gmail.com within 3 working
+  /// days."*
+  ///
+  /// That file has been bundled with the app all along. This class was written
+  /// earlier the same day saying the office had published no contact details,
+  /// which was a statement about what had been looked at rather than about
+  /// what existed.
+  static const String phone = '0905 481 8572';
+
+  /// The number as printed, for `tel:` and for anyone comparing with the form.
+  static const String phoneDigits = '09054818572';
+
+  static const String email = 'meocastilla@gmail.com';
+
+  /// The office's own turnaround promise for an enquiry, in its own words.
+  ///
+  /// Distinct from the RA 11032 processing pledge, which is about the
+  /// application. This one is about the question.
+  static const String replyPledge = 'within 3 working days';
+
+  /// Where these came from, shown beside them.
+  ///
+  /// An applicant deciding whether to trust a phone number is owed its
+  /// provenance, and this app has been wrong about contact details once
+  /// already — it printed an invented address at a domain no government
+  /// entity holds, and a Metro Manila landline for a Sorsogon municipality.
+  static const String contactSource =
+      'From the office’s own Building Permit documentary checklist.';
+
+  /// What is still not published: a named Data Protection Officer.
+  ///
+  /// The checklist gives the office's number and address, which is what an
+  /// applicant needs for an application. RA 10173 rights are a different
+  /// channel and the LGU has not named one — so the Privacy Policy says the
+  /// office, and says plainly that no DPO has been published. M-16.
+  static const String dataProtectionOfficerPending =
+      'The LGU has not published a named Data Protection Officer for this '
+      'app. Send data privacy requests to the office above, and ask for the '
+      'Data Protection Officer.';
 }

@@ -129,9 +129,11 @@ const _sections = [
   (
     title: '14. Contact Information',
     body:
-        'Questions about these Terms go to the Office of the Building '
-        'Official at the Municipality of Castilla, Sorsogon. '
-        '${OfficeContact.detailsPending} '
+        'Questions about these Terms go to the ${OfficeContact.office} — '
+        '${OfficeContact.engineeringOffice} — at the '
+        '${OfficeContact.localGovernment}. Call ${OfficeContact.phone} or '
+        'email ${OfficeContact.email}; the office answers '
+        '${OfficeContact.replyPledge}. '
         'Office hours are Monday to Friday, 8:00 AM to 5:00 PM.',
   ),
 ];

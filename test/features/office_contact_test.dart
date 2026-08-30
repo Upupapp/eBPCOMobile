@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/contract/office_contact.dart';
+
 /// The app may not invent a way to reach the office.
 ///
 /// Every contact detail in this app was fabricated until 30 August 2026, and
@@ -73,15 +75,19 @@ void main() {
     }
   });
 
-  test('no applicant-facing screen invents an email address or a phone', () {
+  test('no applicant-facing screen holds its own email or phone literal', () {
+    // The rule changed on 31 August, and why it changed is worth stating: the
+    // office's real number and address turned out to be in this repository all
+    // along, in the footer of its own bundled documentary checklist. So a
+    // contact detail is no longer forbidden — an INVENTED one is.
+    //
     // The shape, not the specific value. A gate that only knew the old strings
     // would pass the moment somebody wrote a different plausible one.
     final email = RegExp(r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}');
-    final phone = RegExp(r'\(0\d{1,2}\)\s?\d{3,4}-\d{4}');
+    final phone = RegExp(r'\(0\d{1,2}\)\s?\d{3,4}-\d{4}|\b09\d{9}\b');
     for (final entity in Directory('lib/features').listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
       final source = _code(entity.path);
-      // Only what the applicant is shown: a Dart string literal.
       for (final literal in RegExp(r"'([^']{4,})'").allMatches(source)) {
         final text = literal.group(1)!;
         if (text.contains('@example') || text.contains('juan.delacruz')) {
@@ -91,27 +97,57 @@ void main() {
           email.hasMatch(text) || phone.hasMatch(text),
           isFalse,
           reason:
-              '${entity.path} shows "$text". If this is the office\'s real, '
-              'published contact detail, put it in OfficeContact with the '
-              'source that verifies it — not in a screen',
+              '${entity.path} writes out "$text". A real contact detail '
+              'belongs in OfficeContact, which carries the document it came '
+              'from; a screen literal carries nothing',
         );
       }
     }
   });
 
-  test('the pending sentence is written once and used three times', () {
-    // The mistake this repository has already made once, with the draft copy:
-    // two surfaces made the same promise, one was corrected, and the other was
-    // missed. One constant, three uses.
-    final contact = _read('lib/core/contract/office_contact.dart');
-    expect(contact, contains('static const String detailsPending'));
-    for (final path in _surfaces) {
-      expect(
-        _read(path),
-        contains('OfficeContact.detailsPending'),
-        reason: '$path states it in its own words instead',
-      );
-    }
+  test('the office\'s real details are shown, and sourced', () {
+    // Found in assets/permits/Building-Permit-and-Occupancy-Checklist.pdf:
+    // "please call MEO at 09054818572 (cellphone) or send an email at
+    // meocastilla@gmail.com within 3 working days."
+    expect(OfficeContact.phoneDigits, '09054818572');
+    expect(OfficeContact.email, 'meocastilla@gmail.com');
+    expect(OfficeContact.replyPledge, 'within 3 working days');
+    expect(
+      OfficeContact.contactSource,
+      contains('documentary checklist'),
+      reason: 'a number with no provenance is what this app printed before',
+    );
+
+    final help = _code(_surfaces.first);
+    expect(help, contains('OfficeContact.phone'));
+    expect(help, contains('OfficeContact.email'));
+    expect(
+      help,
+      contains('OfficeContact.contactSource'),
+      reason: 'the provenance belongs beside the details, not only in code',
+    );
+  });
+
+  test('the checklist that supplies them is still bundled', () {
+    // If the file goes, the citation above becomes a claim nobody can check.
+    final checklist = File(
+      'assets/permits/Building-Permit-and-Occupancy-Checklist.pdf',
+    );
+    expect(checklist.existsSync(), isTrue);
+    expect(checklist.lengthSync(), greaterThan(1000));
+  });
+
+  test('the Data Protection Officer is still named as unpublished', () {
+    // M-16's other half. The checklist gives the office; RA 10173 rights are a
+    // different channel and the LGU has not named an officer for it.
+    expect(
+      OfficeContact.dataProtectionOfficerPending,
+      contains('has not published a named Data Protection Officer'),
+    );
+    expect(
+      _code('lib/features/profile/presentation/privacy_policy_screen.dart'),
+      contains('OfficeContact.dataProtectionOfficerPending'),
+    );
   });
 
   test('the website is presented as recorded, not as verified', () {
