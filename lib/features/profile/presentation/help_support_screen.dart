@@ -9,6 +9,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/layout/section_header.dart';
+import '../../../core/contract/office_contact.dart';
 
 const _faqs = [
   (
@@ -116,7 +117,7 @@ class HelpSupportScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             const SectionHeader(title: 'Contact Information'),
             const SizedBox(height: AppSpacing.xs),
-            const AppCard(
+            AppCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -126,24 +127,28 @@ class HelpSupportScreen extends StatelessWidget {
                     value: 'Monday to Friday, 8:00 AM – 5:00 PM',
                   ),
                   SizedBox(height: AppSpacing.md),
-                  _ContactRow(
-                    icon: Icons.call_outlined,
-                    label: 'Phone Number',
-                    value: '(02) 8988-4242',
-                  ),
                   SizedBox(height: AppSpacing.md),
+                  // The phone number, the email address and the office address
+                  // that used to sit here were all fabricated, and all pointed
+                  // at Quezon City rather than Sorsogon. See OfficeContact.
                   _ContactRow(
-                    icon: Icons.mail_outline,
-                    label: 'Email Address',
-                    value: 'support@ebpco.gov.ph',
-                  ),
-                  SizedBox(height: AppSpacing.md),
-                  _ContactRow(
-                    icon: Icons.location_on_outlined,
-                    label: 'Office Address',
+                    icon: Icons.account_balance_outlined,
+                    label: 'Office',
                     value:
-                        'Office of the Building Official, City Hall '
-                        'Building, Quezon City, Metro Manila, Philippines',
+                        '${OfficeContact.office}, '
+                        '${OfficeContact.localGovernment}',
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  _ContactRow(
+                    icon: Icons.language_outlined,
+                    label: 'Website',
+                    value: OfficeContact.website,
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  _ContactRow(
+                    icon: Icons.info_outline,
+                    label: 'Direct line and email',
+                    value: OfficeContact.detailsPending,
                   ),
                 ],
               ),

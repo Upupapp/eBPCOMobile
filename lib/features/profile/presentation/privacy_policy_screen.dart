@@ -4,6 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import 'widgets/legal_document_section.dart';
+import '../../../core/contract/office_contact.dart';
 
 const _sections = [
   (
@@ -105,11 +106,11 @@ const _sections = [
   (
     title: 'Contact Information',
     body:
-        'Questions about this Privacy Policy or requests to exercise your '
-        'data privacy rights may be sent to the Office of the Building '
-        'Official at support@ebpco.gov.ph, or by calling '
-        '(02) 8988-4242 during office hours, Monday to Friday, '
-        '8:00 AM to 5:00 PM.',
+        'Questions about this Privacy Policy, and requests to exercise your '
+        'rights under the Data Privacy Act, go to the Office of the Building '
+        'Official at the Municipality of Castilla, Sorsogon. '
+        '${OfficeContact.detailsPending} '
+        'Office hours are Monday to Friday, 8:00 AM to 5:00 PM.',
   ),
   (
     title: 'Data Privacy Act of 2012',

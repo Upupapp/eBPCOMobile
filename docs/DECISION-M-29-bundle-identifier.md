@@ -51,15 +51,40 @@ on both stores.** Shape, not a specific string:
 ph.gov.<lgu-domain>.ebpco
 ```
 
-Two things I deliberately have not decided:
+### Correction, 30 August 2026 — there IS a candidate domain
 
-- **The domain is the LGU's to state.** No `.gov.ph` domain for Castilla is
-  recorded anywhere in this repository — I checked. Inventing one would put a
-  fabricated authority into a permanent identifier, which is the one place a
-  guess cannot be corrected later.
-- **Whether to keep `com.ebpco`.** If the LGU has no domain to hand, keeping it
-  is defensible for a pilot — but then it should be spelled *identically* on
-  both stores, which today it is not.
+This note said no `.gov.ph` domain for Castilla was recorded anywhere in the
+repository, and that a chosen one would therefore be invented. **That was
+wrong.** The check behind it looked at the documents and the platform files and
+not at `lib`.
+
+`lib/core/contract/requirements_catalog.dart` records
+**`castillasorsogon.gov.ph`** as the *"Municipality of Castilla, Sorsogon —
+official Citizen's Charter / OBO documentary checklist"*.
+
+It carries `verificationStatus: PENDING_CASTILLA_VERIFICATION` and a note that
+the site was *"not accessible to automated research as of 2026-08-20"*. So the
+domain is **recorded but unverified**, which is a materially better position
+than nothing: it is a candidate the LGU can confirm or correct in one sentence,
+rather than a blank the LGU has to fill.
+
+That makes the recommendation concrete:
+
+```
+ph.gov.castillasorsogon.ebpco
+```
+
+— on one condition, which is the whole of what is still needed: **somebody
+confirms the municipality actually holds that domain.** A bundle identifier
+cannot be changed after publication, so an unverified domain baked into one is
+the single worst place for this particular uncertainty.
+
+Two things I still deliberately have not decided:
+
+- **Whether the domain is real.** See above. It is recorded, not verified.
+- **Whether to keep `com.ebpco`.** If the domain cannot be confirmed, keeping
+  it is defensible for a pilot — but then it must be spelled *identically*
+  everywhere, which today it is not.
 
 Avoid: `_` in the iOS identifier (Apple discourages it), and the
 `UserApp`/`user_app` suffix, which describes an internal build target rather
@@ -73,6 +98,18 @@ nothing in `lib/` reads it.
 
 **The Windows lane's half is larger**: two Gradle values plus a package
 directory move for `MainActivity.kt`.
+
+### It is a four-target split, not a two-target one
+
+Measured 30 August: **macOS carries the iOS spelling and Linux carries the
+Android one.** Two camps, four files, one product. macOS and Linux are not
+shipped, and they are still two more places the wrong spelling is written down
+and can be copied from.
+
+`test/architecture/bundle_identifier_test.dart` now pins all four and asserts
+the split *as it stands*, so it cannot be closed by halves: change one side and
+the test fails; change both to the same value and it fails too, and says to
+delete itself.
 
 Say the identifier and I will apply the iOS half, update the four documents, and
 leave the Android half stated for that lane.
