@@ -34,14 +34,29 @@ const List<String> fencingFormsOfOwnership = [
   'Others',
 ];
 
-/// Step 2 — Owner / Applicant Information (Box 1). Notably, per the
-/// official form's field list for this permit, there is no contact number
-/// or province field (unlike other ancillary permits' applicant sections).
+/// Step 2 — Owner / Applicant Information (Box 1).
+///
+/// **Corrected 31 August 2026 by reading the form.** This said the official
+/// form has "no contact number or province field (unlike other ancillary
+/// permits')", and that was half right. Box 1's address row is
+/// `ADDRESS NO. · STREET · BARANGAY · CITY/MUNICIPALITY · ZIP CODE ·
+/// TELEPHONE NO.` — no province, and a telephone number the app was not
+/// asking for. Fencing was the only one of the nineteen wizards without it;
+/// the other eighteen collect a contact number, and the comment was the
+/// reason nobody questioned the gap.
+///
+/// The form is `NBC FORM NO. B–03`, headed *Republic of the Philippines /
+/// MUNICIPALITY OF CASTILLA / Province of Sorsogon / Office of the Building
+/// Official*, which also settles `isOfficialCastillaForm` for this one.
 class FencingApplicantInfo {
   String lastName = '';
   String firstName = '';
   String middleInitial = '';
   String tin = '';
+
+  /// Box 1, `TELEPHONE NO.` — how the office reaches the applicant about this
+  /// application. Optional on the form, so optional here.
+  String contactNumber = '';
 
   bool isOwnedByEnterprise = false;
   String enterpriseName = '';
@@ -496,7 +511,9 @@ class FencingProcessingInfo {
   String? permitIssuanceStatus;
 
   double? get totalAssessedFees {
-    if (filingFee == null && processingFee == null && otherAssessedFees == null) {
+    if (filingFee == null &&
+        processingFee == null &&
+        otherAssessedFees == null) {
       return null;
     }
     return (filingFee ?? 0) + (processingFee ?? 0) + (otherAssessedFees ?? 0);

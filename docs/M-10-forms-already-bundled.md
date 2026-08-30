@@ -90,7 +90,20 @@ stand-ins, and the DPWH/JMC unified forms are still worth having as the
 national reference.
 
 What it changes is the size and the order. **Ten of the nineteen wizards can be
-audited now**, against files already committed here, by someone who can open a
-PDF and read a form. That is work this lane cannot do — reading a scanned form
-is not a source scan — but it is work that needs no external party, and the
-register said otherwise.
+audited now**, against files already committed here.
+
+### Correction, same day: this lane can read them
+
+The paragraph that stood here said the audit needed *"someone who can open a
+PDF and read a form"* and that this was *"work this lane cannot do — reading a
+scanned form is not a source scan"*. **Wrong, and wrong because I did not
+try.** Every Mac ships `qlmanage`, which renders a PDF page to an image that
+can then be read directly. `tool/render-form.sh` is the two lines it takes, and
+`docs/FORM-AUDIT-METHOD.md` records the method, its real limit — page one only,
+since there is no poppler and no Homebrew on this machine — and the first
+audit's findings.
+
+That first audit, on the Fencing Permit, found a field the form asks for and
+the wizard did not collect, sitting behind a comment that asserted the form had
+no such field. It also settles that form's `isOfficialCastillaForm` flag by
+reading its letterhead — the third method tried, and the only conclusive one.

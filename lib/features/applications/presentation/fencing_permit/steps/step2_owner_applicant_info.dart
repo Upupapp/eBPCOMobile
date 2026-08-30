@@ -35,6 +35,7 @@ class _Step2OwnerApplicantInfoState extends State<Step2OwnerApplicantInfo> {
   late final TextEditingController _firstName;
   late final TextEditingController _middleInitial;
   late final TextEditingController _tin;
+  late final TextEditingController _contactNumber;
   late final TextEditingController _enterpriseName;
   late final TextEditingController _addressNumber;
   late final TextEditingController _street;
@@ -51,6 +52,7 @@ class _Step2OwnerApplicantInfoState extends State<Step2OwnerApplicantInfo> {
     _firstName = TextEditingController(text: _applicant.firstName);
     _middleInitial = TextEditingController(text: _applicant.middleInitial);
     _tin = TextEditingController(text: _applicant.tin);
+    _contactNumber = TextEditingController(text: _applicant.contactNumber);
     _enterpriseName = TextEditingController(text: _applicant.enterpriseName);
     _addressNumber = TextEditingController(text: _applicant.addressNumber);
     _street = TextEditingController(text: _applicant.street);
@@ -65,6 +67,7 @@ class _Step2OwnerApplicantInfoState extends State<Step2OwnerApplicantInfo> {
     _firstName.dispose();
     _middleInitial.dispose();
     _tin.dispose();
+    _contactNumber.dispose();
     _enterpriseName.dispose();
     _addressNumber.dispose();
     _street.dispose();
@@ -131,6 +134,21 @@ class _Step2OwnerApplicantInfoState extends State<Step2OwnerApplicantInfo> {
                     keyboardType: TextInputType.number,
                     onChanged: (v) {
                       _applicant.tin = v;
+                      widget.onChanged();
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  // Box 1's TELEPHONE NO. The form has always asked for it;
+                  // this wizard was the only one of the nineteen not to,
+                  // because a comment in the model said the form had no such
+                  // field. Reading the form settled it.
+                  AppTextField(
+                    controller: _contactNumber,
+                    label: 'Telephone Number',
+                    hint: 'Optional',
+                    keyboardType: TextInputType.phone,
+                    onChanged: (v) {
+                      _applicant.contactNumber = v;
                       widget.onChanged();
                     },
                   ),

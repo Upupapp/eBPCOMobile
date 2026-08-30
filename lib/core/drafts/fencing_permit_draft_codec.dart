@@ -105,6 +105,7 @@ class FencingPermitDraftCodec extends DraftCodec<FencingPermitDraft> {
     out.scalar('applicant.firstName', applicant.firstName);
     out.scalar('applicant.middleInitial', applicant.middleInitial);
     out.scalar('applicant.tin', applicant.tin);
+    out.scalar('applicant.contactNumber', applicant.contactNumber);
     out.scalar('applicant.isOwnedByEnterprise', applicant.isOwnedByEnterprise);
     out.scalar('applicant.enterpriseName', applicant.enterpriseName);
     out.scalar('applicant.formOfOwnership', applicant.formOfOwnership);
@@ -251,6 +252,7 @@ class FencingPermitDraftCodec extends DraftCodec<FencingPermitDraft> {
       ..firstName = input.string('applicant.firstName')
       ..middleInitial = input.string('applicant.middleInitial')
       ..tin = input.string('applicant.tin')
+      ..contactNumber = input.string('applicant.contactNumber')
       ..isOwnedByEnterprise = input.boolean('applicant.isOwnedByEnterprise')
       ..enterpriseName = input.string('applicant.enterpriseName')
       ..formOfOwnership = input.nullableString('applicant.formOfOwnership')
