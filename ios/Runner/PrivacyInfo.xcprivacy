@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Privacy manifest for the eBPCO applicant app (Runner target only).
+
+  This file describes what THIS binary does. Every plugin the app depends on
+  ships its own manifest inside its own resource bundle, and Apple aggregates
+  them at submission; none of their declarations belong here.
+
+  Everything below was measured from source on 30 August 2026, not estimated.
+  The measurement, the reasoning, and the two decisions that are the LGU's
+  rather than mine, are in docs/M-46-privacy-manifest.md.
+
+  It is enforced by test/architecture/privacy_manifest_test.dart, which fails
+  if the app starts sending a field this file does not account for, if it
+  starts calling a required-reason API, or if this file stops being part of the
+  Runner build.
+-->
+<plist version="1.0">
+<dict>
+	<!--
+	  No tracking. There is no advertising, attribution or analytics SDK in
+	  pubspec.yaml, no IDFA access anywhere in the tree, and the app talks to
+	  exactly one host — the LGU's own API. Nothing is combined with data from
+	  other companies' apps or websites, which is what tracking means here.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!--
+	  Empty deliberately, and this is the entry most likely to be "fixed" by
+	  someone adding entries that look plausible.
+
+	  Required-reason APIs are declared by the binary that CALLS them. The app's
+	  own native code is two files — AppDelegate.swift and SceneDelegate.swift —
+	  and neither touches UserDefaults, file timestamps, disk space, system boot
+	  time or active keyboards. The Dart layer reaches those APIs only through
+	  plugins, each of which ships its own manifest: shared_preferences_foundation
+	  declares the UserDefaults reason, path_provider_foundation and file_picker
+	  the file-timestamp ones, and so on.
+
+	  Declaring an API this binary does not call would be a false statement, not
+	  a safe one.
+	-->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+
+	<!--
+	  What leaves the device. Read from the request bodies the app actually
+	  builds, in lib/core/repositories/http_*.dart, rather than from what the
+	  screens collect: a wizard holds far more than it sends, and Apple's
+	  question is about transmission.
+
+	  Everything is linked to the applicant, because all of it travels under an
+	  account the LGU issued and can trace back to a named person. Nothing is
+	  used for tracking. Every purpose is App Functionality: this is a permit
+	  application, and the office cannot act on one without knowing who filed it.
+	-->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array>
+		<!-- firstName, lastName — POST /auth/register. -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeName</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- email — POST /auth/register and POST /auth/token. Also the sign-in identifier. -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeEmailAddress</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- mobileNumber — POST /auth/register. -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePhoneNumber</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- street, barangay, city, province — POST /businesses. -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePhysicalAddress</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!--
+		  The account the LGU issues, and the bearer token sent back on every
+		  authenticated request. Declared even though the server, not the app,
+		  creates it: the app transmits it, which is what counts.
+		-->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeUserID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!--
+		  The application itself and the credential that authenticates it:
+		  password; business name and category; permitType and
+		  applicationAction; payment method and reference number; and the
+		  LABELS AND FILENAMES of attached documents.
+
+		  The document FILES are not here, and that is a measurement rather
+		  than a position: the separate upload flow is not built, so no file
+		  bytes leave the device today. The moment one does, this manifest
+		  needs NSPrivacyCollectedDataTypePhotosorVideos or
+		  NSPrivacyCollectedDataTypeOtherUserContent — and the test guarding
+		  this file fails until it gets them.
+		-->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherDataTypes</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
