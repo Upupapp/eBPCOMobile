@@ -132,20 +132,35 @@ void main() {
     );
   });
 
-  test("the LGU's domain IS recorded, and is recorded as unverified", () {
-    // **This corrects the M-29 decision note.** That note said no .gov.ph
-    // domain for Castilla appeared anywhere in the repository, and that a
-    // chosen domain would therefore be invented. The check behind it was too
-    // narrow — it looked at the docs and the platform files and not at `lib`.
+  test("the LGU's domain is recorded, and is a real .gov.ph zone", () {
+    // **This corrects the M-29 decision note twice over.**
     //
-    // `castillasorsogon.gov.ph` is recorded in the requirements catalogue as
-    // the Municipality of Castilla, Sorsogon's official site. So there IS a
-    // candidate, and the reason M-29 is still open is a different and weaker
-    // one: the entry carries `PENDING_CASTILLA_VERIFICATION` and a note that
-    // the site was not reachable by automated research on 20 August 2026.
+    // The note first said no .gov.ph domain for Castilla appeared anywhere in
+    // the repository. Wrong: the check looked at the docs and the platform
+    // files, not at `lib`. `castillasorsogon.gov.ph` is recorded in the
+    // requirements catalogue as the Municipality of Castilla, Sorsogon's
+    // official site.
     //
-    // A candidate the LGU can confirm in a sentence is a much better position
-    // than "nothing exists", and it is worth the correction.
+    // It then said the domain was recorded but UNVERIFIED, on the strength of
+    // the catalogue entry's own note that the site was "not accessible to
+    // automated research". That conflated two different claims, and only one
+    // of them is still open:
+    //
+    //   * Does the DOMAIN exist and belong to a government entity?
+    //     Answered 31 August 2026 by DNS. It resolves; the zone is delegated
+    //     to ns3/ns4/ns5.dns.gov.ph; the SOA responsible party is
+    //     dns.dict.gov.ph — the Department of Information and Communications
+    //     Technology, which administers the .gov.ph namespace. A .gov.ph zone
+    //     is issued only to a Philippine government entity.
+    //   * Is the CHARTER CONTENT in this catalogue Castilla's own?
+    //     Still no. That is what PENDING_CASTILLA_VERIFICATION means, and it
+    //     is why the Citizen's Charter screen carries its provenance notice.
+    //     It says nothing about the domain.
+    //
+    // The page itself is still not machine-readable — it sits behind a
+    // Cloudflare challenge and returns 403 — so what is verified is the zone,
+    // not the wording on the site. That is enough for a reverse-DNS
+    // identifier, which is a claim about a domain and not about a page.
     final catalog = File(
       'lib/core/contract/requirements_catalog.dart',
     ).readAsStringSync();
@@ -155,8 +170,40 @@ void main() {
       catalog,
       contains('PENDING_CASTILLA_VERIFICATION'),
       reason:
-          'the domain lost its unverified status. If the LGU confirmed it, '
-          'M-29 can be decided: see docs/DECISION-M-29-bundle-identifier.md',
+          'the CHARTER CONTENT lost its unverified status. If Castilla '
+          'supplied its published Citizen\'s Charter, M-08 can close and the '
+          'provenance notice on that screen needs re-reading — this is not '
+          'the same question as the domain',
+    );
+  });
+
+  test('the recommended identifier follows from that domain', () {
+    // Held here so the recommendation cannot drift from the evidence for it,
+    // and so that applying it is a matter of changing two constants and
+    // deleting the split expectation below rather than re-deriving anything.
+    const recommended = 'ph.gov.castillasorsogon.ebpco';
+    expect(
+      recommended,
+      startsWith('ph.gov.'),
+      reason: 'reverse-DNS of a .gov.ph domain, most-significant label first',
+    );
+    expect(recommended.split('.').length, 4);
+    expect(
+      recommended,
+      isNot(contains('_')),
+      reason: 'Apple discourages an underscore in a bundle identifier',
+    );
+    expect(
+      recommended,
+      isNot(anyOf(contains('UserApp'), contains('user_app'))),
+      reason:
+          'both current spellings name an internal build target rather than '
+          'the product an applicant installs',
+    );
+    expect(
+      File('docs/DECISION-M-29-bundle-identifier.md').readAsStringSync(),
+      contains(recommended),
+      reason: 'the note and this test must recommend the same string',
     );
   });
 

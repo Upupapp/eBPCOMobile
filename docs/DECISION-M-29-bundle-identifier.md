@@ -63,28 +63,63 @@ not at `lib`.
 official Citizen's Charter / OBO documentary checklist"*.
 
 It carries `verificationStatus: PENDING_CASTILLA_VERIFICATION` and a note that
-the site was *"not accessible to automated research as of 2026-08-20"*. So the
-domain is **recorded but unverified**, which is a materially better position
-than nothing: it is a candidate the LGU can confirm or correct in one sentence,
-rather than a blank the LGU has to fill.
+the site was *"not accessible to automated research as of 2026-08-20"*.
 
-That makes the recommendation concrete:
+### Second correction, 31 August 2026 — the domain is verified
+
+The "recorded but unverified" framing conflated two different questions. Only
+one of them is still open.
+
+**Does the domain exist and belong to a government entity? Yes — measured by
+DNS, not asserted:**
+
+```
+$ dig +short castillasorsogon.gov.ph A
+104.18.34.142
+172.64.153.114
+
+$ dig +short castillasorsogon.gov.ph NS
+ns3.dns.gov.ph.  ns4.dns.gov.ph.  ns5.dns.gov.ph.  newscott.gov.ph.
+
+$ dig +short castillasorsogon.gov.ph SOA
+ns3.dns.gov.ph. dns.dict.gov.ph. 2022072147 …
+```
+
+The zone is live and **delegated to the Philippine government's own
+nameservers**, with the SOA responsible party at `dns.dict.gov.ph` — the
+Department of Information and Communications Technology, which administers the
+`.gov.ph` namespace. **A `.gov.ph` zone is issued only to a Philippine
+government entity**, and the label is `castillasorsogon`.
+
+**What is still not machine-verifiable:** the page itself. It sits behind a
+Cloudflare challenge and returns `403` to an automated fetch, which is exactly
+what the catalogue entry recorded on 20 August. That is a fact about the site's
+bot protection, not about the domain.
+
+**And that distinction is the point.** A reverse-DNS bundle identifier is a
+claim about a *domain*, not about the wording on a page. The domain is real,
+governmental, and Castilla's. `PENDING_CASTILLA_VERIFICATION` stays exactly
+where it is — it describes whether the **Citizen's Charter content** in that
+catalogue came from Castilla, which is M-08, and is untouched by any of this.
+
+### So the recommendation is no longer conditional
 
 ```
 ph.gov.castillasorsogon.ebpco
 ```
 
-— on one condition, which is the whole of what is still needed: **somebody
-confirms the municipality actually holds that domain.** A bundle identifier
-cannot be changed after publication, so an unverified domain baked into one is
-the single worst place for this particular uncertainty.
+Avoid the two current spellings' suffix: `UserApp` and `user_app` both name an
+internal build target rather than the product an applicant installs. Avoid the
+underscore, which Apple discourages.
 
-Two things I still deliberately have not decided:
+**The one thing still outstanding is the decision, not the evidence.** The
+owner deferred it on 30 August pending the LGU's answer, and it has not been
+applied. What would make it wrong is not the domain — it is if the LGU intends
+to publish under some other identity, which no measurement can tell me.
 
-- **Whether the domain is real.** See above. It is recorded, not verified.
-- **Whether to keep `com.ebpco`.** If the domain cannot be confirmed, keeping
-  it is defensible for a pilot — but then it must be spelled *identically*
-  everywhere, which today it is not.
+The fallback remains: if the LGU prefers `com.ebpco`, that is defensible for a
+pilot, but it must then be spelled **identically** everywhere, which today it
+is not.
 
 Avoid: `_` in the iOS identifier (Apple discourages it), and the
 `UserApp`/`user_app` suffix, which describes an internal build target rather
