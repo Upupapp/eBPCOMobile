@@ -48,6 +48,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
     String? location,
+    Map<String, Object?>? form,
   }) async {
     // `applicationAction` below already carries New / Renewal / Amendment,
     // which both lines have agreed on since the first reconciliation. What
@@ -83,6 +84,14 @@ class HttpApplicationsRepository implements ApplicationsRepository {
         // permit type and the applicant and not the site. Omitted rather than
         // sent empty when the wizard has no address of its own.
         'location': ?location,
+        // Everything the applicant typed. Sent since 1 September 2026; before
+        // that a filing reached the office carrying the permit type, the
+        // applicant's name and the site line, and none of the nine or ten
+        // steps behind them. Optional in the contract and the only request
+        // object it declares `additionalProperties: true`, so sending it
+        // cannot refuse a filing the way an undeclared key would. See
+        // `permitFormPayload`.
+        'form': ?form,
         // The contract declares `documentIds` — uuids of files already
         // uploaded through /documents — and this app could not produce them
         // until the upload repository existed. It can now, so it sends them.

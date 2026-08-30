@@ -127,5 +127,10 @@ roughly fifteen times in sixteen — in production, on a filing, not here.
 - **The key is per attempt, not per operation.** See the honest limit above.
 - **No upload progress.** A twenty-megabyte plan set on a slow connection shows
   a spinner and nothing else.
-- **`form` and `location` are still not sent** — a separate M-47 item, blocked
-  on M-10.
+- ~~**`form` and `location` are still not sent**~~ — **both closed.**
+  `location` on 31 August; `form` on 1 September, once the field-for-field
+  audit against Castilla's own forms retired the reason it was blocked on
+  M-10. See `docs/M-47-form-payload.md`.
+- **The App Store Connect privacy label has not been re-read** since the app
+  started transmitting the wizard contents. It is a separate declaration of the
+  same facts as the privacy manifest, and only the manifest was updated.

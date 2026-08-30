@@ -44,6 +44,14 @@ abstract class ApplicationsRepository {
     /// and sent as nothing until 31 August 2026 — see
     /// `submitPermitApplication`.
     String? location,
+
+    /// Everything the applicant typed, from the wizard's draft codec.
+    ///
+    /// Declared by the contract as an optional open object and sent as
+    /// nothing until 1 September 2026, so a filing carried the permit type,
+    /// the applicant and the site and none of the nine or ten steps behind
+    /// them. See `permitFormPayload`.
+    Map<String, Object?>? form,
   });
 
   /// Reports a payment the applicant says they made.
@@ -102,6 +110,8 @@ class MockApplicationsRepository implements ApplicationsRepository {
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
     String? location,
+    // Held by the wire repository only. A local filing has nowhere to send it.
+    Map<String, Object?>? form,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     final now = DateTime.now();

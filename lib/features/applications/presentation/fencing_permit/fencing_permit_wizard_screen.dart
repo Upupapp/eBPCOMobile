@@ -9,6 +9,8 @@ import '../../../../core/models/fencing_permit_model.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/fencing_permit_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/drafts/fencing_permit_draft_codec.dart';
+import '../../../../core/drafts/form_payload.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
@@ -207,6 +209,9 @@ class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
         'FNC-${now.year}-${(now.millisecondsSinceEpoch % 900000 + 100000)}';
     final application = await submitPermitApplication(
       context,
+      // Everything the applicant typed. Sent since 1 September 2026;
+      // before this a filing carried none of it. See permitFormPayload.
+      form: permitFormPayload(const FencingPermitDraftCodec(), _draft),
       // The contract has declared a nullable `location` since it was
       // written, and the app sent nothing — so the office learned the
       // permit type and the applicant and not the site.

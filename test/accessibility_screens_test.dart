@@ -68,6 +68,7 @@ class _Applications implements ApplicationsRepository {
     ApplicationLineage? lineage,
     List<String> documentIds = const [],
     String? location,
+    Map<String, Object?>? form,
   }) => throw UnimplementedError();
 
   @override

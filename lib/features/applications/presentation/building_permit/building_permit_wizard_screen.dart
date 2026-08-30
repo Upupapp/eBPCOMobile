@@ -8,6 +8,8 @@ import '../../../../core/contract/admin_vocabulary.dart';
 import '../../../../core/models/building_permit_model.dart';
 import '../../../../core/providers/building_permit_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/drafts/building_permit_draft_codec.dart';
+import '../../../../core/drafts/form_payload.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/dialogs/confirmation_dialog.dart';
@@ -186,6 +188,9 @@ class _BuildingPermitWizardScreenState
     // the applicant's Building Permit is absent from their own list.
     final application = await submitPermitApplication(
       context,
+      // Everything the applicant typed. Sent since 1 September 2026;
+      // before this a filing carried none of it. See permitFormPayload.
+      form: permitFormPayload(const BuildingPermitDraftCodec(), _draft),
       // The contract has declared a nullable `location` since it was
       // written, and the app sent nothing — so the office learned the
       // permit type and the applicant and not the site.

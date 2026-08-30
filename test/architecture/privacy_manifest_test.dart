@@ -63,6 +63,26 @@ const Map<String, String> _declaredFor = {
   'items': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'itemId': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'response': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  // **A compound, and by far the largest thing this app sends.** `form` is the
+  // whole wizard: every answer the applicant typed, sent since 1 September
+  // 2026 and sent as nothing before it. One key in the body, up to 239 fields
+  // inside it on a mechanical permit.
+  //
+  // Its contents fall under types already declared above and already in the
+  // manifest — names, a physical address, phone numbers, and the application
+  // details Apple has no category for. It introduces no NEW type, which is
+  // why one entry is honest here; what it does introduce is volume, and one
+  // fact worth naming:
+  //
+  //   **It carries other people's data, not only the applicant's.** Every
+  //   construction wizard collects the designing professional and the
+  //   full-time supervisor — name, PRC licence, PTR, address, contact number.
+  //   Those are third parties to this app's account holder. Apple's manifest
+  //   has no axis for a data subject, so the types are unchanged; the App
+  //   Store Connect privacy label and the in-app Privacy Policy are where
+  //   that has to be visible, and both were written when the app transmitted
+  //   none of it.
+  'form': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   // A payment the applicant made to the LGU: how, when, how much, and the
   // bank reference or OR number. Apple has a category for exactly this, and
   // it is not "other" — folding it in with the permit details would understate

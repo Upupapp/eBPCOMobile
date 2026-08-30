@@ -54,6 +54,17 @@ Future<ApplicationModel?> submitPermitApplication(
   /// Null where the wizard has no site of its own — the two BFP clearances,
   /// which attach to a building permit that carries the address.
   String? location,
+
+  /// Everything the applicant typed, from the wizard's own draft codec.
+  ///
+  /// Until 1 September 2026 no wizard sent any of it: a filing reached the
+  /// office knowing the permit type, the applicant's name and the site line,
+  /// and nothing from the nine or ten steps behind them. Build it with
+  /// `permitFormPayload`.
+  ///
+  /// Null for a wizard with no draft codec, which is the honest state rather
+  /// than an empty object — `{}` would assert the applicant entered nothing.
+  Map<String, Object?>? form,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   // A renewal or amendment started elsewhere and walked the applicant into
@@ -76,6 +87,7 @@ Future<ApplicationModel?> submitPermitApplication(
       applicationNumber: referenceNumber,
       lineage: lineage,
       location: location,
+      form: form,
     );
   } catch (_) {
     messenger.showSnackBar(

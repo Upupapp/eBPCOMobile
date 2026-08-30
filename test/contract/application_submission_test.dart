@@ -191,26 +191,85 @@ void main() {
     });
   });
 
-  test('DIVERGENCE — the application still carries no form data', () {
+  test('CLOSED — the application now carries the applicant\'s answers', () {
     // Found 30 August 2026 and never named before: the contract declares
     // `form` (the permit-type-specific field set) and `location`, and the app
-    // sent NEITHER. `location` is sent as of 31 August. Every application it files therefore carries a permit
-    // type, an action and a business id, and not one of the applicant's typed
-    // answers — up to 239 fields on a mechanical permit.
+    // sent NEITHER. So every application it filed carried a permit type, an
+    // action and a business id, and not one of the applicant's typed answers
+    // — up to 239 fields on a mechanical permit.
     //
-    // Not fixable here, and not for the usual reason. `form` is
-    // `additionalProperties: true` and "validated server-side against the
-    // schema for permitType", and the contract itself says the wizards are
-    // auditable against the DPWH/JMC unified forms "once those are supplied".
-    // They have not been — that is M-10. Sending mobile's internal field names
-    // would make this app's private shape the de facto official one.
+    // `location` closed 31 August. `form` closed 1 September, and the reason
+    // it stood until then is worth keeping, because it was a good reason that
+    // stopped being true:
+    //
+    //   "Not fixable here… `form` is validated server-side against the schema
+    //    for permitType, and the contract says the wizards are auditable
+    //    against the DPWH/JMC unified forms once those are supplied. They have
+    //    not been — that is M-10. Sending mobile's internal field names would
+    //    make this app's private shape the de facto official one."
+    //
+    // Three things answer that now:
+    //
+    //   * **The audit happened, against a better source.** On 31 August every
+    //     wizard was checked field-for-field against Castilla's OWN bundled
+    //     forms — the ones this office issues — and nine of ten matched box
+    //     for box. What decision E-14 was waiting for is done; the national
+    //     templates would have been a weaker authority than the LGU's.
+    //   * **These are no longer "mobile's internal names" in the sense that
+    //     mattered.** They are the audited field set of the forms themselves.
+    //   * **Silence protected nothing.** Withholding the data did not keep the
+    //     shape open; it meant the office received none of it. A shape the
+    //     office can read beats no data at all, and `additionalProperties:
+    //     true` lets a server ignore what it does not recognise.
+    //
+    // The residual risk is named rather than dismissed: these keys are now a
+    // WIRE surface as well as a storage one. If the DPWH/JMC forms ever
+    // dictate different names, that belongs in a mapping layer — not in a
+    // rename, which would orphan every draft on every device.
     expect(listOf('properties'), containsAll(['form', 'location']));
-    expect(bodyKeys(), isNot(contains('form')));
-    // `location` closed on 31 August 2026 — it is a plain nullable string and
-    // needed no form schema, only for somebody to join the address parts the
-    // wizards already collect. `form` is what is left, and it is blocked on
-    // M-10 rather than on effort.
-    expect(bodyKeys(), contains('location'));
+    expect(
+      bodyKeys(),
+      containsAll(['form', 'location']),
+      reason:
+          'both halves of the divergence are closed. If `form` has gone again '
+          'a filing is carrying nothing the applicant typed',
+    );
+  });
+
+  test('every wizard sends it, not just the one that proved it worked', () {
+    // A payload builder that exists is not a field that is sent — and one
+    // wizard wired out of nineteen is the shape this repo has been bitten by
+    // three times: tested pieces, untested wiring.
+    final wizards = Directory('lib/features/applications/presentation')
+        .listSync()
+        .whereType<Directory>()
+        .expand((d) => d.listSync().whereType<File>())
+        .where((f) => f.path.endsWith('.dart'))
+        // The helper that DEFINES submitPermitApplication lives under
+        // presentation/widgets and is not a wizard. Counting it made this 20
+        // on the first run, which is what the count is here to catch.
+        .where((f) => !f.path.endsWith('submit_permit_application.dart'))
+        .map((f) => f.readAsStringSync())
+        .where((source) => source.contains('submitPermitApplication('))
+        .toList();
+
+    expect(
+      wizards,
+      hasLength(19),
+      reason:
+          'nineteen wizards file applications. If this changed, the count '
+          'below is measuring something else',
+    );
+    final without = wizards
+        .where((source) => !source.contains('permitFormPayload('))
+        .length;
+    expect(
+      without,
+      0,
+      reason:
+          '$without wizards still file without sending anything the applicant '
+          'typed',
+    );
   });
 
   test('the fix is NOT to adopt the contract spelling', () {
