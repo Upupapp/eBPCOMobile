@@ -12,16 +12,16 @@ class BeforeYouStartCard extends StatelessWidget {
   static const _checklist = [
     'Prepare all required documents and information.',
     'Ensure all details are accurate and complete.',
-    // Narrowed 29 August 2026 after measuring what a draft actually
-    // survives. Nineteen wizards offer Save as Draft, nineteen providers
-    // expose one to the Drafts list, and NOTHING is written to disk —
-    // every draft lives in a ChangeNotifier and dies with the process.
-    // The old wording, "You can save your progress as a draft", promised
-    // an applicant their nine steps of typing would be waiting for them,
-    // and it would not be. See draft_persistence_test.
-    'You can save your progress as a draft and come back to it — but '
-        'only while the app stays open. Closing it loses an unsubmitted '
-        'application.',
+    // Narrowed 29 August 2026, when nothing was written to disk and every
+    // draft died with the process; widened again 30 August, when M-48 made
+    // all nineteen wizards persist. It says what is true of the new
+    // behaviour AND what is not: the typing survives, the files do not,
+    // because a picked file's path is not reliably readable after a
+    // restart. Gated both ways by honest_assurances_test — the promise may
+    // not come back without the caveat that makes it true.
+    'You can save your progress as a draft and come back to it later, '
+        'even after closing the app. Attached files are not kept — you '
+        'will be asked to attach them again.',
     'Forms must be signed by a licensed engineer before submission.',
   ];
 

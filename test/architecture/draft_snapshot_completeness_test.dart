@@ -24,7 +24,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// dropped — which is why exemptions exist and why each carries a reason
 /// rather than a name alone.
 
-/// The wizards that persist. Two of nineteen; see `docs/MANUAL-TASKS.md`.
+/// Every wizard that persists. All nineteen, since M-48 part 2.
+///
+/// Adding a wizard here before writing its codec is the intended order: the
+/// gate then fails until the codec is complete, rather than after.
 const _wizards = [
   (
     model: 'lib/core/models/building_permit_model.dart',
@@ -36,21 +39,139 @@ const _wizards = [
     codec: 'lib/core/drafts/fencing_permit_draft_codec.dart',
     root: 'FencingPermitDraft',
   ),
+  (
+    model: 'lib/core/models/addition_extension_permit_model.dart',
+    codec: 'lib/core/drafts/addition_extension_permit_draft_codec.dart',
+    root: 'AdditionExtensionPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/architectural_permit_model.dart',
+    codec: 'lib/core/drafts/architectural_permit_draft_codec.dart',
+    root: 'ArchitecturalPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/certificate_of_occupancy_model.dart',
+    codec: 'lib/core/drafts/certificate_of_occupancy_draft_codec.dart',
+    root: 'CertificateOfOccupancyDraft',
+  ),
+  (
+    model: 'lib/core/models/civil_structural_permit_model.dart',
+    codec: 'lib/core/drafts/civil_structural_permit_draft_codec.dart',
+    root: 'CivilStructuralPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/demolition_permit_model.dart',
+    codec: 'lib/core/drafts/demolition_permit_draft_codec.dart',
+    root: 'DemolitionPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/electrical_permit_model.dart',
+    codec: 'lib/core/drafts/electrical_permit_draft_codec.dart',
+    root: 'ElectricalPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/electronics_permit_model.dart',
+    codec: 'lib/core/drafts/electronics_permit_draft_codec.dart',
+    root: 'ElectronicsPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/excavation_permit_model.dart',
+    codec: 'lib/core/drafts/excavation_permit_draft_codec.dart',
+    root: 'ExcavationPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/fsec_permit_model.dart',
+    codec: 'lib/core/drafts/fsec_permit_draft_codec.dart',
+    root: 'FsecPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/fsic_permit_model.dart',
+    codec: 'lib/core/drafts/fsic_permit_draft_codec.dart',
+    root: 'FsicPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/interior_design_permit_model.dart',
+    codec: 'lib/core/drafts/interior_permit_draft_codec.dart',
+    root: 'InteriorPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/mechanical_permit_model.dart',
+    codec: 'lib/core/drafts/mechanical_permit_draft_codec.dart',
+    root: 'MechanicalPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/plumbing_permit_model.dart',
+    codec: 'lib/core/drafts/plumbing_permit_draft_codec.dart',
+    root: 'PlumbingPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/renovation_permit_model.dart',
+    codec: 'lib/core/drafts/renovation_permit_draft_codec.dart',
+    root: 'RenovationPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/sanitary_plumbing_permit_model.dart',
+    codec: 'lib/core/drafts/sanitary_permit_draft_codec.dart',
+    root: 'SanitaryPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/sign_permit_model.dart',
+    codec: 'lib/core/drafts/sign_permit_draft_codec.dart',
+    root: 'SignPermitDraft',
+  ),
+  (
+    model: 'lib/core/models/zoning_permit_model.dart',
+    codec: 'lib/core/drafts/zoning_permit_draft_codec.dart',
+    root: 'ZoningPermitDraft',
+  ),
 ];
 
-/// Paths a codec is right not to persist. A path exempts its whole subtree.
-const Map<String, String> _exemptFromCapture = {
-  'notarialAcknowledgment':
-      'The paper form\'s notarial block. Office-controlled and never exposed '
-      'as applicant-editable UI, so every field is unset in every draft this '
-      'app can produce — persisting them would store nothing, forever.',
-  'processingInfo':
-      'Boxes 7-8: review stage, assessed fees, official receipt, issuance. '
-      'Office-controlled, filled by a staff surface that does not exist yet, '
-      'and read-only to the applicant. A draft never holds a value here.',
+const String _officeOnly =
+    'Office-controlled: the paper form\'s processing and notarial blocks, '
+    'filled by a staff surface that does not exist yet and read-only to the '
+    'applicant. Every field is unset in every draft this app can produce, so '
+    'persisting them would store nothing, forever.';
+
+const String _fixedByTheWizard =
+    'A `final` field fixed at construction — which wizard this is, not '
+    'anything the applicant entered. It cannot be assigned on restore and '
+    'cannot have changed since capture, so storing it would be storing a '
+    'constant and reading it back would not compile.';
+
+/// Paths a codec is right not to persist, per wizard. A path exempts its whole
+/// subtree.
+///
+/// Keyed by wizard rather than shared, and that is not tidiness. A flat map
+/// would have let `scopeOfWork` — genuinely fixed on the Addition/Extension
+/// draft — silently exempt the scope of every other wizard, including the two
+/// where it is the applicant's own answer.
+const Map<String, Map<String, String>> _exemptFromCapture = {
+  'AdditionExtensionPermitDraft': {'scopeOfWork': _fixedByTheWizard},
+  'ArchitecturalPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'CivilStructuralPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'DemolitionPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'ElectricalPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'ElectronicsPermitDraft': {
+    'processingInfo': _officeOnly,
+    'applicant.permitType': _fixedByTheWizard,
+  },
+  'ExcavationPermitDraft': {'processingInfo': _officeOnly},
+  'FencingPermitDraft': {
+    'notarialAcknowledgment': _officeOnly,
+    'processingInfo': _officeOnly,
+  },
+  'InteriorPermitDraft': {
+    'processingInfo': _officeOnly,
+    'applicant.permitType': _fixedByTheWizard,
+  },
+  'MechanicalPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'PlumbingPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'SanitaryPermitDraft': {'applicant.permitType': _fixedByTheWizard},
+  'SignPermitDraft': {'processingInfo': _officeOnly},
 };
 
-/// Paths that are captured but deliberately not read back.
+/// Captured but deliberately not read back. Shared: `status` is the same field
+/// at the root of all nineteen drafts.
 const Map<String, String> _exemptFromRestore = {
   'status':
       'A restored draft is always a draft. Only submitApplication() may set '
@@ -58,36 +179,57 @@ const Map<String, String> _exemptFromRestore = {
       'filed application as editable. Asserted in draft_round_trip_test.',
 };
 
-/// The body of `class <name>`, bounded by the next top-level declaration.
+/// The body of `class <name>`, bounded by its own closing brace.
+///
+/// Brace-matched rather than "up to the next class", which is what this did
+/// first. Several models declare top-level helper functions BETWEEN two
+/// classes — `String? _nonNegativeWholeNumber(...)` in the electrical,
+/// plumbing and sanitary models — and those fell inside the preceding class's
+/// slice, so a `final parsed = int.tryParse(...)` local read as a declared
+/// field named `parsed`. Three phantom fields, each of which would have needed
+/// a phantom exemption to silence.
 String? _classBody(String source, String name) {
   final start = RegExp(
     r'^(?:abstract\s+)?class\s+' + name + r'\b',
     multiLine: true,
   ).firstMatch(source);
   if (start == null) return null;
-  final next = RegExp(r'^(?:abstract\s+)?(?:class|enum)\s+\w+', multiLine: true)
-      .allMatches(source)
-      .map((m) => m.start)
-      .firstWhere((s) => s > start.start, orElse: () => source.length);
-  return source.substring(start.start, next);
+  final open = source.indexOf('{', start.start);
+  if (open < 0) return null;
+  var depth = 0;
+  for (var i = open; i < source.length; i++) {
+    if (source[i] == '{') depth++;
+    if (source[i] == '}') {
+      depth--;
+      if (depth == 0) return source.substring(start.start, i + 1);
+    }
+  }
+  return source.substring(start.start);
 }
 
 /// Instance fields declared directly on a class, as (type, name).
 ///
-/// Getters, statics and methods are excluded: a getter is derived from fields
-/// that are themselves captured, so persisting one would store the same value
-/// twice and let the two disagree after a restore.
+/// Only at brace depth 1 — a local inside a method is not a field. Getters,
+/// statics and methods are excluded too: a getter is derived from fields that
+/// are themselves captured, so persisting one would store the same value twice
+/// and let the two disagree after a restore.
 List<(String, String)> _fields(String body) {
   final fields = <(String, String)>[];
+  var depth = 0;
   for (final line in body.split('\n')) {
-    if (!line.startsWith('  ') || line.startsWith('   ')) continue;
+    final wasTopLevel = depth == 1;
+    for (final rune in line.runes) {
+      if (rune == 0x7B) depth++;
+      if (rune == 0x7D) depth--;
+    }
+    if (!wasTopLevel) continue;
     if (line.contains(' get ') || line.contains('static')) continue;
     final match = RegExp(
       r'^  (?:final\s+)?([A-Za-z_][\w<>?, ]*?)\s+([a-z_]\w*)\s*(?:=|;)',
     ).firstMatch(line);
     if (match == null) continue;
     final type = match.group(1)!.trim();
-    if (type == 'void' || type == 'return') continue;
+    if (type == 'void' || type == 'return' || type == 'final') continue;
     fields.add((type, match.group(2)!));
   }
   return fields;
@@ -149,8 +291,13 @@ Set<String> _touchedPaths(String codec, {required bool capturing}) {
   final entry = bodies[capturing ? 'capture' : 'restore'];
   expect(entry, isNotNull, reason: 'no ${capturing ? 'capture' : 'restore'}()');
 
+  // `accessor \s* . \s*`, not `accessor .`. dart format breaks a long
+  // assignment after the receiver — `= input\n    .boolean('a.very.long.path')`
+  // — and the strict form stopped seeing those calls entirely. It reported
+  // eleven fields across four wizards as captured-but-never-restored when
+  // every one of them was restored correctly.
   Set<String> pathsIn(String body) => RegExp(
-    accessor + r"\.\w+\(\s*'([^']+)'",
+    accessor + r"\s*\.\s*\w+\(\s*'([^']+)'",
   ).allMatches(body).map((m) => m.group(1)!).toSet();
 
   final touched = pathsIn(literalsOf(entry!));
@@ -169,9 +316,8 @@ Set<String> _touchedPaths(String codec, {required bool capturing}) {
   return touched;
 }
 
-bool _exempt(Map<String, String> exemptions, String path) => exemptions.keys.any(
-  (key) => path == key || path.startsWith('$key.'),
-);
+bool _exempt(Map<String, String> exemptions, String path) =>
+    exemptions.keys.any((key) => path == key || path.startsWith('$key.'));
 
 void main() {
   test('the parse is not vacuous', () {
@@ -207,14 +353,14 @@ void main() {
       final model = File(wizard.model).readAsStringSync();
       final codec = File(wizard.codec).readAsStringSync();
       final expected = _expectedPaths(model, wizard.root);
+      final exempt =
+          _exemptFromCapture[wizard.root] ?? const <String, String>{};
 
       test('every field is captured, or exempted with a reason', () {
         final captured = _touchedPaths(codec, capturing: true);
         final dropped = [
           for (final path in expected.keys)
-            if (!captured.contains(path) &&
-                !_exempt(_exemptFromCapture, path))
-              path,
+            if (!captured.contains(path) && !_exempt(exempt, path)) path,
         ];
         expect(
           dropped,
@@ -232,7 +378,7 @@ void main() {
           for (final entry in expected.entries)
             if (!entry.value &&
                 !restored.contains(entry.key) &&
-                !_exempt(_exemptFromCapture, entry.key) &&
+                !_exempt(exempt, entry.key) &&
                 !_exempt(_exemptFromRestore, entry.key))
               entry.key,
         ];
@@ -264,7 +410,7 @@ void main() {
           for (final entry in expected.entries)
             if (entry.value &&
                 !captured.contains(entry.key) &&
-                !_exempt(_exemptFromCapture, entry.key))
+                !_exempt(exempt, entry.key))
               entry.key,
         ];
         expect(
@@ -291,32 +437,41 @@ void main() {
   }
 
   group('the exemptions themselves', () {
-    test('each names a path that exists', () {
-      final all = <String>{};
+    test('each names a path that exists on the wizard it is filed under', () {
+      // Filed under the wrong wizard, an exemption exempts nothing there and
+      // may silently cover a live field here. Checked against the wizard's own
+      // paths rather than a union of all nineteen, which would hide exactly
+      // that.
       for (final wizard in _wizards) {
-        all.addAll(
-          _expectedPaths(
-            File(wizard.model).readAsStringSync(),
-            wizard.root,
-          ).keys,
-        );
-      }
-      for (final key in [..._exemptFromCapture.keys, ..._exemptFromRestore.keys]) {
-        expect(
-          all.any((path) => path == key || path.startsWith('$key.')),
-          isTrue,
-          reason:
-              '"$key" exempts nothing — the field was renamed or removed and '
-              'the exemption now silently covers a live field instead',
-        );
+        final paths = _expectedPaths(
+          File(wizard.model).readAsStringSync(),
+          wizard.root,
+        ).keys;
+        for (final key in (_exemptFromCapture[wizard.root] ?? const {}).keys) {
+          expect(
+            paths.any((path) => path == key || path.startsWith('$key.')),
+            isTrue,
+            reason:
+                '"$key" exempts nothing on ${wizard.root} — the field was '
+                'renamed or removed, or the exemption is filed under the '
+                'wrong wizard',
+          );
+        }
+        for (final key in _exemptFromRestore.keys) {
+          expect(paths, contains(key), reason: '$key on ${wizard.root}');
+        }
       }
     });
 
     test('each carries a real reason', () {
-      for (final entry in [
-        ..._exemptFromCapture.entries,
-        ..._exemptFromRestore.entries,
-      ]) {
+      final reasons = <String, String>{
+        for (final wizard in _exemptFromCapture.entries)
+          for (final entry in wizard.value.entries)
+            '${wizard.key}.${entry.key}': entry.value,
+        ..._exemptFromRestore,
+      };
+      expect(reasons, isNotEmpty);
+      for (final entry in reasons.entries) {
         expect(
           entry.value.length,
           greaterThanOrEqualTo(40),

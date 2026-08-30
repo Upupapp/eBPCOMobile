@@ -25,51 +25,74 @@ import 'package:flutter_test/flutter_test.dart';
 String _read(String path) => File(path).readAsStringSync();
 
 void main() {
-  group('drafts do not promise to survive', () {
-    const claims = [
-      'You can save your progress as a draft.',
-      'are saved here so you',
+  group('drafts promise exactly what they now do', () {
+    // Inverted 30 August 2026. Until M-48 the only honest thing either
+    // surface could say was that a draft dies with the process, and this
+    // group held them to it. All nineteen wizards now persist, so the promise
+    // is allowed back — but only WITH the caveat that makes it true, because
+    // the half of it that is still false is the half an applicant would
+    // discover at the worst moment.
+    const surfaces = [
+      'lib/features/applications/presentation/widgets/'
+          'before_you_start_card.dart',
+      'lib/features/applications/presentation/application_list_screen.dart',
     ];
 
-    test('neither the card nor the Drafts empty state claims persistence', () {
-      final card = _read(
-        'lib/features/applications/presentation/widgets/'
-        'before_you_start_card.dart',
-      );
-      final list = _read(
-        'lib/features/applications/presentation/application_list_screen.dart',
-      );
+    /// The copy as an applicant reads it, not as the file stores it.
+    ///
+    /// dart format breaks a long sentence across adjacent string literals, so
+    /// a raw `contains` on the source misses any phrase that happens to span
+    /// the wrap — which is precisely how a test like this passes while the
+    /// sentence it guards says something else. Joined first.
+    String copy(String file) =>
+        _read(file).replaceAll(RegExp(r"'\s*\n\s*'"), '');
 
-      for (final claim in claims) {
-        expect(
-          card.contains("'$claim'"),
-          isFalse,
-          reason: 'the Before-you-start card promises "$claim" again',
-        );
-        expect(
-          list.contains(claim),
-          isFalse,
-          reason: 'the Drafts empty state promises "$claim" again',
-        );
+    test('the joined copy is not empty', () {
+      for (final file in surfaces) {
+        expect(copy(file).length, greaterThan(200), reason: file);
       }
     });
 
-    test('both say what is actually true instead', () {
-      // Asserted positively as well, so deleting the honest sentence does not
-      // quietly pass by leaving neither claim nor caveat.
+    test('both say the draft survives closing the app', () {
       expect(
-        _read(
-          'lib/features/applications/presentation/widgets/'
-          'before_you_start_card.dart',
+        copy(surfaces.first),
+        contains(
+          'You can save your progress as a draft and come back to it later, '
+          'even after closing the app.',
         ),
-        contains('only while the app stays open'),
       );
       expect(
-        _read(
-          'lib/features/applications/presentation/application_list_screen.dart',
+        copy(surfaces.last),
+        contains(
+          'Applications you start but do not finish are saved here, and are '
+          'still here after you close the app.',
         ),
-        contains('Closing it loses an unsubmitted application'),
       );
+    });
+
+    test('neither promises the attachments survive', () {
+      // The one thing M-48 deliberately does NOT keep. A promise of "your
+      // progress is saved" with no mention of the files would send an
+      // applicant back to a step they believe is finished.
+      for (final file in surfaces) {
+        expect(
+          copy(file),
+          contains('Attached files are not kept'),
+          reason: '$file promises progress is saved without saying what is not',
+        );
+        expect(copy(file), contains('attach them again'));
+      }
+    });
+
+    test('the stale caveat is gone from both', () {
+      // True of every wizard until M-48, and now true of none.
+      for (final file in surfaces) {
+        expect(copy(file), isNot(contains('only while the app stays open')));
+        expect(
+          copy(file),
+          isNot(contains('Closing it loses an unsubmitted application')),
+        );
+      }
     });
   });
 

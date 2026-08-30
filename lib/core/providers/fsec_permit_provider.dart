@@ -2,13 +2,47 @@ import 'package:flutter/foundation.dart';
 
 import '../models/draft_summary.dart';
 import '../models/fsec_permit_model.dart';
+import '../drafts/fsec_permit_draft_codec.dart';
+import '../drafts/draft_persistence_barrel.dart';
+import '../drafts/persistent_draft.dart';
 
-/// Holds the single in-progress FSEC draft for the
-/// current app session (frontend-only: nothing here is persisted to disk or a
-/// server). Mirrors the other permit providers' shape exactly, but is a fully
-/// separate provider so this draft can never be overwritten by, or overwrite,
-/// any other permit's draft.
-class FsecPermitProvider extends ChangeNotifier implements DraftSource {
+/// Holds the single in-progress FSEC for Building Permit (BFP) application draft.
+///
+/// Persisted since M-48: the typed fields are written to the keychain on
+/// every Save as Draft and read back on launch, while the attachments are
+/// deliberately not — a picked file's path is not reliably readable after a
+/// restart, so they are named back to the applicant to re-attach instead.
+/// See `lib/core/drafts/` and `docs/M-48-draft-persistence.md`.
+///
+/// A fully separate provider and class from every other permit's, so this
+/// draft can never be overwritten by, or overwrite, another permit's — which
+/// stays true on disk: each wizard's snapshot is stored under its own key.
+///
+/// Nothing here reaches a server. The draft becomes an application only when
+/// the wizard files it.
+class FsecPermitProvider extends ChangeNotifier
+    with PersistentDraft<FsecPermitDraft>
+    implements DraftSource {
+  /// Null everywhere except the running app. A provider built without a store
+  /// behaves exactly as it did before M-48 — in memory, dying with the
+  /// process — which is what leaves every existing widget test unchanged.
+  FsecPermitProvider({this.persistence});
+
+  @override
+  final DraftPersistence? persistence;
+
+  @override
+  DraftCodec<FsecPermitDraft> get codec => const FsecPermitDraftCodec();
+
+  @override
+  FsecPermitDraft? get resumableDraft => hasResumableDraft ? _draft : null;
+
+  @override
+  FsecPermitDraft beginRestoredDraft() => startNew();
+
+  @override
+  void seekRestoredStep(int step) => _currentStep = step;
+
   FsecPermitDraft? _draft;
   int _currentStep = 0;
 
@@ -48,6 +82,9 @@ class FsecPermitProvider extends ChangeNotifier implements DraftSource {
     if (draft == null) return;
     draft.status = FSECPermitDraftStatus.draft;
     draft.lastSavedAt = DateTime.now();
+    // Fire-and-forget: the applicant taps Save as Draft and leaves, and a
+    // keychain write must not hold the tap.
+    persistDraft(_currentStep);
     notifyListeners();
   }
 
@@ -58,12 +95,16 @@ class FsecPermitProvider extends ChangeNotifier implements DraftSource {
     final draft = _draft;
     if (draft == null) return;
     draft.status = FSECPermitDraftStatus.submitted;
+    // A filed application is not an unfinished one. Leaving it on disk would
+    // resurrect it as an editable draft on the next launch.
+    forgetPersistedDraft();
     notifyListeners();
   }
 
   void discardDraft() {
     _draft = null;
     _currentStep = 0;
+    forgetPersistedDraft();
     notifyListeners();
   }
 
@@ -82,6 +123,7 @@ class FsecPermitProvider extends ChangeNotifier implements DraftSource {
       completedSteps: draft.completedSteps,
       totalSteps: 4,
       route: '/applications/new/fsec-clearance',
+      documentsToReattach: documentsToReattach,
     );
   }
 }

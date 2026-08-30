@@ -72,14 +72,65 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
   /// start the restore before anything renders, and all drafts share a single
   /// keychain record, so two stores would each overwrite the other's writes.
   ///
-  /// Two of nineteen. The other seventeen are still in-memory only, which is
-  /// why the Before-you-start card's narrowed wording stands — see M-48.
+  /// All nineteen wizards write here, each under its own key, and all of them
+  /// share this one record — which is why `DraftPersistence` serialises its
+  /// writes. See M-48.
   final DraftPersistence _drafts = DraftPersistence(SecureDraftStore());
 
+  // All nineteen wizards, built here rather than in a `create` callback.
+  // `initState` has to reach them to start the restore before anything
+  // renders, and a lazily-built provider would not begin reading until
+  // something asked for it — by which time the applicant may already be
+  // looking at an empty Drafts list.
   late final BuildingPermitProvider _buildingPermit = BuildingPermitProvider(
     persistence: _drafts,
   );
+  late final RenovationPermitProvider _renovation = RenovationPermitProvider(
+    persistence: _drafts,
+  );
+  late final AdditionExtensionPermitProvider _additionExtension =
+      AdditionExtensionPermitProvider(persistence: _drafts);
+  late final DemolitionPermitProvider _demolition = DemolitionPermitProvider(
+    persistence: _drafts,
+  );
+  late final ArchitecturalPermitProvider _architectural =
+      ArchitecturalPermitProvider(persistence: _drafts);
+  late final CivilStructuralPermitProvider _civilStructural =
+      CivilStructuralPermitProvider(persistence: _drafts);
+  late final ElectricalPermitProvider _electrical = ElectricalPermitProvider(
+    persistence: _drafts,
+  );
+  late final MechanicalPermitProvider _mechanical = MechanicalPermitProvider(
+    persistence: _drafts,
+  );
+  late final SanitaryPlumbingPermitProvider _sanitaryPlumbing =
+      SanitaryPlumbingPermitProvider(persistence: _drafts);
+  late final PlumbingPermitProvider _plumbing = PlumbingPermitProvider(
+    persistence: _drafts,
+  );
+  late final ElectronicsPermitProvider _electronics = ElectronicsPermitProvider(
+    persistence: _drafts,
+  );
+  late final InteriorDesignPermitProvider _interiorDesign =
+      InteriorDesignPermitProvider(persistence: _drafts);
   late final FencingPermitProvider _fencingPermit = FencingPermitProvider(
+    persistence: _drafts,
+  );
+  late final SignPermitProvider _sign = SignPermitProvider(
+    persistence: _drafts,
+  );
+  late final ExcavationPermitProvider _excavation = ExcavationPermitProvider(
+    persistence: _drafts,
+  );
+  late final CertificateOfOccupancyProvider _certificateOfOccupancy =
+      CertificateOfOccupancyProvider(persistence: _drafts);
+  late final ZoningPermitProvider _zoning = ZoningPermitProvider(
+    persistence: _drafts,
+  );
+  late final FsicPermitProvider _fsic = FsicPermitProvider(
+    persistence: _drafts,
+  );
+  late final FsecPermitProvider _fsec = FsecPermitProvider(
     persistence: _drafts,
   );
 
@@ -95,7 +146,24 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
     // provider refuses to overwrite a draft the applicant has already started
     // typing into while the read was in flight.
     _buildingPermit.restoreFromStore();
+    _renovation.restoreFromStore();
+    _additionExtension.restoreFromStore();
+    _demolition.restoreFromStore();
+    _architectural.restoreFromStore();
+    _civilStructural.restoreFromStore();
+    _electrical.restoreFromStore();
+    _mechanical.restoreFromStore();
+    _sanitaryPlumbing.restoreFromStore();
+    _plumbing.restoreFromStore();
+    _electronics.restoreFromStore();
+    _interiorDesign.restoreFromStore();
     _fencingPermit.restoreFromStore();
+    _sign.restoreFromStore();
+    _excavation.restoreFromStore();
+    _certificateOfOccupancy.restoreFromStore();
+    _zoning.restoreFromStore();
+    _fsic.restoreFromStore();
+    _fsec.restoreFromStore();
   }
 
   @override
@@ -194,60 +262,50 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
         ChangeNotifierProvider<BuildingPermitProvider>.value(
           value: _buildingPermit,
         ),
-        ChangeNotifierProvider<RenovationPermitProvider>(
-          create: (_) => RenovationPermitProvider(),
+        ChangeNotifierProvider<RenovationPermitProvider>.value(
+          value: _renovation,
         ),
-        ChangeNotifierProvider<AdditionExtensionPermitProvider>(
-          create: (_) => AdditionExtensionPermitProvider(),
+        ChangeNotifierProvider<AdditionExtensionPermitProvider>.value(
+          value: _additionExtension,
         ),
-        ChangeNotifierProvider<DemolitionPermitProvider>(
-          create: (_) => DemolitionPermitProvider(),
+        ChangeNotifierProvider<DemolitionPermitProvider>.value(
+          value: _demolition,
         ),
-        ChangeNotifierProvider<ArchitecturalPermitProvider>(
-          create: (_) => ArchitecturalPermitProvider(),
+        ChangeNotifierProvider<ArchitecturalPermitProvider>.value(
+          value: _architectural,
         ),
-        ChangeNotifierProvider<CivilStructuralPermitProvider>(
-          create: (_) => CivilStructuralPermitProvider(),
+        ChangeNotifierProvider<CivilStructuralPermitProvider>.value(
+          value: _civilStructural,
         ),
-        ChangeNotifierProvider<ElectricalPermitProvider>(
-          create: (_) => ElectricalPermitProvider(),
+        ChangeNotifierProvider<ElectricalPermitProvider>.value(
+          value: _electrical,
         ),
-        ChangeNotifierProvider<ElectronicsPermitProvider>(
-          create: (_) => ElectronicsPermitProvider(),
+        ChangeNotifierProvider<ElectronicsPermitProvider>.value(
+          value: _electronics,
         ),
-        ChangeNotifierProvider<InteriorDesignPermitProvider>(
-          create: (_) => InteriorDesignPermitProvider(),
+        ChangeNotifierProvider<InteriorDesignPermitProvider>.value(
+          value: _interiorDesign,
         ),
         ChangeNotifierProvider<FencingPermitProvider>.value(
           value: _fencingPermit,
         ),
-        ChangeNotifierProvider<MechanicalPermitProvider>(
-          create: (_) => MechanicalPermitProvider(),
+        ChangeNotifierProvider<MechanicalPermitProvider>.value(
+          value: _mechanical,
         ),
-        ChangeNotifierProvider<SanitaryPlumbingPermitProvider>(
-          create: (_) => SanitaryPlumbingPermitProvider(),
+        ChangeNotifierProvider<SanitaryPlumbingPermitProvider>.value(
+          value: _sanitaryPlumbing,
         ),
-        ChangeNotifierProvider<PlumbingPermitProvider>(
-          create: (_) => PlumbingPermitProvider(),
+        ChangeNotifierProvider<PlumbingPermitProvider>.value(value: _plumbing),
+        ChangeNotifierProvider<SignPermitProvider>.value(value: _sign),
+        ChangeNotifierProvider<ExcavationPermitProvider>.value(
+          value: _excavation,
         ),
-        ChangeNotifierProvider<SignPermitProvider>(
-          create: (_) => SignPermitProvider(),
+        ChangeNotifierProvider<CertificateOfOccupancyProvider>.value(
+          value: _certificateOfOccupancy,
         ),
-        ChangeNotifierProvider<ExcavationPermitProvider>(
-          create: (_) => ExcavationPermitProvider(),
-        ),
-        ChangeNotifierProvider<CertificateOfOccupancyProvider>(
-          create: (_) => CertificateOfOccupancyProvider(),
-        ),
-        ChangeNotifierProvider<ZoningPermitProvider>(
-          create: (_) => ZoningPermitProvider(),
-        ),
-        ChangeNotifierProvider<FsicPermitProvider>(
-          create: (_) => FsicPermitProvider(),
-        ),
-        ChangeNotifierProvider<FsecPermitProvider>(
-          create: (_) => FsecPermitProvider(),
-        ),
+        ChangeNotifierProvider<ZoningPermitProvider>.value(value: _zoning),
+        ChangeNotifierProvider<FsicPermitProvider>.value(value: _fsic),
+        ChangeNotifierProvider<FsecPermitProvider>.value(value: _fsec),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
         ),

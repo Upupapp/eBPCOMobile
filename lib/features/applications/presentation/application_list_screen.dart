@@ -297,13 +297,14 @@ class _EmptyFor extends StatelessWidget {
           icon: Icons.edit_note_outlined,
           title: 'No drafts',
           message:
-              // Narrowed 29 August, alongside the Before-you-start card. Both
-              // made the same promise and only one was corrected first time —
-              // fixing one copy and missing its sibling is its own recurring
-              // defect here. Drafts live in memory and die with the process;
-              // see draft_persistence_test and M-48.
-              'Applications you start but do not finish are listed here while '
-              'the app is open. Closing it loses an unsubmitted application.',
+              // Kept in step with the Before-you-start card, deliberately.
+              // Both made the same promise, both were narrowed on 29 August
+              // when nothing reached disk, and both are widened here now that
+              // M-48 persists all nineteen — fixing one copy and missing its
+              // sibling is its own recurring defect in this repository.
+              'Applications you start but do not finish are saved here, and '
+              'are still here after you close the app. Attached files are '
+              'not kept — you will be asked to attach them again.',
         );
       case ApplicationSegment.inProgress:
         return const EmptyState(

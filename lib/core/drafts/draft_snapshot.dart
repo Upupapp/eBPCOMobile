@@ -122,8 +122,15 @@ abstract class DraftCodec<T> {
 
 /// Collects field values under dotted paths.
 class SnapshotWriter {
+  SnapshotWriter() : detachedDocuments = [];
+
+  /// A row inside a collection. Shares the parent's detachment list, so a
+  /// document held inside a repeated record is still named back to the
+  /// applicant rather than vanishing with the row it sat in.
+  SnapshotWriter._row(this.detachedDocuments);
+
   final Map<String, Object?> fields = {};
-  final List<String> detachedDocuments = [];
+  final List<String> detachedDocuments;
 
   /// A `String`, `bool`, `int` or `double`. Nulls are written, because a
   /// nullable field that the applicant deliberately cleared is not the same as
@@ -142,6 +149,21 @@ class SnapshotWriter {
 
   void strings(String path, Iterable<String> values) =>
       fields[path] = values.toList();
+
+  /// One record of a repeated collection. Written with the same accessors as
+  /// the draft itself, and read back through a [SnapshotReader] over its own
+  /// keys — so a row cannot drift from the rest of the format.
+  SnapshotWriter row() => SnapshotWriter._row(detachedDocuments);
+
+  /// A fixed-size or growable collection, as a list of rows.
+  ///
+  /// Every collection in these drafts is either keyed by an enum's values and
+  /// pre-populated, or a short list the applicant adds to. Both restore by
+  /// matching a key inside the row rather than by position, because a list
+  /// index is not an identity — an enum reordered, or a row removed, would
+  /// otherwise shift every value onto the wrong record.
+  void rows(String path, List<SnapshotWriter> rows) =>
+      fields[path] = [for (final row in rows) row.fields];
 
   /// Records that a slot held a file, and drops the file.
   ///
@@ -190,6 +212,36 @@ class SnapshotReader {
   DateTime? date(String path) {
     final value = _fields[path];
     return value is String ? DateTime.tryParse(value) : null;
+  }
+
+  /// A whole number. `int` and `double` both survive JSON, but a `double`
+  /// that happens to be integral comes back as an `int`, so both are accepted.
+  int integer(String path, {int fallback = 0}) {
+    final value = _fields[path];
+    return value is int ? value : (value is double ? value.toInt() : fallback);
+  }
+
+  int? nullableInteger(String path) {
+    final value = _fields[path];
+    return value is int ? value : (value is double ? value.toInt() : null);
+  }
+
+  double decimal(String path, {double fallback = 0}) =>
+      nullableDecimal(path) ?? fallback;
+
+  double? nullableDecimal(String path) {
+    final value = _fields[path];
+    return value is num ? value.toDouble() : null;
+  }
+
+  /// The records of a repeated collection, each read exactly as the draft is.
+  List<SnapshotReader> rows(String path) {
+    final raw = _fields[path];
+    if (raw is! List) return const [];
+    return [
+      for (final row in raw)
+        if (row is Map) SnapshotReader(Map<String, Object?>.from(row)),
+    ];
   }
 
   T? enumValue<T extends Enum>(String path, List<T> values) {
