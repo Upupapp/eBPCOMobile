@@ -110,39 +110,72 @@ void main() {
     expect(descriptionOf('Certificate of Completion'), contains('notarised'));
   });
 
-  test('KNOWN GAP — the wizard does not yet collect what the list names', () {
-    // Asserted as it stands, so the day the wizard is aligned this fails and
-    // says so. The catalogue tells the applicant what to bring; the wizard
-    // gives them somewhere to put it, and the two do not agree.
+  test('the wizard collects exactly what the list names', () {
+    // This was a KNOWN GAP for one commit: the catalogue was corrected first
+    // and the wizard followed. Asserted the other way round now — a slot that
+    // disappears fails here, and so does one added for a document Castilla
+    // does not ask for at this stage.
     final model = File(
       'lib/core/models/certificate_of_occupancy_model.dart',
     ).readAsStringSync();
-    final missing = [
-      for (final entry in const {
-        'Unified Form for Certificate of Occupancy': 'unifiedOccupancyForm',
-        'Approved Plan': 'approvedPlanUpload',
-        'Approved Specifications': 'approvedSpecificationsUpload',
-        'Photographs of the Structure (all sides)': 'structurePhotographs',
-        'Valid Licenses of all involved professionals': 'professionalLicenses',
-        'Fire Safety Compliance and Commissioning Report (FSCCR)':
-            'fsccrUpload',
-      }.entries)
-        if (!model.contains(entry.value)) entry.key,
-    ];
-    expect(
-      missing,
-      hasLength(6),
-      reason:
-          'the wizard now has an upload slot for one of these — good. Remove '
-          'it from this list, and check the applicant is asked for it on the '
-          'step that reviews the occupancy documents: $missing',
-    );
+
+    for (final slot in const [
+      'unifiedOccupancyFormUpload',
+      'certificateOfCompletionUpload',
+      'approvedPlanUpload',
+      'approvedSpecificationsUpload',
+      'constructionLogbookUpload',
+      'structurePhotographsUpload',
+      'professionalLicensesUpload',
+      'asBuiltPlansUpload',
+      'fireSafetyComplianceReportUpload',
+    ]) {
+      expect(model, contains(slot), reason: slot);
+    }
+
+    // The five it used to demand and Castilla does not list. Each was a trip
+    // to another office for a document nobody was going to ask for.
+    for (final ghost in const [
+      'landTitleOrTaxDeclarationUpload',
+      'barangayClearanceUpload',
+      'locationalClearanceUpload',
+      'validGovernmentIdUpload',
+      'electricalCertificateUpload',
+    ]) {
+      expect(model, isNot(contains(ghost)), reason: ghost);
+    }
+
     expect(
       model,
-      contains('fireSafetyInspectionCertificateUpload'),
-      reason:
-          'the wizard still collects an FSIC, which Castilla does not ask for '
-          'at this stage. When that slot becomes the FSCCR, delete this',
+      isNot(contains('fireSafetyInspectionCertificateUpload')),
+      reason: 'the FSIC slot became the FSCCR, which is a different document',
     );
+  });
+
+  test('the wizard requires the eight, and not the conditional ninth', () {
+    // As-built plans are "in case of changes in the building". A wizard that
+    // blocks submission on them contradicts the list it is built from.
+    final model = File(
+      'lib/core/models/certificate_of_occupancy_model.dart',
+    ).readAsStringSync();
+    final validity = model.substring(
+      model.indexOf(
+        'bool isValid() {',
+        model.indexOf('OccupancyRequiredDocuments'),
+      ),
+    );
+    final body = validity.substring(0, validity.indexOf('\n  }'));
+    expect(
+      body,
+      isNot(contains('asBuiltPlansUpload == null')),
+      reason: 'as-built plans are conditional on the checklist',
+    );
+    for (final required in const [
+      'unifiedOccupancyFormUpload',
+      'certificateOfCompletionUpload',
+      'fireSafetyComplianceReportUpload',
+    ]) {
+      expect(body, contains('$required == null'), reason: required);
+    }
   });
 }

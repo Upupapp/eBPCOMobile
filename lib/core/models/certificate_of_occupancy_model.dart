@@ -216,30 +216,56 @@ class OccupancyOtherDocument {
 /// request for three physical copies of the as-built plans is
 /// represented as a single digital upload here.
 class OccupancyRequiredDocuments {
-  DocumentModel? asBuiltPlansUpload;
-  DocumentModel? constructionLogbookUpload;
-  DocumentModel? civilWorksCertificateUpload;
-  DocumentModel? electricalCertificateUpload;
+  // Castilla's own list, in the order its checklist prints it.
+  //
+  // **Rewritten 31 August 2026.** What was here came from the requirements
+  // catalogue, which for this permit had been built from PD 1096 and a Puerto
+  // Princesa sample. The comment it carried explained the reasoning that went
+  // wrong: the four "every permit type needs" — proof of ownership, barangay
+  // clearance, locational clearance, a valid ID — were reasoned across from
+  // the entries that ARE Castilla-sourced, on the assumption that what the
+  // building permit asks for the occupancy permit asks for too.
+  //
+  // Castilla's checklist has an occupancy section of its own, in a file this
+  // app has always bundled, and it asks for none of those four. It asks for
+  // nine other things, five of which had no slot here at all. See
+  // `docs/M-08-occupancy-requirements.md`.
 
-  /// Added 27 Aug 2026, reconciling this step against the requirements
-  /// catalog. Five required documents had no slot: the four every permit type
-  /// needs — proof of ownership, barangay clearance, locational clearance and
-  /// a valid ID — and the final Fire Safety Inspection Certificate, which is a
-  /// precondition of occupancy under RA 9514 and which the app was asking for
-  /// nowhere at all.
+  /// Four copies, per the checklist.
+  DocumentModel? unifiedOccupancyFormUpload;
+
+  /// Duly notarised, signed and sealed. Four copies.
   ///
-  /// The catalog entry for this type is not itself built from a Castilla form,
-  /// but these five appear in the entries that are — the Building Permit and
-  /// Zoning checklists both list them — so they are well founded even though
-  /// this entry is marked unverified.
-  DocumentModel? landTitleOrTaxDeclarationUpload;
-  DocumentModel? barangayClearanceUpload;
-  DocumentModel? locationalClearanceUpload;
-  DocumentModel? validGovernmentIdUpload;
-  DocumentModel? fireSafetyInspectionCertificateUpload;
+  /// The app held a `dateOfCompletion` and no way to attach the certificate
+  /// that proves it.
+  DocumentModel? certificateOfCompletionUpload;
 
-  // Conditionally required in practice ("when applicable" / "when
-  // required" per the official form), so not blocking here.
+  DocumentModel? approvedPlanUpload;
+  DocumentModel? approvedSpecificationsUpload;
+  DocumentModel? constructionLogbookUpload;
+
+  /// All sides, four copies.
+  DocumentModel? structurePhotographsUpload;
+
+  /// Three copies.
+  DocumentModel? professionalLicensesUpload;
+
+  /// Conditional, and the checklist says so: *"in case of changes in the
+  /// building"*. Required here until 31 August 2026, which cost an applicant
+  /// whose building matched its approved plan a document they did not owe.
+  DocumentModel? asBuiltPlansUpload;
+
+  /// The Fire Safety Compliance and Commissioning **Report**, one copy.
+  ///
+  /// NOT the Fire Safety Inspection Certificate, which this slot used to be.
+  /// The FSCCR is prepared by the project's own fire safety practitioner and
+  /// precedes the FSIC, so an applicant sent for the wrong one arrives with a
+  /// document the office cannot accept.
+  DocumentModel? fireSafetyComplianceReportUpload;
+
+  // Optional, for anything the office asks for beyond its published list.
+  // Kept deliberately: a checklist is a floor, and an evaluator may ask for
+  // more on a particular project.
   DocumentModel? otherDisciplineCertificatesUpload;
   DocumentModel? notarizedDocumentsUpload;
   DocumentModel? otherSupportingRequirementsUpload;
@@ -247,15 +273,16 @@ class OccupancyRequiredDocuments {
   final List<OccupancyOtherDocument> otherDocuments = [];
 
   bool isValid() {
-    if (asBuiltPlansUpload == null) return false;
+    if (unifiedOccupancyFormUpload == null) return false;
+    if (certificateOfCompletionUpload == null) return false;
+    if (approvedPlanUpload == null) return false;
+    if (approvedSpecificationsUpload == null) return false;
     if (constructionLogbookUpload == null) return false;
-    if (civilWorksCertificateUpload == null) return false;
-    if (electricalCertificateUpload == null) return false;
-    if (landTitleOrTaxDeclarationUpload == null) return false;
-    if (barangayClearanceUpload == null) return false;
-    if (locationalClearanceUpload == null) return false;
-    if (validGovernmentIdUpload == null) return false;
-    if (fireSafetyInspectionCertificateUpload == null) return false;
+    if (structurePhotographsUpload == null) return false;
+    if (professionalLicensesUpload == null) return false;
+    if (fireSafetyComplianceReportUpload == null) return false;
+    // asBuiltPlansUpload is deliberately absent: the checklist asks for it
+    // only where the building as completed differs from the approved plan.
     for (final doc in otherDocuments) {
       if (!doc.isValid) return false;
     }

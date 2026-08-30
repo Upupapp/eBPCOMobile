@@ -91,13 +91,23 @@ class _Step5CertificationReviewSubmissionState
       owner.lastName,
     ].where((s) => s.trim().isNotEmpty).join(' ');
 
+    // The eight Castilla requires, in its checklist's order. As-built plans
+    // are not among them: the checklist asks for those only where the
+    // building as completed differs from the approved plan, so counting them
+    // as required would tell an applicant they are short a document they do
+    // not owe.
     final requiredDocsUploaded = [
-      documents.asBuiltPlansUpload,
+      documents.unifiedOccupancyFormUpload,
+      documents.certificateOfCompletionUpload,
+      documents.approvedPlanUpload,
+      documents.approvedSpecificationsUpload,
       documents.constructionLogbookUpload,
-      documents.civilWorksCertificateUpload,
-      documents.electricalCertificateUpload,
+      documents.structurePhotographsUpload,
+      documents.professionalLicensesUpload,
+      documents.fireSafetyComplianceReportUpload,
     ].where((d) => d != null).length;
     final optionalDocsUploaded = [
+      documents.asBuiltPlansUpload,
       documents.otherDisciplineCertificatesUpload,
       documents.notarizedDocumentsUpload,
       documents.otherSupportingRequirementsUpload,
@@ -257,11 +267,11 @@ class _Step5CertificationReviewSubmissionState
               rows: [
                 _SummaryRow(
                   'Required Documents',
-                  '$requiredDocsUploaded of 4 uploaded',
+                  '$requiredDocsUploaded of 8 uploaded',
                 ),
                 _SummaryRow(
                   'Optional Documents',
-                  '$optionalDocsUploaded of 3 uploaded',
+                  '$optionalDocsUploaded of 4 uploaded',
                 ),
                 _SummaryRow(
                   'Additional Documents',

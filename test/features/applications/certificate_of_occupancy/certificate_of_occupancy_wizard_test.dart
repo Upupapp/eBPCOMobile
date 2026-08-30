@@ -193,19 +193,19 @@ Future<void> _completeStep3(WidgetTester tester) async {
 }
 
 Future<void> _completeStep4(WidgetTester tester) async {
-  // Only the four required documents need to be uploaded — the optional
-  // ones are deliberately left untouched to prove they don't block.
+  // The eight Castilla's checklist requires. The optional ones — including
+  // the as-built plans, which the checklist asks for only "in case of changes
+  // in the building" — are deliberately left untouched to prove they do not
+  // block. Rewritten 31 August 2026 with the step itself.
   for (final label in [
-    'As-Built Plans and Specifications',
-    'Construction Logbook (Signed and Sealed)',
-    'Certificate of Completion — Civil Works',
-    'Electrical Certificate of Completion',
-    // Added when step 4 was reconciled against the requirements catalog.
-    'Land Title or Tax Declaration',
-    'Barangay Clearance',
-    'Locational Clearance / Zoning Certification',
-    'Valid Government-Issued ID',
-    'Fire Safety Inspection Certificate (final)',
+    'Unified Form for Certificate of Occupancy',
+    'Certificate of Completion',
+    'Approved Plan',
+    'Approved Specifications',
+    'Construction Logbook',
+    'Photographs of the Structure',
+    'Valid Licenses of all involved professionals',
+    'Fire Safety Compliance and Commissioning Report (FSCCR)',
   ]) {
     final tile = find.widgetWithText(DocumentUploadTile, label);
     await tester.ensureVisible(tile);

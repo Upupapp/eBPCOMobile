@@ -63,18 +63,39 @@ That takes the catalogue's Castilla-sourced entries from four to five. Both
 gates that pin those counts failed on the change and were updated with the
 reason, which is what they are for.
 
-## What is NOT fixed, and is asserted as not fixed
+## The wizard followed, in the next commit
 
-**The wizard does not collect what the list now names.** It has no slot for the
-unified form, the approved plan, the approved specifications, the photographs
-or the professional licences, and its fire-safety slot is an FSIC rather than
-an FSCCR.
+The catalogue was corrected first and the wizard was left behind it for one
+commit, with the gap asserted by name. It is aligned now:
 
-So the app now tells an applicant the right things to bring and still gives
-them the wrong places to put them. That is a smaller wrong than telling them
-the wrong things to bring, and it is recorded rather than left to be
-discovered: `occupancy_requirements_test` asserts all six gaps **by name**, so
-closing one fails the test and says which.
+- **Six slots added** — the unified form, the certificate of completion, the
+  approved plan, the approved specifications, the photographs and the
+  professional licences. The certificate of completion is the one the first
+  write-up missed: the app held a `dateOfCompletion` and no way to attach the
+  document that proves it.
+- **The FSIC slot became the FSCCR.**
+- **Five slots removed** — land title, barangay clearance, locational
+  clearance, valid ID and the electrical certificate of completion. Each was a
+  trip to another office for a document nobody was going to ask for. Anything
+  an evaluator does ask for beyond the published list still has somewhere to
+  go: the optional slots and the applicant's own *Other Documents* list are
+  untouched, because a checklist is a floor.
+- **As-built plans are optional now**, labelled *"Only if the building differs
+  from the approved plan"*, and counted with the optional documents rather
+  than against the required eight — a review screen that says "3 of 9" when
+  the applicant owes eight is its own small lie.
+
+The gate is inverted with it: it now asserts the nine slots exist, the five
+ghosts are gone, and `isValid` requires the eight without requiring the
+conditional ninth.
+
+**One consequence worth stating.** Removing a slot removes its snapshot key, so
+a draft saved before today loses those five attachments on restore. They are
+attachments for documents the office does not want, and the applicant is told
+what is missing rather than left to discover it — but it is a loss, and it is
+the reason the storage keys were *not* touched when the building permit's ID
+fields were renamed yesterday. Removing a field and renaming one are different
+decisions.
 
 ## The lesson, again
 

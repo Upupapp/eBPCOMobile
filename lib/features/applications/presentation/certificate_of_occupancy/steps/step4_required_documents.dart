@@ -95,66 +95,71 @@ class _Step4RequiredDocumentsState extends State<Step4RequiredDocuments> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // The four every permit type needs, plus the final FSIC. Added
-            // when this step was reconciled against the requirements catalog —
-            // an applicant could previously reach submission without any proof
-            // of ownership, any clearance, or the fire certificate that RA 9514
-            // makes a precondition of occupancy.
+            // Castilla's nine, in the order its own checklist prints them.
+            // What stood here asked for four documents the occupancy
+            // checklist does not list and offered no slot for five it does.
             _uploadTile(
-              label: 'Land Title or Tax Declaration',
-              getDocument: () => _documents.landTitleOrTaxDeclarationUpload,
-              setDocument: (d) =>
-                  _documents.landTitleOrTaxDeclarationUpload = d,
+              label: 'Unified Form for Certificate of Occupancy',
+              statusLabel: 'Required — four copies',
+              getDocument: () => _documents.unifiedOccupancyFormUpload,
+              setDocument: (d) => _documents.unifiedOccupancyFormUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Barangay Clearance',
-              getDocument: () => _documents.barangayClearanceUpload,
-              setDocument: (d) => _documents.barangayClearanceUpload = d,
+              label: 'Certificate of Completion',
+              statusLabel:
+                  'Required — notarised, signed and sealed, four copies',
+              getDocument: () => _documents.certificateOfCompletionUpload,
+              setDocument: (d) => _documents.certificateOfCompletionUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Locational Clearance / Zoning Certification',
-              getDocument: () => _documents.locationalClearanceUpload,
-              setDocument: (d) => _documents.locationalClearanceUpload = d,
+              label: 'Approved Plan',
+              getDocument: () => _documents.approvedPlanUpload,
+              setDocument: (d) => _documents.approvedPlanUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Valid Government-Issued ID',
-              getDocument: () => _documents.validGovernmentIdUpload,
-              setDocument: (d) => _documents.validGovernmentIdUpload = d,
+              label: 'Approved Specifications',
+              getDocument: () => _documents.approvedSpecificationsUpload,
+              setDocument: (d) => _documents.approvedSpecificationsUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Fire Safety Inspection Certificate (final)',
-              getDocument: () =>
-                  _documents.fireSafetyInspectionCertificateUpload,
-              setDocument: (d) =>
-                  _documents.fireSafetyInspectionCertificateUpload = d,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _uploadTile(
-              label: 'As-Built Plans and Specifications',
-              getDocument: () => _documents.asBuiltPlansUpload,
-              setDocument: (d) => _documents.asBuiltPlansUpload = d,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _uploadTile(
-              label: 'Construction Logbook (Signed and Sealed)',
+              label: 'Construction Logbook',
               getDocument: () => _documents.constructionLogbookUpload,
               setDocument: (d) => _documents.constructionLogbookUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Certificate of Completion — Civil Works',
-              getDocument: () => _documents.civilWorksCertificateUpload,
-              setDocument: (d) => _documents.civilWorksCertificateUpload = d,
+              label: 'Photographs of the Structure',
+              statusLabel: 'Required — all sides, four copies',
+              getDocument: () => _documents.structurePhotographsUpload,
+              setDocument: (d) => _documents.structurePhotographsUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(
-              label: 'Electrical Certificate of Completion',
-              getDocument: () => _documents.electricalCertificateUpload,
-              setDocument: (d) => _documents.electricalCertificateUpload = d,
+              label: 'Valid Licenses of all involved professionals',
+              statusLabel: 'Required — three copies',
+              getDocument: () => _documents.professionalLicensesUpload,
+              setDocument: (d) => _documents.professionalLicensesUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'As-Built Plans',
+              isRequired: false,
+              statusLabel:
+                  'Only if the building differs from the approved plan',
+              getDocument: () => _documents.asBuiltPlansUpload,
+              setDocument: (d) => _documents.asBuiltPlansUpload = d,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _uploadTile(
+              label: 'Fire Safety Compliance and Commissioning Report (FSCCR)',
+              statusLabel: 'Required — one copy',
+              getDocument: () => _documents.fireSafetyComplianceReportUpload,
+              setDocument: (d) =>
+                  _documents.fireSafetyComplianceReportUpload = d,
             ),
             const SizedBox(height: AppSpacing.md),
             _uploadTile(

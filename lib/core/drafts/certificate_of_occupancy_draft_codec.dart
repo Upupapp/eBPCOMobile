@@ -80,6 +80,36 @@ class CertificateOfOccupancyDraftCodec
       draft.projectDetails.dateOfCompletion,
     );
     out.document(
+      'requiredDocuments.unifiedOccupancyFormUpload',
+      draft.requiredDocuments.unifiedOccupancyFormUpload,
+      'Unified Form for Certificate of Occupancy',
+    );
+    out.document(
+      'requiredDocuments.certificateOfCompletionUpload',
+      draft.requiredDocuments.certificateOfCompletionUpload,
+      'Certificate of Completion',
+    );
+    out.document(
+      'requiredDocuments.approvedPlanUpload',
+      draft.requiredDocuments.approvedPlanUpload,
+      'Approved Plan',
+    );
+    out.document(
+      'requiredDocuments.approvedSpecificationsUpload',
+      draft.requiredDocuments.approvedSpecificationsUpload,
+      'Approved Specifications',
+    );
+    out.document(
+      'requiredDocuments.structurePhotographsUpload',
+      draft.requiredDocuments.structurePhotographsUpload,
+      'Photographs of the Structure',
+    );
+    out.document(
+      'requiredDocuments.professionalLicensesUpload',
+      draft.requiredDocuments.professionalLicensesUpload,
+      'Valid Licenses of all involved professionals',
+    );
+    out.document(
       'requiredDocuments.asBuiltPlansUpload',
       draft.requiredDocuments.asBuiltPlansUpload,
       'As-built plans',
@@ -90,38 +120,8 @@ class CertificateOfOccupancyDraftCodec
       'Construction Logbook',
     );
     out.document(
-      'requiredDocuments.civilWorksCertificateUpload',
-      draft.requiredDocuments.civilWorksCertificateUpload,
-      'Civil Works Certificate',
-    );
-    out.document(
-      'requiredDocuments.electricalCertificateUpload',
-      draft.requiredDocuments.electricalCertificateUpload,
-      'Electrical Certificate',
-    );
-    out.document(
-      'requiredDocuments.landTitleOrTaxDeclarationUpload',
-      draft.requiredDocuments.landTitleOrTaxDeclarationUpload,
-      'Land Title or Tax Declaration',
-    );
-    out.document(
-      'requiredDocuments.barangayClearanceUpload',
-      draft.requiredDocuments.barangayClearanceUpload,
-      'Barangay Clearance',
-    );
-    out.document(
-      'requiredDocuments.locationalClearanceUpload',
-      draft.requiredDocuments.locationalClearanceUpload,
-      'Locational Clearance',
-    );
-    out.document(
-      'requiredDocuments.validGovernmentIdUpload',
-      draft.requiredDocuments.validGovernmentIdUpload,
-      'Valid Government ID',
-    );
-    out.document(
-      'requiredDocuments.fireSafetyInspectionCertificateUpload',
-      draft.requiredDocuments.fireSafetyInspectionCertificateUpload,
+      'requiredDocuments.fireSafetyComplianceReportUpload',
+      draft.requiredDocuments.fireSafetyComplianceReportUpload,
       'Fire Safety Inspection Certificate',
     );
     out.document(
@@ -241,32 +241,33 @@ class CertificateOfOccupancyDraftCodec
     draft.projectDetails.dateOfCompletion = input.date(
       'projectDetails.dateOfCompletion',
     );
+    draft.requiredDocuments.unifiedOccupancyFormUpload = input.document(
+      'requiredDocuments.unifiedOccupancyFormUpload',
+    );
+    draft.requiredDocuments.certificateOfCompletionUpload = input.document(
+      'requiredDocuments.certificateOfCompletionUpload',
+    );
+    draft.requiredDocuments.approvedPlanUpload = input.document(
+      'requiredDocuments.approvedPlanUpload',
+    );
+    draft.requiredDocuments.approvedSpecificationsUpload = input.document(
+      'requiredDocuments.approvedSpecificationsUpload',
+    );
+    draft.requiredDocuments.structurePhotographsUpload = input.document(
+      'requiredDocuments.structurePhotographsUpload',
+    );
+    draft.requiredDocuments.professionalLicensesUpload = input.document(
+      'requiredDocuments.professionalLicensesUpload',
+    );
     draft.requiredDocuments.asBuiltPlansUpload = input.document(
       'requiredDocuments.asBuiltPlansUpload',
     );
     draft.requiredDocuments.constructionLogbookUpload = input.document(
       'requiredDocuments.constructionLogbookUpload',
     );
-    draft.requiredDocuments.civilWorksCertificateUpload = input.document(
-      'requiredDocuments.civilWorksCertificateUpload',
+    draft.requiredDocuments.fireSafetyComplianceReportUpload = input.document(
+      'requiredDocuments.fireSafetyComplianceReportUpload',
     );
-    draft.requiredDocuments.electricalCertificateUpload = input.document(
-      'requiredDocuments.electricalCertificateUpload',
-    );
-    draft.requiredDocuments.landTitleOrTaxDeclarationUpload = input.document(
-      'requiredDocuments.landTitleOrTaxDeclarationUpload',
-    );
-    draft.requiredDocuments.barangayClearanceUpload = input.document(
-      'requiredDocuments.barangayClearanceUpload',
-    );
-    draft.requiredDocuments.locationalClearanceUpload = input.document(
-      'requiredDocuments.locationalClearanceUpload',
-    );
-    draft.requiredDocuments.validGovernmentIdUpload = input.document(
-      'requiredDocuments.validGovernmentIdUpload',
-    );
-    draft.requiredDocuments.fireSafetyInspectionCertificateUpload = input
-        .document('requiredDocuments.fireSafetyInspectionCertificateUpload');
     draft.requiredDocuments.otherDisciplineCertificatesUpload = input.document(
       'requiredDocuments.otherDisciplineCertificatesUpload',
     );
