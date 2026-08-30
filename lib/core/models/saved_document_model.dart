@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import '../services/document_storage_service.dart';
+
 /// Supported file types for imported "My Documents" items — the same set
 /// accepted by the import file picker.
 enum SavedDocumentFileType { pdf, jpg, jpeg, png }
@@ -87,7 +89,31 @@ class SavedDocumentModel {
   final String id;
   final String originalFileName;
   final String? displayName;
-  final String localPath;
+
+  /// The file's NAME inside the app's own document storage.
+  ///
+  /// **An absolute path is not durable and must not be persisted.** On iOS the
+  /// app's container is `/var/mobile/Containers/Data/Application/<UUID>/…` and
+  /// that UUID changes on every app update — so a path saved today is dead
+  /// tomorrow while the file itself is untouched under a different prefix.
+  ///
+  /// This library stored the absolute path in SharedPreferences until 31
+  /// August 2026. Every entry would have broken at the first app update:
+  /// the list would still show the documents, and none of them would open.
+  ///
+  /// The draft snapshots learned this first; this is the same fix applied to
+  /// the other place the app remembers a file.
+  final String storedName;
+
+  /// A path this entry already knows, used only when [storedName] cannot be
+  /// resolved.
+  ///
+  /// Two things arrive here and both are fallbacks, never the record: the
+  /// absolute path an entry saved before the migration carries, and the path
+  /// the file was just copied to at import, before anything has asked the
+  /// platform where the documents directory is. **Never written back to
+  /// storage** — writing a path again is the defect this replaced.
+  final String? knownPath;
   final SavedDocumentFileType fileType;
   final int fileSizeBytes;
   final DateTime dateImported;
@@ -107,7 +133,8 @@ class SavedDocumentModel {
     required this.id,
     required this.originalFileName,
     this.displayName,
-    required this.localPath,
+    required this.storedName,
+    this.knownPath,
     required this.fileType,
     required this.fileSizeBytes,
     required this.dateImported,
@@ -144,12 +171,31 @@ class SavedDocumentModel {
   static DateTime _day(DateTime value) =>
       DateTime(value.year, value.month, value.day);
 
+  static String _basenameOf(String path) =>
+      path.contains('/') ? path.substring(path.lastIndexOf('/') + 1) : path;
+
   /// The name shown throughout the UI — the custom display name when set,
   /// otherwise the original imported file name.
-  String get name =>
-      (displayName != null && displayName!.trim().isNotEmpty)
+  String get name => (displayName != null && displayName!.trim().isNotEmpty)
       ? displayName!
       : originalFileName;
+
+  /// Where the file is now.
+  ///
+  /// Resolved against the CURRENT documents directory every time it is asked
+  /// for, rather than remembered. Falls back to the pre-migration path when
+  /// the name cannot be resolved — which covers a test with no storage root,
+  /// and an entry whose file has genuinely gone.
+  String get localPath =>
+      DocumentStorageService.resolveStoredName(storedName) ??
+      knownPath ??
+      storedName;
+
+  /// False when the file is not where the name says. The list still shows the
+  /// entry — an applicant is owed the difference between "you never imported
+  /// this" and "it is no longer on this device".
+  bool get fileExists =>
+      DocumentStorageService.resolveStoredName(storedName) != null;
 
   File get file => File(localPath);
 
@@ -164,7 +210,8 @@ class SavedDocumentModel {
       id: id,
       originalFileName: originalFileName,
       displayName: displayName ?? this.displayName,
-      localPath: localPath,
+      storedName: storedName,
+      knownPath: knownPath,
       fileType: fileType,
       fileSizeBytes: fileSizeBytes,
       dateImported: dateImported,
@@ -178,7 +225,8 @@ class SavedDocumentModel {
     'id': id,
     'originalFileName': originalFileName,
     'displayName': displayName,
-    'localPath': localPath,
+    // The name, never the path. See [storedName].
+    'storedName': storedName,
     'fileType': fileType.name,
     'fileSizeBytes': fileSizeBytes,
     'dateImported': dateImported.toIso8601String(),
@@ -192,7 +240,14 @@ class SavedDocumentModel {
       id: json['id'] as String,
       originalFileName: json['originalFileName'] as String,
       displayName: json['displayName'] as String?,
-      localPath: json['localPath'] as String,
+      // `localPath` is what entries saved before 31 August 2026 carry. Its
+      // basename is the file's name in our own storage, so the migration is a
+      // read-time one and needs no separate pass: the next save writes
+      // `storedName` and the absolute path is never written again.
+      storedName: json['storedName'] is String
+          ? json['storedName'] as String
+          : _basenameOf(json['localPath'] as String? ?? ''),
+      knownPath: json['localPath'] as String?,
       fileType: SavedDocumentFileType.values.firstWhere(
         (t) => t.name == json['fileType'],
         orElse: () => SavedDocumentFileType.pdf,

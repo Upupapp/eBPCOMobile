@@ -47,7 +47,7 @@ SavedDocumentModel _document({
   return SavedDocumentModel(
     id: id,
     originalFileName: originalFileName,
-    localPath: '/fake/path/$originalFileName',
+    storedName: originalFileName,
     fileType: fileType,
     fileSizeBytes: 204800,
     dateImported: DateTime(2026, 1, 10),

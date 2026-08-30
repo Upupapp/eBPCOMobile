@@ -249,7 +249,13 @@ class DocumentsProvider extends ChangeNotifier {
         id: 'doc-${DateTime.now().microsecondsSinceEpoch}',
         originalFileName: picked.originalFileName,
         displayName: displayName,
-        localPath: saved.path,
+        // The NAME, not the path — see SavedDocumentModel.storedName. The
+        // file has just been copied into our own storage, so its basename is
+        // the durable half of where it is.
+        storedName: saved.uri.pathSegments.last,
+        // Known now, and useful only until the documents directory has been
+        // read once. Not persisted.
+        knownPath: saved.path,
         fileType: picked.fileType,
         fileSizeBytes: size,
         dateImported: DateTime.now(),

@@ -6,7 +6,7 @@ SavedDocumentModel _document({DateTime? expiry, String id = 'doc-1'}) =>
     SavedDocumentModel(
       id: id,
       originalFileName: 'barangay_clearance.pdf',
-      localPath: '/tmp/barangay_clearance.pdf',
+      storedName: 'barangay_clearance.pdf',
       fileType: SavedDocumentFileType.pdf,
       fileSizeBytes: 120000,
       dateImported: DateTime(2026, 1, 10),

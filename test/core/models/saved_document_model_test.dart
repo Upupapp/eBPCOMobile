@@ -40,7 +40,7 @@ void main() {
     final baseDocument = SavedDocumentModel(
       id: 'doc-1',
       originalFileName: 'valid_id.jpg',
-      localPath: '/app/documents/doc_1.jpg',
+      storedName: 'doc_1.jpg',
       fileType: SavedDocumentFileType.jpg,
       fileSizeBytes: 204800,
       dateImported: DateTime(2026, 1, 15),
