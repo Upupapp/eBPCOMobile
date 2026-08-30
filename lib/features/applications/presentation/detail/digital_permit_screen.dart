@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/contract/office_contact.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/application_detail.dart';
 import '../../../../core/models/application_model.dart';
@@ -384,22 +385,38 @@ class _ClaimInstructions extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
           ],
-          if (release.claimLocation != null) ...[
-            Text(
-              'Where to claim',
-              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
-            ),
-            Text(release.claimLocation!, style: AppTypography.body),
-            const SizedBox(height: AppSpacing.md),
+          // Where to claim. The backend omits this by design — the contract's
+          // R-13 says the logistics values are LGU-specific and "omitted
+          // rather than guessed" — so without a fallback this whole section
+          // was a heading and the SPA paragraph, reached by an applicant the
+          // app had just sent a push notification promising instructions.
+          Text(
+            'Where to claim',
+            style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
+          ),
+          Text(
+            release.claimLocation ?? ClaimProcedure.location,
+            style: AppTypography.body,
+          ),
+          if (release.claimLocation == null) ...[
+            const SizedBox(height: 2),
+            Text(OfficeContact.addressPending, style: AppTypography.bodyMuted),
           ],
-          if (release.officeHours != null) ...[
-            Text(
-              'Office hours',
-              style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
-            ),
-            Text(release.officeHours!, style: AppTypography.body),
-            const SizedBox(height: AppSpacing.md),
-          ],
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Office hours',
+            style: AppTypography.helper.copyWith(fontWeight: FontWeight.w600),
+          ),
+          // Not invented. Philippine offices commonly open 8–5 on weekdays,
+          // but "commonly" is not Castilla, and the hours are what an
+          // applicant plans a trip around.
+          Text(
+            release.officeHours ?? OfficeContact.officeHoursPending,
+            style: release.officeHours != null
+                ? AppTypography.body
+                : AppTypography.bodyMuted,
+          ),
+          const SizedBox(height: AppSpacing.md),
           if (release.bringWithYou.isNotEmpty) ...[
             Text(
               'Bring with you',
@@ -411,6 +428,21 @@ class _ClaimInstructions extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 2),
                 child: Text('• $item', style: AppTypography.body),
               ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          // Step 3 of the checklist. Worth saying because this app models each
+          // ancillary permit as its own application, so an applicant with six
+          // of them has no reason to expect one visit.
+          Text(ClaimProcedure.claimedTogether, style: AppTypography.body),
+          const SizedBox(height: AppSpacing.xs),
+          Text(ClaimProcedure.source, style: AppTypography.bodyMuted),
+          const SizedBox(height: AppSpacing.md),
+          if (release.claimLocation == null) ...[
+            Text(
+              'Call ${OfficeContact.phone} or email ${OfficeContact.email} '
+              'to confirm before you travel.',
+              style: AppTypography.body,
+            ),
             const SizedBox(height: AppSpacing.md),
           ],
           Container(
