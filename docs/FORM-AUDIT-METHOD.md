@@ -155,3 +155,42 @@ paper — twelve scope options here, eight there, fifteen natures of work, three
 electrical supervisor types. A count that lives only in a document is a count
 nobody checks; an option quietly added or dropped now fails a test and has to
 be justified against the form.
+
+---
+
+## The document steps, 31 August 2026
+
+The audits above compared each wizard's **fields** against its application
+form. This compares the **document steps** against Castilla's
+`Building Permit Documentary Requirements` checklist — the other half of what
+an applicant is asked for, and the half that costs trips rather than typing.
+
+### The building permit
+
+The catalogue entry was a faithful transcription of the checklist's fourteen
+lines. **The wizard was not.**
+
+| Finding | |
+|---|---|
+| **Proof of ownership was "Land Title"** | The checklist prints *"Certified True Copy of OCT/TCT"* with indented alternatives — deed of sale, deed of donation, lease contract, assignment of rights, *"or any valid proof of ownership"*. The app demanded a title, so **an applicant building on leased land or land taken by deed could not file at all** |
+| **No slot for the applicant's and owner's ID** | The checklist asks for *"Valid ID of Applicant and Owner of Lot"* on every application. The consent step collects the lot owner's ID, and only when the applicant is not the registered owner — a different question |
+| **Four documents were mandatory and are not on the checklist** | Tax declaration, real property tax receipt, bill of materials, barangay clearance. Each was a trip to another counter for a list the office does not keep |
+
+All four unlisted documents keep their slots and are simply no longer required
+— an evaluator may still ask, and an applicant who has one should be able to
+send it. The tax declaration's label now says the more useful thing: that it
+can serve as the proof of ownership.
+
+`landTitleUpload` keeps its field name so drafts saved before today still
+restore. The name is now slightly wrong and the storage key is right, which is
+the trade this repository settled on when the building permit's ID fields were
+renamed: **a snapshot key is a compatibility surface.**
+
+### What that means for the ancillary permits
+
+The checklist treats them as **one submission**: *"Building permit & Ancillary
+Forms — 4 Copies"*, with the nine ancillary forms listed under it, and the
+documentary requirements above shared across the lot. So there is no separate
+ancillary document list to audit against — which is itself the finding, and it
+is why the catalogue's ancillary entries cite national law rather than a
+Castilla checklist that does not exist for them.

@@ -412,7 +412,7 @@ void main() {
 
       // Property Documents starts expanded; its uploads are immediately
       // usable without needing to tap anything first.
-      expect(find.text('Land Title'), findsOneWidget);
+      expect(find.text('Proof of ownership'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'Upload'), findsWidgets);
 
       // Toggling a collapsed section open and shut again shouldn't throw
@@ -553,7 +553,7 @@ void main() {
     await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
     await tester.pumpAndSettle();
     expect(find.text('Step 7 of 9'), findsOneWidget);
-    expect(find.text('Land Title'), findsOneWidget);
+    expect(find.text('Proof of ownership'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
     await tester.pumpAndSettle();

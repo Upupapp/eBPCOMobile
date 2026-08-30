@@ -160,7 +160,15 @@ import 'package:ebpco_user_app/features/applications/presentation/fsic_clearance
 const _expected = <String, int>{
   'addition_extension_permit': 36,
   'architectural_permit': 29,
-  'building_permit': 22,
+  // 22 until 31 August 2026. The checklist audit added the applicant-and-owner
+  // ID the step had no slot for; four others became optional rather than being
+  // removed, so they still render and still count.
+  'building_permit': 23,
+  // Still 13 after the 31 August rewrite against Castilla's own occupancy
+  // checklist — six slots added and five removed happens to net out at the
+  // same count, which is exactly why a census counts and does not compare
+  // names. What changed is asserted by name in
+  // `test/architecture/occupancy_requirements_test.dart`.
   'certificate_of_occupancy': 13,
   'zoning_clearance': 16,
   'fsec_clearance': 9,

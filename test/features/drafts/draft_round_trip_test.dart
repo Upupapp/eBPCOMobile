@@ -130,7 +130,7 @@ void main() {
       expect(after.draft!.professional.prcIdUpload, isNull);
       expect(after.documentsToReattach, [
         'PRC ID of the professional in charge',
-        'Land Title',
+        'Proof of ownership',
         'Plans',
       ]);
       expect(

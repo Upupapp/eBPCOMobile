@@ -393,10 +393,43 @@ class ConsentAuthorization {
 /// professional documents) since this step represents the full annex
 /// checklist, not a shortcut back to those fields.
 class RequiredDocuments {
+  // Reconciled against Castilla's own `Building Permit Documentary
+  // Requirements` checklist on 31 August 2026 — the file this app has bundled
+  // all along, and which the catalogue entry for this permit already cited.
+  //
+  // The catalogue was a faithful transcription of it. This class was not: it
+  // made four documents mandatory that the checklist does not list at all, and
+  // it had no slot for one that it does.
+
   // Property Documents
+
+  /// The checklist's first line: *"Certified True Copy of OCT/TCT — 2 Copies"*,
+  /// with indented alternatives — Deed of Sale, Deed of Donation, Lease
+  /// Contract, Assignment of Rights, *"or any valid proof of ownership"*.
+  ///
+  /// The field keeps its name so drafts saved before today still restore; what
+  /// changed is that the app no longer demands a title specifically. An
+  /// applicant building on leased land, or on land taken by deed, could not
+  /// file at all.
   DocumentModel? landTitleUpload;
+
+  /// Not on Castilla's checklist, and no longer required.
+  ///
+  /// It may serve as the *"any valid proof of ownership"* alternative above,
+  /// which is why the slot stays — but requiring it as well as a title asked
+  /// an applicant for a document the office does not ask for.
   DocumentModel? taxDeclarationUpload;
+
+  /// Not on Castilla's checklist. Optional since 31 August 2026.
   DocumentModel? realPropertyTaxReceiptUpload;
+
+  /// The checklist's *"Valid ID of Applicant and Owner of Lot"*.
+  ///
+  /// Had no slot in this step at all. The consent step collects the lot
+  /// owner's ID when the applicant is not the registered owner, which is a
+  /// different question — the checklist wants both people's identification on
+  /// every application.
+  DocumentModel? validIdOfApplicantAndOwnerUpload;
 
   // Technical Documents
   DocumentModel? plansUpload;
@@ -434,17 +467,22 @@ class RequiredDocuments {
   /// collects.
   DocumentModel? unifiedApplicationFormUpload;
 
+  /// The fourteen lines Castilla's checklist prints, and only those.
+  ///
+  /// Four documents were required here and appear nowhere on it — the tax
+  /// declaration, the real property tax receipt, the bill of materials and the
+  /// barangay clearance. Each was a trip to another counter for a list the
+  /// office does not keep, and each is optional now rather than removed: an
+  /// evaluator may still ask, and an applicant who has one should be able to
+  /// send it.
   bool get isValid =>
       landTitleUpload != null &&
-      taxDeclarationUpload != null &&
-      realPropertyTaxReceiptUpload != null &&
+      validIdOfApplicantAndOwnerUpload != null &&
       plansUpload != null &&
       specificationsUpload != null &&
-      billOfMaterialsUpload != null &&
       prcIdChecklistUpload != null &&
       ptrChecklistUpload != null &&
       signedFormsUpload != null &&
-      barangayClearanceUpload != null &&
       zoningClearanceUpload != null &&
       fireRelatedRequirementsUpload != null &&
       surveyPlanUpload != null &&

@@ -29,7 +29,7 @@ late Directory storage;
 
 DocumentModel _attachment(String name, {String? absolutePath}) => DocumentModel(
   id: 'doc-$name',
-  label: 'Land Title',
+  label: 'Proof of ownership',
   fileName: '$name.pdf',
   uploadedAt: DateTime(2026, 8, 30),
   fileSizeBytes: 9,
@@ -74,7 +74,7 @@ void main() {
       final restored = after.draft!.requiredDocuments.landTitleUpload;
       expect(restored, isNotNull, reason: 'the file was still there');
       expect(restored!.fileName, 'land-title.pdf');
-      expect(restored.label, 'Land Title');
+      expect(restored.label, 'Proof of ownership');
       expect(restored.fileSizeBytes, 9);
       expect(File(restored.filePath!).existsSync(), isTrue);
       expect(
@@ -146,7 +146,7 @@ void main() {
       final after = BuildingPermitProvider(persistence: persistence);
       await after.restoreFromStore();
       expect(after.draft!.requiredDocuments.landTitleUpload, isNull);
-      expect(after.documentsToReattach, ['Land Title']);
+      expect(after.documentsToReattach, ['Proof of ownership']);
       outside.deleteSync(recursive: true);
     });
 
@@ -167,10 +167,10 @@ void main() {
       final after = BuildingPermitProvider(persistence: persistence);
       await after.restoreFromStore();
       expect(after.draft!.requiredDocuments.landTitleUpload, isNull);
-      expect(after.documentsToReattach, ['Land Title']);
+      expect(after.documentsToReattach, ['Proof of ownership']);
       expect(
         after.draftSummary!.documentsToReattach,
-        ['Land Title'],
+        ['Proof of ownership'],
         reason: 'and it reaches the Drafts row, which is where they will look',
       );
     });
@@ -196,7 +196,7 @@ void main() {
         step: 0,
       );
       expect(snapshot.fields['requiredDocuments.landTitleUpload'], isNull);
-      expect(snapshot.detachedDocuments, contains('Land Title'));
+      expect(snapshot.detachedDocuments, contains('Proof of ownership'));
     });
   });
 }

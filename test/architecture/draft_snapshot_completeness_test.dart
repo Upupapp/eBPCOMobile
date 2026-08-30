@@ -330,10 +330,12 @@ void main() {
     expect(building.length, greaterThan(70));
     expect(
       building.values.where((isDocument) => isDocument).length,
-      24,
+      25,
       reason:
-          'the Building Permit carries 24 attachment slots. If this changed, '
-          'the re-attach list an applicant is shown changed with it',
+          'the Building Permit carries 25 attachment slots — 24 until 31 '
+          'August 2026, when the checklist audit added the applicant-and-owner '
+          'ID it had no slot for. If this changed, the re-attach list an '
+          'applicant is shown changed with it',
     );
     expect(building['applicant.firstName'], isFalse);
     expect(building['requiredDocuments.landTitleUpload'], isTrue);

@@ -186,7 +186,12 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
     out.document(
       'requiredDocuments.landTitleUpload',
       documents.landTitleUpload,
-      'Land Title',
+      'Proof of ownership',
+    );
+    out.document(
+      'requiredDocuments.validIdOfApplicantAndOwnerUpload',
+      documents.validIdOfApplicantAndOwnerUpload,
+      'Valid ID of Applicant and Owner of Lot',
     );
     out.document(
       'requiredDocuments.taxDeclarationUpload',
@@ -472,6 +477,9 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
     );
     draft.requiredDocuments.landTitleUpload = input.document(
       'requiredDocuments.landTitleUpload',
+    );
+    draft.requiredDocuments.validIdOfApplicantAndOwnerUpload = input.document(
+      'requiredDocuments.validIdOfApplicantAndOwnerUpload',
     );
     draft.requiredDocuments.taxDeclarationUpload = input.document(
       'requiredDocuments.taxDeclarationUpload',

@@ -37,10 +37,14 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
     required String label,
     required DocumentModel? Function() getDocument,
     required void Function(DocumentModel?) setDocument,
+    bool isRequired = true,
+    String? statusLabel,
   }) {
     final document = getDocument();
     return DocumentUploadTile(
       label: label,
+      isRequired: isRequired,
+      statusLabel: statusLabel,
       document: document,
       allowReplace: true,
       onUpload: () async {
@@ -90,18 +94,37 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                   setDocument: (d) =>
                       _documents.unifiedApplicationFormUpload = d,
                 ),
+                // The checklist's first line, with its own alternatives. The
+                // app demanded a title specifically, so an applicant building
+                // on leased land or land taken by deed could not file at all.
                 _uploadTile(
-                  label: 'Land Title',
+                  label: 'Proof of ownership',
+                  statusLabel:
+                      'Required — Certified True Copy of the OCT/TCT, or a '
+                      'deed of sale, deed of donation, lease contract or '
+                      'assignment of rights',
                   getDocument: () => _documents.landTitleUpload,
                   setDocument: (d) => _documents.landTitleUpload = d,
                 ),
                 _uploadTile(
+                  label: 'Valid ID of Applicant and Owner of Lot',
+                  getDocument: () =>
+                      _documents.validIdOfApplicantAndOwnerUpload,
+                  setDocument: (d) =>
+                      _documents.validIdOfApplicantAndOwnerUpload = d,
+                ),
+                _uploadTile(
                   label: 'Tax Declaration',
+                  isRequired: false,
+                  statusLabel:
+                      'Optional — or use it as your proof of ownership',
                   getDocument: () => _documents.taxDeclarationUpload,
                   setDocument: (d) => _documents.taxDeclarationUpload = d,
                 ),
                 _uploadTile(
                   label: 'Real Property Tax Receipt',
+                  isRequired: false,
+                  statusLabel: 'Optional — not on the office’s checklist',
                   getDocument: () => _documents.realPropertyTaxReceiptUpload,
                   setDocument: (d) =>
                       _documents.realPropertyTaxReceiptUpload = d,
@@ -146,6 +169,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
                 ),
                 _uploadTile(
                   label: 'Bill of Materials',
+                  isRequired: false,
+                  statusLabel: 'Optional — not on the office’s checklist',
                   getDocument: () => _documents.billOfMaterialsUpload,
                   setDocument: (d) => _documents.billOfMaterialsUpload = d,
                 ),
@@ -178,6 +203,8 @@ class _Step7RequiredDocumentsState extends State<Step7RequiredDocuments> {
               children: [
                 _uploadTile(
                   label: 'Barangay Clearance',
+                  isRequired: false,
+                  statusLabel: 'Optional — not on the office’s checklist',
                   getDocument: () => _documents.barangayClearanceUpload,
                   setDocument: (d) => _documents.barangayClearanceUpload = d,
                 ),
