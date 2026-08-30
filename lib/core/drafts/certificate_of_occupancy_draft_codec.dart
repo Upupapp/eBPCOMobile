@@ -241,6 +241,41 @@ class CertificateOfOccupancyDraftCodec
     draft.projectDetails.dateOfCompletion = input.date(
       'projectDetails.dateOfCompletion',
     );
+    draft.requiredDocuments.asBuiltPlansUpload = input.document(
+      'requiredDocuments.asBuiltPlansUpload',
+    );
+    draft.requiredDocuments.constructionLogbookUpload = input.document(
+      'requiredDocuments.constructionLogbookUpload',
+    );
+    draft.requiredDocuments.civilWorksCertificateUpload = input.document(
+      'requiredDocuments.civilWorksCertificateUpload',
+    );
+    draft.requiredDocuments.electricalCertificateUpload = input.document(
+      'requiredDocuments.electricalCertificateUpload',
+    );
+    draft.requiredDocuments.landTitleOrTaxDeclarationUpload = input.document(
+      'requiredDocuments.landTitleOrTaxDeclarationUpload',
+    );
+    draft.requiredDocuments.barangayClearanceUpload = input.document(
+      'requiredDocuments.barangayClearanceUpload',
+    );
+    draft.requiredDocuments.locationalClearanceUpload = input.document(
+      'requiredDocuments.locationalClearanceUpload',
+    );
+    draft.requiredDocuments.validGovernmentIdUpload = input.document(
+      'requiredDocuments.validGovernmentIdUpload',
+    );
+    draft.requiredDocuments.fireSafetyInspectionCertificateUpload = input
+        .document('requiredDocuments.fireSafetyInspectionCertificateUpload');
+    draft.requiredDocuments.otherDisciplineCertificatesUpload = input.document(
+      'requiredDocuments.otherDisciplineCertificatesUpload',
+    );
+    draft.requiredDocuments.notarizedDocumentsUpload = input.document(
+      'requiredDocuments.notarizedDocumentsUpload',
+    );
+    draft.requiredDocuments.otherSupportingRequirementsUpload = input.document(
+      'requiredDocuments.otherSupportingRequirementsUpload',
+    );
     draft.requiredDocuments.otherDocuments
       ..clear()
       ..addAll([
@@ -248,7 +283,7 @@ class CertificateOfOccupancyDraftCodec
           OccupancyOtherDocument(
             name: row.string('name'),
             description: row.string('description'),
-          ),
+          )..file = row.document('file'),
       ]);
     draft.certification.submittedByName = input.string(
       'certification.submittedByName',
@@ -259,6 +294,9 @@ class CertificateOfOccupancyDraftCodec
     );
     draft.certification.ctcPlaceIssued = input.string(
       'certification.ctcPlaceIssued',
+    );
+    draft.certification.signedDocumentUpload = input.document(
+      'certification.signedDocumentUpload',
     );
     draft.declaration.certifiesInformationIsAccurate = input.boolean(
       'declaration.certifiesInformationIsAccurate',

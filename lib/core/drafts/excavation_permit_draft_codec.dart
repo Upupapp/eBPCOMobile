@@ -333,6 +333,18 @@ class ExcavationPermitDraftCodec extends DraftCodec<ExcavationPermitDraft> {
     draft.applicant.barangay = input.string('applicant.barangay');
     draft.applicant.city = input.string('applicant.city');
     draft.applicant.zipCode = input.string('applicant.zipCode');
+    draft.constructionLocation.landTitleOrTaxDeclarationUpload = input.document(
+      'constructionLocation.landTitleOrTaxDeclarationUpload',
+    );
+    draft.constructionLocation.barangayClearanceUpload = input.document(
+      'constructionLocation.barangayClearanceUpload',
+    );
+    draft.constructionLocation.locationalClearanceUpload = input.document(
+      'constructionLocation.locationalClearanceUpload',
+    );
+    draft.constructionLocation.validGovernmentIdUpload = input.document(
+      'constructionLocation.validGovernmentIdUpload',
+    );
     draft.constructionLocation.lotNumber = input.string(
       'constructionLocation.lotNumber',
     );
@@ -408,6 +420,12 @@ class ExcavationPermitDraftCodec extends DraftCodec<ExcavationPermitDraft> {
     draft.professionals.designProfessional.dateSigned = input.date(
       'professionals.designProfessional.dateSigned',
     );
+    draft.professionals.designSignedDocumentUpload = input.document(
+      'professionals.designSignedDocumentUpload',
+    );
+    draft.professionals.designPrcAndPtrUpload = input.document(
+      'professionals.designPrcAndPtrUpload',
+    );
     draft.professionals.supervisor.fullName = input.string(
       'professionals.supervisor.fullName',
     );
@@ -439,6 +457,9 @@ class ExcavationPermitDraftCodec extends DraftCodec<ExcavationPermitDraft> {
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
     );
+    draft.professionals.supervisorSignedDocumentUpload = input.document(
+      'professionals.supervisorSignedDocumentUpload',
+    );
     draft.ownerConsent.owner.printedName = input.string(
       'ownerConsent.owner.printedName',
     );
@@ -456,6 +477,9 @@ class ExcavationPermitDraftCodec extends DraftCodec<ExcavationPermitDraft> {
     );
     draft.ownerConsent.owner.dateSigned = input.date(
       'ownerConsent.owner.dateSigned',
+    );
+    draft.ownerConsent.ownerSignedDocumentUpload = input.document(
+      'ownerConsent.ownerSignedDocumentUpload',
     );
     draft.ownerConsent.isOwnerAlsoLotOwner = input.nullableBoolean(
       'ownerConsent.isOwnerAlsoLotOwner',
@@ -477,6 +501,9 @@ class ExcavationPermitDraftCodec extends DraftCodec<ExcavationPermitDraft> {
     );
     draft.ownerConsent.lotOwner.dateSigned = input.date(
       'ownerConsent.lotOwner.dateSigned',
+    );
+    draft.ownerConsent.lotOwnerSignedDocumentUpload = input.document(
+      'ownerConsent.lotOwnerSignedDocumentUpload',
     );
     draft.reviewDeclaration.certifiesInformationIsAccurate = input.boolean(
       'reviewDeclaration.certifiesInformationIsAccurate',

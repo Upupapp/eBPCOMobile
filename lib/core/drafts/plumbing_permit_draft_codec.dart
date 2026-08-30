@@ -952,6 +952,21 @@ class PlumbingPermitDraftCodec extends DraftCodec<PlumbingPermitDraft> {
     draft.professionals.designMasterPlumber.dateSigned = input.date(
       'professionals.designMasterPlumber.dateSigned',
     );
+    draft.professionals.designPrcIdUpload = input.document(
+      'professionals.designPrcIdUpload',
+    );
+    draft.professionals.designPtrDocumentUpload = input.document(
+      'professionals.designPtrDocumentUpload',
+    );
+    draft.professionals.signedSealedPlansUpload = input.document(
+      'professionals.signedSealedPlansUpload',
+    );
+    draft.professionals.signedSealedSpecificationsUpload = input.document(
+      'professionals.signedSealedSpecificationsUpload',
+    );
+    draft.professionals.signedPlumbingCalculationsUpload = input.document(
+      'professionals.signedPlumbingCalculationsUpload',
+    );
     draft.professionals.isSupervisorSameAsDesignMasterPlumber = input.boolean(
       'professionals.isSupervisorSameAsDesignMasterPlumber',
       fallback: true,
@@ -982,6 +997,15 @@ class PlumbingPermitDraftCodec extends DraftCodec<PlumbingPermitDraft> {
     );
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
+    );
+    draft.professionals.supervisorPrcIdUpload = input.document(
+      'professionals.supervisorPrcIdUpload',
+    );
+    draft.professionals.supervisorPtrUpload = input.document(
+      'professionals.supervisorPtrUpload',
+    );
+    draft.professionals.signedSupervisorConfirmationUpload = input.document(
+      'professionals.signedSupervisorConfirmationUpload',
     );
     draft.ownershipConsent.isApplicantBuildingOwner = input.nullableBoolean(
       'ownershipConsent.isApplicantBuildingOwner',
@@ -1018,6 +1042,168 @@ class PlumbingPermitDraftCodec extends DraftCodec<PlumbingPermitDraft> {
     );
     draft.ownershipConsent.lotOwner.ctcPlaceIssued = input.string(
       'ownershipConsent.lotOwner.ctcPlaceIssued',
+    );
+    draft.ownershipConsent.buildingOwnerValidIdUpload = input.document(
+      'ownershipConsent.buildingOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.lotOwnerValidIdUpload = input.document(
+      'ownershipConsent.lotOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.proofOfOwnershipUpload = input.document(
+      'ownershipConsent.proofOfOwnershipUpload',
+    );
+    draft.ownershipConsent.lotOwnerConsentUpload = input.document(
+      'ownershipConsent.lotOwnerConsentUpload',
+    );
+    draft.ownershipConsent.authorizationLetterUpload = input.document(
+      'ownershipConsent.authorizationLetterUpload',
+    );
+    draft.requiredDocuments.plumbingPlansUpload = input.document(
+      'requiredDocuments.plumbingPlansUpload',
+    );
+    draft.requiredDocuments.plumbingSpecificationsUpload = input.document(
+      'requiredDocuments.plumbingSpecificationsUpload',
+    );
+    draft.requiredDocuments.waterDistributionLayoutUpload = input.document(
+      'requiredDocuments.waterDistributionLayoutUpload',
+    );
+    draft.requiredDocuments.sewageLayoutCoreUpload = input.document(
+      'requiredDocuments.sewageLayoutCoreUpload',
+    );
+    draft.requiredDocuments.stormDrainageLayoutUpload = input.document(
+      'requiredDocuments.stormDrainageLayoutUpload',
+    );
+    draft.requiredDocuments.plumbingRiserDiagramUpload = input.document(
+      'requiredDocuments.plumbingRiserDiagramUpload',
+    );
+    draft.requiredDocuments.isometricDiagramUpload = input.document(
+      'requiredDocuments.isometricDiagramUpload',
+    );
+    draft.requiredDocuments.fixtureScheduleUpload = input.document(
+      'requiredDocuments.fixtureScheduleUpload',
+    );
+    draft.requiredDocuments.generalNotesUpload = input.document(
+      'requiredDocuments.generalNotesUpload',
+    );
+    draft.requiredDocuments.plumbingCalculationsUpload = input.document(
+      'requiredDocuments.plumbingCalculationsUpload',
+    );
+    draft.requiredDocuments.billOfMaterialsUpload = input.document(
+      'requiredDocuments.billOfMaterialsUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.quantityTakeoffUpload = input.document(
+      'requiredDocuments.quantityTakeoffUpload',
+    );
+    draft.requiredDocuments.pipeAndMaterialSpecificationsUpload = input
+        .document('requiredDocuments.pipeAndMaterialSpecificationsUpload');
+    draft.requiredDocuments.fixtureEquipmentSpecificationsUpload = input
+        .document('requiredDocuments.fixtureEquipmentSpecificationsUpload');
+    draft.requiredDocuments.waterDistributionPlanUpload = input.document(
+      'requiredDocuments.waterDistributionPlanUpload',
+    );
+    draft.requiredDocuments.waterDemandCalculationUpload = input.document(
+      'requiredDocuments.waterDemandCalculationUpload',
+    );
+    draft.requiredDocuments.pipeSizingCalculationUpload = input.document(
+      'requiredDocuments.pipeSizingCalculationUpload',
+    );
+    draft.requiredDocuments.waterMeterDetailsUpload = input.document(
+      'requiredDocuments.waterMeterDetailsUpload',
+    );
+    draft.requiredDocuments.pumpDetailsUpload = input.document(
+      'requiredDocuments.pumpDetailsUpload',
+    );
+    draft.requiredDocuments.waterStorageDetailsUpload = input.document(
+      'requiredDocuments.waterStorageDetailsUpload',
+    );
+    draft.requiredDocuments.providerCoordinationUpload = input.document(
+      'requiredDocuments.providerCoordinationUpload',
+    );
+    draft.requiredDocuments.sewageLayoutUpload = input.document(
+      'requiredDocuments.sewageLayoutUpload',
+    );
+    draft.requiredDocuments.wastewaterFlowCalculationUpload = input.document(
+      'requiredDocuments.wastewaterFlowCalculationUpload',
+    );
+    draft.requiredDocuments.sewerPipeSizingCalculationUpload = input.document(
+      'requiredDocuments.sewerPipeSizingCalculationUpload',
+    );
+    draft.requiredDocuments.sewerConnectionDetailsUpload = input.document(
+      'requiredDocuments.sewerConnectionDetailsUpload',
+    );
+    draft.requiredDocuments.receivingSystemCoordinationUpload = input.document(
+      'requiredDocuments.receivingSystemCoordinationUpload',
+    );
+    draft.requiredDocuments.septicTankPlanUpload = input.document(
+      'requiredDocuments.septicTankPlanUpload',
+    );
+    draft.requiredDocuments.septicTankDetailsUpload = input.document(
+      'requiredDocuments.septicTankDetailsUpload',
+    );
+    draft.requiredDocuments.septicCapacityCalculationUpload = input.document(
+      'requiredDocuments.septicCapacityCalculationUpload',
+    );
+    draft.requiredDocuments.septicEffluentDisposalPlanUpload = input.document(
+      'requiredDocuments.septicEffluentDisposalPlanUpload',
+    );
+    draft.requiredDocuments.septicMaintenanceAccessDetailsUpload = input
+        .document('requiredDocuments.septicMaintenanceAccessDetailsUpload');
+    draft.requiredDocuments.stormDrainagePlanUpload = input.document(
+      'requiredDocuments.stormDrainagePlanUpload',
+    );
+    draft.requiredDocuments.drainageCalculationUpload = input.document(
+      'requiredDocuments.drainageCalculationUpload',
+    );
+    draft.requiredDocuments.roofDrainDownspoutLayoutUpload = input.document(
+      'requiredDocuments.roofDrainDownspoutLayoutUpload',
+    );
+    draft.requiredDocuments.catchBasinDetailsUpload = input.document(
+      'requiredDocuments.catchBasinDetailsUpload',
+    );
+    draft.requiredDocuments.stormDischargeDetailsUpload = input.document(
+      'requiredDocuments.stormDischargeDetailsUpload',
+    );
+    draft.requiredDocuments.stormClearanceCoordinationUpload = input.document(
+      'requiredDocuments.stormClearanceCoordinationUpload',
+    );
+    draft.requiredDocuments.swimmingPoolPlumbingPlanUpload = input.document(
+      'requiredDocuments.swimmingPoolPlumbingPlanUpload',
+    );
+    draft.requiredDocuments.greaseTrapDetailsUpload = input.document(
+      'requiredDocuments.greaseTrapDetailsUpload',
+    );
+    draft.requiredDocuments.waterTankReservoirDetailsUpload = input.document(
+      'requiredDocuments.waterTankReservoirDetailsUpload',
+    );
+    draft.requiredDocuments.laboratoryPlumbingDetailsUpload = input.document(
+      'requiredDocuments.laboratoryPlumbingDetailsUpload',
+    );
+    draft.requiredDocuments.dentalPlumbingDetailsUpload = input.document(
+      'requiredDocuments.dentalPlumbingDetailsUpload',
+    );
+    draft.requiredDocuments.specializedFixtureDetailsUpload = input.document(
+      'requiredDocuments.specializedFixtureDetailsUpload',
+    );
+    draft.requiredDocuments.relatedBuildingPermitUpload = input.document(
+      'requiredDocuments.relatedBuildingPermitUpload',
+    );
+    draft.requiredDocuments.existingPlumbingPermitUpload = input.document(
+      'requiredDocuments.existingPlumbingPermitUpload',
+    );
+    draft.requiredDocuments.waterProviderCoordinationUpload = input.document(
+      'requiredDocuments.waterProviderCoordinationUpload',
+    );
+    draft.requiredDocuments.sewerProviderCoordinationUpload = input.document(
+      'requiredDocuments.sewerProviderCoordinationUpload',
+    );
+    draft.requiredDocuments.siteOrUtilityPlanUpload = input.document(
+      'requiredDocuments.siteOrUtilityPlanUpload',
+    );
+    draft.requiredDocuments.otherPlumbingDocumentsUpload = input.document(
+      'requiredDocuments.otherPlumbingDocumentsUpload',
     );
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',

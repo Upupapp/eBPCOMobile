@@ -1,4 +1,5 @@
 import '../models/document_model.dart';
+import '../services/document_storage_service.dart';
 
 /// A wizard draft reduced to the part that can honestly be written to disk.
 ///
@@ -165,12 +166,46 @@ class SnapshotWriter {
   void rows(String path, List<SnapshotWriter> rows) =>
       fields[path] = [for (final row in rows) row.fields];
 
-  /// Records that a slot held a file, and drops the file.
+  /// Keeps an attachment if its bytes are somewhere durable, and records it
+  /// as lost if they are not.
   ///
-  /// [label] is what the applicant will be asked to re-attach, so it must read
-  /// as the document's name — "Land Title", not "landTitleUpload".
+  /// **This used to drop every attachment**, and the reason was sound at the
+  /// time: a `DocumentModel` carried a path into a file the picker had left in
+  /// a temporary container the OS may reclaim, and persisting such a reference
+  /// gives a draft that claims to hold a document it cannot open.
+  ///
+  /// Two things changed on 30 August 2026. Picked attachments are now copied
+  /// into the app's own storage the moment they are chosen, so the bytes
+  /// survive. And what is stored is the file's NAME rather than its path,
+  /// because an absolute path into the app's container is not stable across an
+  /// app update even though the file is.
+  ///
+  /// So: a file inside our storage is kept, by name. Anything else is dropped
+  /// and named for the applicant to attach again — [label] must therefore read
+  /// as the document's name, "Land Title", not "landTitleUpload".
   void document(String path, DocumentModel? value, String label) {
-    if (value != null) detachedDocuments.add(label);
+    if (value == null) {
+      fields[path] = null;
+      return;
+    }
+    final storedName = DocumentStorageService.storedNameOf(value.filePath);
+    if (storedName == null) {
+      // Bytes we cannot vouch for: a fabricated attachment with no file, or a
+      // picker path from before attachments were copied.
+      fields[path] = null;
+      detachedDocuments.add(label);
+      return;
+    }
+    fields[path] = {
+      'id': value.id,
+      'label': value.label,
+      'fileName': value.fileName,
+      'storedName': storedName,
+      'uploadedAt': value.uploadedAt.toIso8601String(),
+      'fileSizeBytes': value.fileSizeBytes,
+      // Carried so the reader can name it if the file has gone missing since.
+      'slotLabel': label,
+    };
   }
 }
 
@@ -181,9 +216,25 @@ class SnapshotWriter {
 /// still understands instead of failing whole — the applicant's alternative is
 /// losing everything, which is the defect this class exists to end.
 class SnapshotReader {
-  const SnapshotReader(this._fields);
+  SnapshotReader(this._fields) : unresolvedDocuments = [];
+
+  /// A row inside a collection, sharing the parent's unresolved list.
+  ///
+  /// Without the sharing, an attachment held inside a repeated record — the
+  /// demolition permit's per-utility disconnection proof, the applicant's own
+  /// extra documents on a Certificate of Occupancy — would go missing without
+  /// anyone being told, which is the one outcome this design refuses.
+  SnapshotReader._row(this._fields, this.unresolvedDocuments);
 
   final Map<String, Object?> _fields;
+
+  /// Attachments this snapshot held and could not give back.
+  ///
+  /// Filled as [document] is called, so it reflects the state of the device
+  /// NOW rather than at save time — a file present when the draft was saved
+  /// and cleared since is named here, which is the case a capture-time list
+  /// gets wrong.
+  final List<String> unresolvedDocuments;
 
   bool has(String path) => _fields.containsKey(path);
 
@@ -240,8 +291,46 @@ class SnapshotReader {
     if (raw is! List) return const [];
     return [
       for (final row in raw)
-        if (row is Map) SnapshotReader(Map<String, Object?>.from(row)),
+        if (row is Map)
+          SnapshotReader._row(
+            Map<String, Object?>.from(row),
+            unresolvedDocuments,
+          ),
     ];
+  }
+
+  /// An attachment, if its file is still where the snapshot said.
+  ///
+  /// Null when the record is absent — the attachment was never kept — or when
+  /// the file has gone. In the second case the slot's label is added to
+  /// [unresolvedDocuments], because an applicant whose document vanished
+  /// between saving and resuming is owed the same sentence as one whose
+  /// attachment was never persisted.
+  DocumentModel? document(String path) {
+    final raw = _fields[path];
+    if (raw is! Map) return null;
+    final record = Map<String, Object?>.from(raw);
+    final resolved = DocumentStorageService.resolveStoredName(
+      record['storedName'] as String?,
+    );
+    if (resolved == null) {
+      final label = record['slotLabel'] ?? record['label'];
+      if (label is String) unresolvedDocuments.add(label);
+      return null;
+    }
+    return DocumentModel(
+      id: record['id'] is String ? record['id'] as String : path,
+      label: record['label'] is String ? record['label'] as String : '',
+      fileName: record['fileName'] is String
+          ? record['fileName'] as String
+          : '',
+      uploadedAt:
+          DateTime.tryParse('${record['uploadedAt']}') ?? DateTime.now(),
+      fileSizeBytes: record['fileSizeBytes'] is int
+          ? record['fileSizeBytes'] as int
+          : null,
+      filePath: resolved,
+    );
   }
 
   T? enumValue<T extends Enum>(String path, List<T> values) {

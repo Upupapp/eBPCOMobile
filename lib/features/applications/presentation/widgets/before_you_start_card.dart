@@ -13,15 +13,16 @@ class BeforeYouStartCard extends StatelessWidget {
     'Prepare all required documents and information.',
     'Ensure all details are accurate and complete.',
     // Narrowed 29 August 2026, when nothing was written to disk and every
-    // draft died with the process; widened again 30 August, when M-48 made
-    // all nineteen wizards persist. It says what is true of the new
-    // behaviour AND what is not: the typing survives, the files do not,
-    // because a picked file's path is not reliably readable after a
-    // restart. Gated both ways by honest_assurances_test — the promise may
-    // not come back without the caveat that makes it true.
+    // draft died with the process. Widened 30 August when all nineteen
+    // wizards began to persist, with the caveat that files were not kept —
+    // a picked file's path was not reliably readable after a restart.
+    // Widened again the same day, once attachments were copied into the
+    // app's own storage and stored by NAME rather than by path: they are
+    // kept now, and the draft names anything it cannot give back. Gated
+    // both ways by honest_assurances_test.
     'You can save your progress as a draft and come back to it later, '
-        'even after closing the app. Attached files are not kept — you '
-        'will be asked to attach them again.',
+        'even after closing the app. Your attached files are kept too — if '
+        'any are missing when you return, the draft will say which.',
     'Forms must be signed by a licensed engineer before submission.',
   ];
 

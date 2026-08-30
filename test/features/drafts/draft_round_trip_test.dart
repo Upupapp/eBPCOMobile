@@ -108,7 +108,11 @@ void main() {
       expect(after.draft!.applicant.firstName, '');
     });
 
-    test('attachments are dropped and named back to the applicant', () async {
+    test('with no storage root, attachments are dropped and named', () async {
+      // The pre-30-August behaviour, and still what happens for a file
+      // outside the app's own storage. `DocumentStorageService.root` is null
+      // here because no test primes it; the boundary itself is held in
+      // `draft_attachments_test.dart`.
       final before = BuildingPermitProvider(persistence: persistence);
       final draft = before.startNew();
       draft.requiredDocuments

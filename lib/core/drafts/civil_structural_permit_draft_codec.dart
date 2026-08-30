@@ -836,6 +836,21 @@ class CivilStructuralPermitDraftCodec
     draft.professionals.designEngineer.dateSigned = input.date(
       'professionals.designEngineer.dateSigned',
     );
+    draft.professionals.designPrcIdUpload = input.document(
+      'professionals.designPrcIdUpload',
+    );
+    draft.professionals.designPtrDocumentUpload = input.document(
+      'professionals.designPtrDocumentUpload',
+    );
+    draft.professionals.signedSealedPlansUpload = input.document(
+      'professionals.signedSealedPlansUpload',
+    );
+    draft.professionals.signedSealedComputationsUpload = input.document(
+      'professionals.signedSealedComputationsUpload',
+    );
+    draft.professionals.signedSealedSpecificationsUpload = input.document(
+      'professionals.signedSealedSpecificationsUpload',
+    );
     draft.professionals.isSupervisorSameAsDesignEngineer = input.boolean(
       'professionals.isSupervisorSameAsDesignEngineer',
       fallback: true,
@@ -870,6 +885,15 @@ class CivilStructuralPermitDraftCodec
     );
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
+    );
+    draft.professionals.supervisorPrcIdUpload = input.document(
+      'professionals.supervisorPrcIdUpload',
+    );
+    draft.professionals.supervisorPtrUpload = input.document(
+      'professionals.supervisorPtrUpload',
+    );
+    draft.professionals.signedSupervisorConfirmationUpload = input.document(
+      'professionals.signedSupervisorConfirmationUpload',
     );
     draft.ownershipConsent.isApplicantBuildingOwner = input.nullableBoolean(
       'ownershipConsent.isApplicantBuildingOwner',
@@ -907,6 +931,159 @@ class CivilStructuralPermitDraftCodec
     draft.ownershipConsent.lotOwner.ctcPlaceIssued = input.string(
       'ownershipConsent.lotOwner.ctcPlaceIssued',
     );
+    draft.ownershipConsent.buildingOwnerValidIdUpload = input.document(
+      'ownershipConsent.buildingOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.lotOwnerValidIdUpload = input.document(
+      'ownershipConsent.lotOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.proofOfOwnershipUpload = input.document(
+      'ownershipConsent.proofOfOwnershipUpload',
+    );
+    draft.ownershipConsent.lotOwnerConsentUpload = input.document(
+      'ownershipConsent.lotOwnerConsentUpload',
+    );
+    draft.ownershipConsent.authorizationLetterUpload = input.document(
+      'ownershipConsent.authorizationLetterUpload',
+    );
+    draft.requiredDocuments.structuralAnalysisUpload = input.document(
+      'requiredDocuments.structuralAnalysisUpload',
+    );
+    draft.requiredDocuments.generalNotesUpload = input.document(
+      'requiredDocuments.generalNotesUpload',
+    );
+    draft.requiredDocuments.billOfMaterialsUpload = input.document(
+      'requiredDocuments.billOfMaterialsUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.quantityTakeoffUpload = input.document(
+      'requiredDocuments.quantityTakeoffUpload',
+    );
+    draft.requiredDocuments.materialSpecificationsUpload = input.document(
+      'requiredDocuments.materialSpecificationsUpload',
+    );
+    draft.requiredDocuments.stakingPlanUpload = input.document(
+      'requiredDocuments.stakingPlanUpload',
+    );
+    draft.requiredDocuments.surveyReferenceUpload = input.document(
+      'requiredDocuments.surveyReferenceUpload',
+    );
+    draft.requiredDocuments.excavationPlanUpload = input.document(
+      'requiredDocuments.excavationPlanUpload',
+    );
+    draft.requiredDocuments.excavationSafetyPlanUpload = input.document(
+      'requiredDocuments.excavationSafetyPlanUpload',
+    );
+    draft.requiredDocuments.soilStabilizationPlanUpload = input.document(
+      'requiredDocuments.soilStabilizationPlanUpload',
+    );
+    draft.requiredDocuments.geotechnicalRecommendationUpload = input.document(
+      'requiredDocuments.geotechnicalRecommendationUpload',
+    );
+    draft.requiredDocuments.pilingLayoutUpload = input.document(
+      'requiredDocuments.pilingLayoutUpload',
+    );
+    draft.requiredDocuments.pileDesignCalculationsUpload = input.document(
+      'requiredDocuments.pileDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.pileTestingProgramUpload = input.document(
+      'requiredDocuments.pileTestingProgramUpload',
+    );
+    draft.requiredDocuments.foundationPlanUpload = input.document(
+      'requiredDocuments.foundationPlanUpload',
+    );
+    draft.requiredDocuments.foundationDesignCalculationsUpload = input.document(
+      'requiredDocuments.foundationDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.erectionPlanUpload = input.document(
+      'requiredDocuments.erectionPlanUpload',
+    );
+    draft.requiredDocuments.liftingPlanUpload = input.document(
+      'requiredDocuments.liftingPlanUpload',
+    );
+    draft.requiredDocuments.temporarySupportPlanUpload = input.document(
+      'requiredDocuments.temporarySupportPlanUpload',
+    );
+    draft.requiredDocuments.concreteFramingPlansUpload = input.document(
+      'requiredDocuments.concreteFramingPlansUpload',
+    );
+    draft.requiredDocuments.concreteDesignCalculationsUpload = input.document(
+      'requiredDocuments.concreteDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.concreteMaterialSpecificationsUpload = input
+        .document('requiredDocuments.concreteMaterialSpecificationsUpload');
+    draft.requiredDocuments.structuralSteelPlansUpload = input.document(
+      'requiredDocuments.structuralSteelPlansUpload',
+    );
+    draft.requiredDocuments.connectionDetailsUpload = input.document(
+      'requiredDocuments.connectionDetailsUpload',
+    );
+    draft.requiredDocuments.steelDesignCalculationsUpload = input.document(
+      'requiredDocuments.steelDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.slabPlansUpload = input.document(
+      'requiredDocuments.slabPlansUpload',
+    );
+    draft.requiredDocuments.slabReinforcementDetailsUpload = input.document(
+      'requiredDocuments.slabReinforcementDetailsUpload',
+    );
+    draft.requiredDocuments.structuralWallPlansUpload = input.document(
+      'requiredDocuments.structuralWallPlansUpload',
+    );
+    draft.requiredDocuments.wallReinforcementDetailsUpload = input.document(
+      'requiredDocuments.wallReinforcementDetailsUpload',
+    );
+    draft.requiredDocuments.prestressingDesignUpload = input.document(
+      'requiredDocuments.prestressingDesignUpload',
+    );
+    draft.requiredDocuments.prestressingProcedureUpload = input.document(
+      'requiredDocuments.prestressingProcedureUpload',
+    );
+    draft.requiredDocuments.tendonLayoutUpload = input.document(
+      'requiredDocuments.tendonLayoutUpload',
+    );
+    draft.requiredDocuments.materialTestingProgramUpload = input.document(
+      'requiredDocuments.materialTestingProgramUpload',
+    );
+    draft.requiredDocuments.testingLaboratoryCredentialsUpload = input.document(
+      'requiredDocuments.testingLaboratoryCredentialsUpload',
+    );
+    draft.requiredDocuments.testReportsUpload = input.document(
+      'requiredDocuments.testReportsUpload',
+    );
+    draft.requiredDocuments.towerPlansUpload = input.document(
+      'requiredDocuments.towerPlansUpload',
+    );
+    draft.requiredDocuments.towerDesignCalculationsUpload = input.document(
+      'requiredDocuments.towerDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.towerFoundationDetailsUpload = input.document(
+      'requiredDocuments.towerFoundationDetailsUpload',
+    );
+    draft.requiredDocuments.tankStructuralPlansUpload = input.document(
+      'requiredDocuments.tankStructuralPlansUpload',
+    );
+    draft.requiredDocuments.tankDesignCalculationsUpload = input.document(
+      'requiredDocuments.tankDesignCalculationsUpload',
+    );
+    draft.requiredDocuments.tankFoundationDetailsUpload = input.document(
+      'requiredDocuments.tankFoundationDetailsUpload',
+    );
+    draft.requiredDocuments.relatedBuildingPermitUpload = input.document(
+      'requiredDocuments.relatedBuildingPermitUpload',
+    );
+    draft.requiredDocuments.geotechnicalOrSoilInvestigationUpload = input
+        .document('requiredDocuments.geotechnicalOrSoilInvestigationUpload');
+    draft.requiredDocuments.siteSurveyUpload = input.document(
+      'requiredDocuments.siteSurveyUpload',
+    );
+    draft.requiredDocuments.materialTestResultsUpload = input.document(
+      'requiredDocuments.materialTestResultsUpload',
+    );
+    draft.requiredDocuments.otherCivilStructuralDocumentsUpload = input
+        .document('requiredDocuments.otherCivilStructuralDocumentsUpload');
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',
     );

@@ -640,6 +640,18 @@ class ArchitecturalPermitDraftCodec
     draft.professionals.designArchitect.dateSigned = input.date(
       'professionals.designArchitect.dateSigned',
     );
+    draft.professionals.designPrcIdUpload = input.document(
+      'professionals.designPrcIdUpload',
+    );
+    draft.professionals.designPtrDocumentUpload = input.document(
+      'professionals.designPtrDocumentUpload',
+    );
+    draft.professionals.signedSealedPlansUpload = input.document(
+      'professionals.signedSealedPlansUpload',
+    );
+    draft.professionals.signedSealedSpecificationsUpload = input.document(
+      'professionals.signedSealedSpecificationsUpload',
+    );
     draft.professionals.isSupervisorSameAsDesignArchitect = input.boolean(
       'professionals.isSupervisorSameAsDesignArchitect',
       fallback: true,
@@ -670,6 +682,15 @@ class ArchitecturalPermitDraftCodec
     );
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
+    );
+    draft.professionals.supervisorPrcIdUpload = input.document(
+      'professionals.supervisorPrcIdUpload',
+    );
+    draft.professionals.supervisorPtrUpload = input.document(
+      'professionals.supervisorPtrUpload',
+    );
+    draft.professionals.signedSupervisorConfirmationUpload = input.document(
+      'professionals.signedSupervisorConfirmationUpload',
     );
     draft.ownershipConsent.isApplicantBuildingOwner = input.nullableBoolean(
       'ownershipConsent.isApplicantBuildingOwner',
@@ -706,6 +727,78 @@ class ArchitecturalPermitDraftCodec
     );
     draft.ownershipConsent.lotOwner.ctcPlaceIssued = input.string(
       'ownershipConsent.lotOwner.ctcPlaceIssued',
+    );
+    draft.ownershipConsent.buildingOwnerValidIdUpload = input.document(
+      'ownershipConsent.buildingOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.lotOwnerValidIdUpload = input.document(
+      'ownershipConsent.lotOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.proofOfOwnershipUpload = input.document(
+      'ownershipConsent.proofOfOwnershipUpload',
+    );
+    draft.ownershipConsent.lotOwnerConsentUpload = input.document(
+      'ownershipConsent.lotOwnerConsentUpload',
+    );
+    draft.ownershipConsent.authorizationLetterUpload = input.document(
+      'ownershipConsent.authorizationLetterUpload',
+    );
+    draft.requiredDocuments.vicinityMapUpload = input.document(
+      'requiredDocuments.vicinityMapUpload',
+    );
+    draft.requiredDocuments.siteDevelopmentPlanUpload = input.document(
+      'requiredDocuments.siteDevelopmentPlanUpload',
+    );
+    draft.requiredDocuments.perspectiveUpload = input.document(
+      'requiredDocuments.perspectiveUpload',
+    );
+    draft.requiredDocuments.floorPlansUpload = input.document(
+      'requiredDocuments.floorPlansUpload',
+    );
+    draft.requiredDocuments.elevationsUpload = input.document(
+      'requiredDocuments.elevationsUpload',
+    );
+    draft.requiredDocuments.sectionsUpload = input.document(
+      'requiredDocuments.sectionsUpload',
+    );
+    draft.requiredDocuments.ceilingPlansUpload = input.document(
+      'requiredDocuments.ceilingPlansUpload',
+    );
+    draft.requiredDocuments.rampDetailsUpload = input.document(
+      'requiredDocuments.rampDetailsUpload',
+    );
+    draft.requiredDocuments.accessibleParkingDetailsUpload = input.document(
+      'requiredDocuments.accessibleParkingDetailsUpload',
+    );
+    draft.requiredDocuments.stairDetailsUpload = input.document(
+      'requiredDocuments.stairDetailsUpload',
+    );
+    draft.requiredDocuments.fireEscapeDetailsUpload = input.document(
+      'requiredDocuments.fireEscapeDetailsUpload',
+    );
+    draft.requiredDocuments.cabinetPartitionDetailsUpload = input.document(
+      'requiredDocuments.cabinetPartitionDetailsUpload',
+    );
+    draft.requiredDocuments.doorWindowScheduleUpload = input.document(
+      'requiredDocuments.doorWindowScheduleUpload',
+    );
+    draft.requiredDocuments.floorFinishScheduleUpload = input.document(
+      'requiredDocuments.floorFinishScheduleUpload',
+    );
+    draft.requiredDocuments.ceilingFinishScheduleUpload = input.document(
+      'requiredDocuments.ceilingFinishScheduleUpload',
+    );
+    draft.requiredDocuments.wallFinishScheduleUpload = input.document(
+      'requiredDocuments.wallFinishScheduleUpload',
+    );
+    draft.requiredDocuments.architecturalInteriorUpload = input.document(
+      'requiredDocuments.architecturalInteriorUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.otherArchitecturalDocumentsUpload = input.document(
+      'requiredDocuments.otherArchitecturalDocumentsUpload',
     );
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',

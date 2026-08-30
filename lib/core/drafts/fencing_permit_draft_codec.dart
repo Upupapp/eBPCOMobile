@@ -332,5 +332,33 @@ class FencingPermitDraftCodec extends DraftCodec<FencingPermitDraft> {
     // a restored draft is always a draft.
     draft.status = FencingPermitDraftStatus.draft;
     draft.lastSavedAt = input.date('lastSavedAt');
+
+    // Attachments, kept since 30 August 2026. Null when the file has gone —
+    // the reader names it for the applicant in that case, so a document
+    // cleared between saving and resuming is not silently missing.
+    draft.constructionLocation.landTitleOrTaxDeclarationUpload = input.document(
+      'constructionLocation.landTitleOrTaxDeclarationUpload',
+    );
+    draft.constructionLocation.barangayClearanceUpload = input.document(
+      'constructionLocation.barangayClearanceUpload',
+    );
+    draft.constructionLocation.locationalClearanceUpload = input.document(
+      'constructionLocation.locationalClearanceUpload',
+    );
+    draft.constructionLocation.validGovernmentIdUpload = input.document(
+      'constructionLocation.validGovernmentIdUpload',
+    );
+    draft.professionals.designSignedDocumentUpload = input.document(
+      'professionals.designSignedDocumentUpload',
+    );
+    draft.professionals.supervisorSignedDocumentUpload = input.document(
+      'professionals.supervisorSignedDocumentUpload',
+    );
+    draft.consent.applicantSignedDocumentUpload = input.document(
+      'consent.applicantSignedDocumentUpload',
+    );
+    draft.consent.lotOwnerSignedDocumentUpload = input.document(
+      'consent.lotOwnerSignedDocumentUpload',
+    );
   }
 }

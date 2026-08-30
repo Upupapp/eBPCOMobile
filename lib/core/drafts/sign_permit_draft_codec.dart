@@ -430,6 +430,35 @@ class SignPermitDraftCodec extends DraftCodec<SignPermitDraft> {
     draft.requiredDocuments.isApplicantPropertyOwner = input.nullableBoolean(
       'requiredDocuments.isApplicantPropertyOwner',
     );
+    draft.requiredDocuments.tctOrOctCopyUpload = input.document(
+      'requiredDocuments.tctOrOctCopyUpload',
+    );
+    draft.requiredDocuments.taxDeclarationUpload = input.document(
+      'requiredDocuments.taxDeclarationUpload',
+    );
+    draft.requiredDocuments.realtyTaxReceiptUpload = input.document(
+      'requiredDocuments.realtyTaxReceiptUpload',
+    );
+    draft.requiredDocuments.contractOfLeaseUpload = input.document(
+      'requiredDocuments.contractOfLeaseUpload',
+    );
+    draft.requiredDocuments.lotPlanUpload = input.document(
+      'requiredDocuments.lotPlanUpload',
+    );
+    draft.requiredDocuments.siteDevelopmentPlanUpload = input.document(
+      'requiredDocuments.siteDevelopmentPlanUpload',
+    );
+    draft.requiredDocuments.signStructurePlansUpload = input.document(
+      'requiredDocuments.signStructurePlansUpload',
+    );
+    draft.requiredDocuments.structuralDesignAndComputationsUpload = input
+        .document('requiredDocuments.structuralDesignAndComputationsUpload');
+    draft.requiredDocuments.specificationsUpload = input.document(
+      'requiredDocuments.specificationsUpload',
+    );
+    draft.requiredDocuments.costEstimatesUpload = input.document(
+      'requiredDocuments.costEstimatesUpload',
+    );
     draft.professionals.designProfessional.fullName = input.string(
       'professionals.designProfessional.fullName',
     );
@@ -460,6 +489,9 @@ class SignPermitDraftCodec extends DraftCodec<SignPermitDraft> {
     );
     draft.professionals.designProfessional.dateSigned = input.date(
       'professionals.designProfessional.dateSigned',
+    );
+    draft.professionals.designSignedDocumentUpload = input.document(
+      'professionals.designSignedDocumentUpload',
     );
     draft.professionals.supervisor.fullName = input.string(
       'professionals.supervisor.fullName',
@@ -492,6 +524,9 @@ class SignPermitDraftCodec extends DraftCodec<SignPermitDraft> {
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
     );
+    draft.professionals.supervisorSignedDocumentUpload = input.document(
+      'professionals.supervisorSignedDocumentUpload',
+    );
     draft.consent.applicant.printedName = input.string(
       'consent.applicant.printedName',
     );
@@ -508,6 +543,9 @@ class SignPermitDraftCodec extends DraftCodec<SignPermitDraft> {
     draft.consent.applicant.tin = input.string('consent.applicant.tin');
     draft.consent.applicant.dateSigned = input.date(
       'consent.applicant.dateSigned',
+    );
+    draft.consent.applicantSignedDocumentUpload = input.document(
+      'consent.applicantSignedDocumentUpload',
     );
     draft.consent.isApplicantAlsoBuildingOwner = input.nullableBoolean(
       'consent.isApplicantAlsoBuildingOwner',
@@ -530,6 +568,9 @@ class SignPermitDraftCodec extends DraftCodec<SignPermitDraft> {
     draft.consent.buildingOwner.tin = input.string('consent.buildingOwner.tin');
     draft.consent.buildingOwner.dateSigned = input.date(
       'consent.buildingOwner.dateSigned',
+    );
+    draft.consent.buildingOwnerSignedDocumentUpload = input.document(
+      'consent.buildingOwnerSignedDocumentUpload',
     );
     draft.reviewDeclaration.certifiesInformationIsAccurate = input.boolean(
       'reviewDeclaration.certifiesInformationIsAccurate',

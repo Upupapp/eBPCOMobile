@@ -889,6 +889,21 @@ class ElectricalPermitDraftCodec extends DraftCodec<ElectricalPermitDraft> {
     draft.professionals.designProfessional.dateSigned = input.date(
       'professionals.designProfessional.dateSigned',
     );
+    draft.professionals.designPrcIdUpload = input.document(
+      'professionals.designPrcIdUpload',
+    );
+    draft.professionals.designPtrDocumentUpload = input.document(
+      'professionals.designPtrDocumentUpload',
+    );
+    draft.professionals.signedSealedPlansUpload = input.document(
+      'professionals.signedSealedPlansUpload',
+    );
+    draft.professionals.signedSealedSpecificationsUpload = input.document(
+      'professionals.signedSealedSpecificationsUpload',
+    );
+    draft.professionals.signedLoadCalculationsUpload = input.document(
+      'professionals.signedLoadCalculationsUpload',
+    );
     draft.professionals.isSupervisorSameAsDesignProfessional = input.boolean(
       'professionals.isSupervisorSameAsDesignProfessional',
       fallback: true,
@@ -924,6 +939,15 @@ class ElectricalPermitDraftCodec extends DraftCodec<ElectricalPermitDraft> {
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
     );
+    draft.professionals.supervisorPrcIdUpload = input.document(
+      'professionals.supervisorPrcIdUpload',
+    );
+    draft.professionals.supervisorPtrUpload = input.document(
+      'professionals.supervisorPtrUpload',
+    );
+    draft.professionals.signedSupervisorConfirmationUpload = input.document(
+      'professionals.signedSupervisorConfirmationUpload',
+    );
     draft.professionals.contractorVoluntarilyIndicated = input.boolean(
       'professionals.contractorVoluntarilyIndicated',
     );
@@ -945,6 +969,13 @@ class ElectricalPermitDraftCodec extends DraftCodec<ElectricalPermitDraft> {
     draft.professionals.contractor.contactNumber = input.string(
       'professionals.contractor.contactNumber',
     );
+    draft.professionals.contractor.pcabLicenseUpload = input.document(
+      'professionals.contractor.pcabLicenseUpload',
+    );
+    draft.professionals.contractor.contractorAccreditationUpload = input
+        .document('professionals.contractor.contractorAccreditationUpload');
+    draft.professionals.contractor.contractorAuthorizationUpload = input
+        .document('professionals.contractor.contractorAuthorizationUpload');
     draft.ownershipConsent.isApplicantBuildingOwner = input.nullableBoolean(
       'ownershipConsent.isApplicantBuildingOwner',
     );
@@ -980,6 +1011,131 @@ class ElectricalPermitDraftCodec extends DraftCodec<ElectricalPermitDraft> {
     );
     draft.ownershipConsent.lotOwner.ctcPlaceIssued = input.string(
       'ownershipConsent.lotOwner.ctcPlaceIssued',
+    );
+    draft.ownershipConsent.buildingOwnerValidIdUpload = input.document(
+      'ownershipConsent.buildingOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.lotOwnerValidIdUpload = input.document(
+      'ownershipConsent.lotOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.proofOfOwnershipUpload = input.document(
+      'ownershipConsent.proofOfOwnershipUpload',
+    );
+    draft.ownershipConsent.lotOwnerConsentUpload = input.document(
+      'ownershipConsent.lotOwnerConsentUpload',
+    );
+    draft.ownershipConsent.authorizationLetterUpload = input.document(
+      'ownershipConsent.authorizationLetterUpload',
+    );
+    draft.requiredDocuments.singleLineDiagramUpload = input.document(
+      'requiredDocuments.singleLineDiagramUpload',
+    );
+    draft.requiredDocuments.loadScheduleUpload = input.document(
+      'requiredDocuments.loadScheduleUpload',
+    );
+    draft.requiredDocuments.panelboardScheduleUpload = input.document(
+      'requiredDocuments.panelboardScheduleUpload',
+    );
+    draft.requiredDocuments.serviceEntranceDetailsUpload = input.document(
+      'requiredDocuments.serviceEntranceDetailsUpload',
+    );
+    draft.requiredDocuments.groundingDetailsUpload = input.document(
+      'requiredDocuments.groundingDetailsUpload',
+    );
+    draft.requiredDocuments.electricalLayoutPlansUpload = input.document(
+      'requiredDocuments.electricalLayoutPlansUpload',
+    );
+    draft.requiredDocuments.lightingLayoutUpload = input.document(
+      'requiredDocuments.lightingLayoutUpload',
+    );
+    draft.requiredDocuments.powerLayoutUpload = input.document(
+      'requiredDocuments.powerLayoutUpload',
+    );
+    draft.requiredDocuments.fireAlarmLayoutUpload = input.document(
+      'requiredDocuments.fireAlarmLayoutUpload',
+    );
+    draft.requiredDocuments.transformerCapacityDetailsUpload = input.document(
+      'requiredDocuments.transformerCapacityDetailsUpload',
+    );
+    draft.requiredDocuments.shortCircuitCalculationUpload = input.document(
+      'requiredDocuments.shortCircuitCalculationUpload',
+    );
+    draft.requiredDocuments.voltageDropCalculationUpload = input.document(
+      'requiredDocuments.voltageDropCalculationUpload',
+    );
+    draft.requiredDocuments.specialFixturesScheduleUpload = input.document(
+      'requiredDocuments.specialFixturesScheduleUpload',
+    );
+    draft.requiredDocuments.equipmentSpecificationsUpload = input.document(
+      'requiredDocuments.equipmentSpecificationsUpload',
+    );
+    draft.requiredDocuments.airConditioningEquipmentScheduleUpload = input
+        .document('requiredDocuments.airConditioningEquipmentScheduleUpload');
+    draft.requiredDocuments.cookingEquipmentScheduleUpload = input.document(
+      'requiredDocuments.cookingEquipmentScheduleUpload',
+    );
+    draft.requiredDocuments.waterHeaterScheduleUpload = input.document(
+      'requiredDocuments.waterHeaterScheduleUpload',
+    );
+    draft.requiredDocuments.waterPumpScheduleUpload = input.document(
+      'requiredDocuments.waterPumpScheduleUpload',
+    );
+    draft.requiredDocuments.generatorDetailsUpload = input.document(
+      'requiredDocuments.generatorDetailsUpload',
+    );
+    draft.requiredDocuments.upsDetailsUpload = input.document(
+      'requiredDocuments.upsDetailsUpload',
+    );
+    draft.requiredDocuments.fireAlarmDetectorScheduleUpload = input.document(
+      'requiredDocuments.fireAlarmDetectorScheduleUpload',
+    );
+    draft.requiredDocuments.otherEquipmentDocumentsUpload = input.document(
+      'requiredDocuments.otherEquipmentDocumentsUpload',
+    );
+    draft.requiredDocuments.existingServiceRecordUpload = input.document(
+      'requiredDocuments.existingServiceRecordUpload',
+    );
+    draft.requiredDocuments.utilityCoordinationUpload = input.document(
+      'requiredDocuments.utilityCoordinationUpload',
+    );
+    draft.requiredDocuments.separateServiceDiagramUpload = input.document(
+      'requiredDocuments.separateServiceDiagramUpload',
+    );
+    draft.requiredDocuments.existingLoadCalculationUpload = input.document(
+      'requiredDocuments.existingLoadCalculationUpload',
+    );
+    draft.requiredDocuments.proposedLoadCalculationUpload = input.document(
+      'requiredDocuments.proposedLoadCalculationUpload',
+    );
+    draft.requiredDocuments.existingServiceEntrancePlanUpload = input.document(
+      'requiredDocuments.existingServiceEntrancePlanUpload',
+    );
+    draft.requiredDocuments.proposedServiceEntrancePlanUpload = input.document(
+      'requiredDocuments.proposedServiceEntrancePlanUpload',
+    );
+    draft.requiredDocuments.temporaryElectricalLayoutUpload = input.document(
+      'requiredDocuments.temporaryElectricalLayoutUpload',
+    );
+    draft.requiredDocuments.removalScheduleUpload = input.document(
+      'requiredDocuments.removalScheduleUpload',
+    );
+    draft.requiredDocuments.workScheduleUpload = input.document(
+      'requiredDocuments.workScheduleUpload',
+    );
+    draft.requiredDocuments.relatedBuildingPermitUpload = input.document(
+      'requiredDocuments.relatedBuildingPermitUpload',
+    );
+    draft.requiredDocuments.previousElectricalPermitUpload = input.document(
+      'requiredDocuments.previousElectricalPermitUpload',
+    );
+    draft.requiredDocuments.existingServiceRecordsUpload = input.document(
+      'requiredDocuments.existingServiceRecordsUpload',
+    );
+    draft.requiredDocuments.utilityProviderApprovalUpload = input.document(
+      'requiredDocuments.utilityProviderApprovalUpload',
+    );
+    draft.requiredDocuments.otherElectricalDocumentsUpload = input.document(
+      'requiredDocuments.otherElectricalDocumentsUpload',
     );
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',

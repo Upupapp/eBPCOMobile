@@ -1336,6 +1336,21 @@ class MechanicalPermitDraftCodec extends DraftCodec<MechanicalPermitDraft> {
     draft.professionals.designProfessional.dateSigned = input.date(
       'professionals.designProfessional.dateSigned',
     );
+    draft.professionals.designPrcIdUpload = input.document(
+      'professionals.designPrcIdUpload',
+    );
+    draft.professionals.designPtrDocumentUpload = input.document(
+      'professionals.designPtrDocumentUpload',
+    );
+    draft.professionals.signedSealedPlansUpload = input.document(
+      'professionals.signedSealedPlansUpload',
+    );
+    draft.professionals.signedSealedSpecificationsUpload = input.document(
+      'professionals.signedSealedSpecificationsUpload',
+    );
+    draft.professionals.signedDesignCalculationsUpload = input.document(
+      'professionals.signedDesignCalculationsUpload',
+    );
     draft.professionals.isSupervisorSameAsDesignProfessional = input.boolean(
       'professionals.isSupervisorSameAsDesignProfessional',
       fallback: true,
@@ -1370,6 +1385,15 @@ class MechanicalPermitDraftCodec extends DraftCodec<MechanicalPermitDraft> {
     );
     draft.professionals.supervisor.dateSigned = input.date(
       'professionals.supervisor.dateSigned',
+    );
+    draft.professionals.supervisorPrcIdUpload = input.document(
+      'professionals.supervisorPrcIdUpload',
+    );
+    draft.professionals.supervisorPtrUpload = input.document(
+      'professionals.supervisorPtrUpload',
+    );
+    draft.professionals.signedSupervisorConfirmationUpload = input.document(
+      'professionals.signedSupervisorConfirmationUpload',
     );
     draft.ownershipConsent.isApplicantBuildingOwner = input.nullableBoolean(
       'ownershipConsent.isApplicantBuildingOwner',
@@ -1406,6 +1430,211 @@ class MechanicalPermitDraftCodec extends DraftCodec<MechanicalPermitDraft> {
     );
     draft.ownershipConsent.lotOwner.ctcPlaceIssued = input.string(
       'ownershipConsent.lotOwner.ctcPlaceIssued',
+    );
+    draft.ownershipConsent.buildingOwnerValidIdUpload = input.document(
+      'ownershipConsent.buildingOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.lotOwnerValidIdUpload = input.document(
+      'ownershipConsent.lotOwnerValidIdUpload',
+    );
+    draft.ownershipConsent.proofOfOwnershipUpload = input.document(
+      'ownershipConsent.proofOfOwnershipUpload',
+    );
+    draft.ownershipConsent.lotOwnerConsentUpload = input.document(
+      'ownershipConsent.lotOwnerConsentUpload',
+    );
+    draft.ownershipConsent.authorizationLetterUpload = input.document(
+      'ownershipConsent.authorizationLetterUpload',
+    );
+    draft.requiredDocuments.equipmentLayoutUpload = input.document(
+      'requiredDocuments.equipmentLayoutUpload',
+    );
+    draft.requiredDocuments.schematicDiagramsUpload = input.document(
+      'requiredDocuments.schematicDiagramsUpload',
+    );
+    draft.requiredDocuments.equipmentSchedulesUpload = input.document(
+      'requiredDocuments.equipmentSchedulesUpload',
+    );
+    draft.requiredDocuments.controlDiagramsUpload = input.document(
+      'requiredDocuments.controlDiagramsUpload',
+    );
+    draft.requiredDocuments.generalNotesUpload = input.document(
+      'requiredDocuments.generalNotesUpload',
+    );
+    draft.requiredDocuments.billOfMaterialsUpload = input.document(
+      'requiredDocuments.billOfMaterialsUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.quantityTakeoffUpload = input.document(
+      'requiredDocuments.quantityTakeoffUpload',
+    );
+    draft.requiredDocuments.equipmentSpecificationsUpload = input.document(
+      'requiredDocuments.equipmentSpecificationsUpload',
+    );
+    draft.requiredDocuments.manufacturerDataSheetsUpload = input.document(
+      'requiredDocuments.manufacturerDataSheetsUpload',
+    );
+    draft.requiredDocuments.sprinklerLayoutUpload = input.document(
+      'requiredDocuments.sprinklerLayoutUpload',
+    );
+    draft.requiredDocuments.hydraulicCalculationsUpload = input.document(
+      'requiredDocuments.hydraulicCalculationsUpload',
+    );
+    draft.requiredDocuments.pumpDetailsUpload = input.document(
+      'requiredDocuments.pumpDetailsUpload',
+    );
+    draft.requiredDocuments.waterSupplyDetailsUpload = input.document(
+      'requiredDocuments.waterSupplyDetailsUpload',
+    );
+    draft.requiredDocuments.boilerLayoutUpload = input.document(
+      'requiredDocuments.boilerLayoutUpload',
+    );
+    draft.requiredDocuments.boilerSpecificationsUpload = input.document(
+      'requiredDocuments.boilerSpecificationsUpload',
+    );
+    draft.requiredDocuments.pressureCapacityCalculationsUpload = input.document(
+      'requiredDocuments.pressureCapacityCalculationsUpload',
+    );
+    draft.requiredDocuments.safetyControlDetailsUpload = input.document(
+      'requiredDocuments.safetyControlDetailsUpload',
+    );
+    draft.requiredDocuments.vesselDrawingsUpload = input.document(
+      'requiredDocuments.vesselDrawingsUpload',
+    );
+    draft.requiredDocuments.pressureCalculationsUpload = input.document(
+      'requiredDocuments.pressureCalculationsUpload',
+    );
+    draft.requiredDocuments.safetyValveDetailsUpload = input.document(
+      'requiredDocuments.safetyValveDetailsUpload',
+    );
+    draft.requiredDocuments.manufacturerCertificationUpload = input.document(
+      'requiredDocuments.manufacturerCertificationUpload',
+    );
+    draft.requiredDocuments.refrigerationLayoutUpload = input.document(
+      'requiredDocuments.refrigerationLayoutUpload',
+    );
+    draft.requiredDocuments.refrigerantPipingDiagramUpload = input.document(
+      'requiredDocuments.refrigerantPipingDiagramUpload',
+    );
+    draft.requiredDocuments.coolingLoadCalculationsUpload = input.document(
+      'requiredDocuments.coolingLoadCalculationsUpload',
+    );
+    draft.requiredDocuments.refrigerationEquipmentSpecificationsUpload = input
+        .document(
+          'requiredDocuments.refrigerationEquipmentSpecificationsUpload',
+        );
+    draft.requiredDocuments.airConditioningLayoutUpload = input.document(
+      'requiredDocuments.airConditioningLayoutUpload',
+    );
+    draft.requiredDocuments.acCoolingLoadCalculationsUpload = input.document(
+      'requiredDocuments.acCoolingLoadCalculationsUpload',
+    );
+    draft.requiredDocuments.ductLayoutUpload = input.document(
+      'requiredDocuments.ductLayoutUpload',
+    );
+    draft.requiredDocuments.acRefrigerantPipingLayoutUpload = input.document(
+      'requiredDocuments.acRefrigerantPipingLayoutUpload',
+    );
+    draft.requiredDocuments.acEquipmentScheduleUpload = input.document(
+      'requiredDocuments.acEquipmentScheduleUpload',
+    );
+    draft.requiredDocuments.ventilationLayoutUpload = input.document(
+      'requiredDocuments.ventilationLayoutUpload',
+    );
+    draft.requiredDocuments.airflowCalculationsUpload = input.document(
+      'requiredDocuments.airflowCalculationsUpload',
+    );
+    draft.requiredDocuments.fanScheduleUpload = input.document(
+      'requiredDocuments.fanScheduleUpload',
+    );
+    draft.requiredDocuments.exhaustDetailsUpload = input.document(
+      'requiredDocuments.exhaustDetailsUpload',
+    );
+    draft.requiredDocuments.pipingLayoutUpload = input.document(
+      'requiredDocuments.pipingLayoutUpload',
+    );
+    draft.requiredDocuments.isometricDiagramUpload = input.document(
+      'requiredDocuments.isometricDiagramUpload',
+    );
+    draft.requiredDocuments.pipingPressureCalculationsUpload = input.document(
+      'requiredDocuments.pipingPressureCalculationsUpload',
+    );
+    draft.requiredDocuments.pipeSpecificationsUpload = input.document(
+      'requiredDocuments.pipeSpecificationsUpload',
+    );
+    draft.requiredDocuments.pipingSafetyControlDetailsUpload = input.document(
+      'requiredDocuments.pipingSafetyControlDetailsUpload',
+    );
+    draft.requiredDocuments.verticalTransportEquipmentLayoutUpload = input
+        .document('requiredDocuments.verticalTransportEquipmentLayoutUpload');
+    draft.requiredDocuments.shaftOrTravelDetailsUpload = input.document(
+      'requiredDocuments.shaftOrTravelDetailsUpload',
+    );
+    draft.requiredDocuments.manufacturerSpecificationsUpload = input.document(
+      'requiredDocuments.manufacturerSpecificationsUpload',
+    );
+    draft.requiredDocuments.structuralInterfaceDetailsUpload = input.document(
+      'requiredDocuments.structuralInterfaceDetailsUpload',
+    );
+    draft.requiredDocuments.verticalTransportSafetyDetailsUpload = input
+        .document('requiredDocuments.verticalTransportSafetyDetailsUpload');
+    draft.requiredDocuments.pumpLayoutUpload = input.document(
+      'requiredDocuments.pumpLayoutUpload',
+    );
+    draft.requiredDocuments.pumpScheduleUpload = input.document(
+      'requiredDocuments.pumpScheduleUpload',
+    );
+    draft.requiredDocuments.capacityHeadCalculationsUpload = input.document(
+      'requiredDocuments.capacityHeadCalculationsUpload',
+    );
+    draft.requiredDocuments.motorSpecificationsUpload = input.document(
+      'requiredDocuments.motorSpecificationsUpload',
+    );
+    draft.requiredDocuments.cavSystemLayoutUpload = input.document(
+      'requiredDocuments.cavSystemLayoutUpload',
+    );
+    draft.requiredDocuments.cavPipingDiagramUpload = input.document(
+      'requiredDocuments.cavPipingDiagramUpload',
+    );
+    draft.requiredDocuments.cavPressureCalculationsUpload = input.document(
+      'requiredDocuments.cavPressureCalculationsUpload',
+    );
+    draft.requiredDocuments.cavStorageEquipmentDetailsUpload = input.document(
+      'requiredDocuments.cavStorageEquipmentDetailsUpload',
+    );
+    draft.requiredDocuments.cavSafetyControlDetailsUpload = input.document(
+      'requiredDocuments.cavSafetyControlDetailsUpload',
+    );
+    draft.requiredDocuments.conveyorSystemLayoutUpload = input.document(
+      'requiredDocuments.conveyorSystemLayoutUpload',
+    );
+    draft.requiredDocuments.conveyorEquipmentSpecificationsUpload = input
+        .document('requiredDocuments.conveyorEquipmentSpecificationsUpload');
+    draft.requiredDocuments.conveyorCapacityCalculationsUpload = input.document(
+      'requiredDocuments.conveyorCapacityCalculationsUpload',
+    );
+    draft.requiredDocuments.conveyorControlSafetyDetailsUpload = input.document(
+      'requiredDocuments.conveyorControlSafetyDetailsUpload',
+    );
+    draft.requiredDocuments.relatedBuildingPermitUpload = input.document(
+      'requiredDocuments.relatedBuildingPermitUpload',
+    );
+    draft.requiredDocuments.equipmentCertificationsUpload = input.document(
+      'requiredDocuments.equipmentCertificationsUpload',
+    );
+    draft.requiredDocuments.manufacturerCertificationsUpload = input.document(
+      'requiredDocuments.manufacturerCertificationsUpload',
+    );
+    draft.requiredDocuments.testingCommissioningPlanUpload = input.document(
+      'requiredDocuments.testingCommissioningPlanUpload',
+    );
+    draft.requiredDocuments.installationScheduleUpload = input.document(
+      'requiredDocuments.installationScheduleUpload',
+    );
+    draft.requiredDocuments.otherMechanicalDocumentsUpload = input.document(
+      'requiredDocuments.otherMechanicalDocumentsUpload',
     );
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',

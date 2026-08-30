@@ -178,6 +178,53 @@ class ZoningPermitDraftCodec extends DraftCodec<ZoningPermitDraft> {
       'proposedUse.estimatedProjectCost',
     );
     draft.proposedUse.existingUse = input.string('proposedUse.existingUse');
+    draft.requiredDocuments.landTitleUpload = input.document(
+      'requiredDocuments.landTitleUpload',
+    );
+    draft.requiredDocuments.barangayClearanceUpload = input.document(
+      'requiredDocuments.barangayClearanceUpload',
+    );
+    draft.requiredDocuments.validGovernmentIdUpload = input.document(
+      'requiredDocuments.validGovernmentIdUpload',
+    );
+    draft.requiredDocuments.letterRequestUpload = input.document(
+      'requiredDocuments.letterRequestUpload',
+    );
+    draft.requiredDocuments.siteDevelopmentPlanUpload = input.document(
+      'requiredDocuments.siteDevelopmentPlanUpload',
+    );
+    draft.requiredDocuments.vicinityMapUpload = input.document(
+      'requiredDocuments.vicinityMapUpload',
+    );
+    draft.requiredDocuments.sketchPlanUpload = input.document(
+      'requiredDocuments.sketchPlanUpload',
+    );
+    draft.requiredDocuments.billOfMaterialsUpload = input.document(
+      'requiredDocuments.billOfMaterialsUpload',
+    );
+    draft.requiredDocuments.proofOfOwnershipUpload = input.document(
+      'requiredDocuments.proofOfOwnershipUpload',
+    );
+    draft.requiredDocuments.taxDeclarationUpload = input.document(
+      'requiredDocuments.taxDeclarationUpload',
+    );
+    draft.requiredDocuments.landTaxReceiptUpload = input.document(
+      'requiredDocuments.landTaxReceiptUpload',
+    );
+    draft.requiredDocuments.barangayBuildingClearanceUpload = input.document(
+      'requiredDocuments.barangayBuildingClearanceUpload',
+    );
+    draft.requiredDocuments.cedulaUpload = input.document(
+      'requiredDocuments.cedulaUpload',
+    );
+    draft.requiredDocuments.ownerWrittenConsentUpload = input.document(
+      'requiredDocuments.ownerWrittenConsentUpload',
+    );
+    draft.requiredDocuments.dpwhClearanceUpload = input.document(
+      'requiredDocuments.dpwhClearanceUpload',
+    );
+    draft.requiredDocuments.environmentalComplianceCertificateUpload = input
+        .document('requiredDocuments.environmentalComplianceCertificateUpload');
     draft.certification.submittedByName = input.string(
       'certification.submittedByName',
     );

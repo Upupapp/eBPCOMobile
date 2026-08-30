@@ -656,6 +656,7 @@ class DemolitionPermitDraftCodec extends DraftCodec<DemolitionPermitDraft> {
       info.provider = row.string('provider');
       info.disconnectionDate = row.date('disconnectionDate');
       info.referenceNumber = row.string('referenceNumber');
+      info.supportingDocument = row.document('supportingDocument');
     }
     draft.safetyAndSitePrep.confirmedSafetyItems
       ..clear()
@@ -719,6 +720,25 @@ class DemolitionPermitDraftCodec extends DraftCodec<DemolitionPermitDraft> {
     );
     draft.professional.tin = input.string('professional.tin');
     draft.professional.dateSigned = input.date('professional.dateSigned');
+    draft.professional.prcIdUpload = input.document('professional.prcIdUpload');
+    draft.professional.ptrDocumentUpload = input.document(
+      'professional.ptrDocumentUpload',
+    );
+    draft.professional.signedSealedFormUpload = input.document(
+      'professional.signedSealedFormUpload',
+    );
+    draft.professional.demolitionPlanUpload = input.document(
+      'professional.demolitionPlanUpload',
+    );
+    draft.professional.demolitionMethodologyUpload = input.document(
+      'professional.demolitionMethodologyUpload',
+    );
+    draft.professional.safetyProgramUpload = input.document(
+      'professional.safetyProgramUpload',
+    );
+    draft.professional.structuralAssessmentUpload = input.document(
+      'professional.structuralAssessmentUpload',
+    );
     draft.consentAuthorization.isRegisteredOwner = input.nullableBoolean(
       'consentAuthorization.isRegisteredOwner',
     );
@@ -740,12 +760,41 @@ class DemolitionPermitDraftCodec extends DraftCodec<DemolitionPermitDraft> {
     draft.consentAuthorization.ctcPlaceIssued = input.string(
       'consentAuthorization.ctcPlaceIssued',
     );
+    draft.consentAuthorization.lotOwnerConsentUpload = input.document(
+      'consentAuthorization.lotOwnerConsentUpload',
+    );
+    draft.consentAuthorization.authorizationLetterUpload = input.document(
+      'consentAuthorization.authorizationLetterUpload',
+    );
+    draft.consentAuthorization.ownerValidIdUpload = input.document(
+      'consentAuthorization.ownerValidIdUpload',
+    );
+    draft.consentAuthorization.representativeValidIdUpload = input.document(
+      'consentAuthorization.representativeValidIdUpload',
+    );
+    draft.consentAuthorization.proofOfOwnershipUpload = input.document(
+      'consentAuthorization.proofOfOwnershipUpload',
+    );
+    draft.requiredDocuments.landTitleUpload = input.document(
+      'requiredDocuments.landTitleUpload',
+    );
+    draft.requiredDocuments.taxDeclarationUpload = input.document(
+      'requiredDocuments.taxDeclarationUpload',
+    );
+    draft.requiredDocuments.realPropertyTaxReceiptUpload = input.document(
+      'requiredDocuments.realPropertyTaxReceiptUpload',
+    );
+    draft.requiredDocuments.existingBuildingPermit.upload = input.document(
+      'requiredDocuments.existingBuildingPermit.upload',
+    );
     draft.requiredDocuments.existingBuildingPermit.markedNotAvailable = input
         .boolean('requiredDocuments.existingBuildingPermit.markedNotAvailable');
     draft.requiredDocuments.existingBuildingPermit.notAvailableExplanation =
         input.string(
           'requiredDocuments.existingBuildingPermit.notAvailableExplanation',
         );
+    draft.requiredDocuments.existingCertificateOfOccupancy.upload = input
+        .document('requiredDocuments.existingCertificateOfOccupancy.upload');
     draft.requiredDocuments.existingCertificateOfOccupancy.markedNotAvailable =
         input.boolean(
           'requiredDocuments.existingCertificateOfOccupancy.markedNotAvailable',
@@ -756,10 +805,56 @@ class DemolitionPermitDraftCodec extends DraftCodec<DemolitionPermitDraft> {
         .notAvailableExplanation = input.string(
       'requiredDocuments.existingCertificateOfOccupancy.notAvailableExplanation',
     );
+    draft.requiredDocuments.approvedOrAsBuiltPlansUpload = input.document(
+      'requiredDocuments.approvedOrAsBuiltPlansUpload',
+    );
+    draft.requiredDocuments.recentPhotographs.upload = input.document(
+      'requiredDocuments.recentPhotographs.upload',
+    );
     draft.requiredDocuments.recentPhotographs.markedNotAvailable = input
         .boolean('requiredDocuments.recentPhotographs.markedNotAvailable');
     draft.requiredDocuments.recentPhotographs.notAvailableExplanation = input
         .string('requiredDocuments.recentPhotographs.notAvailableExplanation');
+    draft.requiredDocuments.proofOfOwnershipOrAuthorityUpload = input.document(
+      'requiredDocuments.proofOfOwnershipOrAuthorityUpload',
+    );
+    draft.requiredDocuments.debrisManagementPlanUpload = input.document(
+      'requiredDocuments.debrisManagementPlanUpload',
+    );
+    draft.requiredDocuments.dustNoiseControlPlanUpload = input.document(
+      'requiredDocuments.dustNoiseControlPlanUpload',
+    );
+    draft.requiredDocuments.projectScheduleUpload = input.document(
+      'requiredDocuments.projectScheduleUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.shoringPlanUpload = input.document(
+      'requiredDocuments.shoringPlanUpload',
+    );
+    draft.requiredDocuments.adjacentPropertyProtectionPlanUpload = input
+        .document('requiredDocuments.adjacentPropertyProtectionPlanUpload');
+    draft.requiredDocuments.trafficOrPedestrianManagementPlanUpload = input
+        .document('requiredDocuments.trafficOrPedestrianManagementPlanUpload');
+    draft.requiredDocuments.barangayClearanceUpload = input.document(
+      'requiredDocuments.barangayClearanceUpload',
+    );
+    draft.requiredDocuments.oboRequirementsUpload = input.document(
+      'requiredDocuments.oboRequirementsUpload',
+    );
+    draft.requiredDocuments.environmentalClearanceUpload = input.document(
+      'requiredDocuments.environmentalClearanceUpload',
+    );
+    draft.requiredDocuments.roadSidewalkUseClearanceUpload = input.document(
+      'requiredDocuments.roadSidewalkUseClearanceUpload',
+    );
+    draft.requiredDocuments.fireClearanceUpload = input.document(
+      'requiredDocuments.fireClearanceUpload',
+    );
+    draft.requiredDocuments.otherLguClearanceUpload = input.document(
+      'requiredDocuments.otherLguClearanceUpload',
+    );
     draft.reviewDeclaration.certifiesTrueAndCorrect = input.boolean(
       'reviewDeclaration.certifiesTrueAndCorrect',
     );

@@ -9,6 +9,7 @@ import 'core/providers/contact_verification_provider.dart';
 import 'core/sync/sync_provider.dart';
 import 'core/sync/offline_queue.dart';
 import 'core/drafts/draft_persistence_barrel.dart';
+import 'core/services/document_storage_service.dart';
 import 'core/providers/applications_provider.dart';
 import 'core/repositories/contact_verification_repository.dart';
 import 'core/providers/architectural_permit_provider.dart';
@@ -148,6 +149,12 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
     // Count what is waiting before anything renders, so a queued item is
     // visible from the first frame rather than after the first flush.
     _sync.refresh();
+    // Read the documents folder once, so the synchronous callers that resolve
+    // a stored file name — the draft snapshot writer and reader — have a root
+    // to work against. Until it returns they treat every attachment as
+    // unresolvable, which is the behaviour that existed before drafts kept
+    // any.
+    DocumentStorageService.primeRoot();
     // Read back anything the applicant was part-way through. Deliberately not
     // awaited: a keychain read must not delay the first frame, and each
     // provider refuses to overwrite a draft the applicant has already started

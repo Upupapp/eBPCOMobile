@@ -303,8 +303,8 @@ class _EmptyFor extends StatelessWidget {
               // M-48 persists all nineteen — fixing one copy and missing its
               // sibling is its own recurring defect in this repository.
               'Applications you start but do not finish are saved here, and '
-              'are still here after you close the app. Attached files are '
-              'not kept — you will be asked to attach them again.',
+              'are still here after you close the app, with the files you '
+              'attached. Anything missing is named on the draft itself.',
         );
       case ApplicationSegment.inProgress:
         return const EmptyState(

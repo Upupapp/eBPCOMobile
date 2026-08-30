@@ -65,23 +65,31 @@ void main() {
         copy(surfaces.last),
         contains(
           'Applications you start but do not finish are saved here, and are '
-          'still here after you close the app.',
+          'still here after you close the app,',
         ),
       );
     });
 
-    test('neither promises the attachments survive', () {
-      // The one thing M-48 deliberately does NOT keep. A promise of "your
-      // progress is saved" with no mention of the files would send an
-      // applicant back to a step they believe is finished.
-      for (final file in surfaces) {
-        expect(
-          copy(file),
-          contains('Attached files are not kept'),
-          reason: '$file promises progress is saved without saying what is not',
-        );
-        expect(copy(file), contains('attach them again'));
-      }
+    test('both say the attachments are kept, AND that some may not be', () {
+      // Inverted a second time on 30 August, once attachments were copied
+      // into the app's own storage and stored by name rather than by path.
+      // The second half is what keeps it honest: a file the applicant cleared
+      // between saving and resuming is gone, and a promise with no room for
+      // that would send them back to a step they believe is finished.
+      expect(
+        copy(surfaces.first),
+        contains(
+          'Your attached files are kept too — if any are missing when you '
+          'return, the draft will say which.',
+        ),
+      );
+      expect(
+        copy(surfaces.last),
+        contains(
+          'with the files you attached. Anything missing is named on the '
+          'draft itself.',
+        ),
+      );
     });
 
     test('the stale caveat is gone from both', () {
@@ -91,6 +99,11 @@ void main() {
         expect(
           copy(file),
           isNot(contains('Closing it loses an unsubmitted application')),
+        );
+        expect(
+          copy(file),
+          isNot(contains('Attached files are not kept')),
+          reason: 'true for one day, and now true of nothing',
         );
       }
     });

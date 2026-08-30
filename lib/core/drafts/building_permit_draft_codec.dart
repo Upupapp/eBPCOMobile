@@ -389,5 +389,77 @@ class BuildingPermitDraftCodec extends DraftCodec<BuildingPermitDraft> {
     // saying otherwise would resurrect a filed application as editable.
     draft.status = BuildingPermitDraftStatus.draft;
     draft.lastSavedAt = input.date('lastSavedAt');
+
+    // Attachments, kept since 30 August 2026. Null when the file has gone —
+    // the reader names it for the applicant in that case, so a document
+    // cleared between saving and resuming is not silently missing.
+    draft.professional.prcIdUpload = input.document('professional.prcIdUpload');
+    draft.professional.ptrUpload = input.document('professional.ptrUpload');
+    draft.professional.signedSealedUpload = input.document(
+      'professional.signedSealedUpload',
+    );
+    draft.consentAuthorization.authorizationLetterUpload = input.document(
+      'consentAuthorization.authorizationLetterUpload',
+    );
+    draft.consentAuthorization.ownerValidIdUpload = input.document(
+      'consentAuthorization.ownerValidIdUpload',
+    );
+    draft.requiredDocuments.landTitleUpload = input.document(
+      'requiredDocuments.landTitleUpload',
+    );
+    draft.requiredDocuments.taxDeclarationUpload = input.document(
+      'requiredDocuments.taxDeclarationUpload',
+    );
+    draft.requiredDocuments.realPropertyTaxReceiptUpload = input.document(
+      'requiredDocuments.realPropertyTaxReceiptUpload',
+    );
+    draft.requiredDocuments.plansUpload = input.document(
+      'requiredDocuments.plansUpload',
+    );
+    draft.requiredDocuments.specificationsUpload = input.document(
+      'requiredDocuments.specificationsUpload',
+    );
+    draft.requiredDocuments.billOfMaterialsUpload = input.document(
+      'requiredDocuments.billOfMaterialsUpload',
+    );
+    draft.requiredDocuments.surveyPlanUpload = input.document(
+      'requiredDocuments.surveyPlanUpload',
+    );
+    draft.requiredDocuments.costEstimateUpload = input.document(
+      'requiredDocuments.costEstimateUpload',
+    );
+    draft.requiredDocuments.structuralDesignAndAnalysisUpload = input.document(
+      'requiredDocuments.structuralDesignAndAnalysisUpload',
+    );
+    draft.requiredDocuments.soilAnalysisUpload = input.document(
+      'requiredDocuments.soilAnalysisUpload',
+    );
+    draft.requiredDocuments.prcIdChecklistUpload = input.document(
+      'requiredDocuments.prcIdChecklistUpload',
+    );
+    draft.requiredDocuments.ptrChecklistUpload = input.document(
+      'requiredDocuments.ptrChecklistUpload',
+    );
+    draft.requiredDocuments.signedFormsUpload = input.document(
+      'requiredDocuments.signedFormsUpload',
+    );
+    draft.requiredDocuments.barangayClearanceUpload = input.document(
+      'requiredDocuments.barangayClearanceUpload',
+    );
+    draft.requiredDocuments.zoningClearanceUpload = input.document(
+      'requiredDocuments.zoningClearanceUpload',
+    );
+    draft.requiredDocuments.fireRelatedRequirementsUpload = input.document(
+      'requiredDocuments.fireRelatedRequirementsUpload',
+    );
+    draft.requiredDocuments.constructionSafetyProgramUpload = input.document(
+      'requiredDocuments.constructionSafetyProgramUpload',
+    );
+    draft.requiredDocuments.roadClearanceUpload = input.document(
+      'requiredDocuments.roadClearanceUpload',
+    );
+    draft.requiredDocuments.unifiedApplicationFormUpload = input.document(
+      'requiredDocuments.unifiedApplicationFormUpload',
+    );
   }
 }

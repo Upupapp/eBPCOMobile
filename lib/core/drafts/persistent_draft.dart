@@ -78,9 +78,18 @@ mixin PersistentDraft<T> on ChangeNotifier {
       return false;
     }
 
-    codec.apply(beginRestoredDraft(), snapshot);
+    final reader = SnapshotReader(snapshot.fields);
+    codec.restore(beginRestoredDraft(), reader);
     seekRestoredStep(snapshot.step);
-    _detached = List.unmodifiable(snapshot.detachedDocuments);
+    // Two different losses, and the applicant needs both. `detachedDocuments`
+    // is what could not be KEPT when the draft was saved — a file outside the
+    // app's own storage. `unresolvedDocuments` is what could not be GIVEN BACK
+    // now — a file that has since been cleared, or a container path from
+    // before an app update. Neither list subsumes the other.
+    _detached = List.unmodifiable({
+      ...snapshot.detachedDocuments,
+      ...reader.unresolvedDocuments,
+    });
     notifyListeners();
     return true;
   }

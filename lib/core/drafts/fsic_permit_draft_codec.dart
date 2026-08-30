@@ -124,6 +124,36 @@ class FsicPermitDraftCodec extends DraftCodec<FsicPermitDraft> {
     draft.project.relatedBuildingPermitNumber = input.string(
       'project.relatedBuildingPermitNumber',
     );
+    draft.requiredDocuments.landTitleUpload = input.document(
+      'requiredDocuments.landTitleUpload',
+    );
+    draft.requiredDocuments.barangayClearanceUpload = input.document(
+      'requiredDocuments.barangayClearanceUpload',
+    );
+    draft.requiredDocuments.locationalClearanceUpload = input.document(
+      'requiredDocuments.locationalClearanceUpload',
+    );
+    draft.requiredDocuments.validGovernmentIdUpload = input.document(
+      'requiredDocuments.validGovernmentIdUpload',
+    );
+    draft.requiredDocuments.oboEndorsementUpload = input.document(
+      'requiredDocuments.oboEndorsementUpload',
+    );
+    draft.requiredDocuments.completionCertificateUpload = input.document(
+      'requiredDocuments.completionCertificateUpload',
+    );
+    draft.requiredDocuments.assessmentCopyUpload = input.document(
+      'requiredDocuments.assessmentCopyUpload',
+    );
+    draft.requiredDocuments.ownerWrittenConsentUpload = input.document(
+      'requiredDocuments.ownerWrittenConsentUpload',
+    );
+    draft.requiredDocuments.asBuiltPlanUpload = input.document(
+      'requiredDocuments.asBuiltPlanUpload',
+    );
+    draft.requiredDocuments.commissioningReportUpload = input.document(
+      'requiredDocuments.commissioningReportUpload',
+    );
     draft.certification.submittedByName = input.string(
       'certification.submittedByName',
     );

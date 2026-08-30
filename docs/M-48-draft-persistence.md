@@ -18,7 +18,46 @@ to say so; that was honesty, not a fix.
 the Building Permit and Fencing first; the remaining seventeen followed once
 the gate was in place to catch what repetition drops.
 
-## The boundary, and why it is drawn at a reason rather than a size
+## The boundary moved, later the same day
+
+**Attachments are kept now.** The section below is the reasoning that dropped
+them, and it was sound when it was written — a `DocumentModel` carried a path
+into the picker's own temporary container, and persisting such a reference
+gives a draft that claims to hold a document it cannot open.
+
+Two things changed it:
+
+1. **Picked attachments are copied into the app's own storage** the moment they
+   are chosen. That was done for a different reason — a picker path can die
+   *within* a session, which was a live defect — and it removed the premise
+   above as a side effect.
+2. **What is stored is the file's NAME, not its path.** On iOS the app's
+   container is `/var/mobile/Containers/Data/Application/<UUID>/…` and that
+   UUID changes on an app update: **the file survives and the path does not.**
+   A draft that stored a path would have kept every attachment right up until
+   the first update and then lost all of them at once, which is worse than
+   never keeping them.
+
+So a file in the app's own storage is kept, by name, resolved against the
+current documents directory at read time. Anything else — a picker path, a
+fabricated attachment with no bytes, a file the applicant has since cleared —
+is dropped and **named**, exactly as before.
+
+The two losses are tracked separately and both reach the applicant:
+`detachedDocuments` is what could not be *kept* at save time;
+`unresolvedDocuments` is what could not be *given back* now. Neither subsumes
+the other, and the second is the one a capture-time list gets wrong.
+
+The applicant-facing sentence changed with it:
+
+> Your attached files are kept too — if any are missing when you return, the
+> draft will say which.
+
+`honest_assurances_test` gates both halves. The second is what keeps it honest.
+
+---
+
+## The boundary as it was first drawn
 
 The scoping note recommended option D — persist "the scalar fields". The
 boundary shipped is sharper: **everything a draft holds is persisted except

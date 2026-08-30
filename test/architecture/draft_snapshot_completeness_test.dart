@@ -372,7 +372,7 @@ void main() {
         );
       });
 
-      test('every field is read back, except the documents', () {
+      test('every non-document field is read back', () {
         final restored = _touchedPaths(codec, capturing: false);
         final dropped = [
           for (final entry in expected.entries)
@@ -391,17 +391,33 @@ void main() {
         );
       });
 
-      test('no document is restored', () {
-        // The whole design rests on this. A path into a picked file is not
-        // reliably readable after a restart, and a draft that claims to hold a
-        // document it cannot open is a worse failure than one that asks.
+      test('every document is read back too', () {
+        // Inverted 30 August 2026. This used to assert that NO document was
+        // restored, and the reason was sound: a `DocumentModel` carried a path
+        // into a picker's temporary container, and persisting such a reference
+        // gives a draft that claims to hold a document it cannot open.
+        //
+        // Two things changed. Picked attachments are copied into the app's own
+        // storage the moment they are chosen, so the bytes survive; and what
+        // is stored is the file's NAME, resolved against the current documents
+        // directory, because an absolute path into an iOS container is not
+        // stable across an app update even though the file is.
         final restored = _touchedPaths(codec, capturing: false);
-        final documents = expected.entries
-            .where((e) => e.value)
-            .map((e) => e.key)
-            .where(restored.contains)
-            .toList();
-        expect(documents, isEmpty);
+        final dropped = [
+          for (final entry in expected.entries)
+            if (entry.value &&
+                !restored.contains(entry.key) &&
+                !_exempt(exempt, entry.key))
+              entry.key,
+        ];
+        expect(
+          dropped,
+          isEmpty,
+          reason:
+              'these attachments are captured and never read back, so the '
+              'applicant is asked to attach them again while the file sits '
+              'in the app\'s own storage: $dropped',
+        );
       });
 
       test('every document is named for the applicant to re-attach', () {
