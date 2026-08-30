@@ -244,6 +244,10 @@ class _RichApplications implements ApplicationsRepository {
   );
 
   @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async =>
+      application;
+
+  @override
   Future<List<ApplicationModel>> fetchAll() async => [application];
 
   @override

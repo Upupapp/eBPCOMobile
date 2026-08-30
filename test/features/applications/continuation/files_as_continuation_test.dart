@@ -21,6 +21,10 @@ class _RecordingRepository implements ApplicationsRepository {
   ApplicationLineage? sawLineage;
 
   @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async =>
+      throw UnimplementedError();
+
+  @override
   Future<List<ApplicationModel>> fetchAll() async => const [];
 
   @override

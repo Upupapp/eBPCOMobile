@@ -32,6 +32,10 @@ class HttpApplicationsRepository implements ApplicationsRepository {
 
   /// One application in full, including timeline, evaluations, letters, and
   /// permit — the §7.2 ApplicationDetail payload.
+  ///
+  /// Written when this class was, and unreachable until 1 September 2026: the
+  /// interface every caller holds did not declare it.
+  @override
   Future<ApplicationModel> fetchDetail(String applicationId) async {
     final json = await _api.getObject('/applications/$applicationId');
     return ApplicationDto.parse(json);

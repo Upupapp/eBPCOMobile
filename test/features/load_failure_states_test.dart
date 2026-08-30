@@ -37,6 +37,10 @@ class _Offline implements Exception {}
 
 class _ThrowingApplications implements ApplicationsRepository {
   @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async =>
+      throw _Offline();
+
+  @override
   Future<List<ApplicationModel>> fetchAll() async => throw _Offline();
   @override
   Future<ApplicationModel> submitApplication({

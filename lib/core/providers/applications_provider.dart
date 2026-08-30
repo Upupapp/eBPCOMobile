@@ -172,6 +172,52 @@ class ApplicationsProvider extends ChangeNotifier {
     return counts;
   }
 
+  /// Ids whose full record has been fetched, so a screen does not refetch on
+  /// every rebuild.
+  final Set<String> _detailed = <String>{};
+
+  /// Ids currently being fetched, so a rebuild mid-flight does not start a
+  /// second request.
+  final Set<String> _detailing = <String>{};
+
+  /// Replaces a summary record with the full one from `GET /applications/{id}`.
+  ///
+  /// **Why a screen has to ask for this.** Everything the app shows about one
+  /// application beyond its headline — the open Letter of Instruction, the
+  /// evaluator's remarks, the permit, the release logistics, the inspection —
+  /// lives in sub-objects the LIST endpoint may omit, and the contract says
+  /// so. Meanwhile the Home action stack is computed from scalars the list
+  /// does carry. So the app could promise "3 items must be corrected" from the
+  /// list and then have nothing to show, because the letters were never
+  /// fetched. See `ApplicationsRepository.fetchDetail`.
+  ///
+  /// Failure is deliberately silent. The summary record stays on screen, which
+  /// is what the applicant had before; a snackbar over a detail they did not
+  /// ask to refresh would be noise, and `loadError` is for the list.
+  Future<void> loadDetail(String id) async {
+    if (_detailed.contains(id) || _detailing.contains(id)) return;
+    _detailing.add(id);
+    try {
+      final detail = await _repository.fetchDetail(id);
+      final index = _applications.indexWhere((a) => a.id == id);
+      if (index >= 0) {
+        _applications = [..._applications]..[index] = detail;
+      } else {
+        _applications = [..._applications, detail];
+      }
+      _detailed.add(id);
+      notifyListeners();
+    } catch (_) {
+      // Left summary. Retried the next time the screen is opened, because the
+      // id never entered `_detailed`.
+    } finally {
+      _detailing.remove(id);
+    }
+  }
+
+  /// Forgets what has been fetched, so a pull-to-refresh re-reads details too.
+  void _invalidateDetails() => _detailed.clear();
+
   ApplicationModel? byId(String id) {
     for (final application in _applications) {
       if (application.id == id) return application;
@@ -181,6 +227,7 @@ class ApplicationsProvider extends ChangeNotifier {
 
   Future<void> _load() async {
     try {
+      _invalidateDetails();
       _applications = await _repository.fetchAll();
       _loadError = null;
       _lastLoadedAt = _clock();

@@ -30,6 +30,10 @@ class _Applications implements ApplicationsRepository {
   final List<ApplicationModel> applications;
 
   @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async =>
+      applications.firstWhere((a) => a.id == applicationId);
+
+  @override
   Future<List<ApplicationModel>> fetchAll() async => applications;
 
   @override

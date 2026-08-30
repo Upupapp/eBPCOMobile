@@ -203,6 +203,10 @@ void main() {
 /// about the notification wiring rather than about what the mock contains.
 class _ResubmitRepository implements ApplicationsRepository {
   @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async =>
+      throw UnimplementedError();
+
+  @override
   Future<List<ApplicationModel>> fetchAll() async => const [];
 
   @override

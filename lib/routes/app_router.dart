@@ -8,6 +8,7 @@ import '../features/applications/presentation/addition_extension_permit/addition
 import '../features/applications/presentation/addition_extension_permit/addition_extension_permit_wizard_screen.dart';
 import '../features/applications/presentation/application_list_screen.dart';
 import '../features/applications/presentation/pre_flight_screen.dart';
+import '../features/applications/presentation/detail/application_detail_gate.dart';
 import '../features/applications/presentation/detail/application_detail_screen.dart';
 import '../features/applications/presentation/detail/application_outcome_screen.dart';
 import '../features/applications/presentation/detail/digital_permit_screen.dart';
@@ -551,26 +552,38 @@ class AppRouter {
         ),
         GoRoute(
           path: '/applications/:applicationId',
-          builder: (context, state) => ApplicationDetailScreen(
+          builder: (context, state) => ApplicationDetailGate(
             applicationId: state.pathParameters['applicationId']!,
+            child: ApplicationDetailScreen(
+              applicationId: state.pathParameters['applicationId']!,
+            ),
           ),
         ),
         GoRoute(
           path: '/applications/:applicationId/instructions',
-          builder: (context, state) => LetterOfInstructionScreen(
+          builder: (context, state) => ApplicationDetailGate(
             applicationId: state.pathParameters['applicationId']!,
+            child: LetterOfInstructionScreen(
+              applicationId: state.pathParameters['applicationId']!,
+            ),
           ),
         ),
         GoRoute(
           path: '/applications/:applicationId/permit',
-          builder: (context, state) => DigitalPermitScreen(
+          builder: (context, state) => ApplicationDetailGate(
             applicationId: state.pathParameters['applicationId']!,
+            child: DigitalPermitScreen(
+              applicationId: state.pathParameters['applicationId']!,
+            ),
           ),
         ),
         GoRoute(
           path: '/applications/:applicationId/outcome',
-          builder: (context, state) => ApplicationOutcomeScreen(
+          builder: (context, state) => ApplicationDetailGate(
             applicationId: state.pathParameters['applicationId']!,
+            child: ApplicationOutcomeScreen(
+              applicationId: state.pathParameters['applicationId']!,
+            ),
           ),
         ),
         GoRoute(
@@ -579,8 +592,11 @@ class AppRouter {
         ),
         GoRoute(
           path: '/applications/:applicationId/pay',
-          builder: (context, state) => OrderOfPaymentScreen(
+          builder: (context, state) => ApplicationDetailGate(
             applicationId: state.pathParameters['applicationId']!,
+            child: OrderOfPaymentScreen(
+              applicationId: state.pathParameters['applicationId']!,
+            ),
           ),
         ),
         GoRoute(

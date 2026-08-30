@@ -12,6 +12,30 @@ import '../models/payment_assessment_model.dart';
 abstract class ApplicationsRepository {
   Future<List<ApplicationModel>> fetchAll();
 
+  /// One application in full — timeline, evaluations, open Letters of
+  /// Instruction, inspection, permit, release and payment.
+  ///
+  /// **Declared here on 1 September 2026, and that is the whole defect.** The
+  /// HTTP repository has had this method since it was written; nothing could
+  /// call it, because callers hold this interface and this interface did not
+  /// have it. So every screen in the app was built from the LIST payload.
+  ///
+  /// The contract separates the two deliberately: `GET /applications` returns
+  /// a page, `GET /applications/{id}` is "One application **in full**", and
+  /// every sub-object — `instructions`, `permit`, `release`, `evaluations`,
+  /// `inspection` — is optional on the shared schema, so a conforming list may
+  /// omit all of them. `ApplicationDto.parse` says as much in its own comment:
+  /// "a summary payload may omit the letters themselves".
+  ///
+  /// What made that a defect rather than a limitation is which side of the
+  /// screen each fact sits on. The Home action stack is computed from SCALARS
+  /// that a summary carries — `openInstructionCount`, `lifecycleStatus` — so
+  /// the promises appear. The destinations are guarded on the OBJECTS a
+  /// summary may omit, so they render nothing. An applicant was told "3 items
+  /// must be corrected", tapped "View instructions", and arrived at a screen
+  /// with no way to find out what they were.
+  Future<ApplicationModel> fetchDetail(String applicationId);
+
   Future<ApplicationModel> submitApplication({
     required String businessId,
     required String businessName,
@@ -97,6 +121,15 @@ class MockApplicationsRepository implements ApplicationsRepository {
   Future<List<ApplicationModel>> fetchAll() async {
     await Future.delayed(AppConstants.mockNetworkDelay);
     return List.unmodifiable(_applications);
+  }
+
+  /// The local store holds one shape, so the detail IS the record.
+  @override
+  Future<ApplicationModel> fetchDetail(String applicationId) async {
+    for (final application in _applications) {
+      if (application.id == applicationId) return application;
+    }
+    throw StateError('No application $applicationId on this device');
   }
 
   @override

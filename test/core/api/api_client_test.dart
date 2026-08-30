@@ -47,7 +47,11 @@ void main() {
         authToken: () async => 'token-123',
       );
 
-      await api.post('/applications', body: {'businessId': 'biz-1'}, idempotencyKey: _key);
+      await api.post(
+        '/applications',
+        body: {'businessId': 'biz-1'},
+        idempotencyKey: _key,
+      );
 
       final request = fake.lastRequest! as http.Request;
       expect(request.method, 'POST');
@@ -198,7 +202,10 @@ void main() {
       );
 
       expect(
-        await api.post('/applications/a/instructions/l/resubmit', idempotencyKey: _key),
+        await api.post(
+          '/applications/a/instructions/l/resubmit',
+          idempotencyKey: _key,
+        ),
         isEmpty,
       );
     });
