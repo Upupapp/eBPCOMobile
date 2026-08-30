@@ -370,6 +370,38 @@ class _DraftTile extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(_lastTouched(), style: AppTypography.helper),
+          // What a restored draft could NOT keep. M-48 persists an applicant's
+          // typing but never their files, because a picked file's path is not
+          // reliably readable after a restart — so the documents are named
+          // here rather than silently missing from a step the applicant has
+          // already been through and believes is finished.
+          if (draft.documentsToReattach.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.attach_file_outlined,
+                  size: 16,
+                  color: AppColors.warning,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    'Re-attach ${draft.documentsToReattach.length} '
+                    '${draft.documentsToReattach.length == 1 ? 'document' : 'documents'}: '
+                    '${draft.documentsToReattach.join(', ')}',
+                    // Colour carries no meaning here — the icon and the
+                    // sentence do — so the text stays at full contrast rather
+                    // than taking the amber, which does not reach AA on white.
+                    style: AppTypography.helper.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: AppSpacing.sm),
           Semantics(
             label:

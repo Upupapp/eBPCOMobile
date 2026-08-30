@@ -2,13 +2,42 @@ import 'package:flutter/foundation.dart';
 
 import '../models/draft_summary.dart';
 import '../models/fencing_permit_model.dart';
+import '../drafts/fencing_permit_draft_codec.dart';
+import '../drafts/draft_persistence_barrel.dart';
+import '../drafts/persistent_draft.dart';
 
-/// Holds the single in-progress Fencing Permit application draft for the
-/// current app session (frontend-only: nothing here is persisted to disk
-/// or a server). Mirrors the other permit providers' shape exactly, but is
-/// a fully separate provider/class so this draft can never be overwritten
-/// by, or overwrite, any other permit's draft.
-class FencingPermitProvider extends ChangeNotifier implements DraftSource {
+/// Holds the single in-progress Fencing Permit application draft.
+///
+/// A fully separate provider and class from every other permit's, so this
+/// draft can never be overwritten by, or overwrite, another permit's — which
+/// remains true on disk: each wizard's snapshot is stored under its own key.
+///
+/// Persisted since M-48, the second of the nineteen wizards to be. Typed
+/// fields survive a restart; attachments do not, and are named back to the
+/// applicant. See `lib/core/drafts/`.
+class FencingPermitProvider extends ChangeNotifier
+    with PersistentDraft<FencingPermitDraft>
+    implements DraftSource {
+  /// Null everywhere except the running app. A provider built without a store
+  /// behaves exactly as it did before M-48 — in memory, dying with the
+  /// process — which is what leaves every existing widget test unchanged.
+  FencingPermitProvider({this.persistence});
+
+  @override
+  final DraftPersistence? persistence;
+
+  @override
+  DraftCodec<FencingPermitDraft> get codec => const FencingPermitDraftCodec();
+
+  @override
+  FencingPermitDraft? get resumableDraft => hasResumableDraft ? _draft : null;
+
+  @override
+  FencingPermitDraft beginRestoredDraft() => startNew();
+
+  @override
+  void seekRestoredStep(int step) => _currentStep = step;
+
   FencingPermitDraft? _draft;
   int _currentStep = 0;
 
@@ -50,6 +79,9 @@ class FencingPermitProvider extends ChangeNotifier implements DraftSource {
     if (draft == null) return;
     draft.status = FencingPermitDraftStatus.draft;
     draft.lastSavedAt = DateTime.now();
+    // The whole of M-48 for this wizard. Fire-and-forget: the applicant taps
+    // Save as Draft and leaves, and a keychain write must not hold the tap.
+    persistDraft(_currentStep);
     notifyListeners();
   }
 
@@ -62,12 +94,16 @@ class FencingPermitProvider extends ChangeNotifier implements DraftSource {
     final draft = _draft;
     if (draft == null) return;
     draft.status = FencingPermitDraftStatus.submitted;
+    // A filed application is not an unfinished one. Leaving it on disk would
+    // resurrect it as an editable draft on the next launch.
+    forgetPersistedDraft();
     notifyListeners();
   }
 
   void discardDraft() {
     _draft = null;
     _currentStep = 0;
+    forgetPersistedDraft();
     notifyListeners();
   }
 
@@ -82,17 +118,19 @@ class FencingPermitProvider extends ChangeNotifier implements DraftSource {
     return DraftSummary(
       permitTypeLabel: 'Fencing',
       lastSavedAt: draft.lastSavedAt,
-      completedSteps: (draft.isStep1Valid ? 1 : 0) +
-      (draft.isStep2Valid ? 1 : 0) +
-      (draft.isStep3Valid ? 1 : 0) +
-      (draft.isStep4Valid ? 1 : 0) +
-      (draft.isStep5Valid ? 1 : 0) +
-      (draft.isStep6Valid ? 1 : 0) +
-      (draft.isStep7Valid ? 1 : 0) +
-      (draft.isStep8Valid ? 1 : 0) +
-      (draft.isStep9Valid ? 1 : 0),
+      completedSteps:
+          (draft.isStep1Valid ? 1 : 0) +
+          (draft.isStep2Valid ? 1 : 0) +
+          (draft.isStep3Valid ? 1 : 0) +
+          (draft.isStep4Valid ? 1 : 0) +
+          (draft.isStep5Valid ? 1 : 0) +
+          (draft.isStep6Valid ? 1 : 0) +
+          (draft.isStep7Valid ? 1 : 0) +
+          (draft.isStep8Valid ? 1 : 0) +
+          (draft.isStep9Valid ? 1 : 0),
       totalSteps: 9,
       route: '/applications/new/fencing-permit',
+      documentsToReattach: documentsToReattach,
     );
   }
 }

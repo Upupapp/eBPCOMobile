@@ -8,6 +8,7 @@ import 'core/providers/application_intent_provider.dart';
 import 'core/providers/contact_verification_provider.dart';
 import 'core/sync/sync_provider.dart';
 import 'core/sync/offline_queue.dart';
+import 'core/drafts/draft_persistence_barrel.dart';
 import 'core/providers/applications_provider.dart';
 import 'core/repositories/contact_verification_repository.dart';
 import 'core/providers/architectural_permit_provider.dart';
@@ -64,6 +65,24 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
 
   late final RepositoryFactory _repositories = RepositoryFactory();
 
+  /// One store behind every persisted wizard draft.
+  ///
+  /// Built here, and the two providers that use it built here too, for the
+  /// same two reasons the queue above is: `initState` has to reach them to
+  /// start the restore before anything renders, and all drafts share a single
+  /// keychain record, so two stores would each overwrite the other's writes.
+  ///
+  /// Two of nineteen. The other seventeen are still in-memory only, which is
+  /// why the Before-you-start card's narrowed wording stands — see M-48.
+  final DraftPersistence _drafts = DraftPersistence(SecureDraftStore());
+
+  late final BuildingPermitProvider _buildingPermit = BuildingPermitProvider(
+    persistence: _drafts,
+  );
+  late final FencingPermitProvider _fencingPermit = FencingPermitProvider(
+    persistence: _drafts,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +90,12 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
     // Count what is waiting before anything renders, so a queued item is
     // visible from the first frame rather than after the first flush.
     _sync.refresh();
+    // Read back anything the applicant was part-way through. Deliberately not
+    // awaited: a keychain read must not delay the first frame, and each
+    // provider refuses to overwrite a draft the applicant has already started
+    // typing into while the read was in flight.
+    _buildingPermit.restoreFromStore();
+    _fencingPermit.restoreFromStore();
   }
 
   @override
@@ -166,8 +191,8 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
         ChangeNotifierProvider<DocumentsProvider>(
           create: (_) => DocumentsProvider(),
         ),
-        ChangeNotifierProvider<BuildingPermitProvider>(
-          create: (_) => BuildingPermitProvider(),
+        ChangeNotifierProvider<BuildingPermitProvider>.value(
+          value: _buildingPermit,
         ),
         ChangeNotifierProvider<RenovationPermitProvider>(
           create: (_) => RenovationPermitProvider(),
@@ -193,8 +218,8 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
         ChangeNotifierProvider<InteriorDesignPermitProvider>(
           create: (_) => InteriorDesignPermitProvider(),
         ),
-        ChangeNotifierProvider<FencingPermitProvider>(
-          create: (_) => FencingPermitProvider(),
+        ChangeNotifierProvider<FencingPermitProvider>.value(
+          value: _fencingPermit,
         ),
         ChangeNotifierProvider<MechanicalPermitProvider>(
           create: (_) => MechanicalPermitProvider(),

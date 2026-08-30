@@ -2,13 +2,44 @@ import 'package:flutter/foundation.dart';
 
 import '../models/draft_summary.dart';
 import '../models/building_permit_model.dart';
+import '../drafts/building_permit_draft_codec.dart';
+import '../drafts/draft_persistence_barrel.dart';
+import '../drafts/persistent_draft.dart';
 
-/// Holds the single in-progress Building Permit application draft for the
-/// current app session (frontend-only: nothing here is persisted to disk
-/// or a server). Lets the wizard resume from where the user left off if
-/// they navigate away and reopen the Building Permit flow before
-/// submitting.
-class BuildingPermitProvider extends ChangeNotifier implements DraftSource {
+/// Holds the single in-progress Building Permit application draft.
+///
+/// Lets the wizard resume from where the applicant left off — and, since
+/// M-48, from where they left off in a *previous run of the app*. The typed
+/// fields are written to the keychain on every Save as Draft and read back on
+/// launch; the attachments are not, and are named back to the applicant to
+/// re-attach. See `lib/core/drafts/` and `docs/SCOPING-M-48-draft-
+/// persistence.md`.
+///
+/// Nothing here reaches a server. The draft becomes an application only when
+/// the wizard files it.
+class BuildingPermitProvider extends ChangeNotifier
+    with PersistentDraft<BuildingPermitDraft>
+    implements DraftSource {
+  /// Null everywhere except the running app. A provider built without a store
+  /// behaves exactly as it did before M-48 — in memory, dying with the
+  /// process — which is what leaves every existing widget test unchanged.
+  BuildingPermitProvider({this.persistence});
+
+  @override
+  final DraftPersistence? persistence;
+
+  @override
+  DraftCodec<BuildingPermitDraft> get codec => const BuildingPermitDraftCodec();
+
+  @override
+  BuildingPermitDraft? get resumableDraft => hasResumableDraft ? _draft : null;
+
+  @override
+  BuildingPermitDraft beginRestoredDraft() => startNew();
+
+  @override
+  void seekRestoredStep(int step) => _currentStep = step;
+
   BuildingPermitDraft? _draft;
   int _currentStep = 0;
 
@@ -50,6 +81,9 @@ class BuildingPermitProvider extends ChangeNotifier implements DraftSource {
     if (draft == null) return;
     draft.status = BuildingPermitDraftStatus.draft;
     draft.lastSavedAt = DateTime.now();
+    // The whole of M-48 for this wizard. Fire-and-forget: the applicant taps
+    // Save as Draft and leaves, and a keychain write must not hold the tap.
+    persistDraft(_currentStep);
     notifyListeners();
   }
 
@@ -61,12 +95,16 @@ class BuildingPermitProvider extends ChangeNotifier implements DraftSource {
     final draft = _draft;
     if (draft == null) return;
     draft.status = BuildingPermitDraftStatus.submitted;
+    // A filed application is not an unfinished one. Leaving it on disk would
+    // resurrect it as an editable draft on the next launch.
+    forgetPersistedDraft();
     notifyListeners();
   }
 
   void discardDraft() {
     _draft = null;
     _currentStep = 0;
+    forgetPersistedDraft();
     notifyListeners();
   }
 
@@ -81,17 +119,19 @@ class BuildingPermitProvider extends ChangeNotifier implements DraftSource {
     return DraftSummary(
       permitTypeLabel: 'New Construction',
       lastSavedAt: draft.lastSavedAt,
-      completedSteps: (draft.isStep1Valid ? 1 : 0) +
-      (draft.isStep2Valid ? 1 : 0) +
-      (draft.isStep3Valid ? 1 : 0) +
-      (draft.isStep4Valid ? 1 : 0) +
-      (draft.isStep5Valid ? 1 : 0) +
-      (draft.isStep6Valid ? 1 : 0) +
-      (draft.isStep7Valid ? 1 : 0) +
-      (draft.isStep8Valid ? 1 : 0) +
-      (draft.isStep9Valid ? 1 : 0),
+      completedSteps:
+          (draft.isStep1Valid ? 1 : 0) +
+          (draft.isStep2Valid ? 1 : 0) +
+          (draft.isStep3Valid ? 1 : 0) +
+          (draft.isStep4Valid ? 1 : 0) +
+          (draft.isStep5Valid ? 1 : 0) +
+          (draft.isStep6Valid ? 1 : 0) +
+          (draft.isStep7Valid ? 1 : 0) +
+          (draft.isStep8Valid ? 1 : 0) +
+          (draft.isStep9Valid ? 1 : 0),
       totalSteps: 9,
       route: '/applications/new/building-permit',
+      documentsToReattach: documentsToReattach,
     );
   }
 }

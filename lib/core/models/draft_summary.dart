@@ -24,12 +24,23 @@ class DraftSummary {
   /// Where to resume. Always a wizard route, never a tab root.
   final String route;
 
+  /// Documents that were attached when this draft was saved and are no longer
+  /// held, by name.
+  ///
+  /// M-48 persists a draft's typing but never its files: a `DocumentModel`
+  /// points at a path the OS may have reclaimed, and a draft claiming to hold
+  /// a document it cannot open is a worse failure than one that says plainly
+  /// what to re-attach. Empty for the seventeen wizards that do not persist at
+  /// all, and for any draft restored with nothing attached.
+  final List<String> documentsToReattach;
+
   const DraftSummary({
     required this.permitTypeLabel,
     required this.lastSavedAt,
     required this.completedSteps,
     required this.totalSteps,
     required this.route,
+    this.documentsToReattach = const [],
   });
 
   /// Progress as a whole percentage, for the applicant rather than for maths.

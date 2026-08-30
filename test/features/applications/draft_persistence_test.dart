@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ebpco_user_app/core/drafts/draft_persistence_barrel.dart';
 import 'package:ebpco_user_app/core/models/draft_summary.dart';
 import 'package:ebpco_user_app/core/providers/building_permit_provider.dart';
 import 'package:ebpco_user_app/core/providers/fencing_permit_provider.dart';
@@ -10,108 +11,138 @@ import 'package:ebpco_user_app/core/providers/zoning_permit_provider.dart';
 
 /// What an applicant actually keeps when the app is killed mid-filing.
 ///
-/// Nineteen wizards each offer **Save as Draft**, nineteen providers implement
-/// [DraftSource], the Applications tab has a **Drafts** segment listing them,
-/// and the Before-you-start card tells the applicant *"You can save your
-/// progress as a draft."*
+/// **This file used to prove the opposite.** Nineteen wizards offered *Save as
+/// Draft*, the Applications tab listed drafts with a "Last saved" time, and
+/// nothing reached disk: every draft lived in a `ChangeNotifier` and died with
+/// the process. That was measured here, the applicant-facing copy was narrowed
+/// to match, and M-48 was raised.
 ///
-/// **Nothing is written to disk.** Every draft lives in a `ChangeNotifier` and
-/// dies with the process. Only `AuthProvider` persists anything at all.
+/// **Two of the nineteen now persist** — Building Permit and Fencing, through
+/// `lib/core/drafts/`. Seventeen do not. The file is rewritten rather than
+/// deleted because the honest statement of a half-finished migration is worth
+/// more than either half alone, and because the copy may only change when the
+/// count does.
 ///
-/// These tests exist to hold that as a measured fact rather than an assumption,
-/// and to fail the day persistence is added — at which point the copy this
-/// programme corrected can be put back.
+/// The round trip itself is proven in `test/features/drafts/`; this states the
+/// boundary.
 
-/// A process restart, as far as the app is concerned: the providers are gone
-/// and rebuilt from nothing. There is no store to rehydrate from, which is the
-/// whole point.
-BuildingPermitProvider _afterRestart() => BuildingPermitProvider();
+/// A provider constructed the way every widget test constructs one: no store.
+///
+/// The seventeen unconverted wizards have no other mode. It matters that this
+/// mode still behaves exactly as it did before M-48, because that is what
+/// leaves the rest of the suite untouched by the change.
+BuildingPermitProvider _withoutAStore() => BuildingPermitProvider();
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  test('a saved draft does not survive a restart', () {
-    final before = BuildingPermitProvider();
-    before.startNew();
-    before.saveAsDraft();
+  group('the seventeen that do not persist', () {
+    test('a saved draft still dies with the process', () {
+      final before = ZoningPermitProvider()..startNew();
+      before.saveAsDraft();
+      expect(before.draftSummary, isNotNull);
 
-    expect(
-      before.hasResumableDraft,
-      isTrue,
-      reason: 'the draft exists in this session',
-    );
-    expect(before.draftSummary, isNotNull);
+      // The applicant force-quits, or the OS reclaims the app.
+      expect(
+        ZoningPermitProvider().draftSummary,
+        isNull,
+        reason:
+            'if this now fails, Zoning has been converted — move it out of '
+            'this group and into the round-trip suite',
+      );
+    });
 
-    // The applicant force-quits, or the OS reclaims the app.
-    final after = _afterRestart();
-
-    expect(
-      after.hasResumableDraft,
-      isFalse,
-      reason:
-          'if this now passes, drafts persist — update the Before-you-start '
-          'copy, which was narrowed because they did not',
-    );
-    expect(after.draftSummary, isNull);
-  });
-
-  test('the Drafts list is empty after a restart, however much was typed', () {
-    // Not one wizard: the segment is assembled from all nineteen, so a restart
-    // empties the list rather than losing one row.
-    final zoning = ZoningPermitProvider()..startNew();
-    final fencing = FencingPermitProvider()..startNew();
-    zoning.saveAsDraft();
-    fencing.saveAsDraft();
-
-    expect([zoning.draftSummary, fencing.draftSummary].nonNulls, hasLength(2));
-
-    final summaries = <DraftSummary?>[
-      ZoningPermitProvider().draftSummary,
-      FencingPermitProvider().draftSummary,
-    ].nonNulls;
-
-    expect(summaries, isEmpty);
-  });
-
-  test('"Last saved" is a within-session timestamp, not a durable one', () {
-    // The Drafts row shows it, which reads as a promise that something was
-    // written somewhere. It was not.
-    final provider = FencingPermitProvider()..startNew();
-    provider.saveAsDraft();
-
-    expect(provider.draft!.lastSavedAt, isNotNull);
-    expect(FencingPermitProvider().draft, isNull);
-  });
-
-  test('no wizard provider writes to any store', () {
-    // Scanned rather than asserted from a list I typed, because a list I typed
-    // would go on saying "no persistence" the day someone adds it. If this
-    // fails, persistence has arrived: revisit the Before-you-start copy, the
-    // pending register, and the two tests above.
-    final offenders = <String>[];
-    for (final entity in Directory('lib/core/providers').listSync()) {
-      if (entity is! File || !entity.path.endsWith('.dart')) continue;
-      if (entity.path.endsWith('auth_provider.dart')) continue; // the session
-      final source = entity.readAsStringSync();
-      for (final store in const [
-        'SharedPreferences',
-        'LocalStorageService',
-        'FlutterSecureStorage',
-        'SecureQueueStore',
-      ]) {
-        if (source.contains(store)) {
-          offenders.add('${entity.path.split('/').last} → $store');
+    test('exactly which wizards are converted, counted from source', () {
+      // Scanned rather than listed by hand, because a hand-written list would
+      // go on claiming "two of nineteen" the day the third landed — and the
+      // applicant-facing copy is gated on this count.
+      final converted = <String>[];
+      final all = <String>[];
+      for (final entity in Directory('lib/core/providers').listSync()) {
+        if (entity is! File) continue;
+        if (!entity.path.endsWith('_permit_provider.dart') &&
+            !entity.path.endsWith('certificate_of_occupancy_provider.dart')) {
+          continue;
+        }
+        final name = entity.path.split('/').last;
+        all.add(name);
+        if (entity.readAsStringSync().contains('with PersistentDraft')) {
+          converted.add(name);
         }
       }
-    }
 
+      expect(all, hasLength(19), reason: 'nineteen wizards');
+      expect(converted..sort(), [
+        'building_permit_provider.dart',
+        'fencing_permit_provider.dart',
+      ]);
+    });
+
+    test('the Drafts list still empties for an unconverted wizard', () {
+      final zoning = ZoningPermitProvider()..startNew();
+      zoning.saveAsDraft();
+      expect(<DraftSummary?>[zoning.draftSummary].nonNulls, hasLength(1));
+      expect(<DraftSummary?>[ZoningPermitProvider().draftSummary].nonNulls, isEmpty);
+    });
+  });
+
+  group('the two that do', () {
+    test('nothing is written when there is no store', () async {
+      // Every widget test in this repository builds providers this way. If
+      // persistence ever became mandatory, hundreds of them would start
+      // touching a keychain that does not exist under `flutter test`.
+      final before = _withoutAStore()..startNew();
+      before.saveAsDraft();
+      await before.pendingWrite;
+
+      expect(_withoutAStore().hasResumableDraft, isFalse);
+      expect(before.documentsToReattach, isEmpty);
+    });
+
+    test('with a store, the draft outlives the provider', () async {
+      final persistence = DraftPersistence(InMemoryDraftStore());
+      final before = BuildingPermitProvider(persistence: persistence);
+      before.startNew().applicant.firstName = 'Maria';
+      before.saveAsDraft();
+      await before.pendingWrite;
+
+      final after = BuildingPermitProvider(persistence: persistence);
+      expect(await after.restoreFromStore(), isTrue);
+      expect(after.draft!.applicant.firstName, 'Maria');
+      expect(after.draftSummary, isNotNull);
+    });
+
+    test('"Last saved" is now a durable timestamp for these two', () async {
+      // The Drafts row shows it, which reads as a promise that something was
+      // written somewhere. For Building Permit and Fencing, it now was.
+      final persistence = DraftPersistence(InMemoryDraftStore());
+      final before = FencingPermitProvider(persistence: persistence)..startNew();
+      before.saveAsDraft();
+      await before.pendingWrite;
+      final saved = before.draft!.lastSavedAt;
+      expect(saved, isNotNull);
+
+      final after = FencingPermitProvider(persistence: persistence);
+      await after.restoreFromStore();
+      expect(after.draft!.lastSavedAt, saved);
+    });
+  });
+
+  test('the narrowed copy stands while any wizard is unconverted', () {
+    // The copy was narrowed to "only while the app stays open" because that
+    // was true of all nineteen. It is now true of seventeen, which is still
+    // the sentence an applicant must be shown — a promise that holds for two
+    // wizards out of nineteen is not a promise.
+    final card = File(
+      'lib/features/applications/presentation/widgets/'
+      'before_you_start_card.dart',
+    ).readAsStringSync();
     expect(
-      offenders,
-      isEmpty,
+      card.contains('only while the app stays open'),
+      isTrue,
       reason:
-          'a provider now persists something: $offenders. If it is a wizard '
-          'draft, the app can finally keep the promise it makes on the '
-          'Before-you-start card.',
+          'the caveat was removed. It may only go when every wizard persists '
+          '— check the converted count in this file first',
     );
   });
 }

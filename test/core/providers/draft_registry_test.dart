@@ -65,8 +65,14 @@ void main() {
         if (!file.path.endsWith('_provider.dart')) continue;
         final source = file.readAsStringSync();
         if (!source.contains('implements DraftSource')) continue;
+        // Anything between the class name and `implements DraftSource` —
+        // notably the `with PersistentDraft<...>` M-48 added to the two
+        // persisted wizards, which dart format wraps onto its own line. The
+        // strict single-line form silently stopped seeing them, and this test
+        // reported seventeen implementers instead of nineteen.
         final match = RegExp(
-          r'class (\w+) extends ChangeNotifier implements DraftSource',
+          r'class (\w+) extends ChangeNotifier[\s\S]{0,120}?implements '
+          r'DraftSource',
         ).firstMatch(source);
         if (match != null) implementers.add(match.group(1)!);
       }
