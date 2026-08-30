@@ -209,27 +209,79 @@ String? _classBody(String source, String name) {
 
 /// Instance fields declared directly on a class, as (type, name).
 ///
-/// Only at brace depth 1 — a local inside a method is not a field. Getters,
-/// statics and methods are excluded too: a getter is derived from fields that
-/// are themselves captured, so persisting one would store the same value twice
-/// and let the two disagree after a restore.
+/// Parsed as STATEMENTS, not as lines. `dart format` puts a declaration's type
+/// and name on separate lines when the line would be too long —
+/// `DocumentModel?\n  signedPlumbingCalculationsUpload;` — and a line-based
+/// regex simply does not see those. It bit on 31 August, when an unrelated
+/// edit lengthened `plumbing_permit_model.dart` enough for the formatter to
+/// wrap two declarations: the gate then reported two correctly-captured paths
+/// as invented. **The third time the formatter has defeated a source scan in
+/// this repository**, after the `input .method(` wrap and the one-line class
+/// regex in `draft_registry_test`.
+///
+/// Method bodies are skipped and collection literals are kept, told apart by
+/// the character before the brace: `= {` opens a literal, anything else opens
+/// a body. Getters and statics are skipped too — a getter is derived from
+/// fields that are themselves captured, so persisting one would store the same
+/// value twice and let the two disagree after a restore.
 List<(String, String)> _fields(String body) {
-  final fields = <(String, String)>[];
-  var depth = 0;
-  for (final line in body.split('\n')) {
-    final wasTopLevel = depth == 1;
-    for (final rune in line.runes) {
-      if (rune == 0x7B) depth++;
-      if (rune == 0x7D) depth--;
+  final open = body.indexOf('{');
+  if (open < 0) return const [];
+  final source = body.substring(open + 1);
+  final kept = StringBuffer();
+  var i = 0;
+  while (i < source.length) {
+    final char = source[i];
+    if (char == '{') {
+      var back = i - 1;
+      while (back >= 0 && (source[back] == ' ' || source[back] == '\n')) {
+        back--;
+      }
+      final literal = back >= 0 && source[back] == '=';
+      var depth = 0;
+      final blockStart = i;
+      while (i < source.length) {
+        if (source[i] == '{') depth++;
+        if (source[i] == '}') {
+          depth--;
+          if (depth == 0) break;
+        }
+        i++;
+      }
+      if (literal) kept.write(source.substring(blockStart, i + 1));
+      i++;
+      continue;
     }
-    if (!wasTopLevel) continue;
-    if (line.contains(' get ') || line.contains('static')) continue;
+    if (char == '}') break;
+    kept.write(char);
+    i++;
+  }
+
+  final text = kept
+      .toString()
+      .replaceAll(RegExp(r'//[^\n]*'), '')
+      .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+
+  final fields = <(String, String)>[];
+  for (final statement in text.split(';')) {
+    final line = statement
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .join(' ');
+    if (line.isEmpty || line.contains(' get ') || line.contains('static')) {
+      continue;
+    }
     final match = RegExp(
-      r'^  (?:final\s+)?([A-Za-z_][\w<>?, ]*?)\s+([a-z_]\w*)\s*(?:=|;)',
+      r'^(?:final\s+)?([A-Za-z_][\w<>?, ]*?)\s+([a-z_]\w*)\s*(?:=.*)?$',
     ).firstMatch(line);
     if (match == null) continue;
     final type = match.group(1)!.trim();
-    if (type == 'void' || type == 'return' || type == 'final') continue;
+    if (type == 'void' ||
+        type == 'return' ||
+        type == 'final' ||
+        type == 'const') {
+      continue;
+    }
     fields.add((type, match.group(2)!));
   }
   return fields;

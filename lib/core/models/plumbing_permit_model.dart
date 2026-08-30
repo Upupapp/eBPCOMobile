@@ -437,17 +437,11 @@ class PlumbingFixtureInventory {
 
   bool get hasAtLeastOneFixture => fixtures.any((f) => f.hasQuantity);
 
-  bool get isValid =>
-      hasAtLeastOneFixture && fixtures.every((f) => f.isValid);
+  bool get isValid => hasAtLeastOneFixture && fixtures.every((f) => f.isValid);
 }
 
 /// The four official plumbing systems — at least one must be selected.
-enum PlumbingSystemType {
-  waterDistribution,
-  sewage,
-  septicTank,
-  stormDrainage,
-}
+enum PlumbingSystemType { waterDistribution, sewage, septicTank, stormDrainage }
 
 extension PlumbingSystemTypeX on PlumbingSystemType {
   String get label {
@@ -673,8 +667,7 @@ class PlumbingStormDrainage {
         null) {
       return false;
     }
-    if (_nonNegativeWholeNumber(catchBasinCount, 'Catch basin count') !=
-        null) {
+    if (_nonNegativeWholeNumber(catchBasinCount, 'Catch basin count') != null) {
       return false;
     }
     if (_nonNegativeWholeNumber(roofDrainCount, 'Roof drain count') != null) {
@@ -694,7 +687,8 @@ class PlumbingInstallationDetails {
   final Set<PlumbingSystemType> selectedSystems = {};
 
   final PlumbingFixtureInventory fixtureInventory = PlumbingFixtureInventory();
-  final PlumbingWaterDistribution waterDistribution = PlumbingWaterDistribution();
+  final PlumbingWaterDistribution waterDistribution =
+      PlumbingWaterDistribution();
   final PlumbingSewageSystem sewageSystem = PlumbingSewageSystem();
   final PlumbingSepticTank septicTank = PlumbingSepticTank();
   final PlumbingStormDrainage stormDrainage = PlumbingStormDrainage();
@@ -756,12 +750,14 @@ class PlumbingProfessionalInfo {
 /// Design Master Plumber's uploads for both roles in that case. The
 /// Signed Plumbing Calculations upload is optional ("when applicable").
 class PlumbingProfessionals {
-  final PlumbingProfessionalInfo designMasterPlumber = PlumbingProfessionalInfo();
+  final PlumbingProfessionalInfo designMasterPlumber =
+      PlumbingProfessionalInfo();
   DocumentModel? designPrcIdUpload;
   DocumentModel? designPtrDocumentUpload;
   DocumentModel? signedSealedPlansUpload;
   DocumentModel? signedSealedSpecificationsUpload;
-  DocumentModel? signedPlumbingCalculationsUpload; // optional, "when applicable"
+  DocumentModel?
+  signedPlumbingCalculationsUpload; // optional, "when applicable"
 
   bool isSupervisorSameAsDesignMasterPlumber = true;
   final PlumbingProfessionalInfo supervisor = PlumbingProfessionalInfo();
@@ -876,7 +872,8 @@ class PlumbingRequiredDocuments {
   DocumentModel? wastewaterFlowCalculationUpload;
   DocumentModel? sewerPipeSizingCalculationUpload;
   DocumentModel? sewerConnectionDetailsUpload;
-  DocumentModel? receivingSystemCoordinationUpload; // optional, "when applicable"
+  DocumentModel?
+  receivingSystemCoordinationUpload; // optional, "when applicable"
 
   // Septic Tank Documents — conditionally required.
   DocumentModel? septicTankPlanUpload;
@@ -958,7 +955,8 @@ class PlumbingRequiredDocuments {
       return false;
     }
     if (hasStormDrainage &&
-        (stormDrainagePlanUpload == null || drainageCalculationUpload == null)) {
+        (stormDrainagePlanUpload == null ||
+            drainageCalculationUpload == null)) {
       return false;
     }
 
@@ -1014,7 +1012,8 @@ enum PlumbingDocumentEvaluationStatus {
   notApplicable,
 }
 
-extension PlumbingDocumentEvaluationStatusX on PlumbingDocumentEvaluationStatus {
+extension PlumbingDocumentEvaluationStatusX
+    on PlumbingDocumentEvaluationStatus {
   String get label {
     switch (this) {
       case PlumbingDocumentEvaluationStatus.pendingReview:
@@ -1106,7 +1105,12 @@ class PlumbingEvaluationPermitStatus {
 
   static const List<String> permitConditions = [
     'Plumbing work must follow approved plumbing plans and applicable codes.',
-    'A Notice of Construction must be submitted when required before work begins.',
+    // The form says it plainly: "prior to any commencement of plumbing works,
+    // a duly accomplished prescribed Notice of Construction SHALL be
+    // submitted". "When required" was a softening nobody had authority for.
+    'Before any plumbing work begins, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
     'A licensed Master Plumber must supervise or take charge of the plumbing work.',
     'Required logbook entries, as-built plans, and completion documents must be submitted.',
     'The Plumbing Permit is invalid without the related Building Permit.',

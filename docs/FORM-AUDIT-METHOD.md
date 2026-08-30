@@ -14,17 +14,29 @@ source scan"*, and needed someone who could open a PDF.
 `qlmanage`, which renders a PDF page to PNG; the PNG can then be read directly.
 `tool/render-form.sh` is the two lines it takes.
 
-## The limit, which is real
+## The limit was not a limit
 
-`qlmanage` renders **page one only**, and this machine has neither Homebrew nor
-poppler, so there is no `pdftoppm` to render the rest. For most of these forms
-page one carries Boxes 1–5 — applicant, location of construction, scope of
-work, the design professional, the supervisor and the consent block — which is
-where nearly all applicant-entered fields live. The later boxes (specifications,
-and the office-only processing sections) are on page two and remain unread.
+This section used to say `qlmanage` renders page one only, that there is no
+poppler and no Homebrew here, and that page two therefore *"remains unread"*.
+The first two are true. **The conclusion was not**, and it stood as a blocker
+for a day.
 
-Say which pages an audit covered. A wizard "audited against the form" on the
-strength of page one is a different claim from one audited against all of it.
+Every Mac ships PDFKit, reachable from JavaScript for Automation with no
+install at all:
+
+```js
+ObjC.import('Quartz'); ObjC.import('AppKit');
+var doc = $.PDFDocument.alloc.initWithURL($.NSURL.fileURLWithPath(src));
+var page = doc.pageAtIndex(n);            // any page
+```
+
+`tool/render-pdf-page.js` is that, and `tool/render-form.sh <form> [page]` now
+takes a page number. **That is the fourth thing this week filed as blocked on
+something external that was answerable here** — after the LGU's domain, the
+forms themselves, and the office's contact details.
+
+Say which pages an audit covered, all the same. A wizard audited on page one is
+a different claim from one audited against the whole form.
 
 ## The method
 
@@ -194,3 +206,69 @@ documentary requirements above shared across the lot. So there is no separate
 ancillary document list to audit against — which is itself the finding, and it
 is why the catalogue's ancillary entries cite national law rather than a
 Castilla checklist that does not exist for them.
+
+---
+
+## Page two, 31 August 2026
+
+Page one carries Boxes 1–5 — the applicant, the site, the scope, the
+professionals, the consent block. **Page two carries Box 8: the conditions the
+permit is issued subject to.** The app renders those to the applicant on the
+Evaluation & Permit Status step of nine wizards, and they had been written
+without the form.
+
+### Fencing — the conditions were a paraphrase, and it lost the obligations
+
+NBC Form B-03's Box 8 puts four things on the applicant. **Three were absent
+from the app entirely:**
+
+- a licensed **Geodetic Engineer** must carry out an actual relocation survey
+  before work starts;
+- before any excavation, the owner of the **adjoining building** must be
+  notified **in writing at least ten days beforehand**, showing how their
+  building will be protected;
+- a **logbook** must be kept at the jobsite at all times and made available to
+  the OBO representative under Section 207 of the National Building Code.
+
+The fourth, full-time supervision by a licensed architect or engineer, was
+there. The app also carried one condition the form does not print — that
+professional documents *"must be authentic"*.
+
+**This is not a wording problem.** An applicant who never hears about the
+ten-day notice does not give it, and the neighbour finds out when the digging
+starts.
+
+Article 1723 of the Civil Code — fifteen years' liability for the engineer or
+architect if the structure collapses through a defect in the plans — is on the
+form and is now shown too.
+
+### Plumbing — right in substance, softened in one place
+
+NBC Form A-06's Box 8 says a Notice of Construction *"shall be submitted"*
+before any plumbing work begins. The app said *"when required"*. Nobody had the
+authority for that word, and it is gone.
+
+The rest of that list was a fair paraphrase, which is worth recording: the
+plans-and-codes condition, the supervising Master Plumber, the logbook and
+as-built plans on completion, and that the permit is void without the building
+permit are all on the form.
+
+### Two facts about the office, from the signature blocks
+
+Both forms are signed by **Jesus D. Abitria, Jr.** — as *Building Official* on
+the fencing form and as *Municipal Engineer* on the plumbing one. One person,
+both titles, which corroborates the OBO/MEO equivalence `OfficeContact` states.
+
+### And a documentary requirement page one does not show
+
+The plumbing form's Box 7 asks for **five sets** of plumbing documents: plans
+and specifications, bill of materials, cost estimates. Worth noting beside the
+building permit audit, which correctly made the bill of materials optional —
+it is not on the building permit checklist, and it *is* on the plumbing form.
+
+### What is left
+
+Box 8 of the seven other two-page forms — Architectural, Civil/Structural,
+Demolition, Electrical, Electronics, Interior Design, Mechanical, Sign,
+Excavation and the Unified form. Each is one render and one read, and nine
+wizards render a conditions list.

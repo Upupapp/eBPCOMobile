@@ -529,11 +529,37 @@ class FencingProcessingInfo {
     'Building Official Decision',
   ];
 
+  /// The conditions Box 8 of the form actually prints, in the applicant's
+  /// terms.
+  ///
+  /// **Rewritten 31 August 2026 by reading page two of NBC Form B-03.** What
+  /// was here was a paraphrase written without the form, and it left out every
+  /// condition that puts an obligation on the applicant: the relocation survey
+  /// before work starts, the ten days' written notice to the neighbour before
+  /// excavation, and the jobsite logbook. It also carried one the form does
+  /// not — that professional documents "must be authentic".
+  ///
+  /// These are shown on the Evaluation & Permit Status step, so they are read
+  /// as what the permit requires. Getting them wrong is not a wording problem:
+  /// an applicant who never hears about the ten-day notice does not give it.
   static const List<String> permitConditions = [
-    'Fence construction must follow the approved plans and applicable regulations.',
-    'A licensed professional must supervise or take charge of the work.',
-    'Required signed and sealed professional documents must be authentic.',
-    'The Fencing Permit is invalid without the related Building Permit.',
+    'The work must follow the approved plans and conform to the National '
+        'Building Code (PD 1096) and its rules.',
+    'Before work starts, a licensed Geodetic Engineer must carry out an '
+        'actual relocation survey.',
+    'Before any excavation, you must notify the owner of the adjoining '
+        'building in writing at least ten (10) days beforehand, and show how '
+        'their building will be protected.',
+    'You must engage a licensed architect or civil engineer for full-time '
+        'inspection and supervision of the work.',
+    'A logbook must be kept at the jobsite at all times, recording progress, '
+        'tests and weather, and made available to the OBO representative '
+        '(Section 207, National Building Code).',
+    'Under Article 1723 of the Civil Code, the engineer or architect who '
+        'prepared the plans is liable for fifteen (15) years if the structure '
+        'collapses through a defect in the plans, specifications or ground; a '
+        'supervising engineer is liable together with the contractor for '
+        'defects in construction or inferior materials.',
   ];
 
   bool get isValid => true;
