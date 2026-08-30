@@ -50,6 +50,12 @@ class PermitForm {
   /// What to call it on screen — the document's own title, not the permit
   /// type's, because they differ and the applicant is looking for the former
   /// on a counter.
+  ///
+  /// Checked against the paper on 31 August 2026 by rendering each form's
+  /// first page. Two were the permit type's name rather than the document's:
+  /// the Excavation form is headed **Excavation and Ground Preparation
+  /// Permit**, and NBC A-05 is headed **Sanitary Permit**, not "Sanitary /
+  /// Plumbing". Both corrected. See `docs/FORM-AUDIT-METHOD.md`.
   final String title;
 
   final FormIssuingOffice office;
@@ -125,7 +131,7 @@ const Map<CanonicalPermitType, PermitForm> _forms = {
   ),
   CanonicalPermitType.sanitaryPermit: PermitForm(
     assetPath: '$_dir/Sanitary-Plumbing-Permit.pdf',
-    title: 'Sanitary / Plumbing Permit Application',
+    title: 'Sanitary Permit',
     office: FormIssuingOffice.obo,
     isOfficialCastillaForm: true,
   ),
@@ -137,7 +143,7 @@ const Map<CanonicalPermitType, PermitForm> _forms = {
   ),
   CanonicalPermitType.excavationPermit: PermitForm(
     assetPath: '$_dir/Excavation-Permit-Form.pdf',
-    title: 'Excavation Permit Application',
+    title: 'Excavation and Ground Preparation Permit',
     office: FormIssuingOffice.obo,
     isOfficialCastillaForm: true,
   ),

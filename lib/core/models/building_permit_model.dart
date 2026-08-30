@@ -92,6 +92,15 @@ enum ScopeOfWorkOption {
   moving,
   raising,
   accessoryBuilding,
+
+  /// Legalising a structure built without a permit.
+  ///
+  /// Added 31 August 2026 by reading Castilla's Unified Application Form for
+  /// Building Permit, whose Scope of Work box lists twelve options; this app
+  /// had eleven. An applicant regularising an existing building had to pick
+  /// "Others" and type it, on the one permit where the office most needs to
+  /// know — legalisation follows a different assessment path under PD 1096.
+  legalizationOfExistingBuilding,
   others,
 }
 
@@ -118,6 +127,8 @@ extension ScopeOfWorkOptionX on ScopeOfWorkOption {
         return 'Raising';
       case ScopeOfWorkOption.accessoryBuilding:
         return 'Accessory Building or Structure';
+      case ScopeOfWorkOption.legalizationOfExistingBuilding:
+        return 'Legalization of Existing Building';
       case ScopeOfWorkOption.others:
         return 'Others';
     }

@@ -78,8 +78,70 @@ Generator/UPS Capacity, all in kVA. The model has
 `generatorCapacityKva`, with a conditional document requirement when the
 generator capacity is above zero. No gap.
 
-## What is left
+## The rest of the audit, 31 August 2026
 
-Nine of the ten permits whose bundled form is flagged as Castilla's own while
-their requirements are recorded as built from a national baseline. Each is one
-render and one read.
+All nine remaining forms rendered and read. **Every one carries the Castilla
+letterhead**, so the ten `isOfficialCastillaForm: true` flags among them are now
+verified by reading rather than pinned on trust — the earlier audit could
+corroborate two of fourteen by machine and said so.
+
+| Permit | Form | Page-one verdict |
+|---|---|---|
+| New Construction · Renovation · Addition/Extension | Unified Application Form for Building Permit | **four findings** |
+| Civil / Structural | NBC A-02 | exact — 12 scope options, 15 natures of work |
+| Electrical | NBC A-03 | exact — 8 scope options, all three supervisor types |
+| Mechanical | NBC A-04 | exact — 12 scope options, 2 supervisor types; the app's 29 equipment kinds are a superset of the form's 19 grouped ones |
+| Sanitary | NBC A-05 | exact — 12 scope, 4 water supplies, 8 disposal systems. Title wrong |
+| Plumbing | NBC A-06 | exact — 12 scope, 4 systems; the app offers one fixture more than page one prints (swimming pool) |
+| Electronics | NBC A-07 | exact — 3 scope options, 14 systems |
+| Excavation | NBC B-02 | exact — 6 scope options. Title wrong |
+| Fencing | NBC B-03 | audited first; the telephone number was missing |
+
+**That settles the 14-against-4 disagreement.** The forms are Castilla's and the
+wizards were built from them — nine of the ten match box for box. The
+requirements catalogue's `verified: false` is the stale party for these
+permits, not the form flag.
+
+### Fixed
+
+- **`LEGALIZATION OF EXISTING BUILDING`** was missing from the building
+  permit's Scope of Work. The form prints twelve options and the app had
+  eleven, so an applicant regularising an unpermitted structure had to choose
+  *Others* and type it — on the one permit where the office most needs to know,
+  since legalisation follows a different assessment path under PD 1096.
+- **Two form titles named the permit rather than the document**, against
+  `PermitForm.title`'s own rule. NBC B-02 is headed *Excavation and Ground
+  Preparation Permit*; NBC A-05 is headed *Sanitary Permit*, not "Sanitary /
+  Plumbing".
+
+### Filed, not fixed
+
+Three more findings on the Unified Application Form, all bigger than an enum
+value and all on the app's most-filed permit:
+
+- **`NUMBER OF STOREY` is not collected.** The form asks for it beside Number
+  of Units, Total Floor Area and Lot Area, which the app does collect.
+- **The estimated-cost breakdown is collapsed to one figure.** The form asks
+  for TOTAL ESTIMATED COST split across *Building · Electrical · Mechanical ·
+  Electronics · Plumbing*, plus *Cost of Equipment Installed*. Building permit
+  fees are assessed from those components, so a single number is not the same
+  information.
+- **Boxes 3 and 4 ask for a `Gov't Issued ID No.`; the app asks for a CTC
+  Number.** The ancillary forms do ask for C.T.C. No., so the app is right
+  elsewhere and wrong here.
+
+### One oddity in the LGU's own paperwork
+
+The Excavation form is headed **Office of the Municipal Engineer**, not Office
+of the Building Official. The app shows the OBO for it. In many municipalities
+these are the same officer and `FormIssuingOffice.obo` documents both, so this
+is recorded rather than changed — but an applicant reads the app's label and
+then the paper's.
+
+## What guards the audit
+
+`test/architecture/form_field_parity_test.dart` pins every count read off the
+paper — twelve scope options here, eight there, fifteen natures of work, three
+electrical supervisor types. A count that lives only in a document is a count
+nobody checks; an option quietly added or dropped now fails a test and has to
+be justified against the form.
