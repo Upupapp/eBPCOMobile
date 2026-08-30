@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
+import 'package:ebpco_user_app/core/contract/service_domain.dart';
 
 /// The one body every application is filed through, against the contract.
 ///
@@ -13,13 +14,20 @@ import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 /// submission — and the body this app builds would be refused by a conforming
 /// server on **four** independent counts.
 ///
-/// None of them is fixable here, and that is why they are asserted rather than
-/// patched: three are the contract lane's, and the fourth cannot be fixed
-/// without breaking the admin parity the whole programme established.
+/// **Two of the four are fixed as of 30 August 2026**, and this file says so
+/// rather than being deleted: the day a divergence is reconciled these
+/// expectations fail and name what changed, which is exactly how the two
+/// fixes below were prompted.
 ///
-/// Recorded as M-47. Each expectation below documents the divergence as it
-/// stands, so the day it is reconciled **this test fails and says so** rather
-/// than the app quietly continuing to send something the server rejects.
+/// What is fixed is what could be fixed WITHOUT silently dropping something
+/// the applicant supplied. `serviceDomain` was derivable and required;
+/// `businessId: ''` was simply the wrong shape for a nullable uuid.
+///
+/// What stands is the rest: `documents` cannot become `documentIds` until the
+/// upload flow exists, and removing it would let a submission succeed while
+/// discarding every attachment the applicant made — a silent loss worse than
+/// the loud rejection it replaces. The permit vocabulary is not this app's to
+/// change. M-47.
 
 void main() {
   final schema =
@@ -55,45 +63,80 @@ void main() {
     expect(schema['additionalPropertiesAllowed'], isFalse);
   });
 
-  group('DIVERGENCE — the app cannot file against a conforming server', () {
-    test('1. a required field is never sent: serviceDomain', () {
-      // 'Business Permit' | 'Construction Permit'. The app has no notion of it
-      // at all — `grep -rn serviceDomain lib` returns nothing — so every
-      // submission is missing a required property.
+  group('FIXED — what could be reconciled without losing anything', () {
+    test('1. serviceDomain is required, and is now sent', () {
+      // Was never sent at all: `grep -rn serviceDomain lib` returned nothing,
+      // so a conforming server refused every filing this app made. Derivable
+      // rather than a decision — every CanonicalPermitType is a construction
+      // permit, and the only other filer is the business-permit screen, which
+      // names no permit type.
       expect(listOf('required'), contains('serviceDomain'));
+      expect(bodyKeys(), contains('serviceDomain'));
+    });
+
+    test('the two values it can send are the two the contract declares', () {
       expect(
-        bodyKeys(),
-        isNot(contains('serviceDomain')),
-        reason:
-            'if this now fails, serviceDomain is being sent — good; '
-            'delete this expectation and close that part of M-47',
+        ServiceDomain.values.map((d) => d.wire).toList(),
+        listOf('serviceDomain'),
+        reason: 'a value the contract does not know fails the whole filing',
+      );
+      expect(
+        serviceDomainFor('Fencing'),
+        ServiceDomain.constructionPermit,
+        reason: 'anything naming a permit is a construction filing',
+      );
+      expect(
+        serviceDomainFor(null),
+        ServiceDomain.businessPermit,
+        reason: 'the business-permit screen names no permit type',
       );
     });
 
-    test('2. an undeclared key is sent: documents', () {
+    test(
+      '3. businessId is null on a construction permit, not an empty string',
+      () {
+        // The contract types it as a uuid or null; '' is neither. The wizard
+        // helper still passes '' — a construction permit is filed by a person
+        // and has no business to name — and the repository is where that
+        // becomes the null the contract asks for.
+        final helper = File(
+          'lib/features/applications/presentation/widgets/'
+          'submit_permit_application.dart',
+        ).readAsStringSync();
+        expect(helper, contains("businessId: ''"));
+
+        final repository = File(
+          'lib/core/repositories/http_applications_repository.dart',
+        ).readAsStringSync();
+        expect(
+          repository,
+          contains("'businessId': businessId.isEmpty ? null : businessId"),
+          reason:
+              'if this moved, check '
+              ' is still not reaching the wire',
+        );
+      },
+    );
+  });
+
+  group('DIVERGENCE — what is left, and why it is left', () {
+    test('an undeclared key is sent: documents', () {
       // The contract declares `documentIds` — uuids of documents already
       // uploaded through /documents. The app sends `documents`, a list of
       // local labels and filenames, because the separate upload flow is not
       // built. With additionalProperties false this alone rejects the body.
+      //
+      // LEFT DELIBERATELY. Dropping the key would make the filing succeed
+      // while discarding every attachment the applicant made — on a Building
+      // Permit, twenty-four of them — and the wizard would have told them
+      // their documents were sent. A loud rejection is the better failure
+      // until the upload flow exists.
       expect(listOf('properties'), contains('documentIds'));
       expect(listOf('properties'), isNot(contains('documents')));
       expect(bodyKeys(), contains('documents'));
     });
 
-    test('3. businessId is sent as an empty string, not a uuid or null', () {
-      // Every construction wizard files through `submitPermitApplication`,
-      // which passes `businessId: ''` because a construction permit is filed
-      // by a person rather than a business. The contract types it as a uuid or
-      // null; '' is neither.
-      final helper = File(
-        'lib/features/applications/presentation/widgets/'
-        'submit_permit_application.dart',
-      ).readAsStringSync();
-      expect(helper, contains("businessId: ''"));
-      expect(bodyKeys(), contains('businessId'));
-    });
-
-    test('4. NO permit type the app sends is in the contract enum', () {
+    test('NO permit type the app sends is in the contract enum', () {
       // The sharpest of the four, and the one I first described wrongly.
       //
       // It is NOT a stale contract that mobile has outrun. `ebpco-api`'s
@@ -125,6 +168,30 @@ void main() {
             'reconciled — re-measure M-47 rather than editing this figure',
       );
     });
+  });
+
+  test('DIVERGENCE — the application carries none of its own content', () {
+    // Found 30 August 2026, and never named before: the contract declares
+    // `form` (the permit-type-specific field set) and `location`, and the app
+    // sends NEITHER. Every application it files therefore carries a permit
+    // type, an action and a business id, and not one of the applicant's typed
+    // answers — up to 239 fields on a mechanical permit.
+    //
+    // Not fixable here, and not for the usual reason. `form` is
+    // `additionalProperties: true` and "validated server-side against the
+    // schema for permitType", and the contract itself says the wizards are
+    // auditable against the DPWH/JMC unified forms "once those are supplied".
+    // They have not been — that is M-10. Sending mobile's internal field names
+    // would make this app's private shape the de facto official one.
+    expect(listOf('properties'), containsAll(['form', 'location']));
+    expect(bodyKeys(), isNot(contains('form')));
+    expect(
+      bodyKeys(),
+      isNot(contains('location')),
+      reason:
+          'if location is now sent, good — it is a plain string and needs no '
+          'form schema. Delete this half of the expectation',
+    );
   });
 
   test('the fix is NOT to adopt the contract spelling', () {

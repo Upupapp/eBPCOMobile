@@ -49,12 +49,27 @@ const Map<String, String> _declaredFor = {
   'label': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'fileName': 'NSPrivacyCollectedDataTypeOtherDataTypes',
   'proof': 'NSPrivacyCollectedDataTypeOtherDataTypes',
-  'method': 'NSPrivacyCollectedDataTypeOtherDataTypes',
-  'referenceNumber': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  // The applicant's answer to a Letter of Instruction: which deficiency, and
+  // what they wrote back about it. Application content.
+  'items': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  'itemId': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  'response': 'NSPrivacyCollectedDataTypeOtherDataTypes',
+  // A payment the applicant made to the LGU: how, when, how much, and the
+  // bank reference or OR number. Apple has a category for exactly this, and
+  // it is not "other" — folding it in with the permit details would understate
+  // what is being sent.
+  'method': 'NSPrivacyCollectedDataTypeOtherFinancialInfo',
+  'referenceNumber': 'NSPrivacyCollectedDataTypeOtherFinancialInfo',
+  'paidOn': 'NSPrivacyCollectedDataTypeOtherFinancialInfo',
+  'amountCentavos': 'NSPrivacyCollectedDataTypeOtherFinancialInfo',
 };
 
 /// Keys that carry nothing about the applicant.
 const Map<String, String> _notPersonalData = {
+  'serviceDomain':
+      'Which of the LGU\'s two services the application belongs to — Business '
+      'Permit or Construction Permit. A property of the filing, not of the '
+      'person filing it, and the same for every applicant who files one.',
   'grantType':
       'A protocol constant. The app sends the literal string "password" to '
       'name the OAuth grant it is using; it says nothing about who is using '

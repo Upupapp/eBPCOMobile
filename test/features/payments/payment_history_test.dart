@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/models/money.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,9 @@ class _FakeRepository implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) => throw UnimplementedError();
   @override

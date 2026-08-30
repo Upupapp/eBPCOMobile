@@ -43,6 +43,10 @@ void main() {
         final paid = await applications.attachPayment(
           submitted.id,
           method: PaymentMethod.bankTransfer,
+          // Both required since M-47: the contract's PaymentProof requires a
+          // reference and a paid-on date, and the app used to send neither.
+          referenceNumber: 'BPI-2026-0099',
+          paidOn: DateTime(2026, 8, 28),
         );
         expect(paid.status, ApplicationStatus.paymentVerification);
         expect(paid.payment, isNotNull);

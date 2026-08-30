@@ -2,17 +2,87 @@
 
 **Hand-off to the contract lane, with the backend and admin lanes.**
 
-*Measured 29 August 2026 from `eBPCO-Mobile-App`. Everything below is checked
-against source, not recalled. Nothing was changed in `~/ebpco-contract` or
-`~/ebpco-api` — this lane is mobile front-end only.*
+*Measured 29 August 2026 from `eBPCO-Mobile-App`, and reworked 30 August after
+acting on it. Everything below is checked against source, not recalled. Nothing
+was changed in `~/ebpco-contract` or `~/ebpco-api` — this lane is mobile
+front-end only.*
+
+---
+
+## What changed on 30 August, and the rule that decided it
+
+The 29 August version of this document said none of the divergences was
+fixable in the mobile lane. **That was wrong**, and the correction is worth
+stating because it is the rule that decides the rest:
+
+> A field the contract **does not declare** cannot be fixed here — sending it
+> early fails the whole request. A field the contract **requires** and the app
+> simply never sent is not the contract lane's problem at all.
+
+Four of the six were the second kind. They are fixed:
+
+| Was | Now |
+|---|---|
+| `serviceDomain` required, never sent — the app had no notion of it | Sent. A new `ServiceDomain` closed vocabulary in `lib/core/contract/`, derived from the permit: every `CanonicalPermitType` is construction-side, and the only other filer is the business-permit screen, which names no permit type |
+| `businessId: ''` against a `uuid \| null` | `null`, mapped in the repository. The wizard helper still passes `''` — a construction permit is filed by a person — and the repository is where that becomes what the contract asks for |
+| `paidOn` required, never sent | Sent. **This was never a matter of adding a key**: the app had no field for it anywhere, so a *"Date paid"* question was added to the proof-of-payment sheet, threaded through `PaymentAssessmentModel`, and sent as a calendar date rather than an instant — the applicant paid on a day, in their own timezone |
+| `amountCentavos` optional, not sent, though the app had the figure on screen | Sent when known. The office can now see a short payment as a short payment rather than as a mystery |
+| `items` required with `minItems: 1`; the resubmit posted **no body at all** | Sends one record per instruction item, with the applicant's note. An empty list is refused in the app, which names the mistake, rather than by the server, which cannot |
+
+A fifth defect was found on the way and fixed: `attachPayment` set
+`referenceNumber: proof?.label ?? ''` — **the label of the attached file, not
+the reference the applicant typed**. The Treasurer's Office reconciles against
+a bank reference or an OR number, and "Proof of payment" is neither, so every
+payment reported through that path was unverifiable.
+
+## What is left, and the single reason it is left
+
+Two divergences stand, and both for the same reason: **fixing them would make
+a request succeed while silently discarding something the applicant supplied.**
+
+- **`documents` vs `documentIds`** on the submission. Dropping the undeclared
+  key would let a Building Permit file successfully with all twenty-four of its
+  attachments discarded, after the wizard told the applicant they were sent.
+- **`proof` vs `documentId`** on the payment. The same, for the receipt.
+
+A loud rejection is the better failure until `/documents` exists. This is the
+same reasoning already recorded for `renewsPermitNumber` (M-44).
+
+**Both close the moment the document upload flow is built.** That is now the
+single blocker for the write path, and it is one piece of work, not two.
+
+## A third thing, never named before
+
+**`POST /applications` declares `form` and `location`, and the app sends
+neither.** Every application it files carries a permit type, an action and a
+business id — and not one of the applicant's typed answers. Up to 239 fields on
+a mechanical permit, all collected, none transmitted.
+
+`location` is a plain nullable string and could be sent tomorrow.
+
+`form` cannot, and not for the usual reason. It is
+`additionalProperties: true`, "validated server-side against the schema for
+`permitType`", and **the contract itself says the wizards are auditable against
+the DPWH/JMC unified forms "once those are supplied"** — which is M-10, still
+open. Sending mobile's internal field names would make this app's private
+shape the de facto official one. That is a decision for the LGU and the
+contract lane, not a gap for mobile to fill quietly.
+
+## And an asymmetry in the read path
+
+`PaymentProof` **requires** `paidOn`; `PaymentState` does not return it. The
+applicant must tell the office when they paid, and the office can never show
+them back what they said. Exempted with that reason in the DTO completeness
+gate rather than parsed, because inventing a key produces a parser that never
+fires.
 
 ---
 
 ## Why nothing has caught this
 
 Every request schema is `additionalProperties: false`, so **one undeclared key
-rejects the whole request**. Three of the five paths a client calls would be
-refused today, and no gate on any lane looks at a request body:
+rejects the whole request**. Three of the five paths a client calls **were** refused, and no gate on any
+lane looks at a request body:
 
 - the contract's `check_client_alignment.py` compares **routes** and **response**
   enums;
@@ -21,8 +91,14 @@ refused today, and no gate on any lane looks at a request body:
 
 The bodies themselves had never been diffed against the schemas until now.
 Mobile now gates all six in `test/contract/write_bodies_test.dart` against a
-vendored copy of the schemas, and every divergence below is asserted **as it
-stands** — so the day one is reconciled, that test fails and says what to do.
+vendored copy of the schemas, and every divergence is asserted **as it stands**
+— so the day one is reconciled, that test fails and says what to do. That is
+not a claim about the future: it is what happened on 30 August. Fixing four
+divergences turned four gate tests red, each naming what had changed, and the
+gate now asserts the fixes instead.
+
+**The sections below are the 29 August measurement, kept as the record of what
+was found.** Read them against the table above for what still stands.
 
 ---
 

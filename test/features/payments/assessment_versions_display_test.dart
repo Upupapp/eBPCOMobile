@@ -52,6 +52,9 @@ class _Repo implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) => throw UnimplementedError();
   @override

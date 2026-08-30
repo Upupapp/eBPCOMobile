@@ -194,6 +194,18 @@ class PaymentAssessmentModel {
   final DocumentModel? proof;
   final DateTime? submittedAt;
 
+  /// The date the applicant says the money was paid.
+  ///
+  /// Not the same as [submittedAt], which is when they told the office. An
+  /// applicant pays at the bank on Friday and uploads the slip on Monday, and
+  /// the Treasurer's Office reconciles against the bank's date, not ours.
+  ///
+  /// Added 30 August 2026: the contract makes `paidOn` a REQUIRED field of
+  /// `PaymentProof`, and the app had no field for it anywhere — so this was
+  /// never a matter of adding a key to a request body, it needed a question
+  /// added to the flow. M-47.
+  final DateTime? paidOn;
+
   /// Official receipt recorded by the Treasurer's Office once verified.
   final String? officialReceiptNumber;
   final DateTime? verifiedAt;
@@ -222,6 +234,7 @@ class PaymentAssessmentModel {
     this.method,
     this.proof,
     this.submittedAt,
+    this.paidOn,
     this.officialReceiptNumber,
     this.verifiedAt,
     this.transactions = const [],
@@ -294,6 +307,7 @@ class PaymentAssessmentModel {
     PaymentMethod? method,
     DocumentModel? proof,
     DateTime? submittedAt,
+    DateTime? paidOn,
     String? officialReceiptNumber,
     DateTime? verifiedAt,
     List<PaymentTransactionRecord>? transactions,
@@ -307,6 +321,7 @@ class PaymentAssessmentModel {
       method: method ?? this.method,
       proof: proof ?? this.proof,
       submittedAt: submittedAt ?? this.submittedAt,
+      paidOn: paidOn ?? this.paidOn,
       officialReceiptNumber:
           officialReceiptNumber ?? this.officialReceiptNumber,
       verifiedAt: verifiedAt ?? this.verifiedAt,

@@ -1,9 +1,11 @@
 import '../api/api_client.dart';
 import '../api/api_exception.dart';
 import '../api/application_dto.dart';
+import '../contract/service_domain.dart';
 import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/document_model.dart';
+import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 import 'applications_repository.dart';
 
@@ -58,7 +60,15 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     final json = await _api.post(
       '/applications',
       body: {
-        'businessId': businessId,
+        // Required by the contract and, until 30 August 2026, never sent — so
+        // a conforming server refused every filing this app made. Derived
+        // rather than decided: see `serviceDomainFor`.
+        'serviceDomain': serviceDomainFor(permitTypeLabel).wire,
+        // Null, not ''. The contract types this as a uuid or null, and an
+        // empty string is neither — every construction wizard files through
+        // `submitPermitApplication`, which has no business to name because a
+        // construction permit is filed by a person.
+        'businessId': businessId.isEmpty ? null : businessId,
         // Sent when the caller is a construction-permit wizard, which knows
         // its own permit name. The server assigns the reference, so the
         // locally-generated one is deliberately not sent — the parsed
@@ -94,11 +104,20 @@ class HttpApplicationsRepository implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) => reportPayment(
     applicationId,
     method: method,
-    referenceNumber: proof?.label ?? '',
+    // Was `proof?.label ?? ''` — the label of the attached file, not the
+    // reference the applicant typed. The Treasurer's Office reconciles against
+    // a bank reference or an OR number, and "Proof of payment" is neither, so
+    // every report sent this way was unverifiable. M-47.
+    referenceNumber: referenceNumber,
+    paidOn: paidOn,
+    amountPaid: amountPaid,
     proof: proof,
   );
 
@@ -111,6 +130,8 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     String applicationId, {
     required PaymentMethod method,
     required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async {
     final json = await _api.post(
@@ -120,6 +141,26 @@ class HttpApplicationsRepository implements ApplicationsRepository {
             ? 'Bank Transfer'
             : 'Onsite',
         'referenceNumber': referenceNumber,
+        // Required by the contract, and absent until 30 August 2026 — so every
+        // payment report was refused before the office saw it. `format: date`,
+        // which is a calendar day and not an instant: the applicant paid on a
+        // date, in their own timezone, and an ISO timestamp would invite the
+        // server to shift it.
+        'paidOn':
+            '${paidOn.year.toString().padLeft(4, '0')}-'
+            '${paidOn.month.toString().padLeft(2, '0')}-'
+            '${paidOn.day.toString().padLeft(2, '0')}',
+        // Optional, and the app has always had the figure — the Order of
+        // Payment is on the screen the applicant is looking at. Sending it
+        // lets the Treasurer's Office see a short payment as a short payment
+        // rather than as a mystery.
+        if (amountPaid != null) 'amountCentavos': amountPaid.centavos,
+        // DELIBERATELY LEFT DIVERGENT. The contract declares `documentId` —
+        // the id of a receipt already uploaded through /documents — and that
+        // flow is not built, so the app has no id to send. Dropping the key
+        // would let the request succeed while silently discarding the receipt
+        // the applicant attached; sending it fails the request loudly instead.
+        // The same reasoning as `documents` on the submission body. M-47.
         if (proof != null)
           'proof': {'label': proof.label, 'fileName': proof.fileName},
       },
@@ -127,13 +168,45 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     return ApplicationDto.parse(json);
   }
 
-  /// Returns corrected documents to the office after a Letter of Instruction.
+  /// Answers a Letter of Instruction, item by item.
+  ///
+  /// Took no arguments and posted no body until 30 August 2026, against an
+  /// endpoint whose `items` array is required with `minItems: 1` — so the
+  /// request was refused before the office ever saw which deficiencies the
+  /// applicant had addressed. That is the call the 28 August remeasure
+  /// mistook for a working M-43: the route exists, and the app was calling it
+  /// wrongly, which is a different thing and was missed because nothing
+  /// compared bodies.
+  ///
+  /// [responses] is the applicant's note against an item, keyed by item id;
+  /// an item with nothing to say sends none. Document ids are deliberately
+  /// absent — the /documents upload flow is not built, so there is no id to
+  /// reference, and the contract makes them optional.
   Future<ApplicationModel> resubmitInstruction(
     String applicationId,
-    String letterId,
-  ) async {
+    String letterId, {
+    required List<String> itemIds,
+    Map<String, String> responses = const {},
+  }) async {
+    if (itemIds.isEmpty) {
+      // `minItems: 1`. Failing here names the mistake; letting it through
+      // would send a body the server rejects for a reason nobody can see.
+      throw const ApiException(
+        ApiFailure.rejected,
+        'a Letter of Instruction cannot be answered with no items',
+      );
+    }
     final json = await _api.post(
       '/applications/$applicationId/instructions/$letterId/resubmit',
+      body: {
+        'items': [
+          for (final itemId in itemIds)
+            {
+              'itemId': itemId,
+              if (responses[itemId] != null) 'response': responses[itemId],
+            },
+        ],
+      },
     );
     return ApplicationDto.parse(json);
   }

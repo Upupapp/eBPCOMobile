@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ebpco_user_app/core/models/money.dart';
 import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/business_model.dart';
@@ -51,6 +52,9 @@ class _ThrowingApplications implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async => throw _Offline();
   @override

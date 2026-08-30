@@ -3,6 +3,7 @@ import '../constants/app_constants.dart';
 import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/document_model.dart';
+import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 
 /// Source of a user's permit applications. Swap [MockApplicationsRepository]
@@ -32,9 +33,18 @@ abstract class ApplicationsRepository {
     ApplicationLineage? lineage,
   });
 
+  /// Reports a payment the applicant says they made.
+  ///
+  /// [referenceNumber] and [paidOn] are both REQUIRED by the contract's
+  /// `PaymentProof`, and both used to be missing here: the reference was
+  /// fabricated from the proof document's label on the HTTP path, and the date
+  /// had no field anywhere in the app. M-47.
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   });
 
@@ -99,6 +109,9 @@ class MockApplicationsRepository implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async {
     await Future.delayed(AppConstants.mockNetworkDelay);
@@ -121,6 +134,8 @@ class MockApplicationsRepository implements ApplicationsRepository {
               .copyWith(
                 status: PaymentAssessmentStatus.pending,
                 method: method,
+                referenceNumber: referenceNumber,
+                paidOn: paidOn,
                 proof: proof,
                 submittedAt: DateTime.now(),
               ),

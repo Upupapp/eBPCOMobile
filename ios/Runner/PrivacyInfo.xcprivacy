@@ -130,6 +130,26 @@
 			</array>
 		</dict>
 		<!--
+		  A payment the applicant reports making to the LGU: the channel, the
+		  date the money moved, the amount, and the bank reference or official
+		  receipt number. Added 30 August 2026, when M-47 added `paidOn` and
+		  `amountCentavos` to the payment body and the guarding test refused to
+		  let them be folded in with the permit details — which would have
+		  understated what is sent.
+		-->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherFinancialInfo</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!--
 		  The application itself and the credential that authenticates it:
 		  password; business name and category; permitType and
 		  applicationAction; payment method and reference number; and the

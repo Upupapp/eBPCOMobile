@@ -8,6 +8,7 @@ import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
 import '../notifications/notification_evaluator.dart';
 import '../models/document_model.dart';
+import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
 import '../services/service_pledge_service.dart';
@@ -270,11 +271,17 @@ class ApplicationsProvider extends ChangeNotifier {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async {
     final updated = await _repository.attachPayment(
       applicationId,
       method: method,
+      referenceNumber: referenceNumber,
+      paidOn: paidOn,
+      amountPaid: amountPaid,
       proof: proof,
     );
     _replace(updated);
@@ -429,6 +436,10 @@ class ApplicationsProvider extends ChangeNotifier {
     required PaymentMethod method,
     required String referenceNumber,
     required DocumentModel proof,
+
+    /// When the applicant says the money was paid — not when they told us.
+    /// Required by the contract's `PaymentProof`; see M-47.
+    required DateTime paidOn,
   }) {
     final application = byId(applicationId);
     final payment = application?.payment;
@@ -443,6 +454,7 @@ class ApplicationsProvider extends ChangeNotifier {
           referenceNumber: referenceNumber,
           proof: proof,
           submittedAt: _clock(),
+          paidOn: paidOn,
         ),
       ),
     );

@@ -10,14 +10,18 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// All six schemas are `additionalProperties: false`, so one undeclared key
 /// rejects the whole request. Measured 29 August 2026: **three of the five
-/// paths a client actually calls cannot succeed.** Two more are clean, and
-/// this asserts that too, so a regression in them fails here.
+/// paths a client actually calls could not succeed.**
 ///
-/// Divergences are asserted as they stand rather than patched, because none is
-/// fixable in this lane — a field the contract does not declare fails the whole
-/// request, so sending it "early" is worse than not sending it. Each
-/// expectation fails the day it is reconciled and says what to do. All of it is
-/// M-47; see `docs/HANDOFF-M-47-permit-vocabulary.md`.
+/// **Reworked 30 August 2026.** The claim that none was fixable in this lane
+/// was wrong. It is true of a field the contract does not declare — sending
+/// one early is worse than not sending it — and false of a field the contract
+/// REQUIRES and the app simply never sent. Three of those are now sent:
+/// `paidOn`, `amountCentavos`, and the instruction resubmit's `items`.
+///
+/// What is left is the one shape that cannot be fixed without losing
+/// something: `proof` versus `documentId`. Removing it would let a payment
+/// report succeed while silently discarding the receipt the applicant
+/// attached. All of it is M-47; see `docs/HANDOFF-M-47-permit-vocabulary.md`.
 
 void main() {
   final schemas =
@@ -108,54 +112,84 @@ void main() {
     });
   });
 
-  group('DIVERGENCE — reporting a payment would be rejected', () {
+  group('FIXED — the payment report now carries what it must', () {
     const file = 'lib/core/repositories/http_applications_repository.dart';
     const anchor = "'/applications/\$applicationId/payments'";
 
-    test('paidOn is required and never sent', () {
-      // The app never asks the applicant WHEN they paid. Not a wire problem —
-      // there is no field for it in the payment screen either, so closing this
-      // needs a question added to the flow, not just a key added to the body.
+    test('paidOn is required, and is now sent', () {
+      // The app never asked the applicant WHEN they paid — there was no field
+      // for it in the payment screen either, so this was never a matter of
+      // adding a key to a body. A "Date paid" question was added to the proof
+      // sheet and threaded through the model.
       expect(requiredOf('PaymentProof'), contains('paidOn'));
       expect(
         bodyOf(file, anchor, nested: {'label', 'fileName'}),
-        isNot(contains('paidOn')),
+        contains('paidOn'),
       );
     });
 
-    test('proof is an undeclared key; the contract declares documentId', () {
-      // Same shape as `documents` on the submission: the contract wants the id
-      // of a file already uploaded through /documents, and that flow is not
-      // built, so the app inlines a label and a filename instead.
+    test('paidOn is sent as a calendar date, not an instant', () {
+      // `format: date`. An applicant paid on a day, in their own timezone;
+      // an ISO timestamp would invite the server to shift it across midnight
+      // and put a payment on the wrong side of a deadline.
+      final source = File(file).readAsStringSync();
+      expect(source, isNot(contains('paidOn.toIso8601String()')));
+      expect(source, contains("paidOn.year.toString().padLeft(4, '0')"));
+    });
+
+    test('the reference number is the applicant\'s, not a filename', () {
+      // It used to be `proof?.label ?? ''` — the label of the attached file.
+      // The Treasurer's Office reconciles against a bank reference or an OR
+      // number, and "Proof of payment" is neither, so every report sent this
+      // way was unverifiable.
+      final source = File(file).readAsStringSync();
+      expect(source, isNot(contains("referenceNumber: proof?.label ?? ''")));
+      expect(
+        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        contains('referenceNumber'),
+      );
+    });
+
+    test('amountCentavos is optional, and is now sent when known', () {
+      // The app always had the figure — the Order of Payment is on the screen
+      // the applicant is looking at — so the server was being told less than
+      // the applicant was shown.
+      expect(requiredOf('PaymentProof'), isNot(contains('amountCentavos')));
+      expect(propsOf('PaymentProof'), contains('amountCentavos'));
+      expect(
+        bodyOf(file, anchor, nested: {'label', 'fileName'}),
+        contains('amountCentavos'),
+      );
+    });
+  });
+
+  test(
+    'DIVERGENCE — proof is an undeclared key; the contract wants documentId',
+    () {
+      // The one payment divergence left, and left deliberately. The contract
+      // wants the id of a receipt already uploaded through /documents; that flow
+      // is not built. Dropping the key would let the report succeed while
+      // silently discarding the receipt the applicant attached — the same
+      // reasoning as `documents` on the submission body.
+      const file = 'lib/core/repositories/http_applications_repository.dart';
+      const anchor = "'/applications/\$applicationId/payments'";
       expect(propsOf('PaymentProof'), contains('documentId'));
       expect(propsOf('PaymentProof'), isNot(contains('proof')));
       expect(
         bodyOf(file, anchor, nested: {'label', 'fileName'}),
         contains('proof'),
       );
-    });
+    },
+  );
 
-    test('amountCentavos is optional, and also not sent', () {
-      // Recorded rather than asserted as a defect: the contract does not
-      // require it. Worth stating because the app HAS the figure — the Order
-      // of Payment is on screen — so the server is being told less than the
-      // applicant was shown.
-      expect(requiredOf('PaymentProof'), isNot(contains('amountCentavos')));
-      expect(
-        bodyOf(file, anchor, nested: {'label', 'fileName'}),
-        isNot(contains('amountCentavos')),
-      );
-    });
-  });
-
-  test('DIVERGENCE — the instruction resubmit sends no body at all', () {
-    // `items` is required. The app posts to the route with no body, so the
-    // request is rejected before the office ever sees which items the
-    // applicant answered.
+  test('FIXED — the instruction resubmit now answers item by item', () {
+    // `items` is required with `minItems: 1`. The app posted to the route with
+    // no body at all, so the request was refused before the office saw which
+    // deficiencies the applicant had addressed.
     //
     // This is the route the 28 August remeasure called "exists" and used to
-    // mark M-43 closed. It does exist. The app calls it wrongly, which is a
-    // different thing and was missed because nothing compared bodies.
+    // mark M-43 closed. It does exist. The app was calling it wrongly, which
+    // is a different thing, and was missed because nothing compared bodies.
     expect(requiredOf('InstructionResponse'), ['items']);
 
     final source = File(
@@ -164,12 +198,22 @@ void main() {
     final start = source.indexOf("instructions/\$letterId/resubmit'");
     expect(start, greaterThan(0));
     final call = source.substring(start, source.indexOf('return', start));
+    expect(call, contains('body:'));
+    expect(call, contains("'items'"));
+    expect(call, contains("'itemId'"));
+  });
+
+  test('an empty item list is refused here rather than by the server', () {
+    // minItems: 1. A body with an empty array is rejected for a reason nobody
+    // reading the app can see, so the app names it instead.
+    final source = File(
+      'lib/core/repositories/http_applications_repository.dart',
+    ).readAsStringSync();
+    expect(source, contains('itemIds.isEmpty'));
     expect(
-      call,
-      isNot(contains('body:')),
-      reason:
-          'if a body is now sent, check it carries `items` and close that part '
-          'of M-47',
+      source,
+      contains('cannot be answered with no items'),
+      reason: 'the guard exists but says nothing useful when it fires',
     );
   });
 }

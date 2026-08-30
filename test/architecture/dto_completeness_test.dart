@@ -44,6 +44,15 @@ const Map<String, Map<String, String>> _exempt = {
         'The path of a real file on THIS device, set when the applicant picks '
         'one. A server cannot know it.',
   },
+  'PaymentAssessmentModel': {
+    'paidOn':
+        'Write-only, and asymmetrically so. The contract REQUIRES `paidOn` on '
+        'PaymentProof — the applicant must say when they paid — and its '
+        'PaymentState response does not return it, so there is no field to '
+        'read back. The office therefore cannot show an applicant the date '
+        'they themselves reported. Filed for the contract lane in M-47; '
+        'inventing a key here would produce a parser that never fires.',
+  },
   'GeneratedPermit': {
     'localFilePath':
         'Set when the applicant downloads their permit for offline use. '

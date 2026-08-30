@@ -12,15 +12,21 @@ import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../applications/presentation/building_permit/widgets/date_picker_field.dart';
 import '../../../documents/presentation/widgets/attach_document_sheet.dart';
 
 /// Collects what the Treasurer's Office needs to verify a payment: the
 /// channel used, the reference number, and an image of the receipt or deposit
 /// slip.
 ///
-/// Both the reference and the attachment are required. A submission with only
-/// one of them cannot be verified, so accepting it would leave the applicant
-/// believing they had paid while their application sat still.
+/// The reference, the date and the attachment are all required. A submission
+/// missing any of them cannot be verified, so accepting it would leave the
+/// applicant believing they had paid while their application sat still.
+///
+/// The date was added 30 August 2026. The contract makes `paidOn` a REQUIRED
+/// field of `PaymentProof` and the app had no field for it anywhere — so this
+/// was never a matter of adding a key to a request body; it needed a question
+/// added to the flow. M-47.
 Future<void> showProofOfPaymentSheet(
   BuildContext context, {
   required String applicationId,
@@ -54,6 +60,7 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
   final _reference = TextEditingController();
   PaymentMethod _method = PaymentMethod.bankTransfer;
   DocumentModel? _proof;
+  DateTime? _paidOn;
 
   @override
   void dispose() {
@@ -62,7 +69,7 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
   }
 
   bool get _canSubmit =>
-      _reference.text.trim().isNotEmpty && _proof != null;
+      _reference.text.trim().isNotEmpty && _proof != null && _paidOn != null;
 
   Future<void> _attach() async {
     final result = await showAttachDocumentOptions(
@@ -77,13 +84,15 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    if (_proof == null) return;
+    final paidOn = _paidOn;
+    if (_proof == null || paidOn == null) return;
 
     context.read<ApplicationsProvider>().submitProofOfPayment(
       widget.applicationId,
       method: _method,
       referenceNumber: _reference.text.trim(),
       proof: _proof!,
+      paidOn: paidOn,
     );
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -152,11 +161,23 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
                 label: _method == PaymentMethod.bankTransfer
                     ? 'Bank reference number *'
                     : 'Official receipt number *',
-                validator: (value) => Validators.required(
-                  value,
-                  fieldLabel: 'reference number',
-                ),
+                validator: (value) =>
+                    Validators.required(value, fieldLabel: 'reference number'),
                 onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // The Treasurer's Office reconciles against the bank's date, not
+              // the date we were told, so this is the day the money moved.
+              // Bounded to the past: nobody has paid tomorrow.
+              DatePickerField(
+                label: 'Date paid *',
+                value: _paidOn,
+                firstDate: DateTime(DateTime.now().year - 2),
+                lastDate: DateTime.now(),
+                validator: (value) =>
+                    value == null ? 'Enter the date you paid.' : null,
+                onChanged: (value) => setState(() => _paidOn = value),
               ),
               const SizedBox(height: AppSpacing.lg),
 

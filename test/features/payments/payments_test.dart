@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ebpco_user_app/core/models/money.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,9 @@ class _FakeRepository implements ApplicationsRepository {
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
+    required String referenceNumber,
+    required DateTime paidOn,
+    PesoAmount? amountPaid,
     DocumentModel? proof,
   }) => throw UnimplementedError();
   @override
@@ -132,6 +136,18 @@ Future<void> _settle(WidgetTester tester) async {
 Future<void> _tall(WidgetTester tester) async {
   await tester.binding.setSurfaceSize(const Size(400, 3000));
   addTearDown(() => tester.binding.setSurfaceSize(null));
+}
+
+/// Picks a "Date paid", which the sheet has required since M-47.
+///
+/// The contract makes `paidOn` a required field of `PaymentProof` and the app
+/// had no field for it anywhere, so closing that gap needed a question added
+/// to the flow rather than a key added to a body.
+Future<void> _pickPaidOn(WidgetTester tester) async {
+  await tester.tap(find.text('Date paid *'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('OK'));
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -274,7 +290,7 @@ void main() {
   });
 
   group('proof of payment', () {
-    testWidgets('requires both a reference number and an attachment', (
+    testWidgets('requires a reference number, a date and an attachment', (
       tester,
     ) async {
       await _tall(tester);
@@ -312,6 +328,15 @@ void main() {
 
       await tester.tap(find.widgetWithText(OutlinedButton, 'Upload'));
       await tester.pumpAndSettle();
+      expect(
+        submit().onPressed,
+        isNull,
+        reason:
+            'the Treasurer\'s Office reconciles against the date the money '
+            'moved, and the server requires it',
+      );
+
+      await _pickPaidOn(tester);
       expect(submit().onPressed, isNotNull);
     });
 
@@ -340,6 +365,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(OutlinedButton, 'Upload'));
       await tester.pumpAndSettle();
+      await _pickPaidOn(tester);
       await tester.tap(find.text('Submit for verification'));
       await tester.pumpAndSettle();
 
