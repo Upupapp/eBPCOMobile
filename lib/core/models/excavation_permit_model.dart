@@ -557,7 +557,9 @@ class ExcavationProcessingInfo {
   String? processedBy;
 
   double? get totalAssessedFees {
-    if (filingFee == null && processingFee == null && otherAssessedFees == null) {
+    if (filingFee == null &&
+        processingFee == null &&
+        otherAssessedFees == null) {
       return null;
     }
     return (filingFee ?? 0) + (processingFee ?? 0) + (otherAssessedFees ?? 0);
@@ -574,15 +576,63 @@ class ExcavationProcessingInfo {
     'Building Official Decision',
   ];
 
+  /// Read off Box 7 of the bundled excavation form, 1 September 2026 —
+  /// Castilla's own, signed by Jesus D. Abitria, Jr.
+  ///
+  /// **The cash bond was the worst instance found of a condition generalised
+  /// into uselessness.** "Larger excavations may require a cash bond per the
+  /// permit conditions" stood in for: more than 50 cubic metres AND more than
+  /// 2 metres deep, fifty thousand pesos for the first 50 cubic metres and
+  /// three hundred pesos for every cubic metre after, deposited with the
+  /// Office of the Building Official, forfeited if the excavation is left
+  /// open with no work for 120 days. Every number an owner needs to budget
+  /// for it, and the one consequence they need to avoid, were absent.
+  ///
+  /// **None of this is displayed.** The excavation wizard has no evaluation
+  /// step — it ends at step 9, consent and review — so this list renders
+  /// nowhere. It is corrected here so it is right whenever it is shown, and
+  /// the gap is filed in `docs/PERMIT-CONDITIONS-AUDIT.md`.
   static const List<String> permitConditions = [
-    'Excavation and ground preparation work must follow the approved '
-        'plans and applicable regulations.',
-    'A licensed professional must supervise or take charge of the work.',
-    'Required signed and sealed professional documents must be authentic.',
-    'This permit supports construction activities but does not replace, '
-        'and does not guarantee the granting of, the Building Permit.',
-    'Larger excavations may require a cash bond per the permit '
-        'conditions.',
+    'Under Article 1723 of the Civil Code, the engineer or architect who drew '
+        'up the plans is liable for fifteen years if the structure collapses '
+        'through a defect in the plans, the specifications or the ground; the '
+        'one supervising the work is solidarily liable with the contractor '
+        'for defective construction or inferior materials.',
+    'The excavation and ground preparation must conform to the zoning '
+        'ordinance, the National Building Code (P.D. 1096), the National '
+        'Structural Code of the Philippines and their IRR.',
+    'Before work starts, a licensed Geodetic Engineer must conduct an actual '
+        'relocation survey.',
+    'At least ten (10) days before excavating, whoever is making the '
+        'excavation must notify the owner of the adjoining building in '
+        'writing and show how that building will be protected.',
+    'The owner must engage a licensed Architect or Civil Engineer for '
+        'full-time inspection and supervision of the work.',
+    'A logbook of daily construction activity — progress, tests, weather — '
+        'must be kept at the jobsite at all times and made available to the '
+        'Building Official under Section 207 of the National Building Code.',
+    'On completion, the supervising Architect or Civil Engineer submits a '
+        'Certificate of Completion stating that the work conforms to the '
+        'National Building Code.',
+    'Streets, sidewalks, curbs, gutters, electric posts, power and '
+        'communication lines, water, sewer and drainage lines must be '
+        'protected; anything damaged must be repaired and restored at the '
+        "owner's expense.",
+    'The owner and contractor are jointly responsible for public safety and '
+        'for storing and disposing of waste properly.',
+    'This permit does not guarantee that the building permit will be granted, '
+        'and the work is undertaken at your own risk.',
+    'It does not exempt you from securing permits or clearances from other '
+        'government authorities.',
+    'For an excavation of more than fifty (50) cubic metres and more than '
+        'two (2) metres deep, the owner or permittee must post a cash bond '
+        'with the Office of the Building Official of fifty thousand pesos '
+        '(P50,000.00) for the first fifty cubic metres, plus three hundred '
+        'pesos (P300.00) for every cubic metre after that.',
+    'Until the building permit is issued the excavation may not exceed one '
+        'hundred (100) cubic metres or three (3) metres in depth, and may not '
+        'be left open with no work for more than one hundred twenty (120) '
+        'days — after which the cash bond is forfeited to cover restoration.',
   ];
 
   bool get isValid => true;

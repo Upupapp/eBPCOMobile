@@ -25,6 +25,10 @@ renderer. `tool/render-form.sh <form> <page>` (JXA + PDFKit) is that renderer.
 | Electrical | Same softening, and the form names **who** submits it | "you as the owner or permittee must submit…" |
 | Electrical | "a PCAB-licensed specialty contractor is required for **qualifying installations**" | "200 amperes and above at 230 volts nominal and above" |
 | Interior Design | Article 1723 and the completion documents absent; same invented "must be authentic" | Corrected, and caveated — see below |
+| Civil/Structural | Article 1723 reduced to "remains professionally accountable" — no period, no consequence, and only one of the two professionals it binds | Fifteen years, and the supervisor's solidary liability with the contractor |
+| Civil/Structural, Electronics, Sanitary | Same "when required" softening; and "applicable codes" where the form names a specific statute | Corrected; each names its own code |
+| Excavation | "Larger excavations **may require a cash bond** per the permit conditions" | The threshold, both amounts, and the forfeiture — see below |
+| Excavation, Sign | Same invented "must be authentic" — third and fourth occurrence | Removed |
 
 Two patterns, each appearing more than once:
 
@@ -58,17 +62,52 @@ What those three still state is limited to what is **national law** and holds
 whichever LGU issues the permit: Article 1723 of the Civil Code, R.A. 8534,
 the National Building Code and its IRR.
 
-## Still to read
+## The cash bond
 
-Box 8 of **Civil/Structural, Electronics and Sanitary/Plumbing**. All three are
-rendered to `${TMPDIR}/ebpco-forms/` already, and all three currently say
-"when required" of the Notice of Construction — which four other forms
-contradict. That is a strong prior and not a reading, so it stands unchanged
-until someone opens the page.
+The single worst entry found. The excavation form's Box 7 condition 7 says:
+for an excavation of **more than 50 cubic metres and more than 2 metres deep**,
+the owner posts **P50,000.00** for the first fifty cubic metres and **P300.00**
+per cubic metre after, with the Office of the Building Official; the excavation
+may not exceed 100 cubic metres or 3 metres deep until the building permit
+issues, nor be left open with no work for **120 days**, after which the bond is
+**forfeited**.
+
+The app said: *"Larger excavations may require a cash bond per the permit
+conditions."*
+
+Every number an owner needs to budget for it, and the one consequence they need
+to avoid, were absent — replaced by a sentence that reads as a footnote.
+
+## Two lists nobody can see
+
+**The excavation and sign wizards have no evaluation step.** Excavation ends at
+step 9 (consent and review), sign at step 10 (review and submission), so their
+`permitConditions` render nowhere — which is why they were not caught by the
+per-wizard reading and only fell out of the class-level sweep below.
+
+Both are corrected so they are right whenever they are shown. **Whether they
+should be shown is an open question**: the cash bond in particular is money an
+applicant has to find before they start, and at present the app never mentions
+it. That is a wizard change, not a text change, and it is not taken here.
+
+## A second signature block, and a plainer one
+
+The sign form is signed by **Rex G. Bundac, CE, EnP — City Building Official**.
+Castilla is a *municipality*. That is the cheapest confirmation of a reference
+form found so far: it needs no comparison against another document.
+
+So the method generalises. **To establish whose form a bundled PDF is, read the
+signature block on page two.** Nothing else in the repository carries it, and
+it settled two forms' provenance in one day.
+
+## Nothing left unread
+
+All ten two-page forms have now been read. The remaining forms are single-page
+and carry no conditions box.
 
 ## The gate
 
-`test/features/permit_conditions_test.dart`, 13 tests. It asserts the corrected
+`test/features/permit_conditions_test.dart`, 21 tests. It asserts the corrected
 text, the absence of both softenings and the invented condition, that the three
 reference-form wizards carry the caveat and do not carry the promise, and that
 that set of three is **exactly** the set `permit_forms.dart` flags as not
@@ -77,3 +116,13 @@ the flag flips, the test fails and the caveat comes off that screen.
 
 It also pins the render count at nine: if a tenth wizard starts showing
 conditions, they have not been checked against a form.
+
+**Two of its assertions are class-level sweeps over all twelve lists**, not
+per-wizard readings: no list may soften an obligation to "when required", and
+no list may invent one about the applicant's honesty. Those two caught the
+excavation and sign lists, which no per-wizard reading would have reached
+because nothing renders them. A list added or edited later cannot reintroduce
+either defect without failing. Both are guarded against vacuity by a test that
+the scan finds exactly twelve lists — if a model moves or a declaration is
+reformatted, that fails rather than the sweeps quietly passing against
+nothing.

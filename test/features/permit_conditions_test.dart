@@ -4,11 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 import 'package:ebpco_user_app/core/contract/lgu_source_notice.dart';
+import 'package:ebpco_user_app/core/models/civil_structural_permit_model.dart';
 import 'package:ebpco_user_app/core/models/electrical_permit_model.dart';
+import 'package:ebpco_user_app/core/models/electronics_permit_model.dart';
+import 'package:ebpco_user_app/core/models/excavation_permit_model.dart';
 import 'package:ebpco_user_app/core/models/fencing_permit_model.dart';
 import 'package:ebpco_user_app/core/models/interior_design_permit_model.dart';
 import 'package:ebpco_user_app/core/models/mechanical_permit_model.dart';
 import 'package:ebpco_user_app/core/models/plumbing_permit_model.dart';
+import 'package:ebpco_user_app/core/models/sanitary_plumbing_permit_model.dart';
 
 /// What the app tells an applicant their permit requires.
 ///
@@ -179,6 +183,139 @@ void main() {
         CanonicalPermitType.demolitionPermit,
         CanonicalPermitType.interiorDesignPermit,
       });
+    });
+  });
+
+  group('Civil/Structural — NBC Form A-02, Box 8', () {
+    test('Article 1723 is stated in full, both halves of it', () {
+      // What stood here was "The Engineer responsible for the plans and
+      // specifications remains professionally accountable" — no period, no
+      // consequence, and only one of the two professionals the article binds.
+      final joined = CivilStructuralEvaluationPermitStatus.permitConditions
+          .join(' ');
+      expect(joined, contains('Article 1723'));
+      expect(joined, contains('fifteen years'));
+      expect(
+        joined,
+        contains('solidarily liable'),
+        reason:
+            'the supervising engineer is solidarily liable with the '
+            'contractor. That half was missing entirely, and it is the half '
+            'that binds the professional an applicant actually hires',
+      );
+      expect(joined, isNot(contains('remains professionally accountable')));
+    });
+
+    test('the Notice of Construction covers any construction activity', () {
+      final notice = CivilStructuralEvaluationPermitStatus.permitConditions
+          .singleWhere((c) => c.contains('Notice of Construction'));
+      expect(notice, contains('Before any construction activity'));
+    });
+  });
+
+  group(
+    'The two patterns, swept across every wizard that shows conditions',
+    () {
+      // Per-wizard assertions catch what has been read. These catch the next
+      // one: a list added or edited later cannot reintroduce either defect
+      // without failing here.
+
+      /// Every `permitConditions` list in the models, by file.
+      Map<String, String> conditionLists() {
+        final found = <String, String>{};
+        for (final entity in Directory('lib/core/models').listSync()) {
+          if (entity is! File || !entity.path.endsWith('.dart')) continue;
+          final source = entity.readAsStringSync();
+          final start = source.indexOf('permitConditions = [');
+          if (start < 0) continue;
+          final end = source.indexOf('];', start);
+          found[entity.uri.pathSegments.last] = source.substring(start, end);
+        }
+        return found;
+      }
+
+      test('the scan finds all twelve lists', () {
+        expect(
+          conditionLists().length,
+          12,
+          reason:
+              'the two sweeps below are only worth as much as what they read. '
+              'If this fell, a model moved or its declaration was reformatted '
+              'and the sweeps are passing against nothing',
+        );
+      });
+
+      test('no list softens an obligation to "when required"', () {
+        // Six forms print the Notice of Construction as an unconditional
+        // "shall". Every one of the six wizards said "when required" until it
+        // was read.
+        final offenders = <String>[];
+        conditionLists().forEach((file, list) {
+          if (list.contains('when required')) offenders.add(file);
+        });
+        expect(
+          offenders,
+          isEmpty,
+          reason:
+              'these make an obligation conditional: $offenders. No form read '
+              'so far prints one that way, and the applicant is the party who '
+              'bears the stop-work order',
+        );
+      });
+
+      test('no list invents a condition about the applicant\'s honesty', () {
+        final offenders = <String>[];
+        conditionLists().forEach((file, list) {
+          if (list.contains('must be authentic')) offenders.add(file);
+        });
+        expect(offenders, isEmpty, reason: 'on no form: $offenders');
+      });
+
+      test('each permit names the code that governs it', () {
+        // "Applicable codes" tells a professional there is a code. Which one is
+        // the part they need, and each form prints a different statute.
+        const governing = {
+          'National Structural Code':
+              CivilStructuralEvaluationPermitStatus.permitConditions,
+          'Philippine Interior Design Act':
+              InteriorProcessingInfo.permitConditions,
+          'Electronics Code': ElectronicsProcessingInfo.permitConditions,
+          'Code on Sanitation': SanitaryEvaluationPermitStatus.permitConditions,
+        };
+        governing.forEach((code, conditions) {
+          expect(
+            conditions.join(' '),
+            contains(code),
+            reason: '$code is what the form names',
+          );
+        });
+      });
+    },
+  );
+
+  group('Excavation — NBC Form B-02, Box 7, and the money in it', () {
+    test('the cash bond states the threshold, the amounts and the forfeit', () {
+      // "Larger excavations may require a cash bond per the permit
+      // conditions" is what stood here. Everything an owner needs to budget
+      // for it — and the one thing they must not do — was absent.
+      final joined = ExcavationProcessingInfo.permitConditions.join(' ');
+      expect(joined, contains('fifty (50) cubic metres'));
+      expect(joined, contains('two (2) metres deep'));
+      expect(joined, contains('P50,000.00'));
+      expect(joined, contains('P300.00'));
+      expect(joined, contains('one hundred twenty (120) days'));
+      expect(joined, contains('forfeited'));
+      expect(joined, isNot(contains('may require a cash bond')));
+    });
+
+    test('the ten-day notice to the neighbour is here too', () {
+      // The same obligation as the fencing permit's, and it was missing from
+      // both until each form was read.
+      final notice = ExcavationProcessingInfo.permitConditions.singleWhere(
+        (c) => c.contains('ten (10) days'),
+      );
+      expect(notice, contains('in writing'));
+      expect(notice, contains('protected'));
     });
   });
 

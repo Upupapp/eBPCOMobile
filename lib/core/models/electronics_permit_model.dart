@@ -295,8 +295,7 @@ extension ElectronicsSystemTypeX on ElectronicsSystemType {
       case ElectronicsSystemType
           .electronicsComputerizedProcessControlsAutomationSystem:
         return 'Electronics Computerized Process Controls Automation System';
-      case ElectronicsSystemType
-          .buildingAutomationManagementAndControlSystem:
+      case ElectronicsSystemType.buildingAutomationManagementAndControlSystem:
         return 'Building Automation Management and Control System';
       case ElectronicsSystemType.buildingWiringCopperFiberOpticOrOtherMedia:
         return 'Building Wiring Utilizing Copper Cable, Fiber-Optic Cable, or Other Media';
@@ -564,11 +563,23 @@ class ElectronicsProcessingInfo {
     'Building Official Decision',
   ];
 
+  /// Read off Box 9 of the bundled electronics form, 1 September 2026.
+  ///
+  /// "Applicable electronics and building regulations" is the same
+  /// generalisation as the electrical form's "qualifying installations": the
+  /// form names the Electronics Code of the Philippines, and which code
+  /// governs is the part a professional needs.
   static const List<String> permitConditions = [
-    'Electronics work must follow approved plans and applicable electronics and building regulations.',
-    'A Notice of Construction must be submitted when required before work begins.',
-    'A licensed Professional Electronics Engineer must supervise or take charge of the work.',
-    'Required logbook entries, as-built plans, and completion documents must be submitted.',
+    'Electronics works must follow the plans filed with the Office of the '
+        'Building Official and conform to the latest Electronics Code of the '
+        'Philippines, the National Building Code and its IRR.',
+    'Before any electronics installation, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
+    'A licensed Professional Electronics Engineer must supervise or take '
+        'charge of the work.',
+    'On completion, that supervisor submits the signed and sealed logbook '
+        'entry, the as-built plans and a Certificate of Completion.',
     'The Electronics Permit is invalid without the related Building Permit.',
   ];
 

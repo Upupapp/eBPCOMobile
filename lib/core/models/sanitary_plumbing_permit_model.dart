@@ -440,8 +440,7 @@ class SanitaryFixtureInventory {
 
   bool get hasAtLeastOneFixture => fixtures.any((f) => f.hasQuantity);
 
-  bool get isValid =>
-      hasAtLeastOneFixture && fixtures.every((f) => f.isValid);
+  bool get isValid => hasAtLeastOneFixture && fixtures.every((f) => f.isValid);
 }
 
 /// Official water-supply system options.
@@ -523,8 +522,7 @@ class SanitaryWaterSupply {
         return false;
       }
       if (Validators.required(deepWellPumpRating) != null) return false;
-      if (_positiveDecimal(deepWellEstimatedYield, 'Estimated Yield') !=
-          null) {
+      if (_positiveDecimal(deepWellEstimatedYield, 'Estimated Yield') != null) {
         return false;
       }
       if (Validators.required(deepWellTreatmentMethod) != null) {
@@ -539,8 +537,7 @@ class SanitaryWaterSupply {
       if (Validators.required(cityWaterMeterSize) != null) return false;
     }
 
-    if (hasOthers &&
-        Validators.required(otherWaterSupplyDescription) != null) {
+    if (hasOthers && Validators.required(otherWaterSupplyDescription) != null) {
       return false;
     }
 
@@ -712,8 +709,7 @@ class SanitaryBuildingProjectDetails {
         null) {
       return false;
     }
-    if (_nonNegativeDecimal(totalBuildingArea, 'Total building area') !=
-        null) {
+    if (_nonNegativeDecimal(totalBuildingArea, 'Total building area') != null) {
       return false;
     }
     final start = proposedStartDate;
@@ -953,7 +949,8 @@ class SanitaryRequiredDocuments {
   DocumentModel? relatedBuildingPermitUpload;
   DocumentModel? waterProviderCoordinationUpload;
   DocumentModel? sewerProviderCoordinationUpload;
-  DocumentModel? environmentalDischargeClearanceUpload; // optional, "when applicable"
+  DocumentModel?
+  environmentalDischargeClearanceUpload; // optional, "when applicable"
   DocumentModel? otherSanitaryPlumbingDocumentsUpload; // optional
 
   bool isValid({
@@ -1008,7 +1005,8 @@ class SanitaryRequiredDocuments {
       return false;
     }
     if (hasImhoffTank &&
-        (imhoffPlanUpload == null || imhoffEffluentDisposalPlanUpload == null)) {
+        (imhoffPlanUpload == null ||
+            imhoffEffluentDisposalPlanUpload == null)) {
       return false;
     }
     if (hasSanitarySewerConnection && sewerConnectionPlanUpload == null) {
@@ -1073,7 +1071,8 @@ enum SanitaryDocumentEvaluationStatus {
   notApplicable,
 }
 
-extension SanitaryDocumentEvaluationStatusX on SanitaryDocumentEvaluationStatus {
+extension SanitaryDocumentEvaluationStatusX
+    on SanitaryDocumentEvaluationStatus {
   String get label {
     switch (this) {
       case SanitaryDocumentEvaluationStatus.pendingReview:
@@ -1163,12 +1162,24 @@ class SanitaryEvaluationPermitStatus {
   static const String recommendingApproval = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
+  /// Read off Box 8 of the bundled sanitary form, 1 September 2026.
+  ///
+  /// The governing code here is the Code on Sanitation of the Philippines —
+  /// a different statute from the Revised National Plumbing Code that governs
+  /// the separate plumbing permit, which is why "applicable codes" was worth
+  /// replacing rather than leaving.
   static const List<String> permitConditions = [
-    'Sanitary and plumbing work must follow the approved plans and applicable codes.',
-    'A Notice of Construction must be submitted when required before work begins.',
-    'A licensed supervisor or professional must oversee the work.',
-    'Required logbook entries, as-built plans, and completion documents must be submitted.',
-    'The Sanitary / Plumbing Permit is invalid without the related Building Permit.',
+    'Sanitary works must follow the plans filed with the Office of the '
+        'Building Official and conform to the latest Code on Sanitation of '
+        'the Philippines, the National Building Code and its IRR.',
+    'Before any sanitary works commence, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
+    'A licensed supervisor or professional must be in charge of the work.',
+    'On completion, that supervisor submits the signed and sealed logbook '
+        'entry, the as-built plans and a Certificate of Completion.',
+    'The Sanitary / Plumbing Permit is invalid without the related Building '
+        'Permit.',
   ];
 
   bool get isValid => true;

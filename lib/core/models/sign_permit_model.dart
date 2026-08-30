@@ -358,8 +358,7 @@ class SignInformation {
         null) {
       return false;
     }
-    if (Validators.positiveDecimal(widthMeters, fieldLabel: 'Width') !=
-        null) {
+    if (Validators.positiveDecimal(widthMeters, fieldLabel: 'Width') != null) {
       return false;
     }
     return true;
@@ -606,7 +605,9 @@ class SignProcessingInfo {
   String? permitIssuanceStatus;
 
   double? get totalAssessedFees {
-    if (filingFee == null && processingFee == null && otherAssessedFees == null) {
+    if (filingFee == null &&
+        processingFee == null &&
+        otherAssessedFees == null) {
       return null;
     }
     return (filingFee ?? 0) + (processingFee ?? 0) + (otherAssessedFees ?? 0);
@@ -622,11 +623,46 @@ class SignProcessingInfo {
     'Building Official Decision',
   ];
 
+  /// The bundled sign form is a REFERENCE TEMPLATE, and it says so more
+  /// plainly than any other: it is signed by a **City** Building Official,
+  /// Rex G. Bundac, CE, EnP. Castilla is a municipality, so this cannot be
+  /// its form — which is the cheapest confirmation yet of
+  /// `isOfficialCastillaForm: false`, and a second instance of the signature
+  /// block settling a form's provenance.
+  ///
+  /// So what is stated here is limited to national law, which holds whichever
+  /// LGU issues the permit — Article 1723, the National Building Code and
+  /// Section 2003 — and not that city's own terms. The invented condition
+  /// ("documents must be authentic") is gone, as it is from fencing,
+  /// interior design and excavation.
+  ///
+  /// Like the excavation list, none of this renders: the sign wizard ends at
+  /// review and submission with no evaluation step.
   static const List<String> permitConditions = [
-    'Sign installation must follow the approved plans and applicable regulations.',
-    'A licensed professional must supervise or take charge of the work.',
-    'Required signed and sealed professional documents must be authentic.',
-    'The Sign Permit is invalid without the related Building Permit.',
+    'Under Article 1723 of the Civil Code, the engineer or architect who drew '
+        'up the plans is liable for fifteen years if the structure collapses '
+        'through a defect in the plans, the specifications or the ground; the '
+        'one supervising the work is solidarily liable with the contractor '
+        'for defective construction or inferior materials.',
+    'The sign must conform to the National Building Code (P.D. 1096) and, '
+        'under Section 2003, plans for a sign structure more than three (3) '
+        'metres above the ground must be signed and sealed by the designing '
+        'architect or civil engineer.',
+    'The owner must engage a licensed architect or civil engineer for '
+        'full-time inspection and supervision, and a jobsite logbook must be '
+        'kept and submitted signed and sealed on completion with the as-built '
+        'plans and a Certificate of Completion.',
+    'No sign may be used until the Building Official has issued the '
+        'Certificate of Use or Occupancy.',
+    'A sign structure with electrical devices needs an electrical plan '
+        'conforming to the latest Philippine Electrical Code, signed and '
+        'sealed by the responsible Professional Engineer.',
+    'A sign may not obstruct a doorway, fire escape, standpipe, required exit '
+        'or fire-protective device.',
+    'A sign written in a foreign language must carry a translation in English '
+        'or the local dialect.',
+    'This permit does not exempt you from securing permits or clearances from '
+        'other government authorities.',
   ];
 
   bool get isValid => true;

@@ -446,7 +446,10 @@ class CivilStructuralWorkDetails {
         null) {
       return false;
     }
-    if (_positiveDecimal(totalStructuralFloorArea, 'Total Structural Floor Area') !=
+    if (_positiveDecimal(
+          totalStructuralFloorArea,
+          'Total Structural Floor Area',
+        ) !=
         null) {
       return false;
     }
@@ -457,7 +460,10 @@ class CivilStructuralWorkDetails {
         null) {
       return false;
     }
-    if (_positiveDecimal(estimatedStructuralCost, 'Estimated Structural Cost') !=
+    if (_positiveDecimal(
+          estimatedStructuralCost,
+          'Estimated Structural Cost',
+        ) !=
         null) {
       return false;
     }
@@ -466,7 +472,8 @@ class CivilStructuralWorkDetails {
     if (start == null || end == null) return false;
     if (end.isBefore(start)) return false;
 
-    if (hasExcavation && _positiveDecimal(excavationDepth, 'Excavation Depth') != null) {
+    if (hasExcavation &&
+        _positiveDecimal(excavationDepth, 'Excavation Depth') != null) {
       return false;
     }
 
@@ -613,7 +620,8 @@ class CivilStructuralProfessionals {
   DocumentModel? signedSupervisorConfirmationUpload;
 
   bool get isValid {
-    final designValid = designEngineer.isValid &&
+    final designValid =
+        designEngineer.isValid &&
         designPrcIdUpload != null &&
         designPtrDocumentUpload != null &&
         signedSealedPlansUpload != null &&
@@ -749,7 +757,8 @@ class CivilStructuralRequiredDocuments {
 
   // Supporting Documents.
   DocumentModel? relatedBuildingPermitUpload;
-  DocumentModel? geotechnicalOrSoilInvestigationUpload; // optional, "when applicable"
+  DocumentModel?
+  geotechnicalOrSoilInvestigationUpload; // optional, "when applicable"
   DocumentModel? siteSurveyUpload;
   DocumentModel? materialTestResultsUpload; // optional, "when available"
   DocumentModel? otherCivilStructuralDocumentsUpload; // optional
@@ -770,7 +779,8 @@ class CivilStructuralRequiredDocuments {
     required bool hasSteelTowers,
     required bool hasTanks,
   }) {
-    final baseValid = structuralAnalysisUpload != null &&
+    final baseValid =
+        structuralAnalysisUpload != null &&
         generalNotesUpload != null &&
         billOfMaterialsUpload != null &&
         costEstimateUpload != null &&
@@ -977,13 +987,35 @@ class CivilStructuralEvaluationPermitStatus {
   static const String recommendingApproval = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
+  /// Read off Box 8 of the bundled civil/structural form, 1 September 2026.
+  ///
+  /// The form's first condition is the longest one it prints and the app had
+  /// reduced it to "remains professionally accountable" — which names no
+  /// period, no consequence and only one of the two professionals it binds.
+  /// Article 1723 makes the DESIGNER answerable for fifteen years if the
+  /// structure collapses through a defect in the plans or the ground, and
+  /// makes the SUPERVISING engineer solidarily liable with the contractor for
+  /// defective work or inferior materials. Both halves are stated now.
   static const List<String> permitConditions = [
-    'The Engineer responsible for the plans and specifications remains professionally accountable.',
-    'Civil and structural work must follow the approved plans and specifications.',
-    'Work must comply with the applicable structural and building-code requirements.',
-    'A Notice of Construction must be submitted when required before work begins.',
-    'Upon completion, required logbook entries, as-built plans, and the Certificate of Completion must be submitted.',
-    'The Civil / Structural Permit is invalid without the related Building Permit.',
+    'Under Article 1723 of the Civil Code, the engineer or architect who drew '
+        'up the plans is answerable for fifteen years if the structure '
+        'collapses through a defect in the plans, the specifications or the '
+        'ground.',
+    'The engineer or architect supervising the construction is solidarily '
+        'liable with the contractor if the structure collapses through '
+        'defective construction or inferior materials.',
+    'Civil and structural works must follow the plans filed with the Office '
+        'of the Building Official and conform to the latest National '
+        'Structural Code of the Philippines, the National Building Code and '
+        'its IRR.',
+    'Before any construction activity, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
+    'On completion, the licensed full-time inspector and supervisor submits '
+        'the signed and sealed logbook entry, the as-built plans and a '
+        'Certificate of Completion.',
+    'The Civil / Structural Permit is invalid without the related Building '
+        'Permit.',
   ];
 
   bool get isValid => true;
@@ -1003,7 +1035,8 @@ class CivilStructuralPermitDraft {
       CivilStructuralRelatedBuildingPermit();
   final CivilStructuralScopeOfWork scopeOfWork = CivilStructuralScopeOfWork();
   final CivilStructuralWorkDetails workDetails = CivilStructuralWorkDetails();
-  final CivilStructuralProfessionals professionals = CivilStructuralProfessionals();
+  final CivilStructuralProfessionals professionals =
+      CivilStructuralProfessionals();
   final CivilStructuralOwnershipConsent ownershipConsent =
       CivilStructuralOwnershipConsent();
   final CivilStructuralRequiredDocuments requiredDocuments =
@@ -1014,17 +1047,21 @@ class CivilStructuralPermitDraft {
       CivilStructuralEvaluationPermitStatus();
 
   bool useApplicantAddressForProjectLocation = false;
-  CivilStructuralPermitDraftStatus status = CivilStructuralPermitDraftStatus.draft;
+  CivilStructuralPermitDraftStatus status =
+      CivilStructuralPermitDraftStatus.draft;
   DateTime? lastSavedAt;
 
   bool get isStep1Valid => applicant.isValid;
   bool get isStep2Valid =>
-      applicantAddress.isValid && projectLocation.isValid && relatedBuildingPermit.isValid;
+      applicantAddress.isValid &&
+      projectLocation.isValid &&
+      relatedBuildingPermit.isValid;
   bool get isStep3Valid => scopeOfWork.isValid;
   bool get isStep4Valid => workDetails.isValid;
   bool get isStep5Valid => professionals.isValid;
   bool get isStep6Valid => ownershipConsent.isValid;
-  bool get isStep7Valid => requiredDocuments.isValid(
+  bool get isStep7Valid =>
+      requiredDocuments.isValid(
         hasStaking: workDetails.hasStaking,
         hasExcavation: workDetails.hasExcavation,
         hasSoilStabilization: workDetails.hasSoilStabilization,
