@@ -90,7 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text('Welcome back', style: AppTypography.pageTitle),
                 const SizedBox(height: 4),
                 Text(
-                  'Log in to manage your business permits.',
+                  // Said "business permits" until 31 August 2026 — naming the
+                  // one legacy flow in this app as though it were the whole
+                  // product. E-BPCO is the Electronic Building Permit and
+                  // Certificate of Occupancy system; the Business Permit
+                  // catalogue entry is a survivor of an earlier build.
+                  'Log in to manage your building permits.',
                   style: AppTypography.bodyMuted,
                 ),
                 const SizedBox(height: 24),
@@ -119,9 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Checkbox(
                           value: _rememberMe,
-                          onChanged: (value) => setState(
-                            () => _rememberMe = value ?? false,
-                          ),
+                          onChanged: (value) =>
+                              setState(() => _rememberMe = value ?? false),
                         ),
                         const Flexible(
                           child: Text(

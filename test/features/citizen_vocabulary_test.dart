@@ -103,6 +103,61 @@ void main() {
     });
   });
 
+  group('the product is Building Permit and Certificate of Occupancy', () {
+    // A separate ruling from the citizen one, and it collided with it: the
+    // strings that named the user also named the wrong product. E-BPCO is the
+    // Electronic Building Permit and Certificate of Occupancy system, and the
+    // sign-in screen told a citizen it managed their BUSINESS permits.
+
+    test('the sign-in and sign-up copy says building', () {
+      expect(
+        _lib('features/authentication/presentation/login_screen.dart'),
+        contains('manage your building permits'),
+      );
+      expect(
+        _lib(
+          'features/authentication/presentation/registration_success_screen.dart',
+        ),
+        contains('building permits and clearances'),
+      );
+    });
+
+    test('and the eligibility clause names citizens', () {
+      final terms = _lib(
+        'features/profile/presentation/terms_conditions_screen.dart',
+      );
+      expect(terms, contains('intended for citizens filing for a permit'));
+      // The three legally distinct parties survive the rewrite: the citizen,
+      // whoever they authorise, and the professional who prepares the plans.
+      expect(terms, contains('authorized representatives'));
+      expect(terms, contains('licensed professionals'));
+    });
+
+    test('but "Business Permit" the DOMAIN and the FORM survive', () {
+      // The trap this ruling carries. `Business Permit` is one of the
+      // contract's two serviceDomain values, the app still has a legacy
+      // business-permit flow at its own route, and "Group E — Business and
+      // Mercantile" is an NBC occupancy classification. A blanket replacement
+      // takes all three.
+      expect(
+        _lib('core/contract/service_domain.dart'),
+        contains("'Business Permit'"),
+        reason:
+            'the contract enum was rewritten — every filing now declares a '
+            'serviceDomain no server accepts',
+      );
+      expect(
+        File('lib/routes/app_router.dart').readAsStringSync(),
+        contains('/applications/new/business-permit'),
+      );
+      expect(
+        _lib('core/models/sign_permit_model.dart'),
+        contains('Business and Mercantile'),
+        reason: 'an NBC occupancy classification was reworded',
+      );
+    });
+  });
+
   group('and these three categories are deliberately untouched', () {
     test('draft snapshot keys still say applicant', () {
       // Storage AND wire. See docs/M-47-form-payload.md: rename Dart fields,

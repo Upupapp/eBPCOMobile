@@ -41,7 +41,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
               Text(
                 'Your E-BPCO account has been created successfully. You can now log in '
                 'using your registered email address and password to start applying for '
-                'business permits and clearances.',
+                'building permits and clearances.',
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMuted.copyWith(height: 1.5),
               ),

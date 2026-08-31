@@ -20,12 +20,13 @@ const _sections = [
   (
     title: '2. Eligibility',
     body:
-        'The app is intended for property owners, business owners, '
-        'authorized representatives, and licensed professionals who need to '
-        'file, track, or manage building permit and business clearance '
-        'applications with the Office of the Building Official. You must '
-        'provide accurate and truthful information when creating an account '
-        'or filing an application.',
+        'The app is intended for citizens filing for a permit, their '
+        'authorized representatives, and the licensed professionals who '
+        'prepare their applications — to file, track, or manage building '
+        'permit, occupancy, and related clearance applications with the '
+        'Office of the Building Official. You must provide accurate and '
+        'truthful information when creating an account or filing an '
+        'application.',
   ),
   (
     title: '3. Account Responsibility',

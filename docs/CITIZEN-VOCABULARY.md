@@ -83,3 +83,42 @@ times, and the checklist's ownership clause is still quoted verbatim.
 
 Falsified by renaming `applicant.firstName` to `citizen.firstName`: the frozen
 guard goes red and names the consequence.
+
+---
+
+# Addendum — the product's own name, fixed at the same time
+
+The strings that named the user also named the wrong product.
+
+**The sign-in screen told a citizen the app managed their *business* permits.**
+E-BPCO is the **Electronic Building Permit and Certificate of Occupancy**
+system. Three sites corrected:
+
+| Where | Before | After |
+|---|---|---|
+| Sign-in | "Log in to manage your business permits." | "…your building permits." |
+| Registration success | "start applying for business permits and clearances" | "building permits and clearances" |
+| Terms §2 Eligibility | "property owners, business owners, authorized representatives, and licensed professionals… building permit and business clearance applications" | "citizens filing for a permit, their authorized representatives, and the licensed professionals who prepare their applications… building permit, occupancy, and related clearance applications" |
+
+The eligibility rewrite keeps all three legally distinct parties — the citizen,
+whoever they authorise, and the professional who prepares the plans — while
+using the word the ruling settled on.
+
+## Why this was not a find-and-replace either
+
+**"Business Permit" is load bearing in three places**, and a sweep takes all
+three:
+
+* **`serviceDomain`** — the contract has exactly two values, `Business Permit`
+  and `Construction Permit`, and every filing declares one. Rewriting it means
+  no conforming server accepts a submission.
+* **The legacy business-permit flow** still exists at
+  `/applications/new/business-permit`, with its own catalogue entry and wizard.
+  It predates the construction-permit catalogue.
+* **"Group E — Business and Mercantile"** is an NBC occupancy classification,
+  printed on the forms.
+
+That is why the standing rule says never to blanket-replace it: the count of
+occurrences is not the measure, the *kind* is. Three tests now hold each of
+those in place, and one of them names the consequence — rewriting the enum
+would have every filing declare a serviceDomain no server accepts.
