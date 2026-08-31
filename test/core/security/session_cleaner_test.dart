@@ -75,15 +75,33 @@ void main() {
       expect(cache.listSync(), isEmpty);
     });
 
+    test('the fixture actually writes something first', () async {
+      // The guard that would have caught both halves of this. An assertion
+      // that a key is null after sign-out proves nothing unless the key was
+      // non-null before it.
+      await seedASession();
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(AppConstants.prefCurrentUserEmail), isNotNull);
+      expect(prefs.getBool(AppConstants.prefIsLoggedIn), isNotNull);
+      expect(prefs.getBool(AppConstants.prefOnboardingCompleted), isNotNull);
+      expect(prefs.getString('last_application_id'), isNotNull);
+    });
+
     test('preference keys carrying personal data', () async {
       await seedASession();
 
       await cleaner().signOut();
 
       final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('applicant_email'), isNull);
+      // The keys the app writes. These asserted `applicant_email` and
+      // `is_logged_in` until 31 August 2026 — names nothing writes — so they
+      // were null before sign-out as well as after, and would have passed
+      // against a signOut() that did nothing at all.
+      expect(prefs.getString(AppConstants.prefCurrentUserEmail), isNull);
+      expect(prefs.getBool(AppConstants.prefIsLoggedIn), isNull);
+      // Not a constant on purpose: an arbitrary key, standing for whatever
+      // some future feature stores without telling this list about it.
       expect(prefs.getString('last_application_id'), isNull);
-      expect(prefs.getBool('is_logged_in'), isNull);
     });
 
     test(
