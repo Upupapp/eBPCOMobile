@@ -33,7 +33,15 @@ import 'package:ebpco_user_app/core/services/secure_session_store.dart';
 /// ```
 ///
 /// Findings from the first run are in `docs/FIRST-LIVE-FILING.md`.
-const base = 'http://127.0.0.1:3000';
+/// Which server to talk to. Override to point at another instance:
+///
+/// ```
+/// flutter test test/live/… --dart-define=EBPCO_LIVE_BASE=http://127.0.0.1:3001
+/// ```
+const base = String.fromEnvironment(
+  'EBPCO_LIVE_BASE',
+  defaultValue: 'http://127.0.0.1:3000',
+);
 final email =
     'citizen.live.${DateTime.now().millisecondsSinceEpoch}@example.ph';
 const password = 'Str0ng-Passphrase-2026!';

@@ -136,6 +136,50 @@ the clients' legacy business-permit flow is a separate open question.
 `PermitType` in `openapi/ebpco.openapi.yaml` takes the same 19 values. They are
 listed, generated rather than retyped, in `HANDOFF-D10-ruled.md`.
 
+## The migration above was applied and checked, not just written
+
+Run against a database carrying all 31 migrations, on 31 August:
+
+```
+permit_types before: 17
+permit_types after:  20
+staff_permit_access rows carried: 17
+```
+
+The three counts are the whole check. **17 → 20** is fifteen renames plus three
+inserts, with `Certificate of Occupancy` and `Business Permit` untouched. And
+**`staff_permit_access` kept all 17 of its rows** — that is the cascade doing
+its job. Without it the first `update` fails on a foreign key and the
+transaction rolls back, which is the failure mode this walkthrough exists to
+prevent.
+
+The twenty names it leaves behind are listed correctly, en dashes included.
+
+### What could NOT be confirmed here, and why
+
+**"19 of 19" has not been proven on this machine.** After the migration, every
+filing against my instance returned 500 — including `Certificate of
+Occupancy`, which files perfectly well against yours.
+
+The cause is my Postgres, not the schema:
+
+```
+Error: read ECONNRESET
+  at PostgresClient.query (src/persistence/postgres-client.ts:67)
+  at async Promise.all (index 1)
+  at SqlCalendarRepository.load
+```
+
+`calendar.repository.ts:40` issues **two concurrent queries** to load the
+holiday calendar for the service pledge. My local Postgres is PGlite over a
+socket bridge, which serves **one connection at a time** and drops it rather
+than queueing — so the filing path cannot run there at all. Nothing to do with
+permit types.
+
+So: **the migration is validated; the end-to-end result is not.** That
+confirmation has to come from your instance, which handles concurrency. It is
+one command.
+
 ## How to know it worked
 
 One command, from the mobile repo, against the running server:
