@@ -4,15 +4,27 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_shadows.dart';
 
-/// Reusable E-BPCO logo mark (the official DILG seal) + app name, used
-/// across splash, onboarding, and authentication screens.
+/// Reusable E-BPCO logo mark + app name, used across the splash, onboarding
+/// and authentication screens.
+///
+/// **The mark is the Municipality of Castilla's own seal.** It used to be the
+/// DILG seal — the Department of the Interior and Local Government, a national
+/// agency. This app belongs to one municipality, and putting a national
+/// department's seal on its sign-in screen claims an issuer it does not have.
+/// Changed 31 August 2026 at the owner's instruction.
+///
+/// The file is the LGU's own, copied byte-for-byte from
+/// `eBPCO-Website/castilla-lgu-portal/public/assets/logos/castilla-seal.png`
+/// — the seal the municipality publishes on its own site — rather than
+/// re-encoded from a screenshot. It carries a transparent background, so it
+/// sits on the white circle below without a visible edge.
 class AppLogo extends StatelessWidget {
   final double iconSize;
   final double titleSize;
   final bool showSubtitle;
   final Color? iconBackgroundColor;
 
-  /// Unused now that the mark is a fixed-color official seal image; kept
+  /// Unused now that the mark is a fixed-colour official seal image; kept
   /// only so existing call sites don't need to change.
   final Color? iconColor;
   final Color? titleColor;
@@ -43,7 +55,7 @@ class AppLogo extends StatelessWidget {
           ),
           child: ClipOval(
             child: Image.asset(
-              'assets/images/DILG logo.png',
+              'assets/images/castilla-seal.png',
               fit: BoxFit.contain,
             ),
           ),
