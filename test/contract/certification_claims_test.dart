@@ -172,8 +172,19 @@ void main() {
     //
     // `tool/verify.sh` now writes the figure `flutter test` actually reported
     // to `suite-count.txt`, and this compares the document against that.
-    final quoted = RegExp(r'(\d{3,5}) tests').firstMatch(certification);
-    expect(quoted, isNotNull, reason: 'the certification quotes no count');
+    // A labelled line, not "the first number followed by the word tests".
+    // The document legitimately quotes an earlier measurement in its dateline;
+    // this is the one that must track the suite.
+    final quoted = RegExp(
+      r'Suite at publication: (\d{3,5}) tests',
+    ).firstMatch(certification);
+    expect(
+      quoted,
+      isNotNull,
+      reason:
+          'the certification carries no "Suite at publication: N tests" line. '
+          'That line is what this check reads',
+    );
 
     final stamp = File('test/contract/suite-count.txt');
     expect(

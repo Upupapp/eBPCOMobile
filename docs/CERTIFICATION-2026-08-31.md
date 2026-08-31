@@ -4,9 +4,17 @@
 document could not have stated.
 
 *Measured 31 August 2026 against this repository at `89b6000`, gated from a
-**detached worktree at that SHA** — `flutter analyze` clean, **2152 tests**
-passed, 0 layout overflows, 1358s — rather than from the working tree it was
-written in. The admin line is unchanged at `e0925d9`.*
+**detached worktree at that SHA** — `flutter analyze` clean, 2152 tests passed,
+0 layout overflows, 1358s — rather than from the working tree it was written
+in. The admin line is unchanged at `e0925d9`.*
+
+**Suite at publication: 2164 tests.**
+
+*That second number is not decoration. §4 records a check that could not fail,
+and its replacement asserts this line equals the figure `tool/verify.sh` last
+measured. It fired within hours of being written — the wire-filing test added
+twelve tests the same day, this line still said 2152, and the gate refused.
+That is the behaviour the old one only claimed to have.*
 
 *A note on dates. Everything in this repository stamped "1 September 2026" was
 written on **31 August** and has been corrected. The datelines were a day ahead
@@ -85,7 +93,11 @@ by that shape.
 
 Fixed properly: `tool/verify.sh` now writes the figure `flutter test` actually
 reported to `test/contract/suite-count.txt`, and the check compares the
-document against that measurement. It also follows the **newest** dated
+**Suite at publication** line above against that measurement — exactly, with no
+tolerance, because a tolerance is how `> 1400` happened. It reads a labelled
+line rather than the first number followed by the word "tests", so the dateline
+can go on quoting the measurement taken at `89b6000` without the two claims
+fighting. It also follows the **newest** dated
 certification rather than a pinned filename — the other half of why it went
 stale, since a new sweep could be written and the gate would keep reading the
 old one.
