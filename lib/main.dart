@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app.dart';
+import 'core/config/app_config.dart';
 
 void main() {
   // **The app must never fetch its typeface.** M-51.
@@ -24,6 +25,12 @@ void main() {
   // the network. Off, a miss falls back to the platform font — visible, local,
   // and not a disclosure.
   GoogleFonts.config.allowRuntimeFetching = false;
+
+  // Refuses to start a release build that has no backend, because that build
+  // ships a fabricated application and a shared password. See
+  // `AppConfig.assertShippable` — it is an exception rather than a warning
+  // because a warning has already been looked past once.
+  AppConfig.assertShippable();
 
   runApp(const EbpcoApp());
 }

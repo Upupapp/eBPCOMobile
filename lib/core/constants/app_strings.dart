@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Centralized user-facing copy for the E-BPCO User App.
 class AppStrings {
   AppStrings._();
@@ -9,9 +11,21 @@ class AppStrings {
       'Building Permit and Certificate of Occupancy';
   static const String splashSubtitle = 'Permits and occupancy, simplified.';
 
-  // Mock account (prototype only).
-  static const String mockEmail = 'user@ebpco.com';
-  static const String mockPassword = 'password123';
+  // The mock account — development only, and **empty in a release binary**.
+  //
+  // `strings` on the release framework found `password123` in the shipped
+  // App.framework on 31 August 2026, after the sign-in banner advertising it
+  // had already been confined to debug builds. The banner was the visible
+  // half. The credential shipped because `MockAuthRepository` ships: without
+  // an API base URL it is the default, and it accepts exactly this pair.
+  //
+  // `kReleaseMode` is a compile-time constant, so a release build compiles
+  // `''` here and the literal is not in the binary at all. `MockAuthRepository`
+  // then authenticates nobody, which is the correct outcome — a release build
+  // with no backend is a demo, and `AppConfig.assertShippable()` refuses to
+  // start one.
+  static const String mockEmail = kReleaseMode ? '' : 'user@ebpco.com';
+  static const String mockPassword = kReleaseMode ? '' : 'password123';
 
   // Generic.
   static const String continueLabel = 'Continue';

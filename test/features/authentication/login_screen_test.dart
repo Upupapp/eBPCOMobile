@@ -29,7 +29,10 @@ void main() {
     expect(find.text('Remember me'), findsOneWidget);
     expect(find.text('Forgot password?'), findsOneWidget);
     expect(find.text('Create account'), findsOneWidget);
-    expect(find.textContaining('Prototype access'), findsOneWidget);
+    // The credential banner is debug-only since 31 August 2026 — it printed
+    // a working account on the sign-in screen of every build. Tests run in
+    // debug, so it is present here, and its wording changed with its scope.
+    expect(find.textContaining('Debug build'), findsOneWidget);
   });
 
   testWidgets('shows validation errors when submitting an empty form', (

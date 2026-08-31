@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -166,12 +167,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                AppAlert(
-                  variant: AppAlertVariant.info,
-                  message:
-                      'Prototype access — use ${AppStrings.mockEmail} / ${AppStrings.mockPassword} to explore the app.',
-                ),
+                // **Debug builds only, from 31 August 2026.** This banner
+                // printed working credentials — `user@ebpco.com` /
+                // `password123` — on the sign-in screen of every build,
+                // including anything that would go to the App Store. Apple
+                // asks for review credentials in App Store Connect's review
+                // notes, not on the screen every citizen sees; and an LGU app
+                // advertising a shared password teaches exactly the habit a
+                // permit system cannot afford.
+                //
+                // Kept for development rather than deleted, because the mock
+                // account is how the wizards are exercised without a backend
+                // (B-1). `kDebugMode` is a compile-time constant, so the
+                // string is tree-shaken out of a release binary rather than
+                // merely hidden.
+                if (kDebugMode) ...[
+                  const SizedBox(height: 24),
+                  AppAlert(
+                    variant: AppAlertVariant.info,
+                    message:
+                        'Debug build — ${AppStrings.mockEmail} / '
+                        '${AppStrings.mockPassword} signs in against the '
+                        'mock repositories.',
+                  ),
+                ],
               ],
             ),
           ),
