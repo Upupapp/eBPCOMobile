@@ -8,14 +8,17 @@ import 'package:ebpco_user_app/shared/widgets/branding/app_logo.dart';
 /// Whose seal the app signs itself with.
 ///
 /// It used to be the **DILG** seal — the Department of the Interior and Local
-/// Government, a national agency. This app belongs to one municipality, and a
-/// national department's seal on a sign-in screen claims an issuer the app
-/// does not have. It is the same class of defect as the invented office
-/// address that pointed at Quezon City: a plausible official mark that is not
-/// this LGU's.
+/// Government. Changed 31 August 2026 at the owner's instruction, to the seal
+/// the Municipality of Castilla publishes on its own website: the app is
+/// Castilla's, so the mark it signs itself with should be too.
 ///
-/// Changed 31 August 2026 at the owner's instruction, to the seal the
-/// Municipality of Castilla publishes on its own website.
+/// **This comment first called it a misattribution — "an issuer the app does
+/// not have" — and compared it to the invented Quezon City address. That was
+/// wrong.** The LGU is a partner with the DILG, which also co-issues the
+/// DILG–DPWH–DICT–DTI Joint Memorandum Circular the Terms cite. A real
+/// relationship, and a real seal. The change stands on identity, not on
+/// impropriety, and the difference matters: one is a fabrication and the other
+/// is the wrong mark in the wrong place.
 
 void main() {
   test('the seal ships, and is the file the LGU publishes', () {

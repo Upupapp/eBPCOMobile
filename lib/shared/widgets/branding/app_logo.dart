@@ -8,10 +8,17 @@ import '../../../core/theme/app_shadows.dart';
 /// and authentication screens.
 ///
 /// **The mark is the Municipality of Castilla's own seal.** It used to be the
-/// DILG seal — the Department of the Interior and Local Government, a national
-/// agency. This app belongs to one municipality, and putting a national
-/// department's seal on its sign-in screen claims an issuer it does not have.
-/// Changed 31 August 2026 at the owner's instruction.
+/// DILG seal — the Department of the Interior and Local Government. Changed 31
+/// August 2026 at the owner's instruction: the app is the Municipality of
+/// Castilla's, and the mark it signs itself with should be Castilla's.
+///
+/// **Corrected the same day.** The first version of this comment called the
+/// DILG seal a misattribution — "claims an issuer it does not have". That was
+/// too strong, and I did not know it: **the LGU is a partner with the DILG**,
+/// which also co-issues the DILG–DPWH–DICT–DTI Joint Memorandum Circular the
+/// Terms cite. The seal was not a fabrication. It was simply the wrong mark
+/// for a screen where the app identifies itself, which is a different and
+/// smaller thing to have got wrong.
 ///
 /// The file is the LGU's own, copied byte-for-byte from
 /// `eBPCO-Website/castilla-lgu-portal/public/assets/logos/castilla-seal.png`

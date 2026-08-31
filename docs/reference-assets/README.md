@@ -9,9 +9,15 @@ the app stopped using it on 31 August 2026.
 It shipped as `DILG%20logo.png`, URL-encoded because of the space in its name,
 which is also why a first check for the literal filename reported it absent.
 
-Nothing referenced it. A municipal app should not carry a national
-department's seal it does not display, so it lives here instead: still in the
-repository, still findable, no longer in the binary.
+Nothing referenced it, and an app should not ship an image it never draws — so
+it lives here instead: still in the repository, still findable, no longer in
+the binary.
+
+**Not because the seal was improper.** The LGU is a partner with the DILG, and
+the department co-issues the Joint Memorandum Circular this app's Terms cite.
+An earlier version of this note called it a misattribution; that was written
+without knowing the relationship and was too strong. It was the wrong mark for
+the screen where the app identifies itself, which is a smaller thing.
 
 **The rule this directory exists for:** an unreferenced file under `assets/`
 is not dead weight that the build strips — it is shipped. Put anything kept
