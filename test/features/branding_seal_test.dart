@@ -46,10 +46,24 @@ void main() {
     expect(File('pubspec.yaml').readAsStringSync(), contains('assets/images/'));
   });
 
-  test('nothing renders the DILG seal any more', () {
-    // The file is deliberately kept — it is a real seal and may belong on a
-    // screen that cites the department. What must not happen is the app
-    // signing ITSELF with it again.
+  test('nothing renders the DILG seal, and it no longer ships', () {
+    // Kept in the repository, moved OUT of the bundle on 31 August 2026.
+    //
+    // `assets/images/` is declared as a directory, so anything in it ships
+    // whether referenced or not — the seal was still travelling in the iOS
+    // binary as `DILG%20logo.png` (URL-encoded, which is why a check for the
+    // literal filename first reported it absent). A municipal app should not
+    // carry a national department's seal it does not display.
+    expect(
+      File('assets/images/DILG logo.png').existsSync(),
+      isFalse,
+      reason: 'back under assets/, so back in the binary',
+    );
+    expect(
+      File('docs/reference-assets/DILG logo.png').existsSync(),
+      isTrue,
+      reason: 'kept for reference, outside the bundle',
+    );
     final referencing = Directory('lib')
         .listSync(recursive: true)
         .whereType<File>()
