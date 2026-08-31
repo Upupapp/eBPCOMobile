@@ -89,6 +89,51 @@ void main() {
     });
   });
 
+  test('the policy names the identifiers the wizards actually collect', () {
+    // Found while preparing the label answers: the wizards ask for a Tax
+    // Identification Number in NINE places — the citizen's, the building
+    // owner's, and five categories of licensed professional — plus PRC, PTR
+    // and Community Tax Certificate numbers. All of it has gone on the wire
+    // since `form` began being sent.
+    //
+    // The Privacy Policy said "information about an authorized representative
+    // or licensed professional". True, and it tells nobody what is collected.
+    // A government financial identifier is personal information under RA
+    // 10173, and a citizen typing their engineer's TIN is entitled to see it
+    // listed.
+    final policy = File(
+      'lib/features/profile/presentation/privacy_policy_screen.dart',
+    ).readAsStringSync();
+    for (final named in const ['Tax Identification Number', 'PRC', 'PTR']) {
+      expect(
+        policy,
+        contains(named),
+        reason: '$named is collected and transmitted, and undisclosed',
+      );
+    }
+  });
+
+  test(
+    'and the wizards still collect them, so the disclosure is not stale',
+    () {
+      // The other direction, and the reason this pair exists: a disclosure that
+      // outlives what it describes is its own defect. If the wizards stop
+      // asking for a TIN, this fails and the policy should stop claiming it.
+      final codecs = Directory('lib/core/drafts')
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('_codec.dart'))
+          .map((f) => f.readAsStringSync())
+          .join();
+      expect(
+        RegExp(r"'[\w.]*\.tin'").allMatches(codecs).length,
+        greaterThan(5),
+      );
+      expect(codecs, contains('ptrNumber'));
+      expect(codecs, contains('prcNumber'));
+    },
+  );
+
   test('the tracking answers agree', () {
     expect(_manifest(), contains('<key>NSPrivacyTracking</key>'));
     expect(_manifest(), contains('<false/>'));

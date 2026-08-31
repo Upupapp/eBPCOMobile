@@ -26,10 +26,26 @@ const _sections = [
   ),
   (
     title: 'Personal Information',
+    // Named rather than summarised, from 31 August 2026. This used to say
+    // "information about an authorized representative or licensed
+    // professional", which is true and tells nobody what is actually
+    // collected: the wizards ask for a Tax Identification Number in nine
+    // places — yours, the building owner's, and five categories of
+    // professional — plus PRC licence, PTR and Community Tax Certificate
+    // numbers. All of it has gone on the wire since the `form` payload began
+    // being sent. A government financial identifier is personal information
+    // under RA 10173, and a citizen typing their engineer's TIN is entitled
+    // to see it listed.
     body:
-        'Full name, contact number, email address, residential address, '
-        'and, where applicable, information about an authorized '
-        'representative or licensed professional acting on your behalf.',
+        'Full name, contact number, email address, and residential address. '
+        'Where a form requires it, government-issued identification details '
+        '— including your Tax Identification Number (TIN), Community Tax '
+        'Certificate, and the number, place and date of issue of a valid ID. '
+        'Where an authorized representative or a licensed professional acts '
+        'on your behalf, the same details for them, together with their PRC '
+        'licence and PTR numbers and validity dates. Please tell anyone whose '
+        'details you enter that you are providing them to the Office of the '
+        'Building Official through this app.',
   ),
   (
     title: 'Application Information',

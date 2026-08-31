@@ -52,6 +52,39 @@ That is worth knowing before answering, not after.
 * **Contacts, Browsing History, Search History, Purchases, Diagnostics,
   Advertising Data** — none.
 
+## Before you answer: what "Other Data Types" is actually carrying
+
+Apple has no category for a government identifier, so the wizards' identity
+fields all land under **Other Data Types**. That answer is correct and it hides
+how much is in there, so it is written out here — measured from the 212 field
+paths the nineteen wizards persist and send:
+
+* **Tax Identification Number (TIN) — in nine places.** The citizen's, the
+  building owner's, and five categories of licensed professional (design
+  architect, design engineer, master plumber, design professional, supervisor).
+* **PRC licence number and validity date**, and **PTR number, place and date of
+  issue**, for each professional.
+* **Community Tax Certificate** number, place and date of issue.
+* **Government-issued ID** number, place and date of issue, on the consent
+  authorisation.
+
+All of it has gone on the wire since `form` began being sent on 31 August.
+
+**Two consequences worth carrying into the questionnaire.** First, none of this
+changes an answer — Other Data Types is declared, linked to identity, App
+Functionality, not used for tracking. Second, **most of these identifiers
+belong to somebody who is not your user.** A citizen types their engineer's TIN
+and PRC number. Apple's form has no axis for that, but a reviewer reading the
+label alongside the app will see the fields.
+
+**The in-app Privacy Policy now names them.** It said "information about an
+authorized representative or licensed professional", which is true and tells
+nobody what is collected; it now lists the TIN, the CTC, the ID details, and
+the PRC and PTR numbers, and asks the citizen to tell anyone whose details they
+enter. Gated by `test/architecture/privacy_label_test.dart`, in both
+directions — the policy must name them, and the wizards must still collect
+them, so the disclosure cannot outlive what it describes.
+
 ## App Privacy → Tracking
 
 **"Does this app track users?" → No.** No IDFA, no ATT prompt, no advertising
