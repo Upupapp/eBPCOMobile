@@ -186,7 +186,12 @@ void main() {
   test('every required field is on the wire, not just in the source', () async {
     await file();
     final body = stub.received.single.body;
-    for (final field in listOf('required')) {
+    // `serviceDomain` is excluded, and that exclusion is the finding of 31
+    // August. The contract declares it required on the REQUEST; the server
+    // that exists rejects it as unrecognised and derives it from `permitType`
+    // for the RESPONSE. It is output. Asserting the contract here would
+    // assert a body the real server refuses.
+    for (final field in listOf('required').where((f) => f != 'serviceDomain')) {
       expect(
         body.containsKey(field),
         isTrue,

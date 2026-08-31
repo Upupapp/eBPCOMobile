@@ -122,6 +122,17 @@ class ApiClient {
   Future<Map<String, dynamic>> patch(String path, {Object? body}) async =>
       _asObject(await _send('PATCH', path, body: body));
 
+  /// A destructive request, and the only verb here that takes an idempotency
+  /// key without a body.
+  ///
+  /// `DELETE /me` answers **202**, not 200 — erasure is queued, not immediate,
+  /// which is what RA 10173 §16(e) requires. `_send` already returns an empty
+  /// map for an empty body, so nothing here insists on a payload that a
+  /// correct response need not carry.
+  Future<void> delete(String path, {required String idempotencyKey}) async {
+    await _send('DELETE', path, idempotencyKey: idempotencyKey);
+  }
+
   void close() => _http.close();
 
   Future<dynamic> _send(

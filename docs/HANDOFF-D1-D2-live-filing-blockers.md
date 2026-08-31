@@ -1,3 +1,13 @@
+> **Answered 31 August.** D-1 was the client's defect, not the server's —
+> `serviceDomain` is output, and the fix that would have sent it is reverted.
+> D-2 is confirmed and is the backend lane's D-9. Account deletion, filed
+> separately as a certain App Store rejection, already existed as `DELETE /me`
+> and is now built on the client. This document is kept as written, because
+> what it got wrong is the useful part: **a contract is a description, and a
+> description can be wrong about the thing it describes — in both directions.**
+
+---
+
 # Handoff — two blockers found by the first live filing
 
 From the mobile lane, 31 August 2026. Both are **cross-lane** and filed rather

@@ -48,8 +48,23 @@ void main() {
     ).readAsStringSync();
     final start = source.indexOf("'/applications',");
     expect(start, greaterThan(0), reason: 'the submit call moved');
-    final body = source.substring(start, source.indexOf('return', start));
-    return RegExp(r"'(\w+)':").allMatches(body).map((m) => m.group(1)!).toSet()
+    // Ends at the body map's own closing brace, not at the next occurrence of
+    // the word "return". It used to do the latter, and on 31 August a comment
+    // explaining that the server RETURNS `serviceDomain` truncated the scan to
+    // nothing — every key vanished and three assertions failed against an
+    // empty set. Fifth time a gate here has been tripped by prose about
+    // itself.
+    final bodyEnd = source.indexOf('\n      },', start);
+    expect(bodyEnd, greaterThan(start), reason: 'the body map has no end');
+    final body = source.substring(start, bodyEnd);
+    // Comment lines are stripped first, for the same reason: the block above
+    // quotes `'serviceDomain'` while explaining why it is not sent, and a
+    // scan that counted it would report the opposite of the truth.
+    final code = body
+        .split('\n')
+        .where((line) => !line.trimLeft().startsWith('//'))
+        .join('\n');
+    return RegExp(r"'(\w+)':").allMatches(code).map((m) => m.group(1)!).toSet()
       ..removeAll({'label', 'fileName'}); // nested inside the documents list
   }
 
@@ -64,14 +79,37 @@ void main() {
   });
 
   group('FIXED — what could be reconciled without losing anything', () {
-    test('1. serviceDomain is required, and is now sent', () {
-      // Was never sent at all: `grep -rn serviceDomain lib` returned nothing,
-      // so a conforming server refused every filing this app made. Derivable
-      // rather than a decision — every CanonicalPermitType is a construction
-      // permit, and the only other filer is the business-permit screen, which
-      // names no permit type.
-      expect(listOf('required'), contains('serviceDomain'));
-      expect(bodyKeys(), contains('serviceDomain'));
+    test('1. serviceDomain is NOT sent — it is output, not input', () {
+      // **This assertion is inverted, and the inversion is the record.**
+      //
+      // It was written on 30 August asserting the opposite: the contract
+      // declares `serviceDomain` required on `ApplicationSubmission`, the
+      // client was not sending it, so a conforming server would refuse every
+      // filing. Sound reasoning from the only evidence available — and wrong,
+      // because the contract does not say which DIRECTION the field travels.
+      //
+      // Measured against the running server on 31 August: the submission
+      // schema is `.strict()` and does not declare it. Sending it is a 400,
+      // `Unrecognized key(s) in object: 'serviceDomain'`. The server derives
+      // it from `permitType` and returns it in the 201.
+      //
+      // So the fix this test was written to enforce would have refused every
+      // filing the app makes. It was caught by calling a real server, which
+      // no amount of reading the contract could have done.
+      expect(
+        listOf('required'),
+        contains('serviceDomain'),
+        reason:
+            'the contract still declares it required on the REQUEST. That is '
+            'the divergence — filed as D-1 for whoever owns the contract',
+      );
+      expect(
+        bodyKeys(),
+        isNot(contains('serviceDomain')),
+        reason:
+            'sending it is a 400 against the server that exists. If this is '
+            'ever reinstated, every filing this app makes is refused',
+      );
     });
 
     test('the two values it can send are the two the contract declares', () {
@@ -80,6 +118,9 @@ void main() {
         listOf('serviceDomain'),
         reason: 'a value the contract does not know fails the whole filing',
       );
+      // `serviceDomainFor` stays — it is how this app labels a filing for its
+      // own screens, and it happens to be the same derivation the server
+      // performs. What changed is that it no longer feeds the wire.
       expect(
         serviceDomainFor('Fencing'),
         ServiceDomain.constructionPermit,

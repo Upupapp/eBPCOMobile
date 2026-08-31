@@ -8,6 +8,36 @@ either side could have found, because each lives in the gap between two things
 that were separately correct. And two false alarms, which are recorded here
 because their cause is worth more than the findings.
 
+## Corrected 31 August, after the backend lane replied
+
+Two claims in the first version of this document were wrong, and both were
+wrong in the direction that flattered this lane.
+
+**1. I did not stand up the server I tested against.** I started a PostgreSQL
+instance on **5432** and ran 31 migrations into it — that part is true, and it
+was my own database. But my API process never bound port 3000: it failed with
+`EADDRINUSE` because the backend lane's instance was already there. `lsof`
+settles it — port 3000 is held by a process started before this session's
+attempt. **Every request below went to their server, backed by their database
+on 5433.** The findings stand; the authorship did not.
+
+Worse, it cuts the other way too: their runbook notes they chose 5433 because
+"another agent's session already held 5432". **That agent was me.** They were
+right to avoid it — running 31 migrations into someone else's database is
+destructive, and they checked rather than assumed.
+
+**2. `serviceDomain` is output, not input — and the client fix was harmful.**
+See D-1 below, now rewritten. The server derives it from `permitType` and
+returns it in the 201; sending it is a 400. The change this lane made on 30
+August to *start* sending it would have refused every filing. That is corrected
+in `http_applications_repository.dart`, and the gate that enforced it is
+inverted.
+
+**3. Account deletion exists.** Filed here as a certain App Store rejection on
+the grounds that the contract declares no DELETE operation. `DELETE /me`
+answers 202 and invalidates the session — measured. The contract is the stale
+party, and the client now implements it.
+
 ## How it was reached
 
 B-1 said "a backend exists and is reachable by nobody". That was true of
@@ -36,7 +66,7 @@ directly, got a 400 for a missing `grantType`, and looked like a client defect.
 It was not. The repository has sent `grantType: 'password'` all along. **A
 hand-rolled request tests nothing the app does.**
 
-## D-1 — the server refuses the field the contract requires
+## D-1 — `serviceDomain` travels the other way
 
 ```
 POST /applications
@@ -44,18 +74,22 @@ POST /applications
 → 400  {"pointer":"/","message":"Unrecognized key(s) in object: 'serviceDomain'"}
 ```
 
-The contract declares `serviceDomain` **required** on `ApplicationSubmission`.
-The server's schema does not have it at all, and rejects it as unrecognised.
-Drop the key and the body validates.
+The contract declares it **required** on `ApplicationSubmission`. The server's
+submission schema is `.strict()` and does not declare it at all; it **derives**
+the value from `permitType` and returns it in the 201. It is output.
 
-This app was changed on **30 August specifically to start sending it** — the
-gate `application_submission_test.dart` asserts it is required, because a
-conforming server would refuse a filing without it. The opposite is true of the
-server that exists.
+This app was changed on 30 August to start sending it, on the reasoning that
+the contract types the field and the client was not supplying it. That
+reasoning was sound and the conclusion was wrong, because **the contract does
+not say which direction a field travels** — and nothing but a real server can.
 
-**So every application this app files is refused, and would have been refused
-by the change that was made to make filing work.** Contract or server must
-move; the client is following the contract and should not move first.
+**Fixed here:** the key is no longer sent, and
+`application_submission_test.dart` now asserts its absence, with the contract
+divergence recorded rather than silently accommodated. `serviceDomainFor` stays
+— it is still how this app labels a filing for its own screens.
+
+**Left for whoever owns the contract:** the request schema still requires a
+field the server rejects.
 
 ## D-2 — a precondition no client can satisfy
 

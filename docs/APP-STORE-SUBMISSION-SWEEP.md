@@ -74,11 +74,14 @@ no backend**.
 
 * **B-1 — no backend.** The blocker under everything above. Until a base URL
   exists, a release build is a demo, and the guard now refuses to run it.
-* **Account deletion.** Apple **Guideline 5.1.1(v)** requires any app offering
-  account creation to offer in-app account deletion. This app creates accounts
-  and has no deletion anywhere — and the contract declares **no DELETE
-  operation at all**, so it cannot be built client-side. **This is a certain
-  rejection.** Backend lane.
+* ~~**Account deletion.**~~ **CLOSED 31 August — and it was never a backend
+  blocker.** This was filed as a certain rejection on the grounds that the
+  contract declares no DELETE operation. The backend lane answered that
+  `DELETE /me` has existed all along; a call against the running server
+  confirmed it — **202**, and `GET /me` with the same token afterwards
+  returns **401**. The contract was the stale party, and a grep of a
+  specification is not a measurement of a server. Built and gated:
+  `test/features/profile/account_deletion_test.dart`.
 * **Orientation.** Portrait, landscape-left and landscape-right are all
   declared; nothing has been designed or tested in landscape. Not a rejection,
   but a reviewer rotating an iPad will see it. A decision, not a defect.

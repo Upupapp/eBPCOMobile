@@ -2,7 +2,6 @@ import '../api/api_client.dart';
 import '../api/idempotency_key.dart';
 import '../api/api_exception.dart';
 import '../api/application_dto.dart';
-import '../contract/service_domain.dart';
 import '../models/application_lineage.dart';
 import '../models/application_model.dart';
 import '../models/document_model.dart';
@@ -68,10 +67,24 @@ class HttpApplicationsRepository implements ApplicationsRepository {
     final json = await _api.post(
       '/applications',
       body: {
-        // Required by the contract and, until 30 August 2026, never sent — so
-        // a conforming server refused every filing this app made. Derived
-        // rather than decided: see `serviceDomainFor`.
-        'serviceDomain': serviceDomainFor(permitTypeLabel).wire,
+        // **`serviceDomain` is NOT sent, and that is the correction.**
+        //
+        // It was added on 30 August because the contract declares it required
+        // on `ApplicationSubmission`, and the reasoning was sound: the
+        // contract types the field and the client was not sending it. What
+        // the contract does not say is which DIRECTION the field travels.
+        //
+        // Measured against the running server on 31 August, by the backend
+        // lane and then here: the submission schema is `.strict()` and does
+        // not declare it, so sending it is a 400 —
+        // `Unrecognized key(s) in object: 'serviceDomain'`. The server DERIVES
+        // it from `permitType` and returns it in the 201. It is output.
+        //
+        // So the fix made on 30 August would have refused every filing this
+        // app makes, and was caught only because somebody called a real
+        // server. `serviceDomainFor` stays: it is still how this app labels a
+        // filing for its own screens, and it is now the same derivation the
+        // server performs rather than a field on the wire.
         // Null, not ''. The contract types this as a uuid or null, and an
         // empty string is neither — every construction wizard files through
         // `submitPermitApplication`, which has no business to name because a

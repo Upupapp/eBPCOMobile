@@ -229,6 +229,29 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Erases the account, then signs out.
+  ///
+  /// Apple Guideline 5.1.1(v) and RA 10173 §16(e). Returns false and leaves
+  /// the citizen signed in when the request failed, because the alternative —
+  /// signing them out of an account that still exists — reads as success.
+  ///
+  /// The local session is cleared through the same path as [logout] so a
+  /// deleted account leaves nothing on the device: the token, the remembered
+  /// email, the cached profile photo and the drafts all go with it.
+  Future<bool> deleteAccount() async {
+    try {
+      await _repository.deleteAccount();
+    } catch (error) {
+      _errorMessage =
+          'Could not delete your account. Check your connection and try '
+          'again — nothing has been deleted.';
+      notifyListeners();
+      return false;
+    }
+    await logout();
+    return true;
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

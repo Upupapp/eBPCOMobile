@@ -43,6 +43,51 @@ class ProfileScreen extends StatelessWidget {
     if (context.mounted) context.go('/login');
   }
 
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    // Two sentences, both true, and the second is the one an applicant needs.
+    // A permit is a public record; deleting an account does not withdraw a
+    // permit the office has issued, and saying so here is cheaper than a
+    // complaint after the fact.
+    final confirmed = await ConfirmationDialog.show(
+      context,
+      title: 'Delete Account',
+      message:
+          'This deletes your eBPCO account and the personal details you have '
+          'given — your name, contact details, address and identification '
+          'numbers. Applications in progress are withdrawn.\n\n'
+          'Permits already issued to you remain public records held by the '
+          'Office of the Building Official. This cannot be undone.',
+      confirmLabel: 'Delete Account',
+      isDestructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final deleted = await context.read<AuthProvider>().deleteAccount();
+    if (!context.mounted) return;
+    if (deleted) {
+      context.go('/login');
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Your account is being deleted. You have been signed out.',
+          ),
+        ),
+      );
+      return;
+    }
+    // Left signed in on purpose: signing someone out of an account that still
+    // exists reads as success.
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          context.read<AuthProvider>().errorMessage ??
+              'Could not delete your account.',
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleEditPhoto(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
     final hasPhoto = authProvider.currentUser?.photoPath != null;
@@ -325,6 +370,34 @@ class ProfileScreen extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.error),
                 ),
+              ),
+              const SizedBox(height: 12),
+              // **Apple Guideline 5.1.1(v)**: an app that lets someone create
+              // an account must let them delete it from inside the app — not
+              // by writing to an address, not on a website. Absent until 31
+              // August 2026, which would have been a certain rejection.
+              //
+              // It is also RA 10173 §16(e), and that is the reason that
+              // matters: a citizen who filed a permit gave this office their
+              // TIN, their address and their government ID, and the law says
+              // they may take it back.
+              TextButton(
+                onPressed: () => _handleDeleteAccount(context),
+                child: Text(
+                  'Delete Account',
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.error,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Deleting removes your account and personal details from '
+                'this app. Permits already issued to you remain public '
+                'records held by the Office of the Building Official.',
+                textAlign: TextAlign.center,
+                style: AppTypography.caption,
               ),
             ],
           ),

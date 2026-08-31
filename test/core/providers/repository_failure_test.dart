@@ -63,6 +63,9 @@ class _ThrowingAuth implements AuthRepository {
   }) async => throw _Offline();
 
   @override
+  Future<void> deleteAccount() async {}
+
+  @override
   Future<UserModel?> hydrateUser(String email) async => throw _Offline();
 }
 

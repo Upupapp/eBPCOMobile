@@ -91,6 +91,15 @@ class HttpAuthRepository implements AuthRepository {
   @override
   Future<UserModel?> hydrateUser(String email) => _profile(email);
 
+  @override
+  Future<void> deleteAccount() async {
+    // 202. The session is invalid immediately afterwards — measured: a GET
+    // /me with the same token returns 401 — so the caller signs out rather
+    // than leaving a token that will fail on the next screen.
+    await _api.delete('/me', idempotencyKey: newIdempotencyKey());
+    await _session.clear();
+  }
+
   Future<UserModel?> _profile(String email) async {
     try {
       final me = await _api.getObject('/me');

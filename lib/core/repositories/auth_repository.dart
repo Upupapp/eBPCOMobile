@@ -21,9 +21,30 @@ abstract class AuthRepository {
   });
 
   Future<UserModel?> hydrateUser(String email);
+
+  /// Erases the citizen's account.
+  ///
+  /// **Apple Guideline 5.1.1(v)**: an app that lets someone create an account
+  /// must let them delete it from inside the app. Not an email address to
+  /// write to, not a web form — the same app.
+  ///
+  /// It is also RA 10173 §16(e), the right to erasure, which is the reason
+  /// that matters here: a citizen who filed a permit gave this office their
+  /// TIN, their address and their government ID, and the law says they may
+  /// take it back.
+  ///
+  /// The server answers **202**. Erasure is queued rather than immediate, so
+  /// this returns when the request is accepted, not when the data is gone —
+  /// and the app must not tell the citizen otherwise.
+  Future<void> deleteAccount();
 }
 
 class MockAuthRepository implements AuthRepository {
+  @override
+  Future<void> deleteAccount() async {
+    // Nothing to erase: the mock account is a constant, not a record.
+  }
+
   MockAuthRepository({LocalStorageService? storageService})
     : _storage = storageService ?? LocalStorageService();
 

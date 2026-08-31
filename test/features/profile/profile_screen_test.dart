@@ -53,6 +53,9 @@ class _FakeAuthRepository implements AuthRepository {
   }) async => true;
 
   @override
+  Future<void> deleteAccount() async {}
+
+  @override
   Future<UserModel?> hydrateUser(String email) async => _user;
 }
 
