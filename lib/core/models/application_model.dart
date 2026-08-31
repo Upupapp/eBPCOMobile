@@ -165,6 +165,18 @@ class ApplicationModel {
   final List<DocumentModel> documents;
   final PaymentAssessmentModel? payment;
   final String? permitNumber;
+
+  /// Where the work is, as one line.
+  ///
+  /// The app has sent this on every filing since 31 August and had nowhere to
+  /// put it coming back: `GET /applications/{id}` returns `location`, and this
+  /// model had no field for it, so a citizen opening their own application saw
+  /// the permit type, the reference number and the status — and not the site.
+  /// The office knew where the work was; the citizen's own record did not say.
+  ///
+  /// Found by comparing the server's response keys against the ones
+  /// `ApplicationDto.parse` actually reads.
+  final String? location;
   final DateTime? issuedDate;
   final List<StatusHistoryEntry> statusHistory;
 
@@ -219,6 +231,7 @@ class ApplicationModel {
     this.documents = const [],
     this.payment,
     this.permitNumber,
+    this.location,
     this.issuedDate,
     this.statusHistory = const [],
     this.lifecycleStatus,
@@ -386,6 +399,7 @@ class ApplicationModel {
     List<DocumentModel>? documents,
     PaymentAssessmentModel? payment,
     String? permitNumber,
+    String? location,
     DateTime? issuedDate,
     List<StatusHistoryEntry>? statusHistory,
     ApplicationLifecycleStatus? lifecycleStatus,
@@ -411,6 +425,7 @@ class ApplicationModel {
       documents: documents ?? this.documents,
       payment: payment ?? this.payment,
       permitNumber: permitNumber ?? this.permitNumber,
+      location: location ?? this.location,
       issuedDate: issuedDate ?? this.issuedDate,
       statusHistory: statusHistory ?? this.statusHistory,
       lifecycleStatus: lifecycleStatus ?? this.lifecycleStatus,

@@ -131,8 +131,18 @@ Future<void> _run() async {
     print('  $e');
   }
 
-  step('POST /applications — a fencing permit with the whole wizard');
+  step(
+    'POST /applications — the whole wizard, on the one permit type the '
+    'server currently issues',
+  );
+  // Certificate of Occupancy is spelled identically in both vocabularies, so
+  // it is the only one of the app's nineteen that files today. D-10 is ruled
+  // and the seed has not moved yet; using this one measures everything PAST
+  // submission without waiting for it.
   final draft = FencingPermitDraft();
+  // The fencing draft is still what fills `form`: the payload is the wizard's
+  // field set, and which wizard it came from is not what is being measured
+  // here — that the 239 fields arrive is.
   draft.applicant.firstName = 'Maria';
   draft.applicant.lastName = 'Dela Cruz';
   draft.constructionLocation.lotNumber = '12';
@@ -144,7 +154,7 @@ Future<void> _run() async {
       businessName: 'Maria Dela Cruz',
       type: ApplicationType.newPermit,
       documents: const [],
-      permitTypeLabel: CanonicalPermitType.fencingPermit.wire,
+      permitTypeLabel: CanonicalPermitType.certificateOfOccupancy.wire,
       location: 'Lot 12, Barangay Bagumbayan, Castilla, Sorsogon',
       form: permitFormPayload(const FencingPermitDraftCodec(), draft),
     );

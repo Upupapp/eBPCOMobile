@@ -102,6 +102,7 @@ const _filedApplication = {
 /// sub-objects. Every optional field on the shared schema is omitted, which a
 /// conforming server is entitled to do.
 const _summaryRow = {
+  'location': 'Lot 12, Barangay Bagumbayan, Castilla, Sorsogon',
   'id': '7c1d4b62-0a6f-4d5e-9d1f-2b3c4d5e6f70',
   'referenceNumber': 'E-BPCO-2026-000145',
   'applicationAction': 'New',
@@ -314,6 +315,20 @@ void main() {
       expect(
         detail.openInstruction!.items.single.remark,
         'Unsigned and unsealed. Resubmit signed and sealed.',
+      );
+    });
+
+    test('the site comes back, and the model holds it', () async {
+      // The app sent `location` on every filing from 31 August and had no
+      // field for it coming back, so a citizen opening their own application
+      // saw the permit type, the reference and the status — and not where the
+      // work was. Found by diffing a real server's response keys against the
+      // ones ApplicationDto.parse reads; six were served and ignored, and
+      // this was the one that cost the citizen something.
+      final rows = await repository.fetchAll();
+      expect(
+        rows.single.location,
+        'Lot 12, Barangay Bagumbayan, Castilla, Sorsogon',
       );
     });
 

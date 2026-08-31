@@ -140,12 +140,25 @@ void main() {
     });
   });
 
-  test('RECORDED — six declared fields mobile never reads', () {
+  test('RECORDED — five declared fields mobile never reads', () {
     // Not defects: the app does not need all of them. Listed so the choice is
     // visible rather than accidental — `pledge` and `requiresApplicantAction`
     // in particular are computed client-side today, and the contract states
     // that the pledge is "computed in exactly one place server-side; clients
     // display and never compute".
+    //
+    // **`location` left this list on 31 August 2026, and how it left is the
+    // point.** It had been recorded here as a deliberate omission since the
+    // list was written — read from the contract, agreed to on paper, and
+    // wrong. Seeing it come back in a real server's response made the
+    // consequence obvious in a way the schema never did: the app SENDS the
+    // site on every filing, and a citizen opening their own application saw
+    // the permit type, the reference number and the status, and not where the
+    // work was. The office knew; their own record did not say.
+    //
+    // A list of accepted omissions is worth keeping and worth re-reading
+    // against something real. This one survived four days of gates because
+    // nothing here asked what the omission cost.
     final topLevel = {
       ...RegExp(r"json,\s*'(\w+)'\)").allMatches(dto).map((m) => m.group(1)!),
       ...RegExp(r"json\['(\w+)'\]").allMatches(dto).map((m) => m.group(1)!),
@@ -154,7 +167,6 @@ void main() {
 
     expect(ignored, {
       'applicantStatus',
-      'location',
       'pledge',
       'requiresApplicantAction',
       'serviceDomain',

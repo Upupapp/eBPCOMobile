@@ -143,3 +143,64 @@ tests passed, and the write path was asserted over a socket against a stub that
 answered from the contract.
 
 The stub was right about the contract. The contract is wrong about the server.
+
+
+---
+
+# The filing succeeded — 31 August, later the same day
+
+D-10 is ruled but the seed has not moved, so eighteen of the nineteen permit
+types are still refused. **`Certificate of Occupancy` is spelled identically in
+both vocabularies**, so it files today — and using it measured everything past
+submission without waiting for anything.
+
+Through the app's own repositories, end to end:
+
+```
+register                          202
+sign in                           user + token
+GET  /me                          200
+POST /applications                201  E-BPCO-2026-000005
+GET  /applications                1 row, parsed
+GET  /applications/{id}           parsed
+```
+
+**`serviceDomain` comes back in the 201**, derived from `permitType`, which is
+the backend lane's account of it confirmed rather than taken on trust. **`form`
+comes back in the detail response**, so the wizard's field set is stored and
+returned, not merely accepted.
+
+## What the round trip found
+
+Diffing the server's response keys against the ones `ApplicationDto.parse`
+actually reads: **six fields are served and ignored.** Five are deliberate and
+recorded. One was not worth the omission.
+
+**`location`.** The app has sent the site line on every filing since 31 August
+and had no field for it coming back. So a citizen opening their own application
+saw the permit type, the reference number and the status — **and not where the
+work was.** The office knew; their own record did not say.
+
+It is now on `ApplicationModel`, parsed by the DTO, and shown as a **Site**
+section on the detail screen.
+
+### How it hid, which is the part worth keeping
+
+**It was already recorded.** `response_bodies_test.dart` has listed `location`
+among "six declared fields mobile never reads" since that gate was written —
+read from the contract, agreed to on paper, and wrong. The gate was doing
+exactly what it was built to do and could not have caught this, because it
+asked *"is this omission deliberate?"* and never *"what does the omission
+cost?"*
+
+Seeing the field come back in a real response made the answer obvious in a way
+the schema never did. **A list of accepted omissions is worth keeping and worth
+re-reading against something real.**
+
+## Left as an observation, not a change
+
+`requiresApplicantAction` is served by the server and computed independently by
+the client from `lifecycleStatus` and `openInstructionCount`. They agree today
+because they are computed from the same inputs. Two authorities for one fact is
+a risk rather than a defect, and the client's derivation is deliberate,
+documented and tested — so it is recorded here rather than quietly switched.

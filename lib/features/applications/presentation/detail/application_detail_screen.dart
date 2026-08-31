@@ -69,6 +69,34 @@ class ApplicationDetailScreen extends StatelessWidget {
             // already happened.
             DetailActionBanner(application: application),
 
+            // Where the work is. The app has sent this on every filing since
+            // 31 August and had nowhere to show it coming back — a citizen
+            // opening their own application saw the permit type, the reference
+            // number and the status, and not the site. Found by comparing a
+            // real server's response keys against the ones the DTO reads.
+            if (application.location != null &&
+                application.location!.trim().isNotEmpty)
+              _Section(
+                title: 'Site',
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.place_outlined,
+                      size: 18,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        application.location!,
+                        style: AppTypography.body,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             _Section(
               title: 'Timeline',
               child: LifecycleTimeline(

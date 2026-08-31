@@ -59,6 +59,9 @@ class ApplicationDto {
       lifecycleStatus: lifecycle,
       classification: _classification(_stringOrNull(json, 'classification')),
       permitTypeLabel: _stringOrNull(json, 'permitType'),
+      // Sent on every filing and, until 31 August 2026, never read back — so
+      // the citizen's own record did not say where the work was.
+      location: _stringOrNull(json, 'location'),
       submittedDate: _dateTime(json, 'dateSubmitted'),
       // Trusted from the server when present, since a summary payload may omit
       // the letters themselves; derived otherwise.
