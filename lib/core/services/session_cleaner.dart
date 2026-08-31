@@ -1,3 +1,4 @@
+import '../constants/app_constants.dart';
 import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,8 +34,22 @@ class SessionCleaner {
   ///
   /// An allow-list, not a deny-list: a key added later is cleared by default,
   /// and the thing that would otherwise be forgotten is somebody's data.
+  ///
+  /// **Written as constants, not literals, since 31 August 2026 — and that is
+  /// the bug this fixes.** The list held `'onboarding_completed'` in snake
+  /// case while the app writes `'onboardingCompleted'`. The allow-list
+  /// therefore did not match the key it was meant to protect, so **signing out
+  /// deleted it**, and the next launch showed a returning applicant the
+  /// three-page introduction as though they had never used the app.
+  ///
+  /// A deny-list would have failed loudly. An allow-list fails by forgetting,
+  /// which is why the spelling has to come from the same place the writer
+  /// takes it from.
   static const kept = <String>{
-    'onboarding_completed',
+    AppConstants.prefOnboardingCompleted,
+    // Nothing writes a language preference yet — `language_screen.dart` does
+    // not persist. Kept so the choice survives the moment it does, and named
+    // here rather than left to be discovered later.
     'preferred_language',
   };
 

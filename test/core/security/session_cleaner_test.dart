@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ebpco_user_app/core/constants/app_constants.dart';
 import 'package:ebpco_user_app/core/services/secure_session_store.dart';
 import 'package:ebpco_user_app/core/services/session_cleaner.dart';
 
@@ -31,10 +32,18 @@ void main() {
   Future<void> seedASession() async {
     await store.save(accessToken: 'access-1', refreshToken: 'refresh-1');
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_logged_in', true);
-    await prefs.setString('applicant_email', 'maria.santos@example.ph');
+    // **The keys the APP writes, not invented ones.** This fixture used to
+    // seed `is_logged_in`, `applicant_email` and `onboarding_completed` —
+    // none of which the app uses. So the suite proved sign-out kept a key
+    // nobody wrote, while the real `onboardingCompleted` was being deleted
+    // and every returning applicant was shown the introduction again.
+    await prefs.setBool(AppConstants.prefIsLoggedIn, true);
+    await prefs.setString(
+      AppConstants.prefCurrentUserEmail,
+      'maria.santos@example.ph',
+    );
     await prefs.setString('last_application_id', 'BP-2026-000418');
-    await prefs.setBool('onboarding_completed', true);
+    await prefs.setBool(AppConstants.prefOnboardingCompleted, true);
     await prefs.setString('preferred_language', 'en');
     File(
       '${cache.path}/tct-142-rizal-ext.pdf',
@@ -114,6 +123,20 @@ void main() {
   });
 
   group('what sign-out deliberately keeps', () {
+    test('the allow-list names the key the app actually writes', () {
+      // The defect this group failed to catch for as long as it existed: the
+      // allow-list held 'onboarding_completed' and the app writes
+      // 'onboardingCompleted'. An allow-list that misspells a key does not
+      // fail loudly — it forgets, quietly, at sign-out.
+      expect(
+        SessionCleaner.kept,
+        contains(AppConstants.prefOnboardingCompleted),
+        reason:
+            'the allow-list and the writer disagree on the spelling, so the '
+            'key is not protected by the list that names it',
+      );
+    });
+
     test('whether onboarding has been seen', () async {
       // Device settings, not personal data. Wiping them makes every sign-out
       // feel like a factory reset without protecting anyone.
@@ -122,8 +145,13 @@ void main() {
       await cleaner().signOut();
 
       expect(
-        (await SharedPreferences.getInstance()).getBool('onboarding_completed'),
+        (await SharedPreferences.getInstance()).getBool(
+          AppConstants.prefOnboardingCompleted,
+        ),
         isTrue,
+        reason:
+            'signing out sent a returning applicant back through the '
+            'three-page introduction',
       );
     });
 
