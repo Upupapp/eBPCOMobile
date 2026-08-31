@@ -62,7 +62,7 @@ class _ArchitecturalPermitWizardScreenState
     _StepMeta(
       title: 'Address & Project Location',
       subtitle:
-          'Provide your address and the location of the architectural work.',
+          'Provide the citizen address and location of the architectural work.',
     ),
     _StepMeta(
       title: 'Scope of Architectural Work',

@@ -52,7 +52,7 @@ class _BuildingPermitWizardScreenState
   static const List<_StepMeta> _stepMeta = [
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Tell us about yourself so we can identify you.',
+      subtitle: 'Tell us about yourself so we can identify the citizen.',
     ),
     _StepMeta(
       title: 'Applicant Address & Construction Location',

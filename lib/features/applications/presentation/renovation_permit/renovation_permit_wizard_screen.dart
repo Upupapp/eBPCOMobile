@@ -61,7 +61,7 @@ class _RenovationPermitWizardScreenState
     _StepMeta(
       title: 'Address & Renovation Location',
       subtitle:
-          'Provide your address and the location of the existing building.',
+          'Provide the citizen address and location of the existing building.',
     ),
     _StepMeta(
       title: 'Renovation Project Information',

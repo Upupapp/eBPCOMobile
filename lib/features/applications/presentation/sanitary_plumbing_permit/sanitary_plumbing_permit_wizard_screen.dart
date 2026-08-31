@@ -63,7 +63,7 @@ class _SanitaryPlumbingPermitWizardScreenState
     _StepMeta(
       title: 'Address & Project Location',
       subtitle:
-          'Provide your address and the location of the sanitary or plumbing work.',
+          'Provide the citizen address and location of the sanitary or plumbing work.',
     ),
     _StepMeta(
       title: 'Scope of Work',

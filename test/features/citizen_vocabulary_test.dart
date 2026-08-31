@@ -23,34 +23,59 @@ import 'package:flutter_test/flutter_test.dart';
 ///  3. **Quoted sources** — the checklist's ownership clause and the RA 9514
 ///     citation are transcriptions, not prose.
 ///
-/// What DID change is the app's own voice: where it spoke about the person in
-/// the third person while addressing them, it now uses second person, and
-/// where it describes them to someone else it says citizen.
+/// What DID change is the app's own voice, which now says **citizen** where it
+/// said applicant. "Citizen details" and "citizen address" are the same
+/// noun-modifier construction "applicant details" and "applicant address"
+/// were, so the sentences keep their shape.
+///
+/// An earlier pass rewrote these into second person — "Provide your address…"
+/// — on the argument that the app is addressing the person it names. The owner
+/// asked for the noun, and the noun is what the rest of the system uses:
+/// PUBLIC, CITIZEN, ADMIN. One word for one user type, in the UI as in the
+/// architecture.
 
 String _lib(String path) => File('lib/$path').readAsStringSync();
 
 void main() {
-  group('the app speaks to a citizen, not about an applicant', () {
-    test('wizard subtitles address them directly', () {
-      // "Provide the applicant details for the Fencing Permit" was the app
-      // talking about someone who is standing right there.
+  group('the app says citizen where it said applicant', () {
+    test('wizard subtitles name the citizen', () {
       const reworded = {
         'features/applications/presentation/fencing_permit/'
                 'fencing_permit_wizard_screen.dart':
-            'Provide your details for',
+            'Provide the citizen details',
         'features/applications/presentation/sign_permit/'
                 'sign_permit_wizard_screen.dart':
-            'Provide your details for',
+            'Provide the citizen details',
         'features/applications/presentation/building_permit/'
                 'building_permit_wizard_screen.dart':
-            'so we can identify you',
+            'identify the citizen',
         'features/applications/presentation/mechanical_permit/'
                 'mechanical_permit_wizard_screen.dart':
-            'Provide your address and',
+            'Provide the citizen address',
       };
       reworded.forEach((path, phrase) {
         expect(_lib(path), contains(phrase), reason: '$path was not reworded');
       });
+    });
+
+    test('and none of them slipped back into second person', () {
+      // The shape an earlier pass used — "Provide your address…" — on the
+      // argument that the app is addressing the person it names. The owner
+      // asked for the noun, and the noun is what the rest of the system uses:
+      // PUBLIC, CITIZEN, ADMIN. Held as an assertion so the two readings
+      // cannot coexist across nineteen wizards.
+      final offenders = <String>[];
+      for (final entity in Directory(
+        'lib/features/applications/presentation',
+      ).listSync(recursive: true)) {
+        if (entity is! File || !entity.path.endsWith('.dart')) continue;
+        final source = entity.readAsStringSync();
+        if (source.contains('Provide your address and') ||
+            source.contains('Provide your details for')) {
+          offenders.add(entity.path);
+        }
+      }
+      expect(offenders, isEmpty);
     });
 
     test('and no wizard subtitle still names the applicant', () {

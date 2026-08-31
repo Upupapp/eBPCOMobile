@@ -61,7 +61,7 @@ class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
     ),
     _StepMeta(
       title: 'Owner / Applicant Information',
-      subtitle: 'Provide your details for the Fencing Permit.',
+      subtitle: 'Provide the citizen details for the Fencing Permit.',
     ),
     _StepMeta(
       title: 'Construction Location',
@@ -82,7 +82,7 @@ class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
     ),
     _StepMeta(
       title: 'Applicant & Lot Owner Consent',
-      subtitle: 'Confirm your details and the lot owner’s.',
+      subtitle: 'Confirm the citizen and lot owner information.',
     ),
     _StepMeta(
       title: 'Fence Specifications',

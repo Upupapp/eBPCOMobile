@@ -61,7 +61,7 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
     ),
     _StepMeta(
       title: 'Applicant Information',
-      subtitle: 'Provide your details for the Sign Permit.',
+      subtitle: 'Provide the citizen details for the Sign Permit.',
     ),
     _StepMeta(
       title: 'Construction Location',
@@ -90,7 +90,7 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
     ),
     _StepMeta(
       title: 'Applicant & Owner Consent',
-      subtitle: 'Confirm your details and the building owner’s.',
+      subtitle: 'Confirm the citizen and building owner information.',
     ),
     _StepMeta(
       title: 'Review & Submission',

@@ -62,7 +62,7 @@ class _AdditionExtensionPermitWizardScreenState
     _StepMeta(
       title: 'Address & Project Location',
       subtitle:
-          'Provide your address and the location of the building being extended.',
+          'Provide the citizen address and location of the building being extended.',
     ),
     _StepMeta(
       title: 'Addition / Extension Details',

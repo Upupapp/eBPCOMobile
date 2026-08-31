@@ -60,7 +60,7 @@ class _DemolitionPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Address & Demolition Location',
-      subtitle: 'Provide your address and the location of the structure.',
+      subtitle: 'Provide the citizen address and location of the structure.',
     ),
     _StepMeta(
       title: 'Structure & Demolition Details',

@@ -38,40 +38,45 @@ checklist's sentence, not ours.
 
 ## What changed
 
-Where the app **spoke about the person in the third person while addressing
-them**, it now uses second person — which is better copy than any noun would
-be, and is what the ruling is really after:
+Where the app **named the person in its own prose**, it now says **citizen**:
 
 | Before | After |
 |---|---|
-| "Tell us about yourself so we can identify the applicant." | "…so we can identify you." |
-| "Provide the applicant details for the Fencing Permit." | "Provide your details for the Fencing Permit." |
-| "Provide the applicant address and location of the electrical work." | "Provide your address and the location of the electrical work." |
-| "Confirm the applicant and lot owner information." | "Confirm your details and the lot owner's." |
+| "Tell us about yourself so we can identify the applicant." | "…so we can identify the citizen." |
+| "Provide the applicant details for the Fencing Permit." | "Provide the citizen details for the Fencing Permit." |
+| "Provide the applicant address and location of the electrical work." | "Provide the citizen address and location of the electrical work." |
+| "Confirm the applicant and lot owner information." | "Confirm the citizen and lot owner information." |
 
-Eight address prompts, three detail prompts, two confirmations, one
-introduction.
+Ten address prompts, three detail prompts, two confirmations, one
+introduction, across 15 files. The sentences keep their shape: *citizen
+details* and *citizen address* are the same noun-modifier construction
+*applicant details* and *applicant address* were.
 
-And where the app **describes the person to someone else**, it says citizen:
-the timeline remark an evaluator reads is now *"Corrections resubmitted by the
+And the timeline remark an ADMIN reads is now *"Corrections resubmitted by the
 citizen."*
 
-## Second person, not "citizen", inside the wizards
+### A first pass got this wrong, and the correction is worth keeping
 
-Worth stating because it looks like a dodge and is not. "Provide the citizen
-details for the Sign Permit" is bad English, and the app is talking **to** that
-person. `you`/`your` is the accurate and natural form, and it stays correct
-whoever is at the keyboard — the account holder is the applicant, whether or
-not they own the building, which is exactly what the wizards go on to ask.
+The first attempt rewrote these into second person — *"Provide your address and
+the location of the electrical work"* — arguing that the app is addressing the
+person it names, so a pronoun beats a noun.
 
-"Citizen" is the right word for the **user type**: in architecture, in
-permissions, in prose about the system, and in anything an ADMIN reads.
+The owner asked for the noun. It is the better answer for a reason the first
+pass missed: **the rest of the system has exactly three user types — PUBLIC,
+CITIZEN, ADMIN — and the UI should use the same word the architecture,
+the permissions and the ADMIN-facing screens use.** One word for one user type.
+A pronoun is invisible to anyone reading across surfaces to check that mobile
+and the citizen web portal agree.
+
+A test now asserts the second-person shape has not come back, so the two
+readings cannot coexist across nineteen wizards.
 
 ## The gate
 
-`test/features/citizen_vocabulary_test.dart`, 6 tests. Three assert the
-rewording landed and that **no wizard subtitle still names the applicant** —
-scanned, not listed, so a new wizard cannot reintroduce it. Three assert the
+`test/features/citizen_vocabulary_test.dart`, 7 tests. Four assert the
+rewording landed, that **no wizard subtitle still names the applicant**, and
+that none has slipped back into second person — scanned, not listed, so a new
+wizard cannot reintroduce either. Three assert the
 frozen categories are still frozen: a snapshot key still reads
 `applicant.firstName`, the form-mirroring labels still appear more than twenty
 times, and the checklist's ownership clause is still quoted verbatim.
