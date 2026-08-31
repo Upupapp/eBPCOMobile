@@ -34,8 +34,12 @@ import 'package:ebpco_user_app/core/services/secure_session_store.dart';
 ///
 /// Findings from the first run are in `docs/FIRST-LIVE-FILING.md`.
 const base = 'http://127.0.0.1:3000';
-const email = 'citizen.live@example.ph';
+final email =
+    'citizen.live.${DateTime.now().millisecondsSinceEpoch}@example.ph';
 const password = 'Str0ng-Passphrase-2026!';
+// A fresh address each run: registration is idempotent by email, and reusing
+// one hides whether a SELF-REGISTERED account can file — which is the whole
+// question D-9 asked.
 
 class _MemorySession implements SessionStore {
   String? token;
