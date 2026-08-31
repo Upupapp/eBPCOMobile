@@ -76,6 +76,30 @@ account. That guard is correct and it means **there is no submittable binary
 until a production API exists**. Hosting and who operates it are E-1/E-2, and
 outside this lane.
 
+**What this lane could do about it, and has.** A live-mode release had never
+been built. The switch everything depends on — `--dart-define`, read by
+`AppConfig`, consulted by `RepositoryFactory` — had never been exercised end to
+end, and no test could have caught a break in it: `String.fromEnvironment` is a
+compile-time constant, so in a default build the live branch does not exist.
+The entire suite runs against a binary where `useLiveBackend` is const false.
+A define that stopped arriving would have passed 2,228 tests and shipped
+fabricated data.
+
+Now verified, and `tool/verify.sh` runs it on every pass:
+
+* a release binary built **with** a base URL compiles the URL in (found once by
+  `strings`), and still contains **no** credentials;
+* `AppConfig.useLiveBackend` and `RepositoryFactory.isLive` are asserted to
+  agree, in whichever mode the suite is run;
+* a live build resolves every domain to its `Http` implementation;
+* **a cleartext base URL fails the check.** The app declares no App Transport
+  Security exceptions, so iOS refuses `http://` at runtime, not at build time —
+  a release shipping one fails in a citizen's hands rather than here. If the
+  LGU's eventual API is not HTTPS, that has to be known now.
+
+So the moment a URL exists, the client side of B-1 is a build flag rather than
+a discovery.
+
 ### 3. Document resubmission returns 404 (D-8)
 
 `POST /applications/{id}/documents/{documentId}/resubmit` is called by the app,

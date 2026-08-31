@@ -27,10 +27,29 @@ else
   fail=1
 fi
 
+# Run once in MOCK mode (the default) and once in LIVE mode.
+#
+# The live half is not a duplicate. `--dart-define=EBPCO_API_BASE_URL` is a
+# compile-time constant, so the branch that reads it does not exist in a
+# default build — every test in the suite runs against a build where
+# `AppConfig.useLiveBackend` is const false. A define that stopped reaching
+# `AppConfig` would pass the whole suite and ship fabricated data. B-1.
+live_out=$(flutter test test/core/config/live_mode_define_test.dart \
+  --dart-define=EBPCO_API_BASE_URL=https://api.example.gov.ph 2>&1)
+live_code=$?
+
 test_out=$(flutter test 2>&1)
 test_code=$?
 passed=$(printf '%s' "$test_out" | grep -oE '\+[0-9]+: All tests passed' | grep -oE '[0-9]+' | tail -1)
 overflows=$(printf '%s' "$test_out" | grep -c 'overflowed by')
+
+if [ "$live_code" -eq 0 ]; then
+  line "live-mode define" "reaches the repositories"
+else
+  line "live-mode define" "FAILED"
+  printf '%s\n' "$live_out" | grep -E '\[E\]$' | head -5
+  fail=1
+fi
 
 if [ "$test_code" -eq 0 ]; then
   line "flutter test" "${passed:-?} passed"
