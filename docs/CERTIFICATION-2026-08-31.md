@@ -8,7 +8,7 @@ document could not have stated.
 0 layout overflows, 1358s — rather than from the working tree it was written
 in. The admin line is unchanged at `e0925d9`.*
 
-**Suite at publication: 2176 tests.**
+**Suite at publication: 2181 tests.**
 
 *That second number is not decoration. §4 records a check that could not fail,
 and its replacement asserts this line equals the figure `tool/verify.sh` last
@@ -129,9 +129,9 @@ Home says fees are due and the screen says not yet available.
 bundle identifier (M-29), which belong to the Windows lane; the App Store
 Connect privacy label (M-50), which cannot be edited from here and is now stale
 because the app began transmitting the wizard contents — the answers to
-transcribe are written out in `docs/M-50-app-store-privacy-label.md`; and how
-the app gets its typeface (M-51), because it currently downloads it from
-`fonts.gstatic.com` at runtime, undeclared.
+transcribe are written out in `docs/M-50-app-store-privacy-label.md`. M-51 — how the app gets its
+typeface — was decided and closed the same day: Poppins is bundled and runtime
+fetching is off, so the app no longer reaches `fonts.gstatic.com`.
 
 **LGU.** The office's street address, its opening hours and a bring-with-you
 list (M-11); the published Citizen's Charter per permit type (M-08); the

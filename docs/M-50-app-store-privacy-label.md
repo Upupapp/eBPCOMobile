@@ -61,51 +61,35 @@ ship their own manifests, not by this binary. See `docs/M-46-privacy-manifest.md
 
 ---
 
-## One thing to decide before you answer
+## Resolved before answering: the typeface
 
-**The app fetches its typeface from a Google server at runtime, and nothing
-declares it.**
+**The app used to download its typeface from a Google server at runtime.** It
+no longer does, and the answers above were prepared after that was fixed rather
+than around it.
 
-`pubspec.yaml` depends on `google_fonts`, `app_theme.dart` and
-`app_typography.dart` call `GoogleFonts.poppins()`, **no Poppins files are
-bundled** — the `fonts:` block in `pubspec.yaml` is still commented out — and
-`GoogleFonts.config.allowRuntimeFetching` is never set, so it keeps its default
-of `true`.
+`google_fonts` downloads a family from `fonts.gstatic.com` on first use unless
+told otherwise, and nothing told it otherwise: `GoogleFonts.poppins()` was
+called from `app_theme.dart` and `app_typography.dart`, no Poppins was bundled,
+and `allowRuntimeFetching` was never set. So every applicant's device made a
+request to a third party, carrying its IP address, before they had agreed to
+anything — undeclared by both the Privacy Policy and the manifest. It also made
+the typeface non-deterministic: a first launch offline got the platform font
+and kept it, in an app whose 6.6 MB of blank forms are bundled precisely so it
+works away from a connection.
 
-So on first use the package downloads Poppins from `fonts.gstatic.com`. That is
-a request to a third party carrying the device's IP address, made on behalf of
-every applicant, before they have agreed to anything.
+**Not a theoretical finding.** Five hashed Poppins files were sitting in the
+iOS Simulator's app container under `Library/Application Support` — one per
+weight, which is `google_fonts`' download cache. The request had been happening.
 
-Three consequences, in order of how much they matter:
+**Fixed 31 August 2026 by the owner's decision (M-51):** Poppins is bundled at
+the five weights the design uses — 400/500/600/700/800, 788 KB with the licence
+— and `main.dart` sets `GoogleFonts.config.allowRuntimeFetching = false`. The
+app looks exactly as it did, always, offline included, and reaches no third
+party for it. `OFL.txt` ships beside the files because the SIL Open Font
+License conditions redistribution on the licence travelling with the font.
 
-1. **The in-app Privacy Policy does not mention it.** It says information "may
-   be shared with other government offices" and that the LGU does not sell
-   personal information. Both true. Neither describes a connection to Google.
-2. **The typeface is non-deterministic.** An applicant who first opens the app
-   online gets Poppins; one who opens it offline gets the platform font, and
-   keeps it until a fetch succeeds. The app is explicitly built for offline
-   preparation — `pubspec.yaml` says the 6.6 MB of blank forms are bundled
-   "because the point of them is offline preparation" — and the typeface is the
-   one asset that contradicts that.
-3. **It bears on the label.** Apple asks whether *you or your third-party
-   partners* collect data. A font CDN receiving an IP address is a thin case,
-   and it is not one to answer from a guess.
-
-**Two ways out, and both are the owner's call:**
-
-* **Bundle Poppins.** It is under the SIL Open Font License, so redistributing
-  it in the app is permitted. Add the `.ttf` files to `assets/fonts/`, declare
-  them under `fonts:`, and set `GoogleFonts.config.allowRuntimeFetching = false`.
-  The app looks the same, always, offline included, and makes no third-party
-  request. Costs a few hundred kilobytes against the 6.6 MB already bundled.
-* **Drop the runtime fetch and accept the platform font.** One line
-  (`allowRuntimeFetching = false`), no new assets, and the app looks different.
-
-**Not taken here**, because it changes either what ships in the binary or how
-every screen looks, and neither is a decision this lane gets to make quietly.
-Recorded as M-51.
-
----
+So the label answer stands unqualified: **no data is collected by third-party
+partners.** There is no third party.
 
 ## The gate
 

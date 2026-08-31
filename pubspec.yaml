@@ -111,6 +111,35 @@ flutter:
     # an applicant filling the paper form with a professional, away from the
     # office and often away from a connection. ~6.6 MB across 18 files.
     - assets/permits/
+    # Poppins, bundled 31 August 2026 rather than fetched. `google_fonts`
+    # downloads a typeface from fonts.gstatic.com on first use unless it finds
+    # the family in the asset bundle — a third-party request carrying the
+    # device's IP, made for every applicant before they have agreed to
+    # anything, that nothing in the app declared. It also made the typeface
+    # non-deterministic: an applicant whose first launch was offline got the
+    # platform font and kept it. M-51.
+    #
+    # SIL Open Font License 1.1, which permits redistribution; OFL.txt ships
+    # beside the files because the licence requires it to.
+    - assets/fonts/
+
+  # Weights 400/500/600/700/800, matching the eBPCO Web Admin's brand
+  # typeface. `GoogleFonts.poppins()` resolves against these instead of the
+  # network once `allowRuntimeFetching` is off — the call sites in
+  # app_theme.dart and app_typography.dart need no change.
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-ExtraBold.ttf
+          weight: 800
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
