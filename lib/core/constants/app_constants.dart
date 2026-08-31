@@ -17,13 +17,23 @@ class AppConstants {
   static const double minTouchTarget = 48;
 
   static const Duration mockNetworkDelay = Duration(milliseconds: 900);
-  static const Duration splashMinimumDuration = Duration(milliseconds: 1400);
+
+  /// How long the splash takes to assemble its mark.
+  ///
+  /// Replaces `splashMinimumDuration`, and the rename is the point. That was a
+  /// floor on how long startup took — `Future.wait` held the boot until it
+  /// elapsed. This is the length of an animation that **nothing waits for**:
+  /// the router redirects the moment the session resolves, whether the reveal
+  /// has finished or not. See `SplashScreen`, rule 1, and Servana's
+  /// `SPLASH_MOTION_SPEC.md` §3.
+  static const Duration splashRevealDuration = Duration(milliseconds: 1600);
 
   // SharedPreferences keys.
   static const String prefOnboardingCompleted = 'onboardingCompleted';
   static const String prefIsLoggedIn = 'isLoggedIn';
   static const String prefRememberMe = 'rememberMe';
   static const String prefRegisteredEmail = 'registeredEmail';
+
   /// Password verifier and its salt. The password itself is never stored —
   /// see CredentialVerifier.
   /// Bearer token for the API, once a real auth backend issues one.
