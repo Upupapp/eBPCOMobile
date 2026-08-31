@@ -84,6 +84,33 @@ retired.
             - FSIC for Occupancy Permit (BFP)
 ```
 
+## Measured against the running server, 31 August
+
+Every one of the nineteen filed through the app's own repository
+(`test/live/all_permit_types_live.dart`):
+
+```
+accepted: 1 of 19
+   ✓ Certificate of Occupancy
+
+refused: 18
+   ✗ Building Permit – New Construction   The LGU does not issue a "…" permit.
+   ✗ Demolition Permit                    The LGU does not issue a "…" permit.
+   ✗ Zoning / Locational Clearance        The LGU does not issue a "…" permit.
+   ✗ Architectural Permit                 The LGU does not issue a "…" permit.
+   … 14 more, all identical
+```
+
+**All eighteen fail for the same reason.** Not one of them gets past the
+permit-type check and fails on something else — no missing required field, no
+authorisation problem, no shape mismatch behind the vocabulary wall.
+
+That is worth stating because it is an assurance rather than a complaint:
+**changing the seed is sufficient, not merely necessary.** When
+`permit_types` carries the office's nineteen names, all nineteen should file,
+and this script re-run is how to confirm it in one command rather than by
+reasoning.
+
 ## What "done" looks like
 
 `test/contract/application_submission_test.dart` in the mobile repo asserts how
