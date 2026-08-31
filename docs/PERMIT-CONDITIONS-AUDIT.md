@@ -85,10 +85,24 @@ step 9 (consent and review), sign at step 10 (review and submission), so their
 `permitConditions` render nowhere — which is why they were not caught by the
 per-wizard reading and only fell out of the class-level sweep below.
 
-Both are corrected so they are right whenever they are shown. **Whether they
-should be shown is an open question**: the cash bond in particular is money an
-applicant has to find before they start, and at present the app never mentions
-it. That is a wizard change, not a text change, and it is not taken here.
+**Closed 31 August 2026.** Both now render their conditions on their final
+review step — `PermitConditionsCard`, placed **before the declaration** rather
+than after it, because these are the obligations the applicant is about to
+certify they understand. The nine other wizards show the same list on their
+Evaluation & Permit Status step, which is the right place there: that screen is
+about what the office is doing, and this one is about what the applicant is
+taking on.
+
+Deliberately **not** done by cloning the evaluation step. That screen carries
+Document Evaluation and Progress Flow tables of office-controlled placeholders
+reading "Pending", and adding two more copies of a fabricated status table to
+show one real list would be the defect this audit exists to remove, in the
+other direction.
+
+Sign carries the reference-form caveat; excavation does not, and the gate
+delegates that distinction to `permit_forms.dart` rather than restating it.
+
+The render count is pinned at **eleven**.
 
 ## A second signature block, and a plainer one
 

@@ -9,6 +9,7 @@ import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
 import '../../../../../shared/widgets/text_fields/app_text_field.dart';
 import '../../../../../shared/widgets/uploads/document_upload_tile.dart';
+import '../../../../../shared/widgets/layout/permit_conditions_card.dart';
 import '../../building_permit/widgets/date_picker_field.dart';
 import '../../../../documents/presentation/widgets/attach_document_sheet.dart';
 
@@ -491,6 +492,16 @@ class _Step9ConsentReviewSubmissionState
                 if (needsSeparateLotOwner)
                   _SummaryRow('Lot Owner Name', lotOwner.printedName),
               ],
+            ),
+
+            // Before the declaration, not after it: these are the
+            // obligations the applicant is about to certify they understand,
+            // and one of them is a fifty-thousand-peso cash bond they have to
+            // find before breaking ground. This wizard has no evaluation
+            // step, so until now the list rendered nowhere at all.
+            const SizedBox(height: AppSpacing.xl),
+            const PermitConditionsCard(
+              conditions: ExcavationProcessingInfo.permitConditions,
             ),
 
             const SizedBox(height: AppSpacing.xl),

@@ -8,7 +8,7 @@ document could not have stated.
 0 layout overflows, 1358s — rather than from the working tree it was written
 in. The admin line is unchanged at `e0925d9`.*
 
-**Suite at publication: 2169 tests.**
+**Suite at publication: 2176 tests.**
 
 *That second number is not decoration. §4 records a check that could not fail,
 and its replacement asserts this line equals the figure `tool/verify.sh` last
@@ -137,6 +137,7 @@ the app gets its typeface (M-51), because it currently downloads it from
 list (M-11); the published Citizen's Charter per permit type (M-08); the
 DPWH/JMC unified forms (M-10).
 
-**This lane.** The excavation and sign wizards hold corrected permit conditions
-that render nowhere, because neither wizard has an evaluation step — and one of
-them carries the ₱50,000 cash bond.
+**This lane.** Nothing outstanding from the register. The excavation and sign
+wizards' conditions — including the ₱50,000 cash bond — reached a screen on
+31 August, on the final review step rather than through a cloned evaluation
+step full of placeholder statuses.

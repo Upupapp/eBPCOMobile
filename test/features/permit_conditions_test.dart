@@ -319,6 +319,70 @@ void main() {
     });
   });
 
+  group('Excavation and Sign, which had nowhere to show them', () {
+    // Both declare permitConditions; neither has an evaluation step. Until
+    // 31 August 2026 their lists rendered nowhere at all — which is how the
+    // excavation permit's cash bond stayed invisible to the person who has to
+    // find fifty thousand pesos before breaking ground.
+
+    String stepSource(String wizard, String file) => File(
+      'lib/features/applications/presentation/${wizard}_permit/steps/$file',
+    ).readAsStringSync();
+
+    test('the excavation conditions render on the final review step', () {
+      final source = stepSource(
+        'excavation',
+        'step9_consent_review_submission.dart',
+      );
+      expect(source, contains('ExcavationProcessingInfo.permitConditions'));
+      expect(source, contains('PermitConditionsCard'));
+    });
+
+    test('and before the declaration, not after it', () {
+      // The applicant certifies they understand their obligations. Printing
+      // those obligations below the certification would be an odd order to
+      // ask anyone to read in.
+      final source = stepSource(
+        'excavation',
+        'step9_consent_review_submission.dart',
+      );
+      expect(
+        source.indexOf('PermitConditionsCard'),
+        lessThan(source.indexOf("Text('Declaration'")),
+      );
+    });
+
+    test('the sign conditions render, and carry the caveat', () {
+      // The bundled sign form is signed by a CITY Building Official.
+      // Castilla is a municipality, so this cannot be its form.
+      final source = File(
+        'lib/features/applications/presentation/sign_permit/steps/'
+        'step10_review_submission.dart',
+      ).readAsStringSync();
+      expect(source, contains('SignProcessingInfo.permitConditions'));
+      expect(source, contains('isReferenceForm: true'));
+    });
+
+    test('and excavation does NOT, because its form is Castilla\'s own', () {
+      // Delegated rather than asserted twice: the flag lives in
+      // permit_forms.dart.
+      expect(
+        LguSourceNotice.isFormCastillasOwn(
+          CanonicalPermitType.excavationPermit,
+        ),
+        isTrue,
+      );
+      expect(
+        LguSourceNotice.isFormCastillasOwn(CanonicalPermitType.signPermit),
+        isFalse,
+      );
+      expect(
+        stepSource('excavation', 'step9_consent_review_submission.dart'),
+        isNot(contains('isReferenceForm: true')),
+      );
+    });
+  });
+
   test('these are shown to the applicant, which is why they matter', () {
     // A list nobody renders would be a documentation problem. This one is on
     // the step that tells an applicant where their application stands.
@@ -333,11 +397,14 @@ void main() {
         .length;
     expect(
       rendered,
-      9,
+      11,
       reason:
-          'permitConditions is rendered by nine wizard steps. If that fell, '
-          'these lists stopped reaching the applicants they are written for; '
-          'if it rose, a tenth wizard now shows conditions that should be '
+          'permitConditions is rendered by eleven wizard steps: nine on their '
+          'Evaluation & Permit Status step, and — since 31 August 2026 — '
+          'Excavation and Sign on their final review step, which is where '
+          'they belong for wizards that have no evaluation step. If this '
+          'fell, lists stopped reaching the applicants they are written for; '
+          'if it rose, another wizard now shows conditions that should be '
           'checked against its own form',
     );
     expect(step.existsSync(), isTrue);

@@ -6,6 +6,7 @@ import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../shared/widgets/cards/app_card.dart';
 import '../../../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../../../shared/widgets/layout/permit_conditions_card.dart';
 
 /// Step 10 — Review & Submission: a read-only summary of every prior step
 /// (with an Edit shortcut back into each), plus the certifications
@@ -241,6 +242,16 @@ class _Step10ReviewSubmissionState extends State<Step10ReviewSubmission> {
                     consent.buildingOwner.printedName,
                   ),
               ],
+            ),
+
+            // This wizard has no evaluation step either, so its conditions
+            // rendered nowhere. Caveated, because the bundled sign form is
+            // signed by a CITY Building Official — Castilla is a
+            // municipality, so it cannot be Castilla's.
+            const SizedBox(height: AppSpacing.xl),
+            const PermitConditionsCard(
+              conditions: SignProcessingInfo.permitConditions,
+              isReferenceForm: true,
             ),
 
             const SizedBox(height: AppSpacing.xl),
