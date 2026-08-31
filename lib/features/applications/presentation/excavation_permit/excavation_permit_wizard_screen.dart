@@ -64,7 +64,7 @@ class _ExcavationPermitWizardScreenState
     _StepMeta(
       title: 'Owner / Applicant Information',
       subtitle:
-          'Provide the applicant details for the Excavation & Ground Preparation Permit.',
+          'Provide your details for the Excavation & Ground Preparation Permit.',
     ),
     _StepMeta(
       title: 'Construction Location',

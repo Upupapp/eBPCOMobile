@@ -63,8 +63,7 @@ class _InteriorDesignPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Address & Location of Construction',
-      subtitle:
-          'Provide the applicant address and location of the interior works.',
+      subtitle: 'Provide your address and the location of the interior works.',
     ),
     _StepMeta(
       title: 'Scope of Work',

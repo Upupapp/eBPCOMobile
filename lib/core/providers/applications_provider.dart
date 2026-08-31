@@ -485,7 +485,7 @@ class ApplicationsProvider extends ChangeNotifier {
             status: ApplicationLifecycleStatus.underEvaluation,
             occurredAt: now,
             office: 'Office of the Building Official',
-            remarks: 'Corrections resubmitted by the applicant.',
+            remarks: 'Corrections resubmitted by the citizen.',
           ),
         ],
       ),

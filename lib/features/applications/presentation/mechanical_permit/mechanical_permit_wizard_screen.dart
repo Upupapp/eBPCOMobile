@@ -62,8 +62,7 @@ class _MechanicalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle:
-          'Provide the applicant address and location of the mechanical work.',
+      subtitle: 'Provide your address and the location of the mechanical work.',
     ),
     _StepMeta(
       title: 'Scope of Mechanical Work',

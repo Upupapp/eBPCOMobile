@@ -62,8 +62,7 @@ class _ElectricalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle:
-          'Provide the applicant address and location of the electrical work.',
+      subtitle: 'Provide your address and the location of the electrical work.',
     ),
     _StepMeta(
       title: 'Scope of Work',

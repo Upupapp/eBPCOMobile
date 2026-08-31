@@ -63,7 +63,7 @@ class _CivilStructuralPermitWizardScreenState
     _StepMeta(
       title: 'Address & Project Location',
       subtitle:
-          'Provide the applicant address and location of the civil or structural work.',
+          'Provide your address and the location of the civil or structural work.',
     ),
     _StepMeta(
       title: 'Scope of Work',
