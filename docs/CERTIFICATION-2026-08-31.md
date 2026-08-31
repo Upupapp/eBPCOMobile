@@ -38,7 +38,7 @@ Nothing regressed. That is the smaller half of this sweep.
 
 | | State on 31 August |
 |---|---|
-| **B-1** — a backend exists and is reachable by nobody | **Unchanged.** Backend lane |
+| **B-1** — a backend exists and is reachable by nobody | **Partly answered 31 Aug.** The API was stood up locally — PGlite on the wire protocol, 31 migrations, `/ready` all up — and the app filed against it for the first time. Production hosting is still the backend lane's; what changed is that the client has now been measured against a real server, and D-1 and D-2 are what that measurement found |
 | **B-2** — routes the app calls that do not exist | **Still open.** The app calls `POST /applications/{id}/documents/{documentId}/resubmit` at `http_applications_repository.dart:139`; the contract does not declare it, and no server implements it |
 | **B-3** — the offline queue's two triggers | **Unchanged.** Both are owner decisions: a `connectivity_plus` dependency, and a background-execution entitlement |
 
