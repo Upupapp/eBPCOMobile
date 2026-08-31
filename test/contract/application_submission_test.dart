@@ -223,6 +223,19 @@ void main() {
       expect(
         acceptable,
         // 'Certificate of Occupancy' is spelled the same in both.
+        //
+        // **This number is the measure of a ruling, not a standing state.**
+        // Confirmed at the wire on 31 August: a running server answers `422
+        // The LGU does not issue a "Fencing Permit" permit`. The owner then
+        // ruled that the office's 19 names are canonical — they are what the
+        // LGU prints on its own forms — and that eBPCO accepts the three
+        // clearances another office issues.
+        //
+        // So this should read 19 when the contract and the `permit_types`
+        // seed move. It fails on the day they do, which is the point: mobile
+        // flips it in one commit and nothing else here changes, because this
+        // app's vocabulary is extracted from the admin portal rather than
+        // typed. See `docs/HANDOFF-D10-ruled.md`.
         hasLength(1),
         reason:
             'the contract accepts $acceptable of the ${sent.length} types this '
