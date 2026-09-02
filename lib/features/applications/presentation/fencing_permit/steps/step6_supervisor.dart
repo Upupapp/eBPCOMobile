@@ -183,6 +183,7 @@ class _Step6SupervisorState extends State<Step6Supervisor> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PRC Validity *',
+                    warnIfPast: true,
                     value: _supervisor.prcValidityDate,
                     validator: (_) => _supervisor.prcValidityDate == null
                         ? 'Please select the PRC validity date.'

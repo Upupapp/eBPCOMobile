@@ -172,6 +172,7 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PRC Validity *',
+                    warnIfPast: true,
                     value: design.prcValidityDate,
                     validator: (_) => design.prcValidityDate == null
                         ? 'Please select the PRC validity date.'
@@ -438,6 +439,7 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     const SizedBox(height: AppSpacing.md),
                     DatePickerField(
                       label: 'PRC Validity *',
+                      warnIfPast: true,
                       value: supervisor.prcValidityDate,
                       validator: (_) => supervisor.prcValidityDate == null
                           ? 'Please select the PRC validity date.'

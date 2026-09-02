@@ -224,6 +224,7 @@ class _Step5ProfessionalInChargeState extends State<Step5ProfessionalInCharge> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PRC Validity *',
+                    warnIfPast: true,
                     value: _professional.prcValidityDate,
                     validator: (_) => _professional.prcValidityDate == null
                         ? 'Please select the PRC validity date.'
