@@ -27,6 +27,10 @@ abstract class DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+
+    /// Bytes handed to the socket, and the total. See `ApiClient.upload` for
+    /// what that does and does not mean.
+    void Function(int sent, int total)? onProgress,
   });
 }
 
@@ -94,6 +98,7 @@ class HttpDocumentUploadRepository implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async {
     final path = document.filePath;
     if (path == null || path.isEmpty) {
@@ -108,6 +113,7 @@ class HttpDocumentUploadRepository implements DocumentUploadRepository {
     }
     return UploadedDocument.parse(
       await _api.upload(
+        onProgress: onProgress,
         '/documents',
         filePath: path,
         label: document.label,
@@ -135,6 +141,7 @@ class UnavailableDocumentUploadRepository implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async => throw const ApiException(
     ApiFailure.rejected,
     'this build has no server to upload documents to',

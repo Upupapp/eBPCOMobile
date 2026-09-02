@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/models/application_model.dart';
 import '../../../../core/models/document_model.dart';
+import '../../../../shared/widgets/states/upload_progress_sheet.dart';
 import '../../../../core/providers/application_intent_provider.dart';
 import '../../../../core/providers/applications_provider.dart';
 
@@ -78,6 +79,42 @@ Future<ApplicationModel?> submitPermitApplication(
   List<DocumentModel> documents = const [],
 }) async {
   final messenger = ScaffoldMessenger.of(context);
+  final navigator = Navigator.of(context);
+  final applications = context.read<ApplicationsProvider>();
+
+  // Shown while the attachments go up, and dismissed however the filing ends.
+  // Before this a citizen sending a twenty-megabyte plan set watched a spinner
+  // for minutes with no sign the app was alive — and the reasonable thing to
+  // do with that screen is close it, which loses the filing.
+  //
+  // Not dismissible by the citizen: closing it mid-upload would leave the
+  // submission running behind a screen that says nothing about it.
+  var sheetIsOpen = false;
+  void showUploadSheet() {
+    if (sheetIsOpen || applications.uploadProgress == null) return;
+    sheetIsOpen = true;
+    showModalBottomSheet<void>(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (_) => AnimatedBuilder(
+        animation: applications,
+        builder: (_, _) {
+          final progress = applications.uploadProgress;
+          if (progress == null) return const SizedBox.shrink();
+          return UploadProgressSheet(progress: progress);
+        },
+      ),
+    );
+  }
+
+  void closeUploadSheet() {
+    if (!sheetIsOpen) return;
+    sheetIsOpen = false;
+    if (navigator.canPop()) navigator.pop();
+  }
+
+  applications.addListener(showUploadSheet);
   // A renewal or amendment started elsewhere and walked the applicant into
   // this wizard. Consumed here rather than in sixteen wizards, and consumed
   // rather than read: an intent that survives its filing is one that can
@@ -86,7 +123,7 @@ Future<ApplicationModel?> submitPermitApplication(
     permitTypeLabel,
   );
   try {
-    return await context.read<ApplicationsProvider>().submitApplication(
+    return await applications.submitApplication(
       businessId: '',
       businessName: applicantName,
       // New unless the applicant came in through a renewal or an amendment,
@@ -110,6 +147,12 @@ Future<ApplicationModel?> submitPermitApplication(
       ),
     );
     return null;
+  } finally {
+    // However the filing ended — success, refusal, or a dropped connection —
+    // the sheet goes and the listener with it. A modal left open over a
+    // finished submission is worse than never having shown one.
+    applications.removeListener(showUploadSheet);
+    closeUploadSheet();
   }
 }
 

@@ -121,12 +121,31 @@ roughly fifteen times in sixteen — in production, on a filing, not here.
 
 ## What is still not done
 
-- **Nothing retries.** A failed upload is reported to the applicant and the
-  draft survives (M-48), but the offline queue's `documentUpload` kind is still
-  unimplemented — the bytes are not queued for later.
+- ~~**Nothing retries.**~~ **Closed 30 August 2026, and this line was stale
+  after that day.** The offline queue's `documentUpload` kind IS implemented:
+  a transient failure enqueues the upload with the same idempotency key and
+  rethrows — queuing is not success, and a caller that treated it as success
+  would file an application referencing documents the office does not have.
+  The bytes survive a restart because picked attachments are copied into the
+  app's own directory.
+
+  What was genuinely missing, and is now filed as a task rather than claimed
+  as done: **the citizen cannot see the queue.** `SyncProvider` exposes
+  `pendingCount` and `hasPendingWork`, and nothing in `lib/features/` reads
+  either. An upload waiting to be retried is invisible.
 - **The key is per attempt, not per operation.** See the honest limit above.
-- **No upload progress.** A twenty-megabyte plan set on a slow connection shows
-  a spinner and nothing else.
+- ~~**No upload progress.**~~ **Closed 31 August 2026.** `ApiClient.upload`
+  takes an `onProgress` callback — a `MultipartRequest` subclass counting the
+  stream it hands to the client, since `package:http` has none and the file is
+  streamed rather than buffered. `ApplicationsProvider` reports an
+  `UploadProgress` per document and `UploadProgressSheet` shows it: how many
+  documents, which one by **its own name**, and a bar spanning the whole
+  filing rather than resetting to zero twenty-four times.
+
+  Stated honestly in the code: those are bytes handed to the socket, not bytes
+  the server acknowledged. The OS buffers, so it can reach the total slightly
+  before the office has the file — and "nearly done" that is a little
+  optimistic beats four minutes of silence.
 - ~~**`form` and `location` are still not sent**~~ — **both closed.**
   `location` on 31 August; `form` on 31 August, once the field-for-field
   audit against Castilla's own forms retired the reason it was blocked on

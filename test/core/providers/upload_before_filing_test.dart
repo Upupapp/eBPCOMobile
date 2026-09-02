@@ -36,6 +36,7 @@ class _Uploads implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async {
     if (document.label == failOn) {
       throw const ApiException(ApiFailure.tooLarge, 'too large');

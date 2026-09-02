@@ -46,6 +46,7 @@ class _Failing implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async {
     attempts++;
     keys.add(idempotencyKey);
@@ -61,6 +62,7 @@ class _Succeeding implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async {
     keys.add(idempotencyKey);
     return UploadedDocument(

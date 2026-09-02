@@ -4,6 +4,7 @@ import '../models/action_item.dart';
 import '../models/application_detail.dart';
 import '../models/application_lineage.dart';
 import '../models/application_model.dart';
+import '../models/upload_progress.dart';
 import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
 import '../notifications/notification_evaluator.dart';
@@ -316,10 +317,46 @@ class ApplicationsProvider extends ChangeNotifier {
     final uploads = _documentUploads;
     if (uploads == null || documents.isEmpty) return const [];
     final ids = <String>[];
-    for (final document in documents) {
-      ids.add((await uploads.upload(document)).id);
+    for (var index = 0; index < documents.length; index++) {
+      final document = documents[index];
+      _reportUpload(
+        UploadProgress(
+          index: index,
+          total: documents.length,
+          label: document.label,
+        ),
+      );
+      ids.add(
+        (await uploads.upload(
+          document,
+          onProgress: (sent, bytes) => _reportUpload(
+            UploadProgress(
+              index: index,
+              total: documents.length,
+              label: document.label,
+              sentBytes: sent,
+              totalBytes: bytes,
+            ),
+          ),
+        )).id,
+      );
     }
+    _reportUpload(null);
     return ids;
+  }
+
+  /// What the app is uploading right now, or null when it is not uploading.
+  ///
+  /// **A twenty-megabyte plan set used to show a spinner and nothing else**,
+  /// for as long as it took — and on rural data that is minutes with no sign
+  /// the app is alive. This is what the submitting screen reads.
+  UploadProgress? _uploadProgress;
+
+  UploadProgress? get uploadProgress => _uploadProgress;
+
+  void _reportUpload(UploadProgress? progress) {
+    _uploadProgress = progress;
+    notifyListeners();
   }
 
   /// Sends a replacement for a document the office turned back.

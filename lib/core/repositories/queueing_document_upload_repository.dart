@@ -36,6 +36,7 @@ class QueueingDocumentUploadRepository implements DocumentUploadRepository {
     DocumentModel document, {
     String? applicationId,
     String? idempotencyKey,
+    void Function(int sent, int total)? onProgress,
   }) async {
     final key = idempotencyKey ?? newIdempotencyKey();
     try {
@@ -43,6 +44,7 @@ class QueueingDocumentUploadRepository implements DocumentUploadRepository {
         document,
         applicationId: applicationId,
         idempotencyKey: key,
+        onProgress: onProgress,
       );
     } on ApiException catch (error) {
       if (error.failure.isTransient) {

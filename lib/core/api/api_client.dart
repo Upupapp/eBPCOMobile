@@ -81,9 +81,25 @@ class ApiClient {
     required String label,
     String? applicationId,
     required String idempotencyKey,
+
+    /// Called as the body is handed to the socket, with bytes sent and the
+    /// total.
+    ///
+    /// **What it measures, honestly.** These are bytes written to the
+    /// transport, not bytes the server has acknowledged. The OS buffers, so on
+    /// a slow link this can reach the total before the office has the file.
+    /// It is still worth showing: a citizen uploading a twenty-megabyte plan
+    /// set over rural data needs to know something is happening and roughly
+    /// how much is left, and "nearly done" that is slightly optimistic beats a
+    /// spinner that says nothing for four minutes.
+    void Function(int sent, int total)? onProgress,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
-    final request = http.MultipartRequest('POST', uri)
+    final request = onProgress == null
+        ? http.MultipartRequest('POST', uri)
+        : _ProgressMultipartRequest('POST', uri, onProgress)
+              as http.MultipartRequest;
+    request
       ..headers['Accept'] = 'application/json'
       ..headers['Idempotency-Key'] = idempotencyKey
       ..fields['label'] = label;
@@ -235,6 +251,34 @@ class ApiClient {
     throw ApiException(
       ApiFailure.malformed,
       'expected a JSON array, got ${decoded.runtimeType}',
+    );
+  }
+}
+
+/// A multipart request that reports how much of itself has gone out.
+///
+/// `package:http` has no progress callback, and the file is streamed rather
+/// than buffered — which is right for a twenty-megabyte plan set on a phone —
+/// so the only place to count is the stream the request hands to the client.
+class _ProgressMultipartRequest extends http.MultipartRequest {
+  _ProgressMultipartRequest(super.method, super.url, this._onProgress);
+
+  final void Function(int sent, int total) _onProgress;
+
+  @override
+  http.ByteStream finalize() {
+    final total = contentLength;
+    var sent = 0;
+    return http.ByteStream(
+      super.finalize().transform(
+        StreamTransformer.fromHandlers(
+          handleData: (chunk, sink) {
+            sent += chunk.length;
+            _onProgress(sent, total);
+            sink.add(chunk);
+          },
+        ),
+      ),
     );
   }
 }
