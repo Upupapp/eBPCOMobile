@@ -59,6 +59,18 @@ if [ "$test_code" -eq 0 ]; then
   # comparing against what `flutter test` reports; it did not, and the
   # document went 608 tests stale without the gate noticing.
   printf '%s\n' "${passed:-0}" > test/contract/suite-count.txt
+
+  # The in-suite gate reads this stamp, so it can only ever compare the
+  # certification against the PREVIOUS run: a test cannot count the suite it is
+  # in. That lag let a growing suite pass on the run that grew it and fail on
+  # the next one, which reads as an unrelated breakage. Comparing here closes
+  # it in the same run.
+  quoted=$(grep -oE 'Suite at publication: [0-9]+ tests' \
+    docs/CERTIFICATION-*.md 2>/dev/null | grep -oE '[0-9]+' | tail -1)
+  if [ -n "$quoted" ] && [ "$quoted" != "${passed:-0}" ]; then
+    line "certification count" "says $quoted, suite ran ${passed:-0}"
+    fail=1
+  fi
 else
   line "flutter test" "FAILED"
   printf '%s\n' "$test_out" | grep -E '\[E\]$' | sed 's/.*dart: //;s/ \[E\]//' | sort -u | head -20

@@ -80,7 +80,40 @@ const _fixture = <String, _Expected>{
   ),
 };
 
+String _codePoints(String s) => s.runes
+    .map((r) => 'U+${r.toRadixString(16).toUpperCase().padLeft(4, '0')}')
+    .join(' ');
+
 void main() {
+  test('the permit each entry ends in is named exactly as the office does', () {
+    // The catalogue is keyed by the enum, so an entry cannot be filed under an
+    // invented permit type. `finalDocument` is the one place inside it that
+    // still holds the name as a literal, and nothing made it agree with the
+    // key — today's 19-for-19 match is a coincidence that no test defends.
+    //
+    // The citizen web portal lane hit the sharp version of this: a
+    // 'General Business Permit' spelling that existed only in their repo, in
+    // an ad-hoc union repeated across five places, so it was a contract that
+    // nobody had noticed was a contract. Ours is milder — this string is shown
+    // to the citizen rather than sent — but a name the office does not use is
+    // still wrong at the counter, where they will quote it.
+    //
+    // Compared code point by code point: a hyphen substituted for the en dash
+    // in the three Building Permit names is invisible in review, and the three
+    // slashed names invite the same slip.
+    for (final entry in requirementsCatalog.entries) {
+      expect(
+        entry.value.finalDocument,
+        entry.key.wire,
+        reason:
+            'the catalogue entry for ${entry.key.name} ends in a differently '
+            'spelled permit.\n'
+            '  finalDocument: ${_codePoints(entry.value.finalDocument)}\n'
+            '  canonical:     ${_codePoints(entry.key.wire)}',
+      );
+    }
+  });
+
   test('every permit type has an entry', () {
     expect(requirementsCatalog.length, CanonicalPermitType.values.length);
     for (final type in CanonicalPermitType.values) {
