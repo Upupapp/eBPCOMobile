@@ -638,6 +638,12 @@ class SignProcessingInfo {
   ///
   /// Like the excavation list, none of this renders: the sign wizard ends at
   /// review and submission with no evaluation step.
+  /// Read off Box 9 of the bundled sign form, 31 August 2026.
+  ///
+  /// The citation is stated here in the form the gate checks for. It was
+  /// true before — each of these was transcribed from the paper — but it
+  /// was said in prose or in a commit message, and a provenance nobody can
+  /// scan is a provenance the next list will not have.
   static const List<String> permitConditions = [
     'Under Article 1723 of the Civil Code, the engineer or architect who drew '
         'up the plans is liable for fifteen years if the structure collapses '

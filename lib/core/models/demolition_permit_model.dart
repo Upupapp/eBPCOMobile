@@ -544,8 +544,9 @@ class DemolitionSafetyAndSitePrep {
 enum DemolitionProfessionType { architect, civilEngineer }
 
 extension DemolitionProfessionTypeX on DemolitionProfessionType {
-  String get label =>
-      this == DemolitionProfessionType.architect ? 'Architect' : 'Civil Engineer';
+  String get label => this == DemolitionProfessionType.architect
+      ? 'Architect'
+      : 'Civil Engineer';
 }
 
 /// Step 5 — Demolition Supervisor. The Structural Assessment upload is
@@ -661,7 +662,8 @@ class DemolitionDocumentSlot {
 
   bool get isSatisfied =>
       upload != null ||
-      (markedNotAvailable && Validators.required(notAvailableExplanation) == null);
+      (markedNotAvailable &&
+          Validators.required(notAvailableExplanation) == null);
 }
 
 /// Step 7 — Required Demolition Documents: the full document-checklist
@@ -677,7 +679,8 @@ class DemolitionRequiredDocuments {
   DocumentModel? landTitleUpload;
   DocumentModel? taxDeclarationUpload;
   DocumentModel? realPropertyTaxReceiptUpload;
-  final DemolitionDocumentSlot existingBuildingPermit = DemolitionDocumentSlot();
+  final DemolitionDocumentSlot existingBuildingPermit =
+      DemolitionDocumentSlot();
   final DemolitionDocumentSlot existingCertificateOfOccupancy =
       DemolitionDocumentSlot();
 
@@ -776,8 +779,9 @@ class DemolitionReviewDeclaration {
 enum DemolitionPaymentMethod { payOnsite, bankTransfer }
 
 extension DemolitionPaymentMethodX on DemolitionPaymentMethod {
-  String get label =>
-      this == DemolitionPaymentMethod.payOnsite ? 'Pay Onsite' : 'Bank Transfer';
+  String get label => this == DemolitionPaymentMethod.payOnsite
+      ? 'Pay Onsite'
+      : 'Bank Transfer';
 }
 
 /// Frontend-only permit status values the applicant can observe but never
@@ -847,13 +851,48 @@ class DemolitionEvaluationPermitStatus {
   static const DemolitionPermitStatus permitStatus =
       DemolitionPermitStatus.submitted;
 
+  /// Read off Box 6 of the bundled demolition form, 31 August 2026.
+  ///
+  /// Caveated on screen: that form is a **reference template**, signed by a
+  /// *City* Building Official. Its content is largely **Rule XI of the
+  /// National Building Code's IRR**, which is national law and holds
+  /// whichever LGU issues the permit.
+  ///
+  /// **The six sentences that used to stand here were the worst summarising
+  /// left in the app**, and the web portal lane's question is what found them.
+  /// Two examples of what a summary costs:
+  ///
+  ///   * *"The Office of the Building Official must receive advance notice"* —
+  ///     the form says **at least five (5) days, in writing**. A citizen given
+  ///     "advance notice" tells the office the day before and is stopped.
+  ///   * *"Utilities must be disconnected or safely controlled"* stood for
+  ///     eight lettered precautions, including that the **power company** cuts
+  ///     the service line at the property boundary. Not something an owner
+  ///     does themselves, and not something they would know to arrange.
   static const List<String> permitConditions = [
-    'The structure must be vacated before demolition.',
-    'Utilities must be disconnected or safely controlled.',
-    'Demolition must be supervised by a licensed Architect or Civil Engineer.',
-    'Safety protection must be provided for workers, the public, and nearby properties.',
-    'The Office of the Building Official must receive advance notice before work begins.',
-    'Work must be completed within the period approved by the Building Official.',
+    'The demolition must follow Rule XI of the National Building Code\'s IRR '
+        'on protection and safety, under the direct responsibility of a '
+        'full-time supervising Architect or Civil Engineer.',
+    'It may begin only after the building is vacated and the electric, gas, '
+        'telephone and water lines are disconnected.',
+    'All gas, electric and water meters must be removed and their supply '
+        'lines disconnected, and any fittings connected to street lighting or '
+        'the electrical supply taken off.',
+    'The power company must shut off the power and cut the service lines at '
+        'or outside the property line — not the owner or the contractor.',
+    'Gas, water and other utility lines must be shut off, cut or capped, with '
+        'the utility company notified in advance and its approval obtained.',
+    'No cable may be left charged; anything that must stay live is relocated '
+        'and protected to the utility company\'s satisfaction.',
+    'Steps must be taken against fire or explosion from leaking gas, and '
+        'against flooding from uncapped water mains, sewers and culverts.',
+    'Entrances and exits used by the demolition workers must be protected, '
+        'and glazed sashes and doors removed before work starts.',
+    'At least five (5) days before demolition begins, you must advise the '
+        'Office of the Building Official in writing.',
+    'The work must be completed within the period the permit states, counted '
+        'from its starting date.',
+    'Compliance is monitored, and the permit may be revoked for a violation.',
   ];
 
   bool get isValid => true;

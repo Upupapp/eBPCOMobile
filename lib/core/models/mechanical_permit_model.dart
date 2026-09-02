@@ -1343,6 +1343,12 @@ class MechanicalEvaluationPermitStatus {
   static const String permitIssuedBy = 'Pending Assessment';
   static const String certificateOfOperationStatus = 'Not Yet Applicable';
 
+  /// Read off Box 9 of the bundled mechanical form (NBC Form A-04), 31 August 2026.
+  ///
+  /// The citation is stated here in the form the gate checks for. It was
+  /// true before — each of these was transcribed from the paper — but it
+  /// was said in prose or in a commit message, and a provenance nobody can
+  /// scan is a provenance the next list will not have.
   static const List<String> permitConditions = [
     'Mechanical work must follow the approved mechanical plans and applicable codes.',
     // NBC Form A-04, Box 9: "prior to any mechanical installation, a duly

@@ -1103,6 +1103,12 @@ class PlumbingEvaluationPermitStatus {
   static const String actionTaken = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
+  /// Read off Box 8 of the bundled plumbing form (NBC Form A-06), 31 August 2026.
+  ///
+  /// The citation is stated here in the form the gate checks for. It was
+  /// true before — each of these was transcribed from the paper — but it
+  /// was said in prose or in a commit message, and a provenance nobody can
+  /// scan is a provenance the next list will not have.
   static const List<String> permitConditions = [
     'Plumbing work must follow approved plumbing plans and applicable codes.',
     // The form says it plainly: "prior to any commencement of plumbing works,

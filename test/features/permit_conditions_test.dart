@@ -383,6 +383,50 @@ void main() {
     });
   });
 
+  test('STRUCTURAL — every conditions list names the box it was read from', () {
+    // **The web portal lane asked whether this week's fix was structural or
+    // per-permit. It was per-permit**, corrected form by form by reading Box
+    // 8 — and two lists had been missed for the same reason they were written
+    // in the first place: their bundled form is a reference template, so
+    // nobody had opened it.
+    //
+    // Architectural still generalised Article 1723 away, and demolition
+    // rendered *"the Office must receive advance notice"* where the form says
+    // **at least five days, in writing** — and *"utilities must be
+    // disconnected or safely controlled"* for eight lettered precautions,
+    // including that the POWER COMPANY cuts the service line.
+    //
+    // So this is the structural half: a conditions list must say which box it
+    // was read from. A list nobody can trace is a list somebody wrote, and
+    // that is exactly what these were.
+    final undocumented = <String>[];
+    for (final entity in Directory('lib/core/models').listSync()) {
+      if (entity is! File || !entity.path.endsWith('.dart')) continue;
+      final source = entity.readAsStringSync();
+      final at = source.indexOf('permitConditions = [');
+      if (at < 0) continue;
+
+      // The doc comment immediately above the declaration.
+      final preamble = source.substring(
+        (at - 1400).clamp(0, source.length),
+        at,
+      );
+      final cites = RegExp(
+        r'Read off Box \d+ of the bundled',
+      ).hasMatch(preamble);
+      if (!cites) undocumented.add(entity.uri.pathSegments.last);
+    }
+
+    expect(
+      undocumented,
+      isEmpty,
+      reason:
+          'these permit conditions cite no form and no box: $undocumented. '
+          'Either read the form and say which box, or do not put words in the '
+          "office's mouth — a citizen acts on these",
+    );
+  });
+
   test('these are shown to the applicant, which is why they matter', () {
     // A list nobody renders would be a documentation problem. This one is on
     // the step that tells an applicant where their application stands.

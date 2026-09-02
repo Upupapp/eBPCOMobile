@@ -170,7 +170,8 @@ extension RelatedBuildingPermitStatusX on RelatedBuildingPermitStatus {
 
 class ArchitecturalRelatedBuildingPermit {
   String buildingPermitNumber = '';
-  RelatedBuildingPermitStatus status = RelatedBuildingPermitStatus.pendingIssuance;
+  RelatedBuildingPermitStatus status =
+      RelatedBuildingPermitStatus.pendingIssuance;
 
   bool get isValid {
     if (status == RelatedBuildingPermitStatus.issued) {
@@ -433,10 +434,11 @@ String? _nonNegativeDecimal(String? value, String fieldLabel) {
 /// presents itself as a final legal approval — every status here is
 /// either applicant-declared or explicitly flagged for office review.
 class ArchitecturalComplianceDetails {
-  final Map<AccessibilityFacility, AccessibilityFacilityStatus> accessibility = {
-    for (final facility in AccessibilityFacility.values)
-      facility: AccessibilityFacilityStatus.notApplicable,
-  };
+  final Map<AccessibilityFacility, AccessibilityFacilityStatus> accessibility =
+      {
+        for (final facility in AccessibilityFacility.values)
+          facility: AccessibilityFacilityStatus.notApplicable,
+      };
   String otherAccessibilityDescription = '';
 
   String buildingFootprintPercentage = '';
@@ -497,7 +499,10 @@ class ArchitecturalComplianceDetails {
         Validators.required(otherAccessibilityDescription) != null) {
       return false;
     }
-    if (_percentage(buildingFootprintPercentage, 'Building Footprint Percentage') !=
+    if (_percentage(
+          buildingFootprintPercentage,
+          'Building Footprint Percentage',
+        ) !=
         null) {
       return false;
     }
@@ -508,7 +513,10 @@ class ArchitecturalComplianceDetails {
         null) {
       return false;
     }
-    if (_percentage(unpavedSurfaceAreaPercentage, 'Unpaved Surface Area Percentage') !=
+    if (_percentage(
+          unpavedSurfaceAreaPercentage,
+          'Unpaved Surface Area Percentage',
+        ) !=
         null) {
       return false;
     }
@@ -518,7 +526,8 @@ class ArchitecturalComplianceDetails {
       }
       if (Validators.required(otherSiteDescription) != null) return false;
     }
-    if (fireCode[FireCodeFeature.others] != FireCodeFeatureStatus.notApplicable &&
+    if (fireCode[FireCodeFeature.others] !=
+            FireCodeFeatureStatus.notApplicable &&
         Validators.required(otherFireFeatureDescription) != null) {
       return false;
     }
@@ -532,7 +541,8 @@ class ArchitecturalComplianceDetails {
     if (_nonNegativeDecimal(totalExitWidth, 'Total Exit Width') != null) {
       return false;
     }
-    if (_nonNegativeDecimal(minimumCorridorWidth, 'Minimum Corridor Width') != null) {
+    if (_nonNegativeDecimal(minimumCorridorWidth, 'Minimum Corridor Width') !=
+        null) {
       return false;
     }
     if (_nonNegativeDecimal(
@@ -542,9 +552,13 @@ class ArchitecturalComplianceDetails {
         null) {
       return false;
     }
-    if (Validators.required(publicStreetAccessDescription) != null) return false;
+    if (Validators.required(publicStreetAccessDescription) != null) {
+      return false;
+    }
     if (Validators.required(fireWallDescription) != null) return false;
-    if (Validators.required(fireSafetyFacilityDescription) != null) return false;
+    if (Validators.required(fireSafetyFacilityDescription) != null) {
+      return false;
+    }
     return true;
   }
 }
@@ -583,20 +597,23 @@ class ArchitecturalProfessionalInfo {
 /// own fields/uploads are never populated — Step 7's document checklist
 /// reads the Design Architect's uploads for both roles in that case.
 class ArchitecturalProfessionals {
-  final ArchitecturalProfessionalInfo designArchitect = ArchitecturalProfessionalInfo();
+  final ArchitecturalProfessionalInfo designArchitect =
+      ArchitecturalProfessionalInfo();
   DocumentModel? designPrcIdUpload;
   DocumentModel? designPtrDocumentUpload;
   DocumentModel? signedSealedPlansUpload;
   DocumentModel? signedSealedSpecificationsUpload;
 
   bool isSupervisorSameAsDesignArchitect = true;
-  final ArchitecturalProfessionalInfo supervisor = ArchitecturalProfessionalInfo();
+  final ArchitecturalProfessionalInfo supervisor =
+      ArchitecturalProfessionalInfo();
   DocumentModel? supervisorPrcIdUpload;
   DocumentModel? supervisorPtrUpload;
   DocumentModel? signedSupervisorConfirmationUpload;
 
   bool get isValid {
-    final designValid = designArchitect.isValid &&
+    final designValid =
+        designArchitect.isValid &&
         designPrcIdUpload != null &&
         designPtrDocumentUpload != null &&
         signedSealedPlansUpload != null &&
@@ -705,7 +722,8 @@ class ArchitecturalRequiredDocuments {
     required bool requiresDoorWindowSchedule,
     required bool requiresInteriorWork,
   }) {
-    final baseValid = vicinityMapUpload != null &&
+    final baseValid =
+        vicinityMapUpload != null &&
         siteDevelopmentPlanUpload != null &&
         perspectiveUpload != null &&
         floorPlansUpload != null &&
@@ -830,7 +848,8 @@ extension ArchitecturalPermitStatusX on ArchitecturalPermitStatus {
 class ArchitecturalEvaluationPermitStatus {
   static const Map<String, ArchitecturalDocumentEvaluationStatus>
   documentEvaluation = {
-    'Architectural Drawings': ArchitecturalDocumentEvaluationStatus.pendingReview,
+    'Architectural Drawings':
+        ArchitecturalDocumentEvaluationStatus.pendingReview,
     'Specifications': ArchitecturalDocumentEvaluationStatus.pendingReview,
     'Other Documents': ArchitecturalDocumentEvaluationStatus.pendingReview,
   };
@@ -848,11 +867,36 @@ class ArchitecturalEvaluationPermitStatus {
   static const String recommendingApproval = 'Pending Assessment';
   static const String permitIssuedBy = 'Pending Assessment';
 
+  /// Read off Box 9 of the bundled architectural form, 31 August 2026.
+  ///
+  /// Caveated on screen: that form is a **reference template**, signed by
+  /// Rex G. Bundac, CE, EnP, *City* Building Official — Castilla is a
+  /// municipality. So only what is national law is stated here.
+  ///
+  /// **What used to stand here was five sentences nobody could source.** "The
+  /// Architect remains professionally responsible for the plans and
+  /// specifications" was Article 1723 with the fifteen years and the
+  /// contractor's solidary liability removed — the same generalisation
+  /// corrected in the civil/structural list. The web portal lane asked whether
+  /// that fix had been structural or per-permit; it was per-permit, and this
+  /// is one of the two it had missed.
   static const List<String> permitConditions = [
-    'The Architect remains professionally responsible for the plans and specifications.',
-    'Work must follow the approved architectural plans.',
-    'A Notice of Construction must be submitted before construction begins.',
-    'Upon completion, required logbook entries, as-built plans, and the Certificate of Completion must be submitted.',
+    'Under Article 1723 of the Civil Code, the architect or engineer who drew '
+        'up the plans is answerable for fifteen years if the structure '
+        'collapses through a defect in the plans, the specifications or the '
+        'ground.',
+    'The architect or engineer supervising the construction is solidarily '
+        'liable with the contractor if it collapses through defective '
+        'construction or inferior materials.',
+    'Architectural works must follow the plans filed with the Office of the '
+        'Building Official and conform to the latest Architectural Code of '
+        'the Philippines, the National Building Code and its IRR.',
+    'Before any construction activity, a duly accomplished Notice of '
+        'Construction must be submitted to the Office of the Building '
+        'Official.',
+    'On completion, the licensed full-time inspector and supervisor submits '
+        'the signed and sealed logbook entry, the as-built plans and a '
+        'Certificate of Completion.',
     'The Architectural Permit is invalid without the related Building Permit.',
   ];
 
@@ -867,7 +911,8 @@ class ArchitecturalPermitDraft {
   final ArchitecturalApplicantInfo applicant = ArchitecturalApplicantInfo();
   final ArchitecturalApplicantAddress applicantAddress =
       ArchitecturalApplicantAddress();
-  final ArchitecturalProjectLocation projectLocation = ArchitecturalProjectLocation();
+  final ArchitecturalProjectLocation projectLocation =
+      ArchitecturalProjectLocation();
   final ArchitecturalRelatedBuildingPermit relatedBuildingPermit =
       ArchitecturalRelatedBuildingPermit();
   final ArchitecturalScopeOfWork scopeOfWork = ArchitecturalScopeOfWork();
@@ -889,18 +934,22 @@ class ArchitecturalPermitDraft {
 
   bool get isStep1Valid => applicant.isValid;
   bool get isStep2Valid =>
-      applicantAddress.isValid && projectLocation.isValid && relatedBuildingPermit.isValid;
+      applicantAddress.isValid &&
+      projectLocation.isValid &&
+      relatedBuildingPermit.isValid;
   bool get isStep3Valid => scopeOfWork.isValid;
   bool get isStep4Valid => complianceDetails.isValid;
   bool get isStep5Valid => professionals.isValid;
   bool get isStep6Valid => ownershipConsent.isValid;
-  bool get isStep7Valid => requiredDocuments.isValid(
+  bool get isStep7Valid =>
+      requiredDocuments.isValid(
         requiresRampDetails: complianceDetails.requiresRampDetails,
         requiresAccessibleParkingDetails:
             complianceDetails.requiresAccessibleParkingDetails,
         requiresStairDetails: complianceDetails.requiresStairDetails,
         requiresFireEscapeDetails: complianceDetails.requiresFireEscapeDetails,
-        requiresDoorWindowSchedule: complianceDetails.requiresDoorWindowSchedule,
+        requiresDoorWindowSchedule:
+            complianceDetails.requiresDoorWindowSchedule,
         requiresInteriorWork: scopeOfWork.impliesInteriorWork,
       ) &&
       professionals.designPrcIdUpload != null &&

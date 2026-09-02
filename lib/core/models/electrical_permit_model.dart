@@ -970,6 +970,12 @@ class ElectricalEvaluationPermitStatus {
   static const String permitIssuedBy = 'Pending Assessment';
   static const String finalElectricalInspectionStatus = 'Not Yet Scheduled';
 
+  /// Read off Box 8 of the bundled electrical form (NBC Form A-03), 31 August 2026.
+  ///
+  /// The citation is stated here in the form the gate checks for. It was
+  /// true before — each of these was transcribed from the paper — but it
+  /// was said in prose or in a commit message, and a provenance nobody can
+  /// scan is a provenance the next list will not have.
   static const List<String> permitConditions = [
     'Electrical work must follow the approved plans and applicable electrical codes.',
     // NBC Form A-03, Box 8: "prior to any electrical installation, the

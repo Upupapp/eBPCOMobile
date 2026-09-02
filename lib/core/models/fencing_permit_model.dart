@@ -542,6 +542,12 @@ class FencingProcessingInfo {
   /// These are shown on the Evaluation & Permit Status step, so they are read
   /// as what the permit requires. Getting them wrong is not a wording problem:
   /// an applicant who never hears about the ten-day notice does not give it.
+  /// Read off Box 8 of the bundled fencing form (NBC Form B-03), 31 August 2026.
+  ///
+  /// The citation is stated here in the form the gate checks for. It was
+  /// true before — each of these was transcribed from the paper — but it
+  /// was said in prose or in a commit message, and a provenance nobody can
+  /// scan is a provenance the next list will not have.
   static const List<String> permitConditions = [
     'The work must follow the approved plans and conform to the National '
         'Building Code (PD 1096) and its rules.',
