@@ -13,6 +13,8 @@ import 'package:ebpco_user_app/core/providers/business_provider.dart';
 import 'package:ebpco_user_app/core/providers/documents_provider.dart';
 import 'package:ebpco_user_app/core/providers/navigation_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/sync/offline_queue.dart';
+import 'package:ebpco_user_app/core/sync/sync_provider.dart';
 import 'package:ebpco_user_app/core/providers/professionals_provider.dart';
 import 'package:ebpco_user_app/core/providers/settings_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
@@ -122,6 +124,11 @@ const _paths = <String>[
 Widget _app(AuthProvider auth, GoRouter router) {
   return MultiProvider(
     providers: [
+      // The applications list shows the pending-work banner, which reads the
+      // offline queue through SyncProvider.
+      ChangeNotifierProvider<SyncProvider>(
+        create: (_) => SyncProvider(queue: OfflineQueue(InMemoryQueueStore())),
+      ),
       ChangeNotifierProvider<AuthProvider>.value(value: auth),
       ChangeNotifierProvider<NavigationProvider>(
         create: (_) => NavigationProvider(),

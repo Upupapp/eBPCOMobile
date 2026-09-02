@@ -12,6 +12,8 @@ import 'package:ebpco_user_app/features/documents/presentation/widgets/attach_do
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/sync/offline_queue.dart';
+import 'package:ebpco_user_app/core/sync/sync_provider.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/features/applications/presentation/application_list_screen.dart';
 import 'package:ebpco_user_app/core/models/notification_event.dart';
@@ -77,6 +79,11 @@ Widget _wrap() {
   );
   return MultiProvider(
     providers: [
+      // The applications list shows the pending-work banner, which reads the
+      // offline queue through SyncProvider.
+      ChangeNotifierProvider<SyncProvider>(
+        create: (_) => SyncProvider(queue: OfflineQueue(InMemoryQueueStore())),
+      ),
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),

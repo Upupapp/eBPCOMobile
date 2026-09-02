@@ -15,6 +15,9 @@ import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 import 'package:ebpco_user_app/core/models/permit_classification.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/sync/offline_queue.dart';
+import 'package:ebpco_user_app/core/sync/queued_operation.dart';
+import 'package:ebpco_user_app/core/sync/sync_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/features/applications/presentation/application_list_screen.dart';
 import 'package:ebpco_user_app/features/applications/presentation/building_permit/widgets/mock_upload.dart';
@@ -95,6 +98,10 @@ ApplicationModel _application({
 Widget _wrap(
   List<ApplicationModel> applications, {
   FencingPermitProvider? fencing,
+
+  /// Work this device is still holding. The screen shows the pending banner
+  /// above the list, so the tests need a real SyncProvider over a real queue.
+  SyncProvider? sync,
 }) {
   final router = GoRouter(
     initialLocation: '/list',
@@ -110,6 +117,9 @@ Widget _wrap(
       ChangeNotifierProvider<NotificationsProvider>(
         create: (_) =>
             NotificationsProvider(repository: MockNotificationsRepository()),
+      ),
+      ChangeNotifierProvider<SyncProvider>.value(
+        value: sync ?? SyncProvider(queue: OfflineQueue(InMemoryQueueStore())),
       ),
       ChangeNotifierProvider<ApplicationsProvider>(
         create: (context) => ApplicationsProvider(
@@ -306,5 +316,58 @@ void _draftsGroup() {
 
       expect(find.textContaining('Drafts (0)'), findsOneWidget);
     });
+  });
+
+  testWidgets('queued work is named on the list screen, and never as filed', (
+    tester,
+  ) async {
+    // The wiring. SyncProvider counted queued work, flushed it on resume and
+    // recorded the outcome since it was written, and no widget read any of
+    // it — so a citizen whose upload failed had their file kept, retried and
+    // sent with no sign that any of it had happened.
+    final queue = OfflineQueue(InMemoryQueueStore());
+    await queue.enqueue(
+      QueuedOperation(
+        id: 'upload-1',
+        kind: QueuedOperationKind.documentUpload,
+        idempotencyKey: 'k1',
+        enqueuedAt: DateTime(2026, 9, 2),
+        payload: const {'filePath': '/tmp/a.pdf', 'label': 'Lot Plan'},
+      ),
+    );
+    await queue.enqueue(
+      QueuedOperation(
+        id: 'verify-1',
+        kind: QueuedOperationKind.contactVerificationRequest,
+        idempotencyKey: 'k2',
+        enqueuedAt: DateTime(2026, 9, 2),
+        payload: const {'channel': 'mobile', 'value': '09171234567'},
+      ),
+    );
+    final sync = SyncProvider(queue: queue);
+    await sync.refresh();
+
+    await tester.pumpWidget(_wrap(const [], sync: sync));
+    await _settle(tester);
+
+    expect(find.text('Waiting to reach the office'), findsOneWidget);
+    expect(
+      find.text('1 file and 1 verification request waiting to be sent.'),
+      findsOneWidget,
+      reason: 'a count with no noun tells the citizen nothing they can act on',
+    );
+    expect(
+      find.textContaining('The office does not have these yet'),
+      findsOneWidget,
+      reason: 'the sentence the whole banner exists for',
+    );
+  });
+
+  testWidgets('nothing waiting shows no banner at all', (tester) async {
+    // It must not become a permanent fixture people learn to ignore.
+    await tester.pumpWidget(_wrap(const []));
+    await _settle(tester);
+
+    expect(find.text('Waiting to reach the office'), findsNothing);
   });
 }

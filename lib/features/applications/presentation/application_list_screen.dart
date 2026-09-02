@@ -13,6 +13,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/badges/status_badge.dart';
 import '../../../shared/widgets/cards/app_card.dart';
 import '../../../shared/widgets/search/app_search_field.dart';
+import '../../../shared/widgets/states/pending_work_banner.dart';
 import '../../../shared/widgets/states/empty_state.dart';
 import '../../../shared/widgets/states/load_failure_state.dart';
 import '../../../shared/widgets/states/loading_view.dart';
@@ -119,6 +120,10 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Above the list, because this is the screen a citizen opens to
+            // ask "did it go through?" — and until now the honest answer for
+            // queued work was somewhere in the app that nothing rendered.
+            const PendingWorkBanner(),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppConstants.screenPaddingHorizontal,

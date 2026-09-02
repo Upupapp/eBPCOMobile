@@ -150,4 +150,35 @@ void main() {
     expect(sync.lastOutcome!.sent, 0);
     expect(await queue.all(), hasLength(1));
   });
+
+  test('the breakdown follows the kinds, not just the total', () async {
+    // The guard used to return early whenever the total was unchanged, which
+    // held a stale breakdown when one operation replaced another of a
+    // different kind: the same number waiting, a different thing to tell the
+    // citizen.
+    final queue = OfflineQueue(InMemoryQueueStore(), clock: () => _now);
+    await queue.enqueue(_op('a'));
+    final provider = _provider(queue);
+    await provider.refresh();
+
+    expect(provider.pendingByKind, {
+      QueuedOperationKind.contactVerificationRequest: 1,
+    });
+
+    await queue.remove('a');
+    await queue.enqueue(
+      QueuedOperation(
+        id: 'b',
+        kind: QueuedOperationKind.documentUpload,
+        idempotencyKey: 'k',
+        enqueuedAt: _now,
+        payload: const {'filePath': '/tmp/a.pdf', 'label': 'Lot Plan'},
+      ),
+    );
+    await provider.refresh();
+
+    expect(provider.pendingByKind, {
+      QueuedOperationKind.documentUpload: 1,
+    }, reason: 'one in, one out — the total never moved');
+  });
 }

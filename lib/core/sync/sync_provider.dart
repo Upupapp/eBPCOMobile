@@ -57,12 +57,37 @@ class SyncProvider extends ChangeNotifier {
   SyncOutcome? get lastOutcome => _lastOutcome;
   bool get hasPendingWork => _pending > 0;
 
+  /// What is waiting, by kind.
+  ///
+  /// The count alone cannot be told to the applicant usefully: "3 items
+  /// waiting" is not the same statement as "3 files waiting" or "a payment
+  /// receipt waiting", and only one of those tells them whether to act.
+  Map<QueuedOperationKind, int> get pendingByKind =>
+      Map.unmodifiable(_pendingByKind);
+  Map<QueuedOperationKind, int> _pendingByKind = const {};
+
   /// Recounts what is waiting. Cheap, and safe to call on every resume.
   Future<void> refresh() async {
     final all = await _queue.all();
-    if (all.length == _pending) return;
+    final byKind = <QueuedOperationKind, int>{};
+    for (final operation in all) {
+      byKind[operation.kind] = (byKind[operation.kind] ?? 0) + 1;
+    }
+    // Both are compared. Guarding on the count alone held a stale breakdown
+    // whenever one operation replaced another of a different kind — the same
+    // total, a different thing to tell the applicant.
+    if (all.length == _pending && _sameKinds(byKind)) return;
     _pending = all.length;
+    _pendingByKind = byKind;
     notifyListeners();
+  }
+
+  bool _sameKinds(Map<QueuedOperationKind, int> other) {
+    if (other.length != _pendingByKind.length) return false;
+    for (final entry in other.entries) {
+      if (_pendingByKind[entry.key] != entry.value) return false;
+    }
+    return true;
   }
 
   /// Sends everything due.

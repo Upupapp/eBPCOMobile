@@ -19,6 +19,8 @@ import 'package:ebpco_user_app/core/models/professional_model.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/documents_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
+import 'package:ebpco_user_app/core/sync/offline_queue.dart';
+import 'package:ebpco_user_app/core/sync/sync_provider.dart';
 import 'package:ebpco_user_app/core/providers/professionals_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
@@ -249,6 +251,10 @@ Widget _host(String initial, double textScale) {
       ),
       ChangeNotifierProvider<DocumentsProvider>(
         create: (_) => DocumentsProvider(),
+      ),
+      // The list screen shows the pending-work banner, which reads the queue.
+      ChangeNotifierProvider<SyncProvider>(
+        create: (_) => SyncProvider(queue: OfflineQueue(InMemoryQueueStore())),
       ),
       // Everything DraftRegistry looks up, for the Drafts segment.
       ...wizardProviders(),
