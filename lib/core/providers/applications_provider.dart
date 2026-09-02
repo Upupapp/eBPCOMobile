@@ -536,10 +536,36 @@ class ApplicationsProvider extends ChangeNotifier {
   /// The applicant does not get to decide the application is now fine — this
   /// returns it to Under Evaluation, which is a *request* for re-evaluation.
   /// Every state after this point still arrives from the server.
-  void resubmitAfterInstruction(String applicationId) {
+  /// Sends the corrections, then records what the office says.
+  ///
+  /// **Was local-only and synchronous.** It flipped the application to Under
+  /// Evaluation, wrote a timeline entry attributed to the Office of the
+  /// Building Official, and cleared the outstanding action — with no request
+  /// of any kind. The screen then told the citizen "Corrections submitted.
+  /// The OBO will re-evaluate your application" and popped. Nothing had left
+  /// the phone: the office was still waiting, the citizen's action item was
+  /// gone, and the deadline in the letter kept running.
+  ///
+  /// Throws on failure so the caller cannot report a success that did not
+  /// happen. Nothing local moves until the office has answered.
+  Future<void> resubmitAfterInstruction(String applicationId) async {
     final application = byId(applicationId);
     if (application == null) return;
     if (application.openInstruction != null) return;
+
+    // The letter being answered, and the items the citizen ticked off. The
+    // endpoint requires at least one and refuses the request otherwise, so an
+    // empty list is a caller error rather than something to paper over.
+    final letter = application.instructions.isEmpty
+        ? null
+        : application.instructions.last;
+    if (letter != null) {
+      await _repository.resubmitInstruction(
+        applicationId,
+        letter.id,
+        itemIds: [for (final item in letter.items) item.id],
+      );
+    }
 
     final now = _clock();
     _replace(

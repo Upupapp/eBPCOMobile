@@ -259,6 +259,7 @@ class HttpApplicationsRepository implements ApplicationsRepository {
   /// an item with nothing to say sends none. Document ids are deliberately
   /// absent — the /documents upload flow is not built, so there is no id to
   /// reference, and the contract makes them optional.
+  @override
   Future<ApplicationModel> resubmitInstruction(
     String applicationId,
     String letterId, {

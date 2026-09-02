@@ -97,6 +97,14 @@ class _Applications implements ApplicationsRepository {
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
       throw UnimplementedError();
+
+  @override
+  Future<ApplicationModel> resubmitInstruction(
+    String applicationId,
+    String letterId, {
+    required List<String> itemIds,
+    Map<String, String> responses = const {},
+  }) async => throw UnimplementedError();
 }
 
 class _Notifications implements NotificationsRepository {

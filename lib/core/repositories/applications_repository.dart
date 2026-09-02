@@ -1,4 +1,5 @@
 import '../../mock/mock_applications_data.dart';
+import '../api/api_exception.dart';
 import '../constants/app_constants.dart';
 import '../models/application_lineage.dart';
 import '../models/application_model.dart';
@@ -111,6 +112,27 @@ abstract class ApplicationsRepository {
 
   /// Moves the application to the next status in [applicationStatusSequence].
   /// No-op (returns the application unchanged) if it's already at the end.
+  /// Answers a Letter of Instruction, naming the deficiencies addressed.
+  ///
+  /// **Absent from this interface until 2026-09-02**, exactly as `fetchDetail`
+  /// was. `HttpApplicationsRepository` has carried a complete implementation
+  /// throughout — it validates the contract's `minItems: 1`, builds the items
+  /// body, sends an idempotency key and parses the response — and nothing
+  /// could reach it, because `ApplicationsProvider` holds this type.
+  ///
+  /// So `resubmitAfterInstruction` did the whole thing locally instead: it
+  /// moved the application to Under Evaluation, wrote a timeline entry
+  /// attributed to the Office of the Building Official, and cleared the
+  /// outstanding action — while the citizen was told "Corrections submitted.
+  /// The OBO will re-evaluate your application." Nothing left the phone. The
+  /// office was still waiting, and the citizen no longer had a reminder.
+  Future<ApplicationModel> resubmitInstruction(
+    String applicationId,
+    String letterId, {
+    required List<String> itemIds,
+    Map<String, String> responses = const {},
+  });
+
   Future<ApplicationModel> advanceStatus(String applicationId);
 }
 
@@ -249,6 +271,25 @@ class MockApplicationsRepository implements ApplicationsRepository {
     );
     _applications[index] = updated;
     return updated;
+  }
+
+  @override
+  @override
+  Future<ApplicationModel> resubmitInstruction(
+    String applicationId,
+    String letterId, {
+    required List<String> itemIds,
+    Map<String, String> responses = const {},
+  }) async {
+    // Mirrors the live endpoint's contract so a mock build cannot succeed
+    // where a real one is refused: `items` is required with minItems 1.
+    if (itemIds.isEmpty) {
+      throw const ApiException(
+        ApiFailure.rejected,
+        'a Letter of Instruction cannot be answered with no items',
+      );
+    }
+    return _applications.firstWhere((a) => a.id == applicationId);
   }
 
   @override

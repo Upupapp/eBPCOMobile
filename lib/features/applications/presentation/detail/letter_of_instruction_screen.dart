@@ -133,16 +133,44 @@ class LetterOfInstructionScreen extends StatelessWidget {
     );
   }
 
-  void _resubmit(BuildContext context, ApplicationsProvider provider) {
-    provider.resubmitAfterInstruction(applicationId);
-    ScaffoldMessenger.of(context).showSnackBar(
+  /// Sends the corrections, and says so only once they are sent.
+  ///
+  /// This method used to be synchronous: it called the provider without
+  /// awaiting it, announced "Corrections submitted. The OBO will re-evaluate
+  /// your application", and popped. The provider made no request at all, so
+  /// the sentence was never true — and once the screen was popped and the
+  /// action item cleared, the citizen had nothing left to tell them the office
+  /// was still waiting on them.
+  Future<void> _resubmit(
+    BuildContext context,
+    ApplicationsProvider provider,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    try {
+      await provider.resubmitAfterInstruction(applicationId);
+    } catch (_) {
+      // Stay on the screen. The corrections are still ticked, the letter is
+      // still open, and the citizen can try again — which is the whole
+      // difference between this and being told it was done.
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not send your corrections. Check your connection and try '
+            'again — the office has not received them yet.',
+          ),
+        ),
+      );
+      return;
+    }
+    messenger.showSnackBar(
       const SnackBar(
         content: Text(
           'Corrections submitted. The OBO will re-evaluate your application.',
         ),
       ),
     );
-    Navigator.of(context).pop();
+    navigator.pop();
   }
 }
 

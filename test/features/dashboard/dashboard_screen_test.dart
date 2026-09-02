@@ -70,6 +70,14 @@ class _FakeApplicationsRepository implements ApplicationsRepository {
   @override
   Future<ApplicationModel> advanceStatus(String applicationId) =>
       throw UnimplementedError();
+
+  @override
+  Future<ApplicationModel> resubmitInstruction(
+    String applicationId,
+    String letterId, {
+    required List<String> itemIds,
+    Map<String, String> responses = const {},
+  }) async => throw UnimplementedError();
 }
 
 /// Fails every fetch, to prove a broken backend degrades the tab rather than
