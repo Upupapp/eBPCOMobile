@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -11,6 +12,9 @@ import '../../../../shared/widgets/buttons/primary_button.dart';
 import '../../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../../shared/widgets/cards/app_card.dart';
 import '../../../../shared/widgets/layout/form_scroll_scaffold.dart';
+import '../../../../core/providers/applications_provider.dart';
+import '../../../../core/models/filing_receipt.dart';
+import 'filing_receipt_card.dart';
 
 /// One row of the confirmation summary card.
 typedef SubmittedFact = ({String label, String value});
@@ -161,6 +165,38 @@ class ApplicationSubmittedView extends StatelessWidget {
                     ],
                   ),
                 ),
+                // The receipt, when this device is the one that filed it.
+                // Absent rather than invented when it is not: a citizen who
+                // reached this screen some other way is shown nothing here
+                // instead of a reconstruction that would look identical and
+                // mean nothing.
+                if (applicationId != null) ...[
+                  Builder(
+                    builder: (context) {
+                      // Looked up defensively, and `listen: false` on
+                      // purpose. The receipt is written before this screen is
+                      // pushed and never changes while it is visible, and a
+                      // view rendered outside the app's provider scope — a
+                      // widget test, a preview — has no receipt rather than an
+                      // error. Absent and unavailable render identically here,
+                      // which is correct: neither is evidence of a filing.
+                      FilingReceipt? receipt;
+                      try {
+                        receipt = Provider.of<ApplicationsProvider>(
+                          context,
+                          listen: false,
+                        ).receiptFor(applicationId!);
+                      } on ProviderNotFoundException {
+                        receipt = null;
+                      }
+                      if (receipt == null) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xl),
+                        child: FilingReceiptCard(receipt: receipt),
+                      );
+                    },
+                  ),
+                ],
                 if (extra != null) ...[
                   const SizedBox(height: AppSpacing.xl),
                   extra!,

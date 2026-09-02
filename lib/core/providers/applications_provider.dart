@@ -9,6 +9,7 @@ import '../models/lifecycle_status.dart';
 import '../models/notification_event.dart';
 import '../notifications/notification_evaluator.dart';
 import '../models/document_model.dart';
+import '../models/filing_receipt.dart';
 import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
@@ -292,6 +293,22 @@ class ApplicationsProvider extends ChangeNotifier {
       location: location,
       form: form,
     );
+    // Captured here because this is the only place both halves exist: the
+    // server's parsed record, and the ids it minted during upload. `_uploadAll`
+    // returned them, the submission body used them, and until now they were
+    // dropped on the floor — so nothing downstream could tell a filing that
+    // carried twenty-four files from one that carried none.
+    _receipts[application.id] = FilingReceipt(
+      applicationId: application.id,
+      referenceNumber: application.applicationNumber,
+      permitType: application.permitTypeLabel,
+      submittedAt: application.submittedDate,
+      location: application.location,
+      attachmentsOffered: documents.length,
+      documentIdsIssued: documentIds,
+      answersSent: form?.length ?? 0,
+    );
+
     _applications = [..._applications, application];
     notifyListeners();
     _notifications.record(
@@ -313,6 +330,19 @@ class ApplicationsProvider extends ChangeNotifier {
   /// Sequential rather than parallel. Twenty-four concurrent multipart uploads
   /// from a phone on a rural connection is how a submission times out, and the
   /// applicant would rather wait than start again.
+  /// What the office acknowledged, per application id.
+  ///
+  /// Held in memory only. A receipt is evidence of what this device sent and
+  /// what came back, so it is deliberately not reconstructed from the
+  /// application list later: a rebuilt receipt would be this app's account of
+  /// the filing rather than the office's, which is the whole thing it exists
+  /// to avoid.
+  final Map<String, FilingReceipt> _receipts = {};
+
+  /// The receipt for [applicationId], or null when this device did not file it
+  /// in this session. Null is honest and the screens say so.
+  FilingReceipt? receiptFor(String applicationId) => _receipts[applicationId];
+
   Future<List<String>> _uploadAll(List<DocumentModel> documents) async {
     final uploads = _documentUploads;
     if (uploads == null || documents.isEmpty) return const [];

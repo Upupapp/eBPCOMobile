@@ -159,6 +159,13 @@ class MockApplicationsRepository implements ApplicationsRepository {
       status: ApplicationStatus.submitted,
       submittedDate: now,
       lineage: lineage,
+      // Echoed, because the live server echoes it and a mock that quietly
+      // drops a field is a mock that hides the screen reading it. This one
+      // took `location`, discarded it, and returned a record with no site —
+      // so the detail screen's Site section and the filing receipt were both
+      // blank on every mock build, for a value the wizard had composed and
+      // sent correctly.
+      location: location,
       documents: documents,
       statusHistory: [
         StatusHistoryEntry(status: ApplicationStatus.submitted, timestamp: now),
