@@ -184,7 +184,22 @@ class _ChannelCard extends StatelessWidget {
               onPressed: busy ? null : () => provider.request(channel),
             ),
 
-            if (verification.isPending || verification.hasFailed) ...[
+            // Asked for, but the office could send nothing. Said here rather
+            // than only in the notice at the top, which scrolls away and
+            // belongs to whichever channel was tapped last.
+            if (verification.requestedButUndeliverable) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'Nothing was sent to you. The office cannot send these yet — '
+                'ask at the counter to have it confirmed.',
+                style: AppTypography.helper,
+              ),
+            ],
+
+            // Gated on delivery, not on Pending. The office records the
+            // request whether or not it could send anything, so Pending alone
+            // put a "Code from the SMS" field under a code that did not exist.
+            if (verification.awaitingCode || verification.hasFailed) ...[
               const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: controller,

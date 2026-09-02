@@ -55,11 +55,16 @@ class MockContactVerificationRepository
   @override
   Future<ContactVerification> request(ContactVerification channel) async {
     // Recording that a request was made is true. Anything beyond it would not
-    // be: no link has been sent, and the applicant should not be left waiting
-    // for one — the screen says so.
+    // be: no link has been sent, and `delivery` is what carries that to the
+    // screen, which shows no code field and no "we sent you a code" without it.
+    //
+    // This comment used to end "the applicant should not be left waiting for
+    // one — the screen says so", and the screen did not say so. It offered
+    // "Code from the SMS" under a code that was never sent.
     return channel.copyWith(
       status: ContactVerificationStatus.pendingVerification,
       lastRequestedAt: _clock(),
+      delivery: ContactDelivery.notSent,
     );
   }
 

@@ -113,12 +113,25 @@ class ContactVerificationProvider extends ChangeNotifier {
       // repository: a fresh request supersedes the last one's reason whatever
       // is behind it, and a stale "That code has expired" sitting under a
       // freshly-sent code reads as if the new one had already failed.
-      _channels[channel] = (await _repository.request(
+      final updated = (await _repository.request(
         current,
       )).copyWith(clearFailure: true);
-      _message =
-          'We have asked the office to send a '
-          '${channel == ContactChannel.email ? 'verification link to ${current.value}' : 'code to ${current.value}'}.';
+      _channels[channel] = updated;
+
+      // What the office could actually do decides what the applicant is told.
+      // The server answers a verification request 202 with `delivery`, and
+      // says `not-sent` while the LGU has chosen no email or SMS provider.
+      // Reporting "we have asked the office to send you a code" over that
+      // leaves the applicant watching an inbox, and the screen then offered
+      // them a field to type the code into.
+      if (updated.delivery == ContactDelivery.sent) {
+        _message =
+            'We have asked the office to send a '
+            '${channel == ContactChannel.email ? 'verification link to ${current.value}' : 'code to ${current.value}'}.';
+      } else {
+        _outcome = VerificationOutcome.unavailable;
+        _message = _unavailableMessage;
+      }
     } on VerificationNotAvailable {
       _outcome = VerificationOutcome.unavailable;
       _message = _unavailableMessage;

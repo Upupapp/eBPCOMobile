@@ -19,6 +19,9 @@ class _Refusing implements ContactVerificationRepository {
       channel.copyWith(
         status: ContactVerificationStatus.pendingVerification,
         lastRequestedAt: _now,
+        // This one is about a code the office rejected, so a code has to have
+        // reached the applicant for them to get it wrong.
+        delivery: ContactDelivery.sent,
       );
 
   @override
@@ -28,6 +31,24 @@ class _Refusing implements ContactVerificationRepository {
   }) async => throw const VerificationRejected(
     'That code has expired. Ask for a new one.',
   );
+}
+
+/// An office that can actually send. What the app should look like once the
+/// LGU has chosen an email or SMS provider.
+class _Sending implements ContactVerificationRepository {
+  @override
+  Future<ContactVerification> request(ContactVerification channel) async =>
+      channel.copyWith(
+        status: ContactVerificationStatus.pendingVerification,
+        lastRequestedAt: _now,
+        delivery: ContactDelivery.sent,
+      );
+
+  @override
+  Future<ContactVerification> confirm(
+    ContactVerification channel, {
+    required String code,
+  }) async => channel.copyWith(status: ContactVerificationStatus.verified);
 }
 
 late ContactVerificationProvider provider;
@@ -102,10 +123,10 @@ void main() {
     );
   });
 
-  testWidgets('asking moves the channel to Pending and offers the code box', (
+  testWidgets('a code box appears only once a code has actually been sent', (
     tester,
   ) async {
-    await _open(tester);
+    await _open(tester, repository: _Sending());
 
     await tester.tap(find.text('Send verification link'));
     await tester.pump();
@@ -114,6 +135,33 @@ void main() {
     expect(find.text('Pending Verification'), findsOneWidget);
     expect(find.text('Code from the email'), findsOneWidget);
     expect(find.text('Send it again'), findsOneWidget);
+  });
+
+  testWidgets('asking when the office cannot send offers no code box', (
+    tester,
+  ) async {
+    // The defect this gate exists for. The server answers a verification
+    // request 202 with `delivery: "not-sent"` while the LGU has chosen no
+    // email or SMS provider, and the app ignored the field: it moved the
+    // channel to Pending, said "We have asked the office to send a code to
+    // 0917...", and put a "Code from the SMS" box underneath. The applicant
+    // was left waiting for a code that could not exist, and typing into a box
+    // that could only ever refuse them.
+    await _open(tester);
+
+    await tester.tap(find.text('Send verification link'));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Code from the email'), findsNothing);
+    expect(find.text('Confirm'), findsNothing);
+    expect(
+      find.textContaining('We have asked the office to send'),
+      findsNothing,
+      reason: 'nothing was sent',
+    );
+    expect(find.textContaining('Nothing was sent to you'), findsOneWidget);
+    expect(find.textContaining('has not switched on'), findsOneWidget);
   });
 
   testWidgets('a rejected code shows the office\'s reason on the channel', (
@@ -137,17 +185,14 @@ void main() {
     );
   });
 
-  testWidgets('confirming against the real mock says it cannot be done yet', (
-    tester,
-  ) async {
-    // And crucially does not show a tick.
+  testWidgets('the real mock never shows a tick', (tester) async {
+    // Confirm is unreachable from this screen against the real mock now,
+    // because there is no code box to type into — which is the fix. What must
+    // still hold is that none of it produces a green tick the office did not
+    // put there.
     await _open(tester);
 
     await tester.tap(find.text('Send verification link'));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    await tester.enterText(find.byType(TextField).first, '123456');
-    await tester.tap(find.text('Confirm'));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 

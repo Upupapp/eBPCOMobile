@@ -25,6 +25,27 @@ enum ContactChannel {
   };
 }
 
+/// Whether a link or a code actually left the office.
+///
+/// Mirrors the `delivery` field the server returns on a verification request,
+/// which answers `not-sent` while the LGU has chosen no email or SMS provider.
+/// The app read the 202 and ignored this field, so it showed "Code from the
+/// SMS" over a code that could not exist and asked the applicant to wait for
+/// it. Anything unrecognised on the wire maps to [notSent]: the failure that
+/// costs an applicant an afternoon is claiming a send that did not happen.
+enum ContactDelivery {
+  sent('sent'),
+  notSent('not-sent');
+
+  const ContactDelivery(this.wire);
+  final String wire;
+
+  static ContactDelivery fromWire(String? value) =>
+      value == ContactDelivery.sent.wire
+      ? ContactDelivery.sent
+      : ContactDelivery.notSent;
+}
+
 /// The state of one contact channel.
 ///
 /// The app registered an account and verified nothing, while the admin has
@@ -58,6 +79,12 @@ class ContactVerification {
   /// carries remarks: "Failed" alone leaves the applicant to guess.
   final String? failureReason;
 
+  /// Whether the last request actually dispatched anything.
+  ///
+  /// Defaults to [ContactDelivery.notSent] so a channel constructed without
+  /// asking cannot imply a code is in flight.
+  final ContactDelivery delivery;
+
   const ContactVerification({
     required this.channel,
     required this.value,
@@ -66,11 +93,22 @@ class ContactVerification {
     this.verifiedAt,
     this.lastRequestedAt,
     this.failureReason,
+    this.delivery = ContactDelivery.notSent,
   });
 
   bool get isVerified => status == ContactVerificationStatus.verified;
   bool get isPending => status == ContactVerificationStatus.pendingVerification;
   bool get hasFailed => status == ContactVerificationStatus.verificationFailed;
+
+  /// A code or link is genuinely in flight and worth waiting for.
+  ///
+  /// The condition for showing the code entry field. [isPending] alone is not:
+  /// the office records the request whether or not it could send anything.
+  bool get awaitingCode => isPending && delivery == ContactDelivery.sent;
+
+  /// Asked for, but nothing was sent — the office has no way to send it yet.
+  bool get requestedButUndeliverable =>
+      isPending && delivery == ContactDelivery.notSent;
 
   /// Nothing has been supplied to verify.
   bool get isMissing => value.trim().isEmpty;
@@ -98,6 +136,7 @@ class ContactVerification {
     DateTime? verifiedAt,
     DateTime? lastRequestedAt,
     String? failureReason,
+    ContactDelivery? delivery,
     bool clearFailure = false,
   }) => ContactVerification(
     channel: channel,
@@ -107,5 +146,6 @@ class ContactVerification {
     verifiedAt: verifiedAt ?? this.verifiedAt,
     lastRequestedAt: lastRequestedAt ?? this.lastRequestedAt,
     failureReason: clearFailure ? null : (failureReason ?? this.failureReason),
+    delivery: delivery ?? this.delivery,
   );
 }
