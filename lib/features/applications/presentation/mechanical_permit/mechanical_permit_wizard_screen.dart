@@ -62,7 +62,8 @@ class _MechanicalPermitWizardScreenState
     ),
     _StepMeta(
       title: 'Address & Project Location',
-      subtitle: 'Provide the citizen address and location of the mechanical work.',
+      subtitle:
+          'Provide the citizen address and location of the mechanical work.',
     ),
     _StepMeta(
       title: 'Scope of Mechanical Work',
@@ -216,6 +217,10 @@ class _MechanicalPermitWizardScreenState
       // Everything the applicant typed. Sent since 31 August 2026;
       // before this a filing carried none of it. See permitFormPayload.
       form: permitFormPayload(const MechanicalPermitDraftCodec(), _draft),
+      // The attachments the citizen added. Passed since 31 August
+      // 2026; before that submitPermitApplication hardcoded an empty
+      // list and none of them were ever uploaded.
+      documents: permitDocuments(const MechanicalPermitDraftCodec(), _draft),
       // The contract has declared a nullable `location` since it was
       // written, and the app sent nothing — so the office learned the
       // permit type and the applicant and not the site.

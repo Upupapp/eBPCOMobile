@@ -171,6 +171,10 @@ class _FsicClearanceWizardScreenState extends State<FsicClearanceWizardScreen> {
       // Everything the applicant typed. Sent since 31 August 2026;
       // before this a filing carried none of it. See permitFormPayload.
       form: permitFormPayload(const FsicPermitDraftCodec(), _draft),
+      // The attachments the citizen added. Passed since 31 August
+      // 2026; before that submitPermitApplication hardcoded an empty
+      // list and none of them were ever uploaded.
+      documents: permitDocuments(const FsicPermitDraftCodec(), _draft),
       referenceNumber: referenceNumber,
       permitTypeLabel: CanonicalPermitType.fsicForOccupancyPermitBfp.wire,
       applicantName: applicantDisplayName(

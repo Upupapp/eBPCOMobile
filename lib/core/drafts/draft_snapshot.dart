@@ -183,11 +183,26 @@ class SnapshotWriter {
   /// So: a file inside our storage is kept, by name. Anything else is dropped
   /// and named for the applicant to attach again — [label] must therefore read
   /// as the document's name, "Land Title", not "landTitleUpload".
+  /// Every attachment the codec visited, in the order it visited them.
+  ///
+  /// **Added 31 August 2026, because nothing was collecting them.** The
+  /// wizards gather a citizen's land title, survey plan and design plans, and
+  /// `submitPermitApplication` passed `documents: const []` — so
+  /// `_uploadAll` had nothing to upload and the office received an application
+  /// with no documents at all. On a building permit that is twenty-four
+  /// attachments the citizen watched themselves add.
+  ///
+  /// Collected here rather than in nineteen wizards because the codecs
+  /// already visit every document field: that is how drafts persist them, and
+  /// it is round-trip tested for every wizard.
+  final List<DocumentModel> documents = [];
+
   void document(String path, DocumentModel? value, String label) {
     if (value == null) {
       fields[path] = null;
       return;
     }
+    documents.add(value);
     final storedName = DocumentStorageService.storedNameOf(value.filePath);
     if (storedName == null) {
       // Bytes we cannot vouch for: a fabricated attachment with no file, or a

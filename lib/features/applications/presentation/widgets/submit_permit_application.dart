@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/models/application_model.dart';
+import '../../../../core/models/document_model.dart';
 import '../../../../core/providers/application_intent_provider.dart';
 import '../../../../core/providers/applications_provider.dart';
 
@@ -65,6 +66,16 @@ Future<ApplicationModel?> submitPermitApplication(
   /// Null for a wizard with no draft codec, which is the honest state rather
   /// than an empty object — `{}` would assert the applicant entered nothing.
   Map<String, Object?>? form,
+
+  /// The attachments the citizen added, uploaded before the application is
+  /// filed.
+  ///
+  /// **Hardcoded to `const []` until 31 August 2026**, so no wizard's
+  /// documents were ever sent: `_uploadAll` had nothing to upload,
+  /// `documentIds` went out empty, and the office received applications with
+  /// none of the land titles, plans or clearances the citizen attached. Build
+  /// it with `permitDocuments`.
+  List<DocumentModel> documents = const [],
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   // A renewal or amendment started elsewhere and walked the applicant into
@@ -82,7 +93,7 @@ Future<ApplicationModel?> submitPermitApplication(
       // which the lineage is the authority on; [permitTypeLabel] is what
       // actually names the permit on screen.
       type: ApplicationType.newPermit,
-      documents: const [],
+      documents: documents,
       permitTypeLabel: permitTypeLabel,
       applicationNumber: referenceNumber,
       lineage: lineage,

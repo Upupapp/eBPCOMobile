@@ -182,6 +182,13 @@ class _CertificateOfOccupancyWizardScreenState
       // Everything the applicant typed. Sent since 31 August 2026;
       // before this a filing carried none of it. See permitFormPayload.
       form: permitFormPayload(const CertificateOfOccupancyDraftCodec(), _draft),
+      // The attachments the citizen added. Passed since 31 August
+      // 2026; before that submitPermitApplication hardcoded an empty
+      // list and none of them were ever uploaded.
+      documents: permitDocuments(
+        const CertificateOfOccupancyDraftCodec(),
+        _draft,
+      ),
       referenceNumber: referenceNumber,
       permitTypeLabel: CanonicalPermitType.certificateOfOccupancy.wire,
       applicantName: applicantDisplayName(

@@ -1,3 +1,4 @@
+import '../models/document_model.dart';
 import 'draft_snapshot.dart';
 
 /// The wizard's collected fields, shaped for `POST /applications` `form`.
@@ -62,3 +63,31 @@ Map<String, Object?> permitFormPayload<T>(DraftCodec<T> codec, T draft) {
 
 bool _isAttachment(Object? value) =>
     value is Map && value.containsKey('storedName');
+
+/// Every attachment a wizard holds, for upload at submission.
+///
+/// **Until 31 August 2026 nothing collected these.**
+/// `submitPermitApplication` passed `documents: const []`, so
+/// `ApplicationsProvider._uploadAll` had nothing to upload, `documentIds` went
+/// out empty, and the Office of the Building Official received applications
+/// with **no documents**. For a permit system whose documentary requirements
+/// are the whole of the filing — the checklist, the copy counts, the
+/// four-sets-of-plans — that is the application missing the part that matters.
+///
+/// The citizen saw no sign of it. The wizard showed each attachment in place,
+/// the review step listed them, and the confirmation screen said the
+/// application was filed.
+///
+/// Uses the same codec walk as [permitFormPayload]: `capture` visits every
+/// document field because that is how drafts persist attachments, so this is
+/// uniform across all nineteen wizards and rests on machinery that is already
+/// round-trip tested.
+///
+/// Attachments the codec could not vouch for — a picked file whose bytes were
+/// never copied into the app's own storage — are **excluded**, and the wizard
+/// already tells the citizen about those through `documentsToReattach`.
+List<DocumentModel> permitDocuments<T>(DraftCodec<T> codec, T draft) {
+  final writer = SnapshotWriter();
+  codec.capture(draft, writer);
+  return List.unmodifiable(writer.documents);
+}
