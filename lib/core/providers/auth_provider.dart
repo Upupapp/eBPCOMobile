@@ -195,14 +195,24 @@ class AuthProvider extends ChangeNotifier {
       barangay: barangay,
       zipCode: zipCode,
     );
-    // Only first/last/mobile are persisted on-device, matching the
-    // prototype's original persistence scope; the newer profile fields
-    // (middle name, address) are session-only mock state that resets on
-    // app restart.
+    // Every field, since 2026-09-03. Only first/last/mobile were kept before,
+    // so a citizen who moved house typed a new address, was told "Profile
+    // updated successfully", and found the old one back on the next launch.
+    //
+    // **This still does not reach the office.** There is no profile-update
+    // endpoint on the contract, so the LGU's record is unchanged by anything
+    // done here; the screen says so rather than implying otherwise, and the
+    // gap is recorded for the backend lane.
     await _storage.updateRegisteredProfile(
       firstName: firstName,
       lastName: lastName,
       mobileNumber: mobileNumber,
+      middleName: middleName,
+      address: address,
+      province: province,
+      city: city,
+      barangay: barangay,
+      zipCode: zipCode,
     );
     notifyListeners();
     return true;

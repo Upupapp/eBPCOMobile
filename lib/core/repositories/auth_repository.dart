@@ -129,9 +129,15 @@ class MockAuthRepository implements AuthRepository {
   Future<UserModel> _hydrateRegisteredUser(String registeredEmail) async {
     return UserModel(
       firstName: await _storage.getRegisteredFirstName() ?? 'User',
+      middleName: await _storage.getRegisteredMiddleName() ?? '',
       lastName: await _storage.getRegisteredLastName() ?? '',
       email: registeredEmail,
       mobileNumber: await _storage.getRegisteredMobile() ?? '',
+      address: await _storage.getRegisteredAddress() ?? '',
+      province: await _storage.getRegisteredProvince() ?? '',
+      city: await _storage.getRegisteredCity() ?? '',
+      barangay: await _storage.getRegisteredBarangay() ?? '',
+      zipCode: await _storage.getRegisteredZipCode() ?? '',
     );
   }
 }

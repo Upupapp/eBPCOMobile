@@ -295,7 +295,15 @@ void main() {
     await tester.tap(find.text('Save Changes'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(find.text('Profile updated successfully.'), findsOneWidget);
+    // Not "Profile updated successfully." There is no profile-update endpoint
+    // on the contract, so nothing here changes the address the office posts a
+    // notice to — and a citizen who has just moved house is exactly the person
+    // who will act on the wrong belief.
+    expect(find.textContaining('Saved on this phone'), findsOneWidget);
+    expect(
+      find.textContaining('still has your previous details'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();

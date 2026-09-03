@@ -97,7 +97,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
-    await SuccessDialog.show(context, message: 'Profile updated successfully.');
+    // Says what actually happened. "Profile updated successfully" invited the
+    // reading that the office now had the new details, and it does not: there
+    // is no profile-update endpoint on the contract, so nothing here changes
+    // the address a notice is posted to or the number an inspector rings.
+    // The citizen has to be told, because acting on the wrong belief costs
+    // them a notice they never receive.
+    await SuccessDialog.show(
+      context,
+      message:
+          'Saved on this phone. The Office of the Building Official still '
+          'has your previous details — tell them at the counter if a notice '
+          'or an inspection call needs to reach you somewhere new.',
+    );
     if (mounted) context.pop();
   }
 

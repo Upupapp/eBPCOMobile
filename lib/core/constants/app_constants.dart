@@ -56,6 +56,16 @@ class AppConstants {
   static const String prefRegisteredFirstName = 'registeredFirstName';
   static const String prefRegisteredLastName = 'registeredLastName';
   static const String prefRegisteredMobile = 'registeredMobile';
+  // The rest of the profile. Only the three above were persisted until
+  // 2026-09-03: a citizen who moved house typed a new address, was told
+  // "Profile updated successfully", and found the old one back after the next
+  // app restart.
+  static const String prefRegisteredMiddleName = 'registeredMiddleName';
+  static const String prefRegisteredAddress = 'registeredAddress';
+  static const String prefRegisteredProvince = 'registeredProvince';
+  static const String prefRegisteredCity = 'registeredCity';
+  static const String prefRegisteredBarangay = 'registeredBarangay';
+  static const String prefRegisteredZipCode = 'registeredZipCode';
   static const String prefCurrentUserEmail = 'currentUserEmail';
   static const String prefRememberedEmail = 'rememberedEmail';
   static const String prefProfilePhotoPath = 'profilePhotoPath';
