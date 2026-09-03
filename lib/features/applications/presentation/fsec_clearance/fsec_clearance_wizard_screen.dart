@@ -109,7 +109,7 @@ class _FsecClearanceWizardScreenState extends State<FsecClearanceWizardScreen> {
       ..firstName = user.firstName
       ..lastName = user.lastName
       ..contactNumber = user.mobileNumber
-      ..address = user.address;
+      ..address = user.street ?? '';
   }
 
   @override

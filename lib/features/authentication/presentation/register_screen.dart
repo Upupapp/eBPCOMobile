@@ -579,9 +579,7 @@ class _AgreementCheckbox extends StatelessWidget {
         child: Row(
           children: [
             Checkbox(value: value, onChanged: (v) => onChanged(v ?? false)),
-            Expanded(
-              child: Text(label, style: AppTypography.body),
-            ),
+            Expanded(child: Text(label, style: AppTypography.body)),
           ],
         ),
       ),

@@ -137,10 +137,10 @@ class _FencingPermitWizardScreenState extends State<FencingPermitWizardScreen> {
     _draft.applicant
       ..firstName = user.firstName
       ..lastName = user.lastName
-      ..street = user.address
-      ..barangay = user.barangay
-      ..city = user.city
-      ..zipCode = user.zipCode;
+      ..street = user.street ?? ''
+      ..barangay = user.barangay ?? ''
+      ..city = user.city ?? ''
+      ..zipCode = user.postalCode ?? '';
   }
 
   @override

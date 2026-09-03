@@ -61,11 +61,11 @@ class AppConstants {
   // "Profile updated successfully", and found the old one back after the next
   // app restart.
   static const String prefRegisteredMiddleName = 'registeredMiddleName';
-  static const String prefRegisteredAddress = 'registeredAddress';
+  static const String prefRegisteredStreet = 'registeredStreet';
   static const String prefRegisteredProvince = 'registeredProvince';
   static const String prefRegisteredCity = 'registeredCity';
   static const String prefRegisteredBarangay = 'registeredBarangay';
-  static const String prefRegisteredZipCode = 'registeredZipCode';
+  static const String prefRegisteredPostalCode = 'registeredPostalCode';
   static const String prefCurrentUserEmail = 'currentUserEmail';
   static const String prefRememberedEmail = 'rememberedEmail';
   static const String prefProfilePhotoPath = 'profilePhotoPath';

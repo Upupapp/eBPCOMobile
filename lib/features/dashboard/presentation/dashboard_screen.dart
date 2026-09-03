@@ -127,8 +127,9 @@ class DashboardScreen extends StatelessWidget {
                         pledge: applicationsProvider.pledgeFor(
                           activeApplication,
                         ),
-                        onViewDetails: () =>
-                            context.push('/applications/${activeApplication.id}'),
+                        onViewDetails: () => context.push(
+                          '/applications/${activeApplication.id}',
+                        ),
                       ),
                     const SizedBox(height: AppSpacing.xl),
 

@@ -45,8 +45,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final needsAction = filter(provider.needsAction);
     final updates = filter(provider.updates);
     final earlier = filter(provider.earlier);
-    final isEmpty =
-        needsAction.isEmpty && updates.isEmpty && earlier.isEmpty;
+    final isEmpty = needsAction.isEmpty && updates.isEmpty && earlier.isEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.background,

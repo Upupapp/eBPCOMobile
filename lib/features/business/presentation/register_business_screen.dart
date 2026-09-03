@@ -15,8 +15,7 @@ class RegisterBusinessScreen extends StatefulWidget {
   const RegisterBusinessScreen({super.key});
 
   @override
-  State<RegisterBusinessScreen> createState() =>
-      _RegisterBusinessScreenState();
+  State<RegisterBusinessScreen> createState() => _RegisterBusinessScreenState();
 }
 
 class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
@@ -137,7 +136,8 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
                 AppTextField(
                   controller: _barangayController,
                   label: 'Barangay',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Barangay'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Barangay'),
                 ),
                 const SizedBox(height: 16),
                 AppTextField(
@@ -150,7 +150,8 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
                 AppTextField(
                   controller: _provinceController,
                   label: 'Province',
-                  validator: (v) => Validators.required(v, fieldLabel: 'Province'),
+                  validator: (v) =>
+                      Validators.required(v, fieldLabel: 'Province'),
                 ),
                 const SizedBox(height: 28),
                 PrimaryButton(

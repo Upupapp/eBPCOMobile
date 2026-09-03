@@ -309,9 +309,15 @@ class ProfileScreen extends StatelessWidget {
               _ProfileTile(
                 icon: Icons.location_on_outlined,
                 label: 'Address',
+                // "Not recorded", not "Not provided". Every account created
+                // before `PATCH /me` has these unset because nobody was ever
+                // asked for them — and telling a citizen they left something
+                // blank, when the question was never put to them, blames them
+                // for the office's gap. Add it from Edit Profile says what to
+                // do about it.
                 value: (user?.fullAddress.isNotEmpty ?? false)
                     ? user!.fullAddress
-                    : 'Not provided',
+                    : 'Not recorded — add it from Edit Profile',
               ),
               _ProfileTile(
                 icon: Icons.badge_outlined,

@@ -119,7 +119,7 @@ class _ZoningClearanceWizardScreenState
       ..firstName = user.firstName
       ..lastName = user.lastName
       ..contactNumber = user.mobileNumber
-      ..address = user.address;
+      ..address = user.street ?? '';
   }
 
   @override

@@ -77,8 +77,7 @@ class _MainShellState extends State<MainShell> {
           // an unbounded bar would eventually leave no room for the screen
           // above it.
           height:
-              88 *
-              MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 2.0),
+              88 * MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 2.0),
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),

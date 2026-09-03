@@ -140,10 +140,10 @@ class _SignPermitWizardScreenState extends State<SignPermitWizardScreen> {
       ..firstName = user.firstName
       ..lastName = user.lastName
       ..contactNumber = user.mobileNumber
-      ..street = user.address
-      ..barangay = user.barangay
-      ..city = user.city
-      ..zipCode = user.zipCode;
+      ..street = user.street ?? ''
+      ..barangay = user.barangay ?? ''
+      ..city = user.city ?? ''
+      ..zipCode = user.postalCode ?? '';
   }
 
   @override

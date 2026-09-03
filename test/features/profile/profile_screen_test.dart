@@ -29,11 +29,11 @@ class _FakeAuthRepository implements AuthRepository {
     lastName: 'Dela Cruz',
     email: 'user@ebpco.com',
     mobileNumber: '09171234567',
-    address: '123 Rizal Street',
+    street: '123 Rizal Street',
     barangay: 'San Isidro',
     city: 'Quezon City',
     province: 'Metro Manila',
-    zipCode: '1100',
+    postalCode: '1100',
     accountStatus: AccountStatus.verified,
   );
 
@@ -57,6 +57,32 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<UserModel?> hydrateUser(String email) async => _user;
+
+  @override
+  Future<ProfileUpdate> updateProfile({
+    FieldEdit firstName = const FieldEdit.absent(),
+    FieldEdit middleName = const FieldEdit.absent(),
+    FieldEdit lastName = const FieldEdit.absent(),
+    FieldEdit mobileNumber = const FieldEdit.absent(),
+    FieldEdit street = const FieldEdit.absent(),
+    FieldEdit barangay = const FieldEdit.absent(),
+    FieldEdit city = const FieldEdit.absent(),
+    FieldEdit province = const FieldEdit.absent(),
+    FieldEdit postalCode = const FieldEdit.absent(),
+  }) async {
+    // Answers like the office. It threw UnimplementedError, which was safe
+    // only while the screen wrote three fields to the device and told nobody
+    // — the test could not have caught that no request was made.
+    return ProfileUpdate(
+      user: _user.copyWith(
+        firstName: firstName.value,
+        mobileNumber: mobileNumber.value,
+        street: street.value,
+      ),
+      mobileVerificationCleared:
+          mobileNumber.isPresent && mobileNumber.value != _user.mobileNumber,
+    );
+  }
 }
 
 Future<AuthProvider> _signedInAuthProvider() async {
@@ -299,9 +325,13 @@ void main() {
     // on the contract, so nothing here changes the address the office posts a
     // notice to — and a citizen who has just moved house is exactly the person
     // who will act on the wrong belief.
-    expect(find.textContaining('Saved on this phone'), findsOneWidget);
+    // The office has it now, because the screen awaited a real call. This
+    // said "Saved on this phone. The Office of the Building Official still
+    // has your previous details" — true at the time, and no longer.
     expect(
-      find.textContaining('still has your previous details'),
+      find.textContaining(
+        'Your details are with the Office of the Building Official',
+      ),
       findsOneWidget,
     );
 

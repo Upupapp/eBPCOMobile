@@ -92,6 +92,71 @@ class HttpAuthRepository implements AuthRepository {
   Future<UserModel?> hydrateUser(String email) => _profile(email);
 
   @override
+  Future<ProfileUpdate> updateProfile({
+    FieldEdit firstName = const FieldEdit.absent(),
+    FieldEdit middleName = const FieldEdit.absent(),
+    FieldEdit lastName = const FieldEdit.absent(),
+    FieldEdit mobileNumber = const FieldEdit.absent(),
+    FieldEdit street = const FieldEdit.absent(),
+    FieldEdit barangay = const FieldEdit.absent(),
+    FieldEdit city = const FieldEdit.absent(),
+    FieldEdit province = const FieldEdit.absent(),
+    FieldEdit postalCode = const FieldEdit.absent(),
+  }) async {
+    // Absent keys are omitted; present ones are sent even when their value is
+    // null, because that is how the office is told to CLEAR a field. A map
+    // built with `if (x != null)` would silently drop every clear and leave a
+    // citizen unable to remove a middle name they do not have.
+    final body = <String, Object?>{};
+    void put(String key, FieldEdit edit) {
+      if (edit.isPresent) body[key] = edit.value;
+    }
+
+    put('firstName', firstName);
+    put('middleName', middleName);
+    put('lastName', lastName);
+    put('mobileNumber', mobileNumber);
+    // `street`, the server's own name for this field on businesses. This app
+    // called it `address` and the wizards it prefills already called it
+    // `street` — two spellings of one idea inside one service, which is the
+    // defect D-10 spent a migration undoing.
+    put('street', street);
+    put('barangay', barangay);
+    put('city', city);
+    put('province', province);
+    put('postalCode', postalCode);
+
+    // No `email`. The server refuses it with a 400 rather than ignoring it,
+    // and rightly: it is the sign-in identity, so a change transfers who can
+    // reach the account and needs proof of control of the new address first.
+    final me = await _api.patch('/me', body: body);
+
+    return ProfileUpdate(
+      user: UserModel(
+        firstName: _string(me, 'firstName') ?? '',
+        middleName: _string(me, 'middleName') ?? '',
+        lastName: _string(me, 'lastName') ?? '',
+        email: _string(me, 'email') ?? '',
+        mobileNumber: _string(me, 'mobileNumber') ?? '',
+        photoPath: _string(me, 'photoPath'),
+        street: _string(me, 'street'),
+        province: _string(me, 'province'),
+        city: _string(me, 'city'),
+        barangay: _string(me, 'barangay'),
+        postalCode: _string(me, 'postalCode'),
+        accountType: _string(me, 'accountType') ?? 'Individual Applicant',
+        accountStatus: _accountStatus(_string(me, 'accountStatus')),
+        registeredSince: _dateTimeOrNull(me, 'registeredSince'),
+      ),
+      // Read, not inferred by comparing numbers. The server also deletes any
+      // pending challenge against the OLD number — otherwise a code already
+      // sent to the old phone could be confirmed afterwards and would verify
+      // the new one — and only the server knows it did that.
+      mobileVerificationCleared: me['mobileVerificationCleared'] == true,
+    );
+  }
+
+  @override
   Future<void> deleteAccount() async {
     // 202. The session is invalid immediately afterwards — measured: a GET
     // /me with the same token returns 401 — so the caller signs out rather
@@ -114,11 +179,19 @@ class HttpAuthRepository implements AuthRepository {
         // no address, no account type, no status and no join date — all of
         // which the screen has rendered since it was built.
         photoPath: _string(me, 'photoPath'),
-        address: _string(me, 'address') ?? '',
-        province: _string(me, 'province') ?? '',
-        city: _string(me, 'city') ?? '',
-        barangay: _string(me, 'barangay') ?? '',
-        zipCode: _string(me, 'zipCode') ?? '',
+        // `street` and `postalCode`, which are the keys the server actually
+        // sends. This read `address` and `zipCode` — names that exist nowhere
+        // on the wire — so the address block came back empty however much the
+        // office held.
+        //
+        // No `?? ''`. Null here means NOT RECORDED: nobody was ever asked for
+        // these before `PATCH /me`, and collapsing that to a blank string
+        // tells a citizen they left something empty when they were not asked.
+        street: _string(me, 'street'),
+        province: _string(me, 'province'),
+        city: _string(me, 'city'),
+        barangay: _string(me, 'barangay'),
+        postalCode: _string(me, 'postalCode'),
         accountType: _string(me, 'accountType') ?? 'Individual Applicant',
         accountStatus: _accountStatus(_string(me, 'accountStatus')),
         registeredSince: _dateTimeOrNull(me, 'registeredSince'),

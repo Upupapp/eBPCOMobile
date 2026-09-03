@@ -141,36 +141,36 @@ class LocalStorageService {
     required String lastName,
     required String mobileNumber,
     String middleName = '',
-    String address = '',
+    String street = '',
     String province = '',
     String city = '',
     String barangay = '',
-    String zipCode = '',
+    String postalCode = '',
   }) async {
     final prefs = await _prefs;
     await prefs.setString(AppConstants.prefRegisteredFirstName, firstName);
     await prefs.setString(AppConstants.prefRegisteredLastName, lastName);
     await prefs.setString(AppConstants.prefRegisteredMobile, mobileNumber);
     await prefs.setString(AppConstants.prefRegisteredMiddleName, middleName);
-    await prefs.setString(AppConstants.prefRegisteredAddress, address);
+    await prefs.setString(AppConstants.prefRegisteredStreet, street);
     await prefs.setString(AppConstants.prefRegisteredProvince, province);
     await prefs.setString(AppConstants.prefRegisteredCity, city);
     await prefs.setString(AppConstants.prefRegisteredBarangay, barangay);
-    await prefs.setString(AppConstants.prefRegisteredZipCode, zipCode);
+    await prefs.setString(AppConstants.prefRegisteredPostalCode, postalCode);
   }
 
   Future<String?> getRegisteredMiddleName() async =>
       (await _prefs).getString(AppConstants.prefRegisteredMiddleName);
-  Future<String?> getRegisteredAddress() async =>
-      (await _prefs).getString(AppConstants.prefRegisteredAddress);
+  Future<String?> getRegisteredStreet() async =>
+      (await _prefs).getString(AppConstants.prefRegisteredStreet);
   Future<String?> getRegisteredProvince() async =>
       (await _prefs).getString(AppConstants.prefRegisteredProvince);
   Future<String?> getRegisteredCity() async =>
       (await _prefs).getString(AppConstants.prefRegisteredCity);
   Future<String?> getRegisteredBarangay() async =>
       (await _prefs).getString(AppConstants.prefRegisteredBarangay);
-  Future<String?> getRegisteredZipCode() async =>
-      (await _prefs).getString(AppConstants.prefRegisteredZipCode);
+  Future<String?> getRegisteredPostalCode() async =>
+      (await _prefs).getString(AppConstants.prefRegisteredPostalCode);
 
   Future<void> setCurrentUserEmail(String email) async {
     final prefs = await _prefs;

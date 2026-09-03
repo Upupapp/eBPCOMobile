@@ -45,8 +45,9 @@ class DocumentCard extends StatelessWidget {
     this.showUseForApplication = true,
   });
 
-  IconData get _fileIcon =>
-      document.fileType.isImage ? Icons.image_outlined : Icons.picture_as_pdf_outlined;
+  IconData get _fileIcon => document.fileType.isImage
+      ? Icons.image_outlined
+      : Icons.picture_as_pdf_outlined;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +117,9 @@ class DocumentCard extends StatelessWidget {
               PopupMenuItem(
                 value: DocumentCardAction.setExpiry,
                 child: Text(
-                  document.isTimeBound ? 'Change expiry date' : 'Set expiry date',
+                  document.isTimeBound
+                      ? 'Change expiry date'
+                      : 'Set expiry date',
                 ),
               ),
               const PopupMenuItem(
@@ -146,7 +149,6 @@ class DocumentCard extends StatelessWidget {
     );
   }
 }
-
 
 /// Expiry state, shown on the card rather than only in the detail sheet.
 ///
@@ -180,9 +182,7 @@ class _ExpiryChip extends StatelessWidget {
         : 'Valid to ${_dateFormat.format(document.expiryDate!)}';
 
     return Semantics(
-      label: expired
-          ? '\$label. This document will not be accepted.'
-          : label,
+      label: expired ? '\$label. This document will not be accepted.' : label,
       excludeSemantics: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,

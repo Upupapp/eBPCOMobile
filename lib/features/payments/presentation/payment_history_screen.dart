@@ -83,8 +83,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                     selectedYear: _year,
                     selectedBusinessId: _businessId,
                     onYear: (value) => setState(() => _year = value),
-                    onBusiness: (value) =>
-                        setState(() => _businessId = value),
+                    onBusiness: (value) => setState(() => _businessId = value),
                   ),
                   _Total(total: total, settledCount: settled.length),
                   Expanded(
@@ -191,10 +190,7 @@ class _Filters extends StatelessWidget {
                 for (final entry in businesses.entries)
                   DropdownMenuItem(
                     value: entry.key,
-                    child: Text(
-                      entry.value,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    child: Text(entry.value, overflow: TextOverflow.ellipsis),
                   ),
               ],
               onChanged: onBusiness,
@@ -276,10 +272,7 @@ class _HistoryTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AmountRow(
-                label: Text(
-                  entry.permitType,
-                  style: AppTypography.cardTitle,
-                ),
+                label: Text(entry.permitType, style: AppTypography.cardTitle),
                 amount: Text(
                   entry.amount.formatted,
                   style: AppTypography.bodyStrong,

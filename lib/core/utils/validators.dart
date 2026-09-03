@@ -72,6 +72,22 @@ class Validators {
     return null;
   }
 
+  /// A postal code the citizen may not have, but which must be right if given.
+  ///
+  /// The profile is a correction, not a registration: a citizen the office has
+  /// never asked for a postal code can save without inventing one, and blank
+  /// clears the field. Four digits or nothing — `PATCH /me` answers 400
+  /// otherwise, and an address the office cannot post to is worse than none,
+  /// because it gets acted on.
+  static String? optionalPostalCode(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return null;
+    if (!_postalCodePattern.hasMatch(trimmed)) {
+      return 'Enter a valid 4-digit postal code, or leave it blank.';
+    }
+    return null;
+  }
+
   /// Whole-number quantities (e.g. number of units) — required, integer,
   /// and strictly positive.
   static String? positiveWholeNumber(

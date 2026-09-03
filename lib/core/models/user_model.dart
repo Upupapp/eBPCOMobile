@@ -59,11 +59,22 @@ class UserModel {
   /// placeholder "photo set" avatar should render instead of initials.
   final String? photoPath;
 
-  final String address;
-  final String province;
-  final String city;
-  final String barangay;
-  final String zipCode;
+  /// The citizen's own postal address, as the office would post a notice to.
+  ///
+  /// **Nullable, and null is not blank.** Null means NOT RECORDED — nobody has
+  /// ever been asked for these, so every account predating `PATCH /me` has
+  /// them unset. Rendering that as an empty field would tell a citizen they
+  /// had left something blank when they were never asked.
+  ///
+  /// `street`, not `address`: the server already calls this field `street` on
+  /// businesses, and a second spelling of one idea inside one service is the
+  /// defect D-10 spent a migration undoing. `postalCode` is this app's name,
+  /// kept because the server had none to match.
+  final String? street;
+  final String? province;
+  final String? city;
+  final String? barangay;
+  final String? postalCode;
 
   /// Free-text account classification shown on the profile info card.
   final String accountType;
@@ -77,11 +88,11 @@ class UserModel {
     required this.email,
     this.mobileNumber = '',
     this.photoPath,
-    this.address = '',
-    this.province = '',
-    this.city = '',
-    this.barangay = '',
-    this.zipCode = '',
+    this.street,
+    this.province,
+    this.city,
+    this.barangay,
+    this.postalCode,
     this.accountType = 'Individual Applicant',
     this.accountStatus = AccountStatus.verified,
     this.registeredSince,
@@ -99,17 +110,21 @@ class UserModel {
     return combined.isNotEmpty ? combined : 'U';
   }
 
-  /// Combines the address parts into one display string, skipping any that
-  /// are still blank.
-  String get fullAddress {
-    return [
-      address,
-      barangay,
-      city,
-      province,
-      zipCode,
-    ].where((part) => part.trim().isNotEmpty).join(', ');
-  }
+  /// The address parts as one line, skipping what is not recorded.
+  ///
+  /// Empty when the office holds none of it — which is a different statement
+  /// from an address that happens to be short, and the screens say so rather
+  /// than rendering a blank.
+  String get fullAddress => [
+    street,
+    barangay,
+    city,
+    province,
+    postalCode,
+  ].whereType<String>().where((part) => part.trim().isNotEmpty).join(', ');
+
+  /// True when the office has never been given any of this.
+  bool get hasNoRecordedAddress => fullAddress.isEmpty;
 
   UserModel copyWith({
     String? firstName,
@@ -118,11 +133,15 @@ class UserModel {
     String? email,
     String? mobileNumber,
     Object? photoPath = _unset,
-    String? address,
-    String? province,
-    String? city,
-    String? barangay,
-    String? zipCode,
+    // Sentinels for the same reason `photoPath` has one: a citizen must be
+    // able to REMOVE a middle name they typed by mistake or never had, and
+    // `null` meaning "leave alone" would make that impossible. A right to
+    // correct that cannot remove is half a right.
+    Object? street = _unset,
+    Object? province = _unset,
+    Object? city = _unset,
+    Object? barangay = _unset,
+    Object? postalCode = _unset,
     String? accountType,
     AccountStatus? accountStatus,
     DateTime? registeredSince,
@@ -136,11 +155,17 @@ class UserModel {
       photoPath: identical(photoPath, _unset)
           ? this.photoPath
           : photoPath as String?,
-      address: address ?? this.address,
-      province: province ?? this.province,
-      city: city ?? this.city,
-      barangay: barangay ?? this.barangay,
-      zipCode: zipCode ?? this.zipCode,
+      street: identical(street, _unset) ? this.street : street as String?,
+      province: identical(province, _unset)
+          ? this.province
+          : province as String?,
+      city: identical(city, _unset) ? this.city : city as String?,
+      barangay: identical(barangay, _unset)
+          ? this.barangay
+          : barangay as String?,
+      postalCode: identical(postalCode, _unset)
+          ? this.postalCode
+          : postalCode as String?,
       accountType: accountType ?? this.accountType,
       accountStatus: accountStatus ?? this.accountStatus,
       registeredSince: registeredSince ?? this.registeredSince,

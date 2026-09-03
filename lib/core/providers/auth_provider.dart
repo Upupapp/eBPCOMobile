@@ -170,58 +170,50 @@ class AuthProvider extends ChangeNotifier {
     return success;
   }
 
-  Future<bool> updateProfile({
+  /// Corrects the citizen's own details with the office.
+  ///
+  /// **Sent, since 2026-09-03.** It wrote three fields to the device, dropped
+  /// the rest, returned true, and told nobody: the office kept whatever it had
+  /// while the screen said "Profile updated successfully". `PATCH /me` exists
+  /// now and this calls it.
+  ///
+  /// Every field is sent on every save, blank meaning cleared, because the
+  /// screen shows them all and an empty box is the citizen saying they have
+  /// none. Absent is reserved for a caller that genuinely declines to say.
+  ///
+  /// Returns the office's own record, or throws. It cannot report a success
+  /// that did not happen.
+  Future<ProfileUpdate> updateProfile({
     required String firstName,
     String middleName = '',
     required String lastName,
     required String mobileNumber,
-    String address = '',
+    String street = '',
     String province = '',
     String city = '',
     String barangay = '',
-    String zipCode = '',
+    String postalCode = '',
   }) async {
-    final user = _currentUser;
-    if (user == null) return false;
+    final update = await _repository.updateProfile(
+      firstName: FieldEdit.fromInput(firstName),
+      middleName: FieldEdit.fromInput(middleName),
+      lastName: FieldEdit.fromInput(lastName),
+      mobileNumber: FieldEdit.fromInput(mobileNumber),
+      street: FieldEdit.fromInput(street),
+      province: FieldEdit.fromInput(province),
+      city: FieldEdit.fromInput(city),
+      barangay: FieldEdit.fromInput(barangay),
+      postalCode: FieldEdit.fromInput(postalCode),
+    );
 
-    _currentUser = user.copyWith(
-      firstName: firstName,
-      middleName: middleName,
-      lastName: lastName,
-      mobileNumber: mobileNumber,
-      address: address,
-      province: province,
-      city: city,
-      barangay: barangay,
-      zipCode: zipCode,
-    );
-    // Every field, since 2026-09-03. Only first/last/mobile were kept before,
-    // so a citizen who moved house typed a new address, was told "Profile
-    // updated successfully", and found the old one back on the next launch.
-    //
-    // **This still does not reach the office.** There is no profile-update
-    // endpoint on the contract, so the LGU's record is unchanged by anything
-    // done here; the screen says so rather than implying otherwise, and the
-    // gap is recorded for the backend lane.
-    await _storage.updateRegisteredProfile(
-      firstName: firstName,
-      lastName: lastName,
-      mobileNumber: mobileNumber,
-      middleName: middleName,
-      address: address,
-      province: province,
-      city: city,
-      barangay: barangay,
-      zipCode: zipCode,
-    );
+    // The office's record, not the text the citizen typed. They differ
+    // whenever the server normalises something, and the office's version is
+    // the one the notices will be posted to.
+    _currentUser = update.user;
     notifyListeners();
-    return true;
+    return update;
   }
 
-  /// Sets or clears the profile photo. [photoPath] is a real local file
-  /// path (saved by [ProfilePhotoService]) or null to remove the photo —
-  /// persisted so it survives app restarts, matching how the other
-  /// registered-profile fields are handled.
   Future<bool> updateProfilePhoto(String? photoPath) async {
     final user = _currentUser;
     if (user == null) return false;

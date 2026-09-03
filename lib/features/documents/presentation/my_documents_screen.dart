@@ -325,7 +325,9 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.selectionMode ? 'Choose a Document' : 'My Documents'),
+        title: Text(
+          widget.selectionMode ? 'Choose a Document' : 'My Documents',
+        ),
         actions: [
           Consumer<DocumentsProvider>(
             builder: (context, provider, _) => IconButton(

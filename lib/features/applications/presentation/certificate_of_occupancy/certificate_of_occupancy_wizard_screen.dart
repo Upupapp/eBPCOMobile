@@ -117,8 +117,8 @@ class _CertificateOfOccupancyWizardScreenState
       ..firstName = user.firstName
       ..lastName = user.lastName
       ..contactNumber = user.mobileNumber
-      ..address = user.address
-      ..zipCode = user.zipCode;
+      ..address = user.street ?? ''
+      ..zipCode = user.postalCode ?? '';
   }
 
   @override

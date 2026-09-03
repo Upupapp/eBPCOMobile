@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ebpco_user_app/core/models/user_model.dart';
 import 'package:ebpco_user_app/core/repositories/auth_repository.dart';
+import 'package:ebpco_user_app/core/utils/validators.dart';
 import 'package:ebpco_user_app/core/services/local_storage_service.dart';
 
 /// A profile the citizen edits has to survive closing the app.
@@ -24,18 +26,18 @@ void main() {
       lastName: 'dela Cruz',
       mobileNumber: '09171234567',
       middleName: 'Reyes',
-      address: '24 Rizal Street',
+      street: '24 Rizal Street',
       province: 'Sorsogon',
       city: 'Castilla',
       barangay: 'Bagalayag',
-      zipCode: '4713',
+      postalCode: '4713',
     );
 
-    expect(await storage.getRegisteredAddress(), '24 Rizal Street');
+    expect(await storage.getRegisteredStreet(), '24 Rizal Street');
     expect(await storage.getRegisteredProvince(), 'Sorsogon');
     expect(await storage.getRegisteredCity(), 'Castilla');
     expect(await storage.getRegisteredBarangay(), 'Bagalayag');
-    expect(await storage.getRegisteredZipCode(), '4713');
+    expect(await storage.getRegisteredPostalCode(), '4713');
     expect(await storage.getRegisteredMiddleName(), 'Reyes');
   });
 
@@ -50,7 +52,7 @@ void main() {
       firstName: 'Juan',
       lastName: 'dela Cruz',
       mobileNumber: '09171234567',
-      address: '24 Rizal Street',
+      street: '24 Rizal Street',
       barangay: 'Bagalayag',
     );
 
@@ -60,7 +62,55 @@ void main() {
     ).hydrateUser('juan@example.com');
 
     expect(user, isNotNull);
-    expect(user!.address, '24 Rizal Street');
+    expect(user!.street, '24 Rizal Street');
     expect(user.barangay, 'Bagalayag');
+  });
+
+  group('a postal code the office can post to', () {
+    // `PATCH /me` answers 400 on anything but four digits. An address the
+    // office cannot post to is worse than none, because it gets acted on.
+    test('four digits passes', () {
+      expect(Validators.optionalPostalCode('4713'), isNull);
+    });
+
+    test('blank passes, because the citizen may have none recorded', () {
+      expect(Validators.optionalPostalCode(''), isNull);
+      expect(Validators.optionalPostalCode('   '), isNull);
+    });
+
+    test('anything else is refused before it reaches the office', () {
+      expect(Validators.optionalPostalCode('471'), isNotNull);
+      expect(Validators.optionalPostalCode('47133'), isNotNull);
+      expect(Validators.optionalPostalCode('4A13'), isNotNull);
+    });
+  });
+
+  group('null is not blank', () {
+    test('an account never asked has no recorded address', () {
+      const user = UserModel(
+        firstName: 'Juan',
+        lastName: 'dela Cruz',
+        email: 'j@e.ph',
+      );
+      expect(user.street, isNull);
+      expect(user.postalCode, isNull);
+      expect(user.fullAddress, isEmpty);
+      expect(
+        user.hasNoRecordedAddress,
+        isTrue,
+        reason: 'nobody was ever asked, which is not the same as left blank',
+      );
+    });
+
+    test('a partial address still reads as recorded', () {
+      const user = UserModel(
+        firstName: 'Juan',
+        lastName: 'dela Cruz',
+        email: 'j@e.ph',
+        barangay: 'Bagalayag',
+      );
+      expect(user.fullAddress, 'Bagalayag');
+      expect(user.hasNoRecordedAddress, isFalse);
+    });
   });
 }

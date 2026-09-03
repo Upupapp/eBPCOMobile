@@ -30,15 +30,15 @@ class PaymentsScreen extends StatelessWidget {
     if (provider.isLoading) {
       return Scaffold(
         appBar: AppBar(
-        title: const Text('Payments'),
-        actions: [
-          IconButton(
-            tooltip: 'Payment history',
-            icon: const Icon(Icons.history),
-            onPressed: () => context.push('/payments/history'),
-          ),
-        ],
-      ),
+          title: const Text('Payments'),
+          actions: [
+            IconButton(
+              tooltip: 'Payment history',
+              icon: const Icon(Icons.history),
+              onPressed: () => context.push('/payments/history'),
+            ),
+          ],
+        ),
         body: const LoadingView(),
       );
     }

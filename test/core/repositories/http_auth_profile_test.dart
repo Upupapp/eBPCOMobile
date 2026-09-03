@@ -48,11 +48,15 @@ void main() {
       'lastName': 'Dela Cruz',
       'email': 'juan@example.com',
       'mobileNumber': '09171234567',
-      'address': '12 Rizal Street',
+      // `street` and `postalCode`, the keys the server actually sends. This
+      // fixture said `address` and `zipCode` — names that exist nowhere on the
+      // wire — and the client read the same wrong keys, so the two agreed and
+      // the test could not have caught that a real response yielded nothing.
+      'street': '12 Rizal Street',
       'barangay': 'Poblacion',
       'city': 'Castilla',
       'province': 'Sorsogon',
-      'zipCode': '4718',
+      'postalCode': '4718',
       'accountType': 'Individual Applicant',
       'accountStatus': 'Verified',
       'registeredSince': '2026-01-15T09:00:00+08:00',
@@ -64,6 +68,8 @@ void main() {
       user.fullAddress,
       '12 Rizal Street, Poblacion, Castilla, Sorsogon, 4718',
     );
+    expect(user.street, '12 Rizal Street');
+    expect(user.postalCode, '4718');
     expect(user.accountType, 'Individual Applicant');
     expect(user.accountStatus, AccountStatus.verified);
     expect(user.registeredSince, isNotNull);
@@ -108,5 +114,26 @@ void main() {
     expect(user.middleName, isEmpty);
     expect(user.photoPath, isNull);
     expect(user.registeredSince, isNull);
+  });
+
+  test('an address the office has never asked for stays null', () async {
+    // Not '' . Every account predating PATCH /me has these unset, and
+    // rendering that as blank tells a citizen they left something empty when
+    // the question was never put to them.
+    final user = (await hydrate({
+      'firstName': 'Juan',
+      'lastName': 'Dela Cruz',
+      'email': 'juan@example.com',
+      'mobileNumber': '09171234567',
+      'street': null,
+      'barangay': null,
+      'city': null,
+      'province': null,
+      'postalCode': null,
+    }))!;
+
+    expect(user.street, isNull);
+    expect(user.postalCode, isNull);
+    expect(user.hasNoRecordedAddress, isTrue);
   });
 }

@@ -67,6 +67,19 @@ class _ThrowingAuth implements AuthRepository {
 
   @override
   Future<UserModel?> hydrateUser(String email) async => throw _Offline();
+
+  @override
+  Future<ProfileUpdate> updateProfile({
+    FieldEdit firstName = const FieldEdit.absent(),
+    FieldEdit middleName = const FieldEdit.absent(),
+    FieldEdit lastName = const FieldEdit.absent(),
+    FieldEdit mobileNumber = const FieldEdit.absent(),
+    FieldEdit street = const FieldEdit.absent(),
+    FieldEdit barangay = const FieldEdit.absent(),
+    FieldEdit city = const FieldEdit.absent(),
+    FieldEdit province = const FieldEdit.absent(),
+    FieldEdit postalCode = const FieldEdit.absent(),
+  }) async => throw UnimplementedError();
 }
 
 Future<void> _settle() =>

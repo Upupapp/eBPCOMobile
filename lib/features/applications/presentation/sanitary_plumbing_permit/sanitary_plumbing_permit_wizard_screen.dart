@@ -144,11 +144,11 @@ class _SanitaryPlumbingPermitWizardScreenState
       ..lastName = user.lastName
       ..contactNumber = user.mobileNumber;
     _draft.applicantAddress
-      ..street = user.address
-      ..barangay = user.barangay
-      ..city = user.city
-      ..province = user.province
-      ..zipCode = user.zipCode;
+      ..street = user.street ?? ''
+      ..barangay = user.barangay ?? ''
+      ..city = user.city ?? ''
+      ..province = user.province ?? ''
+      ..zipCode = user.postalCode ?? '';
   }
 
   @override
