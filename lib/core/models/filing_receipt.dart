@@ -62,4 +62,35 @@ class FilingReceipt {
   /// Nothing was typed anywhere, or nothing was sent. Worth saying out loud:
   /// a filing carrying no answers is one the office cannot assess.
   bool get carriesNoAnswers => answersSent == 0;
+
+  /// Kept across restarts, because a receipt the citizen can only see in the
+  /// seconds after filing is not a receipt.
+  ///
+  /// Persisted verbatim rather than recomputed. Rebuilding it later from the
+  /// application list would produce this app's account of the filing instead of
+  /// the office's, which is the one thing it exists to avoid — so what is
+  /// written here is exactly what came back at the time.
+  Map<String, Object?> toJson() => {
+    'applicationId': applicationId,
+    'referenceNumber': referenceNumber,
+    'permitType': permitType,
+    'submittedAt': submittedAt.toIso8601String(),
+    'location': location,
+    'attachmentsOffered': attachmentsOffered,
+    'documentIdsIssued': documentIdsIssued,
+    'answersSent': answersSent,
+  };
+
+  static FilingReceipt fromJson(Map<String, Object?> json) => FilingReceipt(
+    applicationId: json['applicationId']! as String,
+    referenceNumber: json['referenceNumber']! as String,
+    permitType: json['permitType'] as String?,
+    submittedAt: DateTime.parse(json['submittedAt']! as String),
+    location: json['location'] as String?,
+    attachmentsOffered: json['attachmentsOffered']! as int,
+    documentIdsIssued: [
+      for (final id in json['documentIdsIssued']! as List) id as String,
+    ],
+    answersSent: json['answersSent']! as int,
+  );
 }

@@ -15,6 +15,8 @@ import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 import 'package:ebpco_user_app/core/models/permit_classification.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
+import 'package:ebpco_user_app/core/models/filing_receipt.dart';
+import 'package:ebpco_user_app/core/models/receipt_store.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/features/applications/presentation/detail/application_detail_screen.dart';
@@ -116,7 +118,14 @@ ApplicationModel _application({
   );
 }
 
-Widget _wrap(ApplicationModel application, {String initial = '/detail'}) {
+Widget _wrap(
+  ApplicationModel application, {
+  String initial = '/detail',
+
+  /// A receipt this device already holds for the application, as after a
+  /// restart. Null means it filed something else, or nothing.
+  ReceiptStore? receiptStore,
+}) {
   final router = GoRouter(
     initialLocation: initial,
     routes: [
@@ -157,6 +166,7 @@ Widget _wrap(ApplicationModel application, {String initial = '/detail'}) {
         create: (context) => ApplicationsProvider(
           notifications: context.read<NotificationsProvider>(),
           repository: _FakeRepository([application]),
+          receiptStore: receiptStore,
           clock: () => DateTime(2026, 8, 18),
         ),
       ),
@@ -500,5 +510,47 @@ void main() {
       expect(find.text('File again'), findsOneWidget);
       expect(find.text('Appeal to the Building Official'), findsOneWidget);
     });
+  });
+
+  testWidgets('the detail screen shows what the office received', (
+    tester,
+  ) async {
+    // The wiring. The receipt was in a map on the provider and nowhere else,
+    // so it existed for the few seconds between filing and leaving the
+    // confirmation screen — and this is the screen a citizen opens a week
+    // later to check.
+    final store = InMemoryReceiptStore();
+    await store.save({
+      'app-1': FilingReceipt(
+        applicationId: 'app-1',
+        referenceNumber: 'E-BPCO-2026-000145',
+        permitType: 'Demolition Permit',
+        submittedAt: DateTime(2026, 8, 18),
+        location: 'Lot 4, Bagalayag, Castilla',
+        attachmentsOffered: 3,
+        documentIdsIssued: const ['a', 'b'],
+        answersSent: 41,
+      ),
+    });
+
+    await tester.pumpWidget(_wrap(_application(), receiptStore: store));
+    await _settle(tester);
+
+    expect(find.text('What the office received'), findsOneWidget);
+    expect(
+      find.text('2 of 3'),
+      findsOneWidget,
+      reason: 'the shortfall has to survive the restart, not just the session',
+    );
+    expect(find.text('41'), findsOneWidget);
+  });
+
+  testWidgets('an application this device did not file shows no receipt', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(_application()));
+    await _settle(tester);
+
+    expect(find.text('What the office received'), findsNothing);
   });
 }

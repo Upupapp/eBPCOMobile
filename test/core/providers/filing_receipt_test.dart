@@ -6,6 +6,8 @@ import 'package:ebpco_user_app/core/providers/applications_provider.dart';
 import 'package:ebpco_user_app/core/providers/notifications_provider.dart';
 import 'package:ebpco_user_app/core/repositories/applications_repository.dart';
 import 'package:ebpco_user_app/core/repositories/document_upload_repository.dart';
+import 'package:ebpco_user_app/core/models/filing_receipt.dart';
+import 'package:ebpco_user_app/core/models/receipt_store.dart';
 import 'package:ebpco_user_app/core/repositories/notifications_repository.dart';
 
 /// The receipt counts what the OFFICE took, never what the draft held.
@@ -44,14 +46,16 @@ class _Uploads implements DocumentUploadRepository {
 }
 
 Future<ApplicationsProvider> _provider(
-  DocumentUploadRepository? uploads,
-) async {
+  DocumentUploadRepository? uploads, {
+  ReceiptStore? store,
+}) async {
   final provider = ApplicationsProvider(
     notifications: NotificationsProvider(
       repository: MockNotificationsRepository(),
     ),
     repository: MockApplicationsRepository(),
     documentUploads: uploads,
+    receiptStore: store,
   );
   await Future.delayed(const Duration(milliseconds: 1200));
   return provider;
@@ -151,4 +155,59 @@ void main() {
       expect(receipt.submittedAt, filed.submittedDate);
     },
   );
+
+  test('a receipt outlives the app that wrote it', () async {
+    // It was held in a map on the provider and nowhere else, so what the
+    // office had received was visible for the few seconds between filing and
+    // leaving the confirmation screen. A citizen checking a week later — which
+    // is when they would — had nothing.
+    final store = InMemoryReceiptStore();
+    final first = await _provider(_Uploads(), store: store);
+    final filed = await _file(
+      first,
+      documents: [_document('Lot Plan')],
+      form: {'applicant.name': 'Juan'},
+      location: 'Lot 4, Bagalayag, Castilla',
+    );
+
+    // A cold start: a new provider over the same store.
+    final second = await _provider(_Uploads(), store: store);
+    final restored = second.receiptFor(filed.id);
+
+    expect(restored, isNotNull);
+    expect(restored!.referenceNumber, filed.applicationNumber);
+    expect(restored.location, 'Lot 4, Bagalayag, Castilla');
+    expect(
+      restored.documentIdsIssued,
+      ['server-id-Lot Plan'],
+      reason: 'the ids the server minted, kept verbatim rather than recomputed',
+    );
+    expect(restored.answersSent, 1);
+  });
+
+  test('a receipt round-trips through JSON without losing a field', () async {
+    final store = InMemoryReceiptStore();
+    final provider = await _provider(null, store: store);
+    final filed = await _file(
+      provider,
+      documents: [_document('Lot Plan'), _document('Land Title')],
+      form: {'a': 1, 'b': 2, 'c': 3},
+    );
+    final original = provider.receiptFor(filed.id)!;
+    final restored = FilingReceipt.fromJson(original.toJson());
+
+    expect(restored.applicationId, original.applicationId);
+    expect(restored.referenceNumber, original.referenceNumber);
+    expect(restored.permitType, original.permitType);
+    expect(restored.submittedAt, original.submittedAt);
+    expect(restored.location, original.location);
+    expect(restored.attachmentsOffered, 2);
+    expect(restored.documentIdsIssued, original.documentIdsIssued);
+    expect(restored.answersSent, 3);
+    expect(
+      restored.attachmentsAreShort,
+      isTrue,
+      reason: 'no upload repository, so the shortfall must survive the trip',
+    );
+  });
 }

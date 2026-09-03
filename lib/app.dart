@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'core/models/receipt_store.dart';
 import 'core/constants/app_strings.dart';
 import 'core/providers/addition_extension_permit_provider.dart';
 import 'core/providers/application_intent_provider.dart';
@@ -234,6 +235,9 @@ class _EbpcoAppState extends State<EbpcoApp> with WidgetsBindingObserver {
           create: (context) => ApplicationsProvider(
             notifications: context.read<NotificationsProvider>(),
             repository: context.read<RepositoryFactory>().applications(),
+            // Receipts outlive the confirmation screen. Same on-device,
+            // this-device-only store as the queue and the drafts.
+            receiptStore: SecureReceiptStore(),
             // The other half of the write path: files go to /documents before
             // an application references them. Refuses on a mock build rather
             // than fabricating ids. M-47.

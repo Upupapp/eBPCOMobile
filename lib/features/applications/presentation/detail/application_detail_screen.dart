@@ -1,3 +1,4 @@
+import '../widgets/filing_receipt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -96,6 +97,24 @@ class ApplicationDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+            // What the office actually received, for the citizen who comes
+            // back a week later to check. Shown only where this device filed
+            // it: a receipt rebuilt from the application list would be this
+            // app's account of the filing rather than the office's, which is
+            // the one thing it exists to avoid.
+            Builder(
+              builder: (context) {
+                final receipt = context
+                    .watch<ApplicationsProvider>()
+                    .receiptFor(application.id);
+                if (receipt == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                  child: FilingReceiptCard(receipt: receipt),
+                );
+              },
+            ),
 
             _Section(
               title: 'Timeline',

@@ -11,6 +11,7 @@ import '../models/notification_event.dart';
 import '../notifications/notification_evaluator.dart';
 import '../models/document_model.dart';
 import '../models/filing_receipt.dart';
+import '../models/receipt_store.dart';
 import '../models/money.dart';
 import '../models/payment_assessment_model.dart';
 import '../repositories/applications_repository.dart';
@@ -35,10 +36,18 @@ class ApplicationsProvider extends ChangeNotifier {
     ServicePledgeService? pledgeService,
     this.actionItemBuilder = const ActionItemBuilder(),
     DateTime Function()? clock,
+
+    /// Where filing receipts survive a restart. In-memory by default so a
+    /// test does not touch the keychain; the app passes the secure store.
+    ReceiptStore? receiptStore,
   }) : _pledgeService = pledgeService ?? const ServicePledgeService(),
+       _receiptStore = receiptStore ?? InMemoryReceiptStore(),
        _clock = clock ?? DateTime.now {
     _load();
+    _restoreReceipts();
   }
+
+  final ReceiptStore _receiptStore;
 
   final ApplicationsRepository _repository;
   final DocumentUploadRepository? _documentUploads;
@@ -309,6 +318,9 @@ class ApplicationsProvider extends ChangeNotifier {
       documentIdsIssued: documentIds,
       answersSent: form?.length ?? 0,
     );
+    // Written before the caller is told the filing succeeded, so a receipt
+    // cannot be missing for an application the citizen has already been shown.
+    await _receiptStore.save(_receipts);
 
     _applications = [..._applications, application];
     notifyListeners();
@@ -333,16 +345,26 @@ class ApplicationsProvider extends ChangeNotifier {
   /// applicant would rather wait than start again.
   /// What the office acknowledged, per application id.
   ///
-  /// Held in memory only. A receipt is evidence of what this device sent and
-  /// what came back, so it is deliberately not reconstructed from the
-  /// application list later: a rebuilt receipt would be this app's account of
-  /// the filing rather than the office's, which is the whole thing it exists
-  /// to avoid.
+  /// Persisted, since 2026-09-03. It was held in memory only, which meant the
+  /// receipt existed for the few seconds between filing and leaving the
+  /// confirmation screen — and a citizen wanting to check what the office
+  /// received would want to a week later, not then.
+  ///
+  /// Stored verbatim and never recomputed. Rebuilding one from the application
+  /// list would produce this app's account of the filing instead of the
+  /// office's, which is the whole thing it exists to avoid.
   final Map<String, FilingReceipt> _receipts = {};
 
   /// The receipt for [applicationId], or null when this device did not file it
   /// in this session. Null is honest and the screens say so.
   FilingReceipt? receiptFor(String applicationId) => _receipts[applicationId];
+
+  Future<void> _restoreReceipts() async {
+    final stored = await _receiptStore.load();
+    if (stored.isEmpty) return;
+    _receipts.addAll(stored);
+    notifyListeners();
+  }
 
   Future<List<String>> _uploadAll(List<DocumentModel> documents) async {
     final uploads = _documentUploads;
