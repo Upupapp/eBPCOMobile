@@ -82,6 +82,10 @@ class OrderOfPaymentScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg),
               _Adjustments(adjustments: payment.adjustments),
             ],
+            if (payment.voidedTransactions.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _VoidedPayments(payments: payment.voidedTransactions),
+            ],
             if (payment.rejectedTransactions.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               _RejectedPayments(payments: payment.rejectedTransactions),
@@ -436,6 +440,61 @@ class _MethodCard extends StatelessWidget {
 /// office recorded against it had nowhere to appear, so the applicant could
 /// not tell whether to send the same proof again, a different one, or a
 /// different amount.
+/// Payments the office cancelled after recording them.
+///
+/// Without this the money simply vanished from the screen: voided transactions
+/// are excluded from the balance, from the receipts list and from the agency
+/// list, so a citizen who had paid saw their receipt disappear and the amount
+/// owing go back up, with nothing to explain it or to quote at a counter.
+class _VoidedPayments extends StatelessWidget {
+  final List<PaymentTransactionRecord> payments;
+
+  const _VoidedPayments({required this.payments});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = DateFormat('MMM d, yyyy');
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.statusPendingBg,
+        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            payments.length == 1
+                ? 'A payment was cancelled by the office'
+                : '${payments.length} payments were cancelled by the office',
+            style: AppTypography.cardTitle.copyWith(
+              color: AppColors.statusPending,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          for (final payment in payments)
+            AmountRow(
+              label: Text(
+                '${payment.method.label} · '
+                '${format.format(payment.submittedAt)}'
+                '${payment.orNumber != null ? ' · OR ${payment.orNumber}' : ''}',
+                style: AppTypography.body,
+              ),
+              amount: Text(payment.amount.formatted, style: AppTypography.body),
+            ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'These no longer count toward what you owe. Ask at the Office of '
+            'the Building Official before paying again — quote the reference '
+            'above.',
+            style: AppTypography.helper,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RejectedPayments extends StatelessWidget {
   final List<PaymentTransactionRecord> payments;
 

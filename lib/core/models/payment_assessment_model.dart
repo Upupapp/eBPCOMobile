@@ -288,6 +288,20 @@ class PaymentAssessmentModel {
   List<PaymentTransactionRecord> get receipts =>
       transactions.where((t) => !t.isVoid && t.hasOfficialReceipt).toList();
 
+  /// Payments the office has cancelled after the fact.
+  ///
+  /// Excluded from [amountPaid], from [receipts] and from
+  /// [collectingAgencies] — correctly, the office does not count them — which
+  /// meant a voided payment simply **disappeared**: the citizen's receipt left
+  /// the list, the balance rose again, and nothing on any screen said why.
+  /// `isVoid` arrives from the server and was read only by the model that
+  /// hid it.
+  ///
+  /// Listed rather than counted, so what happened is visible without the money
+  /// being credited.
+  List<PaymentTransactionRecord> get voidedTransactions =>
+      transactions.where((t) => t.isVoid).toList();
+
   /// Every agency that has collected against this assessment.
   ///
   /// More than one means the applicant has paid at more than one counter,

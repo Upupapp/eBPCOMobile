@@ -137,4 +137,34 @@ void main() {
     expect(adjustment.amount.centavos, 25000);
     expect(adjustment.reason, isNotNull);
   });
+
+  group('a voided payment', () {
+    // It is excluded from the balance, from the receipts list and from the
+    // agency list — correctly, the office does not count it. That made it
+    // vanish: the citizen's receipt left the screen, the amount owing rose
+    // again, and nothing said why. `isVoid` arrives from the server and was
+    // read only by the model that hid it.
+    PaymentAssessmentModel assessment() => PaymentAssessmentModel(
+      status: PaymentAssessmentStatus.pending,
+      transactions: [
+        _txn(orNumber: 'OR-11', isVoid: true),
+        _txn(orNumber: 'OR-12'),
+      ],
+    );
+
+    test('is still listed, so the citizen can see what happened', () {
+      expect(assessment().voidedTransactions, hasLength(1));
+      expect(assessment().voidedTransactions.single.orNumber, 'OR-11');
+    });
+
+    test('is not counted as paid, and not shown as a usable receipt', () {
+      final payment = assessment();
+      expect(
+        payment.amountPaid.centavos,
+        100000,
+        reason: 'only the unvoided verified payment counts',
+      );
+      expect(payment.receipts.map((t) => t.orNumber), ['OR-12']);
+    });
+  });
 }

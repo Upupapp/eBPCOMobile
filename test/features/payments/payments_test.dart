@@ -11,6 +11,7 @@ import 'package:ebpco_user_app/core/models/application_lineage.dart';
 import 'package:ebpco_user_app/core/models/application_model.dart';
 import 'package:ebpco_user_app/core/models/document_model.dart';
 import 'package:ebpco_user_app/core/models/lifecycle_status.dart';
+import 'package:ebpco_user_app/core/contract/admin_vocabulary.dart';
 import 'package:ebpco_user_app/core/models/order_of_payment.dart';
 import 'package:ebpco_user_app/core/models/payment_assessment_model.dart';
 import 'package:ebpco_user_app/core/providers/applications_provider.dart';
@@ -215,6 +216,49 @@ void main() {
       // 500.00 + 1,200.00 + 2,850.50 + 3,412.75 + 965.00 + 420.00
       expect(find.text('PHP 9,348.25'), findsOneWidget);
       expect(find.textContaining('Pay on or before'), findsOneWidget);
+    });
+
+    testWidgets('a payment the office cancelled is shown, not hidden', (
+      tester,
+    ) async {
+      // Voided transactions are excluded from the balance, the receipts list
+      // and the agency list — correctly. That made them vanish: the citizen's
+      // receipt left the screen and the amount owing rose again with nothing
+      // to explain it or to quote at a counter.
+      await _tall(tester);
+      await tester.pumpWidget(
+        _wrap([
+          _application(
+            payment: PaymentAssessmentModel(
+              status: PaymentAssessmentStatus.pending,
+              orderOfPayment: _order(),
+              transactions: [
+                PaymentTransactionRecord(
+                  id: 't-void',
+                  amount: const PesoAmount(150000),
+                  method: PaymentMethod.onsite,
+                  reference: 'REF-VOID',
+                  status: PaymentTransactionStatus.verified,
+                  submittedAt: DateTime(2026, 8, 15),
+                  isVoid: true,
+                  orNumber: 'OR-2026-77',
+                ),
+              ],
+            ),
+          ),
+        ]),
+      );
+      await _settle(tester);
+
+      expect(
+        find.text('A payment was cancelled by the office'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('OR-2026-77'), findsOneWidget);
+      expect(
+        find.textContaining('no longer count toward what you owe'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a fee explains itself on demand', (tester) async {
