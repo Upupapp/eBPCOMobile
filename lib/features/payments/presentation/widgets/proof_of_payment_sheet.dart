@@ -69,7 +69,10 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
   }
 
   bool get _canSubmit =>
-      _reference.text.trim().isNotEmpty && _proof != null && _paidOn != null;
+      !_sending &&
+      _reference.text.trim().isNotEmpty &&
+      _proof != null &&
+      _paidOn != null;
 
   Future<void> _attach() async {
     final result = await showAttachDocumentOptions(
@@ -82,20 +85,49 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
     setState(() => _proof = result);
   }
 
-  void _submit() {
+  /// Sends the receipt and the payment, and says so only once they are sent.
+  ///
+  /// This was synchronous and called `submitProofOfPayment`, which uploaded
+  /// nothing and reported nothing — it changed the payment on the device and
+  /// cleared the citizen's reminders. The sheet then popped and announced
+  /// "Proof of payment submitted. The Treasurer's Office will verify it."
+  ///
+  /// A citizen who had genuinely paid at the bank therefore sent their receipt
+  /// nowhere, had every reminder that would have told them removed, and waited
+  /// on an office holding no record of the payment.
+  Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final paidOn = _paidOn;
     if (_proof == null || paidOn == null) return;
 
-    context.read<ApplicationsProvider>().submitProofOfPayment(
-      widget.applicationId,
-      method: _method,
-      referenceNumber: _reference.text.trim(),
-      proof: _proof!,
-      paidOn: paidOn,
-    );
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    setState(() => _sending = true);
+    try {
+      await context.read<ApplicationsProvider>().attachPayment(
+        widget.applicationId,
+        method: _method,
+        referenceNumber: _reference.text.trim(),
+        proof: _proof!,
+        paidOn: paidOn,
+      );
+    } catch (_) {
+      // The sheet stays open with the receipt and the reference still in it.
+      // Losing those to a dismissed sheet would make the citizen photograph a
+      // receipt they have already put away.
+      if (mounted) setState(() => _sending = false);
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not send your proof of payment. Check your connection and '
+            'try again — the office has not received it yet.',
+          ),
+        ),
+      );
+      return;
+    }
+    navigator.pop();
+    messenger.showSnackBar(
       const SnackBar(
         content: Text(
           'Proof of payment submitted. The Treasurer’s Office will verify it.',
@@ -103,6 +135,8 @@ class _ProofOfPaymentFormState extends State<_ProofOfPaymentForm> {
       ),
     );
   }
+
+  bool _sending = false;
 
   @override
   Widget build(BuildContext context) {

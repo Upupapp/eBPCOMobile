@@ -55,7 +55,25 @@ class _FakeRepository implements ApplicationsRepository {
     PesoAmount? amountPaid,
     DocumentModel? proof,
     String? documentId,
-  }) => throw UnimplementedError();
+  }) async {
+    // Answers like the office does. It threw UnimplementedError until
+    // 2026-09-03 and nothing noticed, because the screen called a local-only
+    // twin of this method that reported the payment nowhere — so the test
+    // below passed over a repository that could not have worked.
+    final application = applications.firstWhere((a) => a.id == applicationId);
+    final payment = application.payment!;
+    return application.copyWith(
+      payment: payment.copyWith(
+        status: PaymentAssessmentStatus.pending,
+        method: method,
+        referenceNumber: referenceNumber,
+        proof: proof,
+        paidOn: paidOn,
+        submittedAt: DateTime(2026, 9, 3),
+      ),
+    );
+  }
+
   @override
   Future<ApplicationModel> resubmitDocument(
     String applicationId, {

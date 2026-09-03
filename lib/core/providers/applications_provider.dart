@@ -1,3 +1,4 @@
+import '../api/api_exception.dart';
 import 'package:flutter/material.dart';
 
 import '../models/action_item.dart';
@@ -426,6 +427,21 @@ class ApplicationsProvider extends ChangeNotifier {
     }
   }
 
+  /// Reports a payment to the office, receipt first.
+  ///
+  /// **This is the only payment path.** A second one, `submitProofOfPayment`,
+  /// existed alongside it until 2026-09-03 and was the one the proof-of-payment
+  /// sheet actually called. It was synchronous and entirely local: it uploaded
+  /// nothing, called no repository, set the payment to Pending on the device,
+  /// recorded a `paymentReceived` notification, and resolved the citizen's
+  /// Order of Payment, Overdue and Rejected reminders — while the sheet told
+  /// them "Proof of payment submitted. The Treasurer's Office will verify it."
+  ///
+  /// So a citizen who had genuinely paid at the bank sent their receipt
+  /// nowhere, lost every reminder that would have told them, and waited on an
+  /// office holding no record of the payment. Deleted rather than kept: a
+  /// local-only twin of a working method is a trap for whoever wires the next
+  /// screen.
   Future<ApplicationModel> attachPayment(
     String applicationId, {
     required PaymentMethod method,
@@ -434,6 +450,18 @@ class ApplicationsProvider extends ChangeNotifier {
     PesoAmount? amountPaid,
     DocumentModel? proof,
   }) async {
+    // Carried over from the deleted twin. A payment cannot be reported against
+    // an application the office has not assessed — there is no Order of
+    // Payment to pay yet, and the server has nothing to match it to.
+    final existing = byId(applicationId)?.payment;
+    if (existing != null && !existing.isAssessed) {
+      throw const ApiException(
+        ApiFailure.rejected,
+        'This application has not been assessed yet, so there is nothing to '
+        'pay against.',
+      );
+    }
+
     // The receipt goes first, for the same reason the application's documents
     // do: a payment reported before its proof reaches the office is a payment
     // the Treasurer's Office cannot verify.
@@ -465,6 +493,10 @@ class ApplicationsProvider extends ChangeNotifier {
       NotificationType.orderOfPaymentIssued,
     );
     _notifications.resolveFor(updated.id, NotificationType.paymentRejected);
+    // Also carried over from the deleted twin. Submitting discharges the
+    // obligation, so the overdue reminder goes — but only now, after the
+    // office has actually answered.
+    _notifications.resolveFor(updated.id, NotificationType.paymentOverdue);
     return updated;
   }
 
@@ -624,50 +656,6 @@ class ApplicationsProvider extends ChangeNotifier {
   /// Paid — only the Treasurer's Office verifies. It moves the record to
   /// Pending Verification, which is a statement about what the applicant has
   /// submitted, not about whether the money arrived.
-  void submitProofOfPayment(
-    String applicationId, {
-    required PaymentMethod method,
-    required String referenceNumber,
-    required DocumentModel proof,
-
-    /// When the applicant says the money was paid — not when they told us.
-    /// Required by the contract's `PaymentProof`; see M-47.
-    required DateTime paidOn,
-  }) {
-    final application = byId(applicationId);
-    final payment = application?.payment;
-    if (application == null || payment == null) return;
-    if (!payment.isAssessed) return;
-
-    _replace(
-      application.copyWith(
-        payment: payment.copyWith(
-          status: PaymentAssessmentStatus.pending,
-          method: method,
-          referenceNumber: referenceNumber,
-          proof: proof,
-          submittedAt: _clock(),
-          paidOn: paidOn,
-        ),
-      ),
-    );
-
-    _notifications.record(
-      NotificationType.paymentReceived,
-      applicationId: application.id,
-      applicationNumber: application.applicationNumber,
-    );
-    _notifications.resolveFor(
-      application.id,
-      NotificationType.orderOfPaymentIssued,
-    );
-    _notifications.resolveFor(application.id, NotificationType.paymentOverdue);
-    // A refused payment is answered by paying again. The rejected transaction
-    // itself never changes — the office keeps the record — so nothing else
-    // would ever clear these.
-    _notifications.resolveFor(application.id, NotificationType.paymentRejected);
-  }
-
   void _replace(ApplicationModel updated) {
     _applications = [
       for (final application in _applications)
