@@ -317,6 +317,7 @@ class _Step5DemolitionSupervisorState extends State<Step5DemolitionSupervisor> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PTR Date Issued *',
+                    warnIfStaleYear: true,
                     value: _professional.ptrDateIssued,
                     validator: (_) => _professional.ptrDateIssued == null
                         ? 'Please select the PTR date issued.'

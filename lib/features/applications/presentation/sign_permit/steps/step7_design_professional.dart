@@ -180,6 +180,7 @@ class _Step7DesignProfessionalState extends State<Step7DesignProfessional> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PTR Date Issued *',
+                    warnIfStaleYear: true,
                     value: _design.ptrDateIssued,
                     validator: (_) => _design.ptrDateIssued == null
                         ? 'Please select the PTR date issued.'

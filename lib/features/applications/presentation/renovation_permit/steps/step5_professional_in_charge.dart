@@ -258,6 +258,7 @@ class _Step5ProfessionalInChargeState extends State<Step5ProfessionalInCharge> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PTR Date Issued *',
+                    warnIfStaleYear: true,
                     value: _professional.ptrDateIssued,
                     validator: (_) => _professional.ptrDateIssued == null
                         ? 'Please select the PTR date issued.'

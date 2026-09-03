@@ -35,6 +35,18 @@ class DatePickerField extends FormField<DateTime> {
     /// accepts and this app has no business overruling. It tells them what
     /// will happen and lets them decide.
     bool warnIfPast = false,
+
+    /// Say so when the date falls in an earlier calendar year.
+    ///
+    /// Set on every PTR Date Issued field. A Professional Tax Receipt is valid
+    /// only for the year it was issued, so last year's will not be accepted on
+    /// a new filing — `ProfessionalModel.isPtrStale` has encoded exactly that
+    /// since it was written, and no wizard compared the year to anything.
+    ///
+    /// The wizards did already warn when a PTR date was in the FUTURE, which
+    /// is the implausible case a citizen would notice themselves. The one that
+    /// gets a filing refused was unguarded.
+    bool warnIfStaleYear = false,
     DateTime Function()? clock,
   }) : super(
          initialValue: value,
@@ -43,10 +55,21 @@ class DatePickerField extends FormField<DateTime> {
            final format = DateFormat('MMM d, yyyy');
            final now = (clock ?? DateTime.now)();
            final chosen = state.value;
+           final today = DateTime(now.year, now.month, now.day);
            final hasLapsed =
+               warnIfPast && chosen != null && chosen.isBefore(today);
+           // Matches `ProfessionalModel.prcNeedsAttention`, which warns from
+           // 60 days out so there is time to renew BEFORE the next filing
+           // rather than after a submission is refused. The first version of
+           // this field warned only once the licence had already lapsed,
+           // which is the point at which the advice is no longer useful.
+           final expiringSoon =
                warnIfPast &&
                chosen != null &&
-               chosen.isBefore(DateTime(now.year, now.month, now.day));
+               !hasLapsed &&
+               chosen.difference(today).inDays <= 60;
+           final staleYear =
+               warnIfStaleYear && chosen != null && chosen.year < now.year;
            return Column(
              crossAxisAlignment: CrossAxisAlignment.start,
              children: [
@@ -92,33 +115,71 @@ class DatePickerField extends FormField<DateTime> {
                    ),
                  ),
                ),
+               if (expiringSoon) ...[
+                 const SizedBox(height: 4),
+                 _FieldNotice(
+                   text:
+                       'This licence expires on ${format.format(chosen)}, in '
+                       '${chosen.difference(today).inDays} days. Renew it '
+                       'before the office assesses this application.',
+                 ),
+               ],
+               if (staleYear) ...[
+                 const SizedBox(height: 4),
+                 _FieldNotice(
+                   text:
+                       'This was issued in ${chosen.year}. A Professional Tax '
+                       'Receipt is only valid for the year it was issued, so '
+                       'the office will not accept it on a ${now.year} '
+                       'filing.',
+                 ),
+               ],
                if (hasLapsed) ...[
                  const SizedBox(height: 4),
-                 Row(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                     const Icon(
-                       Icons.warning_amber_outlined,
-                       size: 16,
-                       color: AppColors.statusPending,
-                     ),
-                     const SizedBox(width: 6),
-                     Expanded(
-                       child: Text(
-                         'This licence expired on '
-                         '${format.format(chosen)}. The office returns '
-                         'applications sealed by a lapsed licence. You can '
-                         'still file, but check with the professional first.',
-                         style: AppTypography.helper.copyWith(
-                           color: AppColors.statusPending,
-                         ),
-                       ),
-                     ),
-                   ],
+                 _FieldNotice(
+                   text:
+                       'This licence expired on ${format.format(chosen)}. The '
+                       'office returns applications sealed by a lapsed '
+                       'licence. You can still file, but check with the '
+                       'professional first.',
                  ),
                ],
              ],
            );
          },
        );
+}
+
+/// One warning line under a date field.
+///
+/// Amber, never red: none of these refuse the filing. The office accepts an
+/// application while a renewal is in progress, and this app has no business
+/// overruling it — it names the consequence and lets the citizen decide.
+class _FieldNotice extends StatelessWidget {
+  final String text;
+
+  const _FieldNotice({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(
+          Icons.warning_amber_outlined,
+          size: 16,
+          color: AppColors.statusPending,
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: AppTypography.helper.copyWith(
+              color: AppColors.statusPending,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

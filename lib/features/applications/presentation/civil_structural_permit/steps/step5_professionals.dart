@@ -210,6 +210,7 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PTR Date Issued *',
+                    warnIfStaleYear: true,
                     value: design.ptrDateIssued,
                     validator: (_) => design.ptrDateIssued == null
                         ? 'Please select the PTR date issued.'
@@ -513,6 +514,7 @@ class _Step5ProfessionalsState extends State<Step5Professionals> {
                     const SizedBox(height: AppSpacing.md),
                     DatePickerField(
                       label: 'PTR Date Issued *',
+                      warnIfStaleYear: true,
                       value: supervisor.ptrDateIssued,
                       validator: (_) => supervisor.ptrDateIssued == null
                           ? 'Please select the PTR date issued.'

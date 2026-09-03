@@ -61,6 +61,119 @@ void main() {
     );
   });
 
+  test('every PTR date field warns when the receipt is from last year', () {
+    // A Professional Tax Receipt is valid only for the year it was issued, so
+    // last year's is refused on a new filing — `ProfessionalModel.isPtrStale`
+    // has encoded exactly that since it was written, and 26 wizard fields
+    // collected the date without comparing the year to anything.
+    //
+    // The wizards DID warn when a PTR date was in the future, which is the
+    // implausible case a citizen would catch themselves. The one that gets a
+    // filing refused was unguarded.
+    final offenders = <String>[];
+    var fields = 0;
+
+    for (final file
+        in Directory('lib/features/applications/presentation')
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))) {
+      final source = file.readAsStringSync();
+      if (!source.contains('ptrDateIssued')) continue;
+
+      for (final match in RegExp(
+        r'DatePickerField\((.*?)\n(\s+)\),',
+        dotAll: true,
+      ).allMatches(source)) {
+        final block = match.group(1)!;
+        if (!block.contains('ptrDateIssued')) continue;
+        fields++;
+        if (!block.contains('warnIfStaleYear')) offenders.add(file.path);
+      }
+    }
+
+    expect(
+      fields,
+      greaterThanOrEqualTo(26),
+      reason:
+          'the scan found $fields PTR date fields; it read 26 when written, '
+          'so a much smaller number means the pattern stopped matching and '
+          'this gate is passing over nothing',
+    );
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'these PTR fields accept last year\'s receipt without a word. Pass '
+          'warnIfStaleYear: true',
+    );
+  });
+
+  testWidgets('a PTR from an earlier year is named on the field', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DatePickerField(
+            label: 'PTR Date Issued *',
+            value: DateTime(2025, 1, 8),
+            warnIfStaleYear: true,
+            clock: () => DateTime(2026, 9, 3),
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('issued in 2025'), findsOneWidget);
+    expect(
+      find.textContaining('not accept it on a 2026 filing'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a PTR issued this year says nothing', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DatePickerField(
+            label: 'PTR Date Issued *',
+            value: DateTime(2026, 1, 8),
+            warnIfStaleYear: true,
+            clock: () => DateTime(2026, 9, 3),
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('only valid for the year'), findsNothing);
+  });
+
+  testWidgets('a licence expiring soon warns before it lapses', (tester) async {
+    // The model's own rule: warn from 60 days out, so there is time to renew
+    // before the next filing rather than after a submission is refused. The
+    // first version of this field warned only once the licence had already
+    // expired, which is the point at which the advice stops being useful.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DatePickerField(
+            label: 'PRC Validity *',
+            value: DateTime(2026, 10, 1),
+            warnIfPast: true,
+            clock: () => DateTime(2026, 9, 3),
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('in 28 days'), findsOneWidget);
+    expect(find.textContaining('expired on'), findsNothing);
+  });
+
   testWidgets('a lapsed licence is named on the field', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

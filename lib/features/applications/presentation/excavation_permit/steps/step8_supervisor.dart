@@ -216,6 +216,7 @@ class _Step8SupervisorState extends State<Step8Supervisor> {
                   const SizedBox(height: AppSpacing.md),
                   DatePickerField(
                     label: 'PTR Date Issued *',
+                    warnIfStaleYear: true,
                     value: _supervisor.ptrDateIssued,
                     validator: (_) => _supervisor.ptrDateIssued == null
                         ? 'Please select the PTR date issued.'
