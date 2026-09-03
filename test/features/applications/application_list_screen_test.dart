@@ -378,4 +378,98 @@ void _draftsGroup() {
 
     expect(find.text('Waiting to reach the office'), findsNothing);
   });
+
+  testWidgets(
+    'work the office refused is not called waiting, and Try now goes',
+    (tester) async {
+      // Shipped wrong on 2026-09-02 and corrected here. `pendingCount` counted
+      // everything in the store, including operations the engine had marked
+      // failedPermanently — and `due()` takes only pending ones, so those are
+      // never retried. The banner told the citizen they would be "sent when you
+      // are back on a connection" for as long as the app stayed installed, and
+      // Try now could not move them: a dead control over a false promise.
+      final queue = OfflineQueue(InMemoryQueueStore());
+      await queue.enqueue(
+        QueuedOperation(
+          id: 'upload-1',
+          kind: QueuedOperationKind.documentUpload,
+          idempotencyKey: 'k1',
+          enqueuedAt: DateTime(2026, 9, 3),
+          payload: const {'filePath': '/tmp/a.pdf', 'label': 'Lot Plan'},
+        ),
+      );
+      final stored = (await queue.all()).single;
+      await queue.update(
+        stored.copyWith(
+          state: QueuedOperationState.failedPermanently,
+          failureMessage: 'The file is larger than the office accepts.',
+        ),
+      );
+      final sync = SyncProvider(queue: queue);
+      await sync.refresh();
+
+      await tester.pumpWidget(_wrap(const [], sync: sync));
+      await _settle(tester);
+
+      expect(sync.hasPendingWork, isFalse, reason: 'nothing will be retried');
+      expect(sync.blockedCount, 1);
+      expect(find.text('Not sent to the office'), findsOneWidget);
+      expect(find.text('Waiting to reach the office'), findsNothing);
+      expect(
+        find.textContaining('sent when you are back on a connection'),
+        findsNothing,
+        reason: 'it will never be sent',
+      );
+      expect(
+        find.textContaining('The file is larger than the office accepts'),
+        findsOneWidget,
+        reason:
+            "the office's own words, recorded by the engine and never shown",
+      );
+      expect(
+        find.text('Try now'),
+        findsNothing,
+        reason: 'a button that cannot change anything reads as having tried',
+      );
+    },
+  );
+
+  testWidgets('Try now says what happened, rather than nothing at all', (
+    tester,
+  ) async {
+    // `SyncProvider.lastOutcome` recorded sent / deferred / failed counts from
+    // the day it was written and was read by nothing, so Try now looked
+    // identical whether it had sent everything or reached no network at all.
+    final queue = OfflineQueue(InMemoryQueueStore());
+    await queue.enqueue(
+      QueuedOperation(
+        id: 'verify-1',
+        kind: QueuedOperationKind.contactVerificationRequest,
+        idempotencyKey: 'k2',
+        enqueuedAt: DateTime(2026, 9, 3),
+        payload: const {'channel': 'mobile', 'value': '09171234567'},
+      ),
+    );
+    // No api and no engine override: _send throws, so the item defers and
+    // stays queued — the honest offline outcome.
+    final sync = SyncProvider(queue: queue);
+    await sync.refresh();
+
+    await tester.pumpWidget(_wrap(const [], sync: sync));
+    await _settle(tester);
+
+    expect(find.text('Try now'), findsOneWidget);
+    await tester.tap(find.text('Try now'));
+    await _settle(tester);
+
+    expect(
+      find.textContaining('Still no connection to the office'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Nothing was lost'),
+      findsOneWidget,
+      reason: 'the citizen has to know their work is still held',
+    );
+  });
 }

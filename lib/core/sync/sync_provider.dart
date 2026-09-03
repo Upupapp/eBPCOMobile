@@ -45,14 +45,37 @@ class SyncProvider extends ChangeNotifier {
   OfflineQueue get queue => _queue;
 
   int _pending = 0;
+  int _blocked = 0;
+  List<({QueuedOperationKind kind, String? reason})> _blockedDetail = const [];
   bool _flushing = false;
   SyncOutcome? _lastOutcome;
 
-  /// How much work has not reached the LGU.
+  /// How much work has not reached the LGU **and still can**.
   ///
   /// Shown as "Queued", never as "Submitted" — the applicant is owed the
   /// difference.
+  ///
+  /// Counts only operations the engine will actually retry. It counted
+  /// `all()` until 2026-09-03, which silently included the ones that had
+  /// failed permanently: `due()` takes only `pending`, so those are never
+  /// sent again, and the banner promised a citizen they would go "when you
+  /// are back on a connection" for as long as the app was installed. Try now
+  /// could not move them either.
   int get pendingCount => _pending;
+
+  /// Work the office refused, which no amount of retrying will change.
+  ///
+  /// Kept in the queue rather than discarded — the engine is careful about
+  /// that — and reported separately because the citizen has to do something
+  /// different about it.
+  int get blockedCount => _blocked;
+  bool get hasBlockedWork => _blocked > 0;
+
+  /// Why each blocked operation was refused, in the server's own words where
+  /// it gave them. Written by the engine since it was built and read by
+  /// nothing until now.
+  List<({QueuedOperationKind kind, String? reason})> get blocked =>
+      List.unmodifiable(_blockedDetail);
   bool get isFlushing => _flushing;
   SyncOutcome? get lastOutcome => _lastOutcome;
   bool get hasPendingWork => _pending > 0;
@@ -69,15 +92,32 @@ class SyncProvider extends ChangeNotifier {
   /// Recounts what is waiting. Cheap, and safe to call on every resume.
   Future<void> refresh() async {
     final all = await _queue.all();
+    // Split by what can still happen to it, not by what is in the store.
+    final waiting = all
+        .where((o) => o.state != QueuedOperationState.failedPermanently)
+        .toList();
+    final stuck = all
+        .where((o) => o.state == QueuedOperationState.failedPermanently)
+        .toList();
     final byKind = <QueuedOperationKind, int>{};
-    for (final operation in all) {
+    for (final operation in waiting) {
       byKind[operation.kind] = (byKind[operation.kind] ?? 0) + 1;
     }
+    final blockedChanged = stuck.length != _blocked;
+    _blocked = stuck.length;
+    _blockedDetail = [
+      for (final o in stuck) (kind: o.kind, reason: o.failureMessage),
+    ];
     // Both are compared. Guarding on the count alone held a stale breakdown
     // whenever one operation replaced another of a different kind — the same
     // total, a different thing to tell the applicant.
-    if (all.length == _pending && _sameKinds(byKind)) return;
-    _pending = all.length;
+    // `blockedChanged` is in the guard because the assignment above already
+    // happened: returning early on an unchanged waiting count would leave the
+    // banner rendering a blocked item the provider has already forgotten.
+    if (waiting.length == _pending && _sameKinds(byKind) && !blockedChanged) {
+      return;
+    }
+    _pending = waiting.length;
     _pendingByKind = byKind;
     notifyListeners();
   }
