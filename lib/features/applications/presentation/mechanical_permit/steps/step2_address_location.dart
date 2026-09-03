@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/related_permit_notice.dart';
 import '../../../../../core/models/mechanical_permit_model.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
@@ -336,6 +337,11 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                       widget.onChanged();
                     },
                   ),
+                  RelatedPermitNotice(
+                    isExpired:
+                        _relatedPermit.status ==
+                        RelatedBuildingPermitStatus.expired,
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(
                     controller: _buildingPermitNumber,
@@ -348,6 +354,10 @@ class _Step2AddressLocationState extends State<Step2AddressLocation> {
                         _relatedPermit.status ==
                             RelatedBuildingPermitStatus.approved
                         ? 'Enter the approved Building Permit number.'
+                        : _relatedPermit.status ==
+                              RelatedBuildingPermitStatus.expired
+                        ? 'The Building Permit must be renewed before this '
+                              'permit can be issued.'
                         : 'Optional while pending approval.',
                     validator: (v) =>
                         _relatedPermit.status ==

@@ -8,7 +8,7 @@ document could not have stated.
 0 layout overflows, 1358s — rather than from the working tree it was written
 in. The admin line is unchanged at `e0925d9`.*
 
-**Suite at publication: 2286 tests.**
+**Suite at publication: 2289 tests.**
 
 *That second number is not decoration. §4 records a check that could not fail,
 and its replacement asserts this line equals the figure `tool/verify.sh` last
