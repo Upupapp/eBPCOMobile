@@ -194,16 +194,34 @@ class AuthProvider extends ChangeNotifier {
     String barangay = '',
     String postalCode = '',
   }) async {
+    // Only what changed. Echoing the whole profile back would overwrite a
+    // field a second device altered with the value this screen loaded before
+    // that happened — a lost update the citizen never sees. It would also send
+    // a clear for a field that was already null, making every save a write.
+    //
+    // Raised by the citizen web portal lane, which shipped this endpoint
+    // first. Their reasoning holds here unchanged: the screen shows every
+    // field, so "the citizen emptied this box" and "this box was already
+    // empty" look identical unless the current record is consulted.
+    final before = _currentUser;
+    FieldEdit changed(String typed, String? held) {
+      final next = typed.trim().isEmpty ? null : typed.trim();
+      if (next == (held?.trim().isEmpty ?? true ? null : held!.trim())) {
+        return const FieldEdit.absent();
+      }
+      return FieldEdit.set(next);
+    }
+
     final update = await _repository.updateProfile(
-      firstName: FieldEdit.fromInput(firstName),
-      middleName: FieldEdit.fromInput(middleName),
-      lastName: FieldEdit.fromInput(lastName),
-      mobileNumber: FieldEdit.fromInput(mobileNumber),
-      street: FieldEdit.fromInput(street),
-      province: FieldEdit.fromInput(province),
-      city: FieldEdit.fromInput(city),
-      barangay: FieldEdit.fromInput(barangay),
-      postalCode: FieldEdit.fromInput(postalCode),
+      firstName: changed(firstName, before?.firstName),
+      middleName: changed(middleName, before?.middleName),
+      lastName: changed(lastName, before?.lastName),
+      mobileNumber: changed(mobileNumber, before?.mobileNumber),
+      street: changed(street, before?.street),
+      province: changed(province, before?.province),
+      city: changed(city, before?.city),
+      barangay: changed(barangay, before?.barangay),
+      postalCode: changed(postalCode, before?.postalCode),
     );
 
     // The office's record, not the text the citizen typed. They differ
